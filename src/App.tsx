@@ -21,6 +21,13 @@ function App() {
   return (
     <div>
       <Grid container>
+        <button>start</button> <div>roomID</div>
+      </Grid>
+      <Grid container>
+        <input></input>
+        <button>join</button>
+      </Grid>
+      <Grid container>
         <Grid item>
           {stream && <StreamHolder title={"Local"} stream={stream} />}
         </Grid>
