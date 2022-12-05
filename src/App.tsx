@@ -1,30 +1,35 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import { getCities } from "./db";
+import StreamHolder from "./components/StreamHolder/StreamHolder";
+import { Grid } from "@mui/material";
 
 function App() {
-  getCities().then((x) => {
-    console.log(x);
-  });
+  const [stream, setStream] = useState<MediaStream>();
+
+  if (!stream)
+    navigator.mediaDevices
+      .getUserMedia({
+        video: true,
+        audio: true,
+      })
+      .then((stream) => {
+        console.log("the stream", stream);
+        setStream(stream);
+      });
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        {/* <p>{data}</p> */}
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <p>test</p>
+      {stream && <StreamHolder stream={stream} />}
+      <Grid container spacing={2}>
+        <Grid item xs={4}>
+          xs=4
+        </Grid>
+        <Grid item xs={4}>
+          xs=4
+        </Grid>
+      </Grid>
     </div>
   );
 }
