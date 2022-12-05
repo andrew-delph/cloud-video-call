@@ -1,7 +1,8 @@
 import React, { createRef, useEffect } from "react";
 
-function StreamHolder(props: { stream: MediaStream }) {
+function StreamHolder(props: { title: string; stream: MediaStream }) {
   const stream: MediaStream = props.stream;
+  const title: string = props.title;
 
   const videoRef = createRef<HTMLVideoElement>();
 
@@ -11,7 +12,7 @@ function StreamHolder(props: { stream: MediaStream }) {
 
   return (
     <div>
-      <p>StreamHolder</p>
+      <h2>{props.title}</h2>
       <video
         ref={videoRef}
         style={{

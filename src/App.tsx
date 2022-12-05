@@ -21,8 +21,12 @@ function App() {
   return (
     <div>
       <Grid container>
-        <Grid item>{stream && <StreamHolder stream={stream} />}</Grid>
-        <Grid item>{stream && <StreamHolder stream={stream} />}</Grid>
+        <Grid item>
+          {stream && <StreamHolder title={"Local"} stream={stream} />}
+        </Grid>
+        <Grid item>
+          {stream && <StreamHolder title={"Remote"} stream={stream} />}
+        </Grid>
       </Grid>
     </div>
   );
