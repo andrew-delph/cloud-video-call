@@ -20,15 +20,9 @@ function App() {
 
   return (
     <div>
-      <p>test</p>
-      {stream && <StreamHolder stream={stream} />}
-      <Grid container spacing={2}>
-        <Grid item xs={4}>
-          xs=4
-        </Grid>
-        <Grid item xs={4}>
-          xs=4
-        </Grid>
+      <Grid container>
+        <Grid item>{stream && <StreamHolder stream={stream} />}</Grid>
+        <Grid item>{stream && <StreamHolder stream={stream} />}</Grid>
       </Grid>
     </div>
   );
