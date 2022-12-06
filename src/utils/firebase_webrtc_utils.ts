@@ -1,5 +1,14 @@
 import { db } from "../firebase";
 
+const configuration: RTCConfiguration = {
+  iceServers: [
+    {
+      urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
+    },
+  ],
+  iceCandidatePoolSize: 10,
+};
+
 export const createRoom = async (
   localStream: MediaStream,
   remoteStream: MediaStream
@@ -8,8 +17,6 @@ export const createRoom = async (
   const roomRef = await db.collection("rooms").doc();
 
   // const roomRef: any = {}; // get from db_utils.ts
-
-  const configuration = undefined;
 
   console.log("Create PeerConnection with configuration: ", configuration);
   const peerConnection = new RTCPeerConnection();
@@ -87,8 +94,6 @@ export const joinRoom = async (
 ): Promise<void> => {
   // const db = firebase.firestore();
   const roomRef = db.collection("rooms").doc(`${roomId}`);
-
-  const configuration = undefined;
 
   // const roomRef: any = {};
   const roomSnapshot = await roomRef.get();
