@@ -1,11 +1,13 @@
+import { db } from "../firebase";
+
 export const createRoom = async (
   localStream: MediaStream,
   remoteStream: MediaStream
 ): Promise<string> => {
-  //   const db = firebase.firestore();
-  //   const roomRef = await db.collection("rooms").doc();
+  console.log("db", db);
+  const roomRef = await db.collection("rooms").doc();
 
-  const roomRef: any = {}; // get from db_utils.ts
+  // const roomRef: any = {}; // get from db_utils.ts
 
   const configuration = undefined;
 
@@ -79,21 +81,29 @@ export const createRoom = async (
 };
 
 export const joinRoom = async (
-  roomID: String,
+  roomId: String,
   localStream: MediaStream,
   remoteStream: MediaStream
 ): Promise<void> => {
   // const db = firebase.firestore();
-  // const roomRef = db.collection("rooms").doc(`${roomId}`);
+  const roomRef = db.collection("rooms").doc(`${roomId}`);
 
   const configuration = undefined;
 
-  const roomRef: any = {};
+  // const roomRef: any = {};
   const roomSnapshot = await roomRef.get();
   console.log("Got room:", roomSnapshot.exists);
 
   if (!roomSnapshot.exists) {
     alert("room doesnt exist");
+    return;
+  }
+
+  const roomSnapshotData = roomSnapshot.data();
+
+  if (!roomSnapshotData) {
+    alert("roomSnapshotData is undefined");
+    return;
   }
 
   console.log("Create PeerConnection with configuration: ", configuration);
@@ -123,7 +133,7 @@ export const joinRoom = async (
   });
 
   // Code for creating SDP answer below
-  const offer = roomSnapshot.data().offer;
+  const offer = roomSnapshotData.offer;
   console.log("Got offer:", offer);
   await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
   const answer = await peerConnection.createAnswer();
