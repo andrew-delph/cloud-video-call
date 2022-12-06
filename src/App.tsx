@@ -1,12 +1,17 @@
-import React, { useEffect, useState } from "react";
 import "./App.css";
 import StreamHolder from "./components/StreamHolder/StreamHolder";
 import { Grid } from "@mui/material";
-import { db } from "./utils/db_utils";
+import { db } from "./firebase";
+import { useState } from "react";
 
 function App() {
   const [stream, setStream] = useState<MediaStream>();
   console.log("db", db);
+  db.doc("hello/world").set({ hello: "world" });
+
+  db.doc("hello/world")
+    .get()
+    .then((data) => console.log(data.data()));
 
   const startButton = () => {
     navigator.mediaDevices
