@@ -12,13 +12,6 @@ function App() {
 
   const [roomId, setRoomId] = useState<string>();
 
-  console.log("db", db);
-  db.doc("hello/world").set({ hello: "world" });
-
-  db.doc("hello/world")
-    .get()
-    .then((data) => console.log(data.data()));
-
   const startButton = () => {
     navigator.mediaDevices
       .getUserMedia({
@@ -26,7 +19,6 @@ function App() {
         audio: true,
       })
       .then((stream) => {
-        console.log("the stream", stream);
         setLocalStream(stream);
         setRemoteStream(new MediaStream());
       });
@@ -38,7 +30,7 @@ function App() {
       localStream || new MediaStream(),
       remoteStream || new MediaStream()
     ).then((roomId) => {
-      console.log("the roomId", roomId);
+      console.log("created room");
       setRoomId(roomId);
     });
   };

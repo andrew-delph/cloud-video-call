@@ -13,13 +13,14 @@ export const createRoom = async (
   localStream: MediaStream,
   remoteStream: MediaStream
 ): Promise<string> => {
-  console.log("db", db);
   const roomRef = await db.collection("rooms").doc();
 
   // const roomRef: any = {}; // get from db_utils.ts
 
-  console.log("Create PeerConnection with configuration: ", configuration);
   const peerConnection = new RTCPeerConnection();
+  peerConnection.onconnectionstatechange = (ev) => {
+    console.log("connection state change:", peerConnection.connectionState);
+  };
 
   localStream.getTracks().forEach((track) => {
     peerConnection.addTrack(track, localStream);
@@ -30,10 +31,8 @@ export const createRoom = async (
 
   peerConnection.addEventListener("icecandidate", (event) => {
     if (!event.candidate) {
-      console.log("Got final candidate!");
       return;
     }
-    console.log("Got candidate: ", event.candidate);
     callerCandidatesCollection.add(event.candidate.toJSON());
   });
   // Code for collecting ICE candidates above
@@ -41,7 +40,6 @@ export const createRoom = async (
   // Code for creating a room below
   const offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer);
-  console.log("Created offer:", offer);
 
   const roomWithOffer = {
     offer: {
@@ -55,9 +53,7 @@ export const createRoom = async (
   // Code for creating a room above
 
   peerConnection.addEventListener("track", (event) => {
-    console.log("Got remote track:", event.streams[0]);
     event.streams[0].getTracks().forEach((track) => {
-      console.log("Add a track to the remoteStream:", track);
       remoteStream.addTrack(track);
     });
   });
@@ -66,7 +62,6 @@ export const createRoom = async (
   roomRef.onSnapshot(async (snapshot: any) => {
     const data = snapshot.data();
     if (!peerConnection.currentRemoteDescription && data && data.answer) {
-      console.log("Got remote description: ", data.answer);
       const rtcSessionDescription = new RTCSessionDescription(data.answer);
       await peerConnection.setRemoteDescription(rtcSessionDescription);
     }
@@ -78,7 +73,6 @@ export const createRoom = async (
     snapshot.docChanges().forEach(async (change: any) => {
       if (change.type === "added") {
         let data = change.doc.data();
-        console.log(`Got new remote ICE candidate: ${JSON.stringify(data)}`);
         await peerConnection.addIceCandidate(new RTCIceCandidate(data));
       }
     });
@@ -97,7 +91,6 @@ export const joinRoom = async (
 
   // const roomRef: any = {};
   const roomSnapshot = await roomRef.get();
-  console.log("Got room:", roomSnapshot.exists);
 
   if (!roomSnapshot.exists) {
     alert("room doesnt exist");
@@ -111,8 +104,11 @@ export const joinRoom = async (
     return;
   }
 
-  console.log("Create PeerConnection with configuration: ", configuration);
   const peerConnection = new RTCPeerConnection(configuration);
+  peerConnection.onconnectionstatechange = (ev) => {
+    console.log("connection state change:", peerConnection.connectionState);
+  };
+
   localStream.getTracks().forEach((track) => {
     peerConnection.addTrack(track, localStream);
   });
@@ -121,28 +117,22 @@ export const joinRoom = async (
   const calleeCandidatesCollection = roomRef.collection("calleeCandidates");
   peerConnection.addEventListener("icecandidate", (event) => {
     if (!event.candidate) {
-      console.log("Got final candidate!");
       return;
     }
-    console.log("Got candidate: ", event.candidate);
     calleeCandidatesCollection.add(event.candidate.toJSON());
   });
   // Code for collecting ICE candidates above
 
   peerConnection.addEventListener("track", (event) => {
-    console.log("Got remote track:", event.streams[0]);
     event.streams[0].getTracks().forEach((track) => {
-      console.log("Add a track to the remoteStream:", track);
       remoteStream.addTrack(track);
     });
   });
 
   // Code for creating SDP answer below
   const offer = roomSnapshotData.offer;
-  console.log("Got offer:", offer);
   await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
   const answer = await peerConnection.createAnswer();
-  console.log("Created answer:", answer);
   await peerConnection.setLocalDescription(answer);
 
   const roomWithAnswer = {
@@ -159,7 +149,6 @@ export const joinRoom = async (
     snapshot.docChanges().forEach(async (change: any) => {
       if (change.type === "added") {
         let data = change.doc.data();
-        console.log(`Got new remote ICE candidate: ${JSON.stringify(data)}`);
         await peerConnection.addIceCandidate(new RTCIceCandidate(data));
       }
     });
