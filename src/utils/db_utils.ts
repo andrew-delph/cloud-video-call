@@ -1,26 +1,27 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore/lite";
-// Follow this pattern to import other Firebase services
-// import { } from 'firebase/<service>';
+import firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/firestore";
 
-// TODO: Replace the following with your app's Firebase project configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCKQBYKydJtEz6fo_gWaKaDfHYP3SCu_RM",
-  authDomain: "fir-rtc-ce975.firebaseapp.com",
-  projectId: "fir-rtc-ce975",
-  storageBucket: "fir-rtc-ce975.appspot.com",
-  messagingSenderId: "699244501679",
-  appId: "1:699244501679:web:f8e3a1c857a281c5a1125a",
-  measurementId: "G-6FJYP74M6B",
-};
+// TODO: Use a configuration object
+firebase.initializeApp({
+  projectId: "",
+  appId: "",
+  databaseURL: "",
+  storageBucket: "",
+  locationId: "",
+  apiKey: "",
+  authDomain: "",
+  messagingSenderId: "",
+});
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = firebase.firestore();
+const auth = firebase.auth;
 
-// Get a list of cities from your database
-export async function getCities() {
-  const citiesCol = collection(db, "cities");
-  const citySnapshot = await getDocs(citiesCol);
-  const cityList = citySnapshot.docs.map((doc) => doc.data());
-  return cityList;
+// eslint-disable-next-line no-restricted-globals
+if (location.hostname === "localhost") {
+  db.useEmulator("localhost", 8080);
+  auth().useEmulator("http://localhost:9099/", { disableWarnings: true });
 }
+
+export default firebase;
+export { db, auth };

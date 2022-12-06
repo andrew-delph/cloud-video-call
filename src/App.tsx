@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import StreamHolder from "./components/StreamHolder/StreamHolder";
 import { Grid } from "@mui/material";
@@ -7,7 +6,7 @@ import { Grid } from "@mui/material";
 function App() {
   const [stream, setStream] = useState<MediaStream>();
 
-  if (!stream)
+  const startButton = () => {
     navigator.mediaDevices
       .getUserMedia({
         video: true,
@@ -17,9 +16,11 @@ function App() {
         console.log("the stream", stream);
         setStream(stream);
       });
+  };
 
   return (
     <div>
+      <button onClick={startButton}>Load</button>
       <Grid container>
         <button>start</button> <div>roomID</div>
       </Grid>
