@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import StreamHolder from "./components/StreamHolder/StreamHolder";
 import { Grid } from "@mui/material";
+import { db } from "./utils/db_utils";
 
 function App() {
   const [stream, setStream] = useState<MediaStream>();
+  console.log("db", db);
 
   const startButton = () => {
     navigator.mediaDevices
