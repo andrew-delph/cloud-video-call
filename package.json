@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "concurrently \"cd client && npm run start\" "
+    "dev": "concurrently \"cd client && npm run start\" \"cd server && npm run dev\" ",
+    "postinstall": "concurrently \"cd client && npm install\" \"cd server && npm install\" "
   },
   "repository": {
     "type": "git",
@@ -15,7 +16,9 @@
     "url": "https://github.com/thing72/react-video-call/issues"
   },
   "homepage": "https://github.com/thing72/react-video-call#readme",
-  "dependencies": {
-    "concurrently": "^7.6.0"
+  "dependencies": {},
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "postinstall": "^0.8.0"
   }
 }

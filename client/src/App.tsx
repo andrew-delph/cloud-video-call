@@ -2,8 +2,13 @@ import "./App.css";
 import StreamHolder from "./components/StreamHolder/StreamHolder";
 import { Grid } from "@mui/material";
 import { db } from "./firebase";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createRoom, joinRoom } from "./utils/firebase_webrtc_utils";
+import io from "socket.io-client";
+
+const socket = io("ws://localhost:4000", {
+  transports: ["websocket"],
+});
 
 function App() {
   const [localStream, setLocalStream] = useState<MediaStream>();
@@ -11,6 +16,34 @@ function App() {
   const [remoteStream, setRemoteStream] = useState<MediaStream>();
 
   const [roomId, setRoomId] = useState<string>();
+
+  let x = 1;
+
+  useEffect(() => {
+    console.log("here");
+
+    socket.on("connect", () => {
+      console.log("connect");
+    });
+
+    socket.io.on("error", (error) => {
+      console.log("error", error);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("disconnect");
+    });
+
+    socket.on("message", (value) => {
+      x = x + 1;
+      console.log("message", x + value);
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+    };
+  }, []);
 
   const startButton = () => {
     navigator.mediaDevices
