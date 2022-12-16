@@ -1,0 +1,21 @@
+{
+  "name": "react-video-call",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "concurrently \"cd client && npm run start\" "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thing72/react-video-call.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thing72/react-video-call/issues"
+  },
+  "homepage": "https://github.com/thing72/react-video-call#readme",
+  "dependencies": {
+    "concurrently": "^7.6.0"
+  }
+}
