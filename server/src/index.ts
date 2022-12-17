@@ -9,7 +9,7 @@ let x = 0;
 io.on("connection", (socket) => {
   x = x + 1;
   console.log("got new connection " + x);
-  socket.emit("message", "hi" + x);
+  socket.emit("message", "hizzz" + x);
 });
 
 httpServer.listen(4000);
