@@ -1,6 +1,7 @@
 import { createServer } from "http";
-import { OrderedSet } from "immutable";
 import { Server } from "socket.io";
+
+import { DistinctPriorityQueue } from "./DistinctPriorityQueue";
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
@@ -12,9 +13,7 @@ const io = new Server(httpServer, {
 
 const clients = new Map();
 
-var readyQueue: OrderedSet<String> = OrderedSet<String>().asMutable();
-
-console.log(readyQueue.toString());
+var readyQueue: DistinctPriorityQueue<String> = new DistinctPriorityQueue();
 
 io.on("connection", (socket) => {
   clients.set(socket.id, socket);
@@ -30,13 +29,11 @@ io.on("connection", (socket) => {
 
   socket.on("ready", () => {
     readyQueue.add(socket.id);
-    console.log(`${readyQueue.size}  ready!`);
+    console.log(`${readyQueue.size()}  ready!`);
 
-    if (readyQueue.size >= 2) {
-      const firstID = readyQueue.first() || "test";
-      readyQueue.remove(firstID);
-      const secondID = readyQueue.first() || "test";
-      readyQueue.remove(secondID);
+    if (readyQueue.size() >= 2) {
+      const firstID = readyQueue.pop();
+      const secondID = readyQueue.pop();
       console.log(`grouping ${firstID} and ${secondID}`);
 
       clients.get(firstID).emit("message", `you are with ${secondID}`);
