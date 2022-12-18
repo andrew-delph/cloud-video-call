@@ -15,18 +15,22 @@ function App() {
   const [remoteStream, setRemoteStream] = useState<MediaStream>();
   const [roomId, setRoomId] = useState<string>();
   const [loaded, setLoaded] = useState<boolean>(false);
+  const [connected, setConnect] = useState<boolean>(false);
 
   useEffect(() => {
     socket.on("connect", () => {
       console.log("connect " + socket.id);
+      setConnect(true);
     });
 
     socket.io.on("error", (error) => {
       console.log("error", error);
+      setConnect(false);
     });
 
     socket.on("disconnect", () => {
       console.log("disconnect");
+      setConnect(false);
     });
 
     socket.on("message", (value) => {
@@ -117,7 +121,7 @@ function App() {
       <button onClick={startButton}>Load</button>
       {loaded && (
         <div>
-          <button onClick={readyButton}>Ready</button>
+          {connected && <button onClick={readyButton}>Ready</button>}
           {!localStream && <h1 style={{ color: "red" }}>localStream ERROR</h1>}
           {!remoteStream && (
             <h1 style={{ color: "red" }}>remoteStream ERROR</h1>
