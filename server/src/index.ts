@@ -1,6 +1,7 @@
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 import { v4 as uuid } from "uuid";
+import { Client } from "./Client";
 
 import { DistinctPriorityQueue } from "./DistinctPriorityQueue";
 
@@ -9,15 +10,12 @@ const io = new Server(httpServer, {
   // options
 });
 
-// import * as common from "react-video-call-common";
-// console.log(common.mytest);
-
-const clients = new Map<String, Socket>();
+const clients = new Map<String, Client>();
 
 var readyQueue: DistinctPriorityQueue<String> = new DistinctPriorityQueue();
 
 io.on("connection", (socket) => {
-  clients.set(socket.id, socket);
+  clients.set(socket.id, new Client(socket));
 
   console.log("got new connection ", `#${clients.size}`, socket.id);
   socket.emit("message", "hizzz111");
@@ -41,12 +39,12 @@ io.on("connection", (socket) => {
         return;
       }
 
-      const firstSocket = clients.get(firstID);
-      const secondSocket = clients.get(secondID);
+      const firstClient = clients.get(firstID);
+      const secondClient = clients.get(secondID);
 
-      if (!firstSocket || !secondSocket) {
+      if (!firstClient || !secondClient) {
         console.log(
-          `error with null socket first:${firstSocket} second:${secondID}`
+          `error with null socket first:${firstClient} second:${secondID}`
         );
         return;
       }
@@ -55,13 +53,16 @@ io.on("connection", (socket) => {
 
       console.log(`grouping ${firstID} and ${secondID} in room: ${roomID}`);
 
-      firstSocket.join(roomID);
-      secondSocket.join(roomID);
+      firstClient.getSocket().join(roomID);
+      secondClient.getSocket().join(roomID);
+
+      firstClient.setRoomId(roomID);
+      secondClient.setRoomId(roomID);
 
       socket.to(roomID).emit("message", `Welcome to ${roomID}`);
 
-      firstSocket.emit("message", `you are with ${secondID}`);
-      secondSocket.emit("message", `you are with ${firstID}`);
+      firstClient.getSocket().emit("message", `you are with ${secondID}`);
+      secondClient.getSocket().emit("message", `you are with ${firstID}`);
     }
   });
 });
