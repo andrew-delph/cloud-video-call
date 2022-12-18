@@ -16,12 +16,6 @@
     "tsc-watch": "^6.0.0",
     "typescript": "^4.9.4"
   },
-  "nodemonConfig": {
-    "ignore": [
-      "src/**"
-    ],
-    "delay": 2500
-  },
   "workspaces": {
     "packages": [
       "../common"

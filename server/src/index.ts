@@ -6,9 +6,8 @@ const io = new Server(httpServer, {
   // options
 });
 
-// import { * } from "react-video-call-common";
-
-console.log(require("react-video-call-common"));
+import * as common from "react-video-call-common";
+console.log(common.mytest);
 
 const clients = new Map();
 
@@ -16,7 +15,7 @@ io.on("connection", (socket) => {
   clients.set(socket.id, socket);
 
   console.log("got new connection " + socket.id);
-  socket.emit("message", "hizzz");
+  socket.emit("message", "hizzz111");
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
