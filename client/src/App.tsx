@@ -80,25 +80,27 @@ function App() {
   };
 
   const createRoomButton = () => {
-    if (!localStream || !remoteStream) alert("stream is undefined");
-    createRoom(
-      localStream || new MediaStream(),
-      remoteStream || new MediaStream()
-    ).then((roomId) => {
+    if (!localStream || !remoteStream) {
+      alert("stream is undefined");
+      return;
+    }
+    createRoom(localStream, remoteStream).then((roomId) => {
       console.log("created room");
       setRoomId(roomId);
     });
   };
 
   const joinRoomButton = () => {
-    if (!localStream || !remoteStream) alert("stream is undefined");
-    if (!roomId) alert("roomId is undefined");
+    if (!localStream || !remoteStream) {
+      alert("stream is undefined");
+      return;
+    }
+    if (!roomId) {
+      alert("roomId is undefined");
+      return;
+    }
 
-    joinRoom(
-      roomId || "test",
-      localStream || new MediaStream(),
-      remoteStream || new MediaStream()
-    ).then(() => {
+    joinRoom(roomId, localStream, remoteStream).then(() => {
       console.log("room joined");
     });
   };
