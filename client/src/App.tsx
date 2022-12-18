@@ -17,8 +17,6 @@ function App() {
   const [roomId, setRoomId] = useState<string>();
 
   useEffect(() => {
-    console.log("here1");
-
     socket.on("connect", () => {
       console.log("connect " + socket.id);
       socket.emit("ready");
@@ -33,7 +31,7 @@ function App() {
     });
 
     socket.on("message", (value) => {
-      console.log("message", value);
+      console.log("message:", value);
     });
 
     return () => {
