@@ -12,10 +12,10 @@ const socket: Socket = io("ws://localhost:4000", {
 
 function App() {
   const [localStream, setLocalStream] = useState<MediaStream>();
-
   const [remoteStream, setRemoteStream] = useState<MediaStream>();
-
   const [roomId, setRoomId] = useState<string>();
+
+  const [loaded, setLoaded] = useState<boolean>(false);
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -76,6 +76,9 @@ function App() {
       .then((stream) => {
         setLocalStream(stream);
         setRemoteStream(new MediaStream());
+      })
+      .finally(() => {
+        setLoaded(true);
       });
   };
 
@@ -108,8 +111,12 @@ function App() {
   return (
     <div>
       <button onClick={startButton}>Load</button>
-      {localStream && (
+      {loaded && (
         <div>
+          {!localStream && <h1 style={{ color: "red" }}>localStream ERROR</h1>}
+          {!remoteStream && (
+            <h1 style={{ color: "red" }}>remoteStream ERROR</h1>
+          )}
           <Grid container>
             <button onClick={createRoomButton}>createRoom</button>{" "}
             <div>{roomId}</div>
