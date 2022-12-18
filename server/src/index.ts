@@ -6,8 +6,8 @@ const io = new Server(httpServer, {
   // options
 });
 
-import * as common from "react-video-call-common";
-console.log(common.mytest);
+// import * as common from "react-video-call-common";
+// console.log(common.mytest);
 
 const clients = new Map();
 
