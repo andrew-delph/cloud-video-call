@@ -5,11 +5,17 @@ const httpServer = createServer();
 const io = new Server(httpServer, {
   // options
 });
-let x = 0;
+
+const clients = new Map();
+
 io.on("connection", (socket) => {
-  x = x + 1;
-  console.log("got new connection " + x);
-  socket.emit("message", "hizzz" + x);
+  clients.set(socket.id, socket);
+
+  console.log("got new connection " + socket.id);
+  socket.emit("message", "hizzz");
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
 });
 
 httpServer.listen(4000);

@@ -21,7 +21,7 @@ function App() {
     console.log("here");
 
     socket.on("connect", () => {
-      console.log("connect");
+      console.log("connect " + socket.id);
     });
 
     socket.io.on("error", (error) => {
