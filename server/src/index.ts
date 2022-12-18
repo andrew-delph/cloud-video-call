@@ -6,6 +6,10 @@ const io = new Server(httpServer, {
   // options
 });
 
+// import { * } from "react-video-call-common";
+
+console.log(require("react-video-call-common"));
+
 const clients = new Map();
 
 io.on("connection", (socket) => {
