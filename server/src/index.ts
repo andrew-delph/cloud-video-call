@@ -32,10 +32,17 @@ io.on("connection", (socket) => {
     const theRoom = myClient.getRoomId();
     if (!theRoom) return;
 
-    socket.to(theRoom).emit("client_host", value);
+    socket.to(theRoom).emit("client_guest", value);
   });
 
-  socket.on("client_guest", () => {});
+  socket.on("client_guest", (value) => {
+    const myClient = clients.get(socket.id);
+    if (!myClient) return;
+    const theRoom = myClient.getRoomId();
+    if (!theRoom) return;
+
+    socket.to(theRoom).emit("client_host", value);
+  });
 
   socket.on("ready", () => {
     readyQueue.add(socket.id);

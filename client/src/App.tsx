@@ -46,7 +46,6 @@ function App() {
 
     socket.on("set_client_guest", (value) => {
       console.log("I am the guest of room:", value);
-      socket.emit("client_guest", "ok we are ready");
     });
 
     socket.on("client_host", (value) => {
@@ -55,6 +54,11 @@ function App() {
 
     socket.on("client_guest", (value) => {
       console.log("guest message:", value);
+      const answer = uuid();
+      console.log(`my answer: ${answer}`);
+      socket.emit("client_guest", {
+        answer: answer,
+      });
     });
 
     return () => {
