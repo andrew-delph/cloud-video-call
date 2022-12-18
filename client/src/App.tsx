@@ -4,6 +4,7 @@ import { Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import { createRoom, joinRoom } from "./utils/firebase_webrtc_utils";
 import io, { Socket } from "socket.io-client";
+import { v4 as uuid } from "uuid";
 
 const socket: Socket = io("ws://localhost:4000", {
   transports: ["websocket"],
@@ -32,6 +33,28 @@ function App() {
 
     socket.on("message", (value) => {
       console.log("message:", value);
+    });
+
+    socket.on("set_client_host", (value) => {
+      console.log("I am the host of room:", value);
+      const offer = uuid();
+      console.log(`my offer: ${offer}`);
+      socket.emit("client_host", {
+        offer: offer,
+      });
+    });
+
+    socket.on("set_client_guest", (value) => {
+      console.log("I am the guest of room:", value);
+      socket.emit("client_guest", "ok we are ready");
+    });
+
+    socket.on("client_host", (value) => {
+      console.log("host message:", value);
+    });
+
+    socket.on("client_guest", (value) => {
+      console.log("guest message:", value);
     });
 
     return () => {

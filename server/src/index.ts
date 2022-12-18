@@ -26,6 +26,17 @@ io.on("connection", (socket) => {
     readyQueue.remove(socket.id);
   });
 
+  socket.on("client_host", (value) => {
+    const myClient = clients.get(socket.id);
+    if (!myClient) return;
+    const theRoom = myClient.getRoomId();
+    if (!theRoom) return;
+
+    socket.to(theRoom).emit("client_host", value);
+  });
+
+  socket.on("client_guest", () => {});
+
   socket.on("ready", () => {
     readyQueue.add(socket.id);
     console.log(`${readyQueue.size()}  ready!`);
@@ -63,6 +74,9 @@ io.on("connection", (socket) => {
 
       firstClient.getSocket().emit("message", `you are with ${secondID}`);
       secondClient.getSocket().emit("message", `you are with ${firstID}`);
+
+      firstClient.getSocket().emit("set_client_host", roomID);
+      secondClient.getSocket().emit("set_client_guest", roomID);
     }
   });
 });
