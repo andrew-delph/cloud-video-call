@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "concurrently \"cd client && npm run start\" \"cd server && npm run dev\" ",
-    "postinstall": "concurrently \"cd client && npm install\" \"cd server && npm install\" "
+    "dev": "concurrently \"cd client && npm run start\" \"cd server && npm run dev\" \"cd common && npm run dev\" ",
+    "postinstall": "concurrently \"cd client && npm install\" \"cd server && npm install\" \"cd common && npm install\" "
   },
   "repository": {
     "type": "git",
