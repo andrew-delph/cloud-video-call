@@ -14,13 +14,11 @@ function App() {
   const [localStream, setLocalStream] = useState<MediaStream>();
   const [remoteStream, setRemoteStream] = useState<MediaStream>();
   const [roomId, setRoomId] = useState<string>();
-
   const [loaded, setLoaded] = useState<boolean>(false);
 
   useEffect(() => {
     socket.on("connect", () => {
       console.log("connect " + socket.id);
-      socket.emit("ready");
     });
 
     socket.io.on("error", (error) => {
@@ -50,10 +48,12 @@ function App() {
 
     socket.on("client_host", (value) => {
       console.log("host message:", value);
+      if (value && value.answer) setRoomId(value.answer);
     });
 
     socket.on("client_guest", (value) => {
       console.log("guest message:", value);
+      if (value && value.offer) setRoomId(value.offer);
       const answer = uuid();
       console.log(`my answer: ${answer}`);
       socket.emit("client_guest", {
@@ -108,11 +108,16 @@ function App() {
     });
   };
 
+  const readyButton = () => {
+    socket.emit("ready");
+  };
+
   return (
     <div>
       <button onClick={startButton}>Load</button>
       {loaded && (
         <div>
+          <button onClick={readyButton}>Ready</button>
           {!localStream && <h1 style={{ color: "red" }}>localStream ERROR</h1>}
           {!remoteStream && (
             <h1 style={{ color: "red" }}>remoteStream ERROR</h1>
