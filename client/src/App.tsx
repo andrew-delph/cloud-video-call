@@ -1,12 +1,11 @@
 import "./App.css";
 import StreamHolder from "./components/StreamHolder/StreamHolder";
 import { Grid } from "@mui/material";
-import { db } from "./firebase";
 import { useEffect, useState } from "react";
 import { createRoom, joinRoom } from "./utils/firebase_webrtc_utils";
-import io from "socket.io-client";
+import io, { Socket } from "socket.io-client";
 
-const socket = io("ws://localhost:4000", {
+const socket: Socket = io("ws://localhost:4000", {
   transports: ["websocket"],
 });
 
@@ -18,10 +17,11 @@ function App() {
   const [roomId, setRoomId] = useState<string>();
 
   useEffect(() => {
-    console.log("here");
+    console.log("here1");
 
     socket.on("connect", () => {
       console.log("connect " + socket.id);
+      socket.emit("ready");
     });
 
     socket.io.on("error", (error) => {
