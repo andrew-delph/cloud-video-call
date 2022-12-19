@@ -1,6 +1,10 @@
 import React, { createRef, useEffect } from "react";
 
-function StreamHolder(props: { title: string; stream: MediaStream }) {
+function StreamHolder(props: {
+  title: string;
+  stream: MediaStream;
+  muted: boolean;
+}) {
   const stream: MediaStream = props.stream;
 
   const videoRef = createRef<HTMLVideoElement>();
@@ -23,7 +27,7 @@ function StreamHolder(props: { title: string; stream: MediaStream }) {
           margin: "1em",
         }}
         id="localVideo"
-        muted
+        muted={props.muted}
         autoPlay
         playsInline
       ></video>

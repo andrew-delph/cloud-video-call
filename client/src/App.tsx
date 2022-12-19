@@ -114,12 +114,20 @@ function App() {
           <Grid container>
             <Grid item>
               {localStream && (
-                <StreamHolder title={"Local"} stream={localStream} />
+                <StreamHolder
+                  title={"Local"}
+                  stream={localStream}
+                  muted={true}
+                />
               )}
             </Grid>
             <Grid item>
               {remoteStream && (
-                <StreamHolder title={"Remote"} stream={remoteStream} />
+                <StreamHolder
+                  title={"Remote"}
+                  stream={remoteStream}
+                  muted={false}
+                />
               )}
             </Grid>
           </Grid>
