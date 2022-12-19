@@ -4,7 +4,6 @@ import { Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import { createRoom, joinRoom } from "./utils/firebase_webrtc_utils";
 import io, { Socket } from "socket.io-client";
-import { v4 as uuid } from "uuid";
 
 const socket: Socket = io("ws://localhost:4000", {
   transports: ["websocket"],
@@ -109,6 +108,9 @@ function App() {
           {!localStream && <h1 style={{ color: "red" }}>localStream ERROR</h1>}
           {!remoteStream && (
             <h1 style={{ color: "red" }}>remoteStream ERROR</h1>
+          )}
+          {!connected && (
+            <h1 style={{ color: "red" }}>NOT CONNECTED TO SOCKETIO</h1>
           )}
 
           <Grid container>
