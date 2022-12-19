@@ -12,7 +12,6 @@ COPY server/package*.json ./server/
 COPY client/package*.json ./client/
 
 # Install production dependencies.
-RUN npm install concurrently
 RUN npm install 
 
 # Copy local code to the container image.

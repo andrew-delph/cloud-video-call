@@ -98,7 +98,7 @@ function App() {
 
   return (
     <div>
-      <button onClick={startButton}>Load</button>
+      {/* <button onClick={startButton}>Load</button> */}
       {loaded && (
         <div>
           {connected && <button onClick={readyButton}>Ready</button>}
