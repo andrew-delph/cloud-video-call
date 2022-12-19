@@ -16,9 +16,13 @@ RUN npm install concurrently
 RUN npm install 
 
 # Copy local code to the container image.
+
 COPY . ./
 
-RUN npm run build 
+RUN npm run build --prefix common
+RUN npm run build --prefix server
+RUN npm run build --prefix client
+
 
 # # Run the web service on container startup.
 CMD [ "npm", "run" , "prod" ]
