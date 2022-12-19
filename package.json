@@ -2,6 +2,7 @@
   "name": "react-video-call",
   "version": "1.0.0",
   "description": "",
+  "main": "server/dist/index.js",
   "scripts": {
     "dev": "concurrently \"cd client && npm run start\" \"cd server && npm run dev\" \"cd common && npm run dev\" ",
     "postinstall": "concurrently \"cd client && npm install\" \"cd server && npm install\" \"cd common && npm install\" ",

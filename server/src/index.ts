@@ -31,7 +31,12 @@ io.on("connection", (socket) => {
   console.log("got new connection ", `#${clients.size}`, socket.id);
   socket.emit("message", "hizzz111");
 
+  const myInterval = setInterval(() => {
+    socket.emit("message", `sending update`);
+  }, 1000);
+
   socket.on("disconnect", () => {
+    clearInterval(myInterval);
     clients.delete(socket.id);
     console.log("user disconnected");
     readyQueue.remove(socket.id);
