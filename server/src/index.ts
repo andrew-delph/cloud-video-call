@@ -2,12 +2,23 @@ import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 import { v4 as uuid } from "uuid";
 import { Client } from "./Client";
+import express from "express";
+import * as path from "path";
 
 import { DistinctPriorityQueue } from "./DistinctPriorityQueue";
 
-const httpServer = createServer();
+const app = express();
+
+const httpServer = createServer(app);
+
 const io = new Server(httpServer, {
   // options
+});
+
+app.use(express.static(path.resolve(__dirname, "../../client/build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../../client/build", "index.html"));
 });
 
 const clients = new Map<String, Client>();
