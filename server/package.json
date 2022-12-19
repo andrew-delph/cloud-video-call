@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsc-watch --onSuccess \"node ./dist/index.js\"",
-    "build": "tsc"
+    "build": "tsc",
+    "prod": "node ./dist/index.js"
   },
   "author": "",
   "license": "ISC",
