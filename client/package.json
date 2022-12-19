@@ -1,5 +1,5 @@
 {
-  "name": "react-video-call-frontend",
+  "name": "react-video-call-client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
