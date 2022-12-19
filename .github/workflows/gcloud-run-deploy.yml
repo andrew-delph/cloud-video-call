@@ -1,0 +1,24 @@
+jobs:
+  job_id:
+    # ...
+
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    steps:
+      - uses: "actions/checkout@v3"
+
+      - uses: "google-github-actions/auth@v1"
+        # with:
+        #   workload_identity_provider: "projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider"
+        #   service_account: "my-service-account@my-project.iam.gserviceaccount.com"
+
+      - id: "deploy"
+        uses: "google-github-actions/deploy-cloudrun@v1"
+        with:
+          service: "react-video-call"
+          source: "."
+
+      - name: "Use output"
+        run: 'curl "${{ steps.deploy.outputs.url }}"'
