@@ -18,6 +18,7 @@ jobs:
         with:
           workload_identity_provider: "projects/619217777312/locations/global/workloadIdentityPools/wi-pool/providers/wi-pool"
           service_account: "react-video-call-GA@react-video-call-thing72.iam.gserviceaccount.com"
+          token_format: "access_token"
 
       - id: "deploy"
         uses: "google-github-actions/deploy-cloudrun@v1"
