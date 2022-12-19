@@ -37,33 +37,7 @@ function App() {
       console.log("message:", value);
     });
 
-    socket.on("set_client_host", (value) => {
-      console.log("I am the host of room:", value);
-      const offer = uuid();
-      console.log(`my offer: ${offer}`);
-      socket.emit("client_host", {
-        offer: offer,
-      });
-    });
-
-    socket.on("set_client_guest", (value) => {
-      console.log("I am the guest of room:", value);
-    });
-
-    socket.on("client_host", (value) => {
-      console.log("host message:", value);
-      if (value && value.answer) setRoomId(value.answer);
-    });
-
-    socket.on("client_guest", (value) => {
-      console.log("guest message:", value);
-      if (value && value.offer) setRoomId(value.offer);
-      const answer = uuid();
-      console.log(`my answer: ${answer}`);
-      socket.emit("client_guest", {
-        answer: answer,
-      });
-    });
+    startButton();
 
     return () => {
       socket.off("connect");
@@ -86,34 +60,44 @@ function App() {
       });
   };
 
-  const createRoomButton = () => {
-    if (!localStream || !remoteStream) {
-      alert("stream is undefined");
-      return;
-    }
-    createRoom(localStream, remoteStream).then((roomId) => {
-      console.log("created room");
-      setRoomId(roomId);
-    });
-  };
-
-  const joinRoomButton = () => {
-    if (!localStream || !remoteStream) {
-      alert("stream is undefined");
-      return;
-    }
-    if (!roomId) {
-      alert("roomId is undefined");
-      return;
-    }
-
-    joinRoom(roomId, localStream, remoteStream).then(() => {
-      console.log("room joined");
-    });
-  };
-
   const readyButton = () => {
     socket.emit("ready");
+
+    socket.on("set_client_host", (value) => {
+      console.log("I am the host of room:", value);
+      socket.off("client_host");
+      socket.off("client_guest");
+
+      const client_host_emit = (data: any) => {
+        socket.emit("client_host", data);
+      };
+
+      const client_host_listener = createRoom(
+        localStream || new MediaStream(),
+        remoteStream || new MediaStream(),
+        client_host_emit
+      );
+
+      socket.on("client_host", client_host_listener);
+    });
+
+    socket.on("set_client_guest", (value) => {
+      console.log("I am the guest of room:", value);
+      socket.off("client_host");
+      socket.off("client_guest");
+
+      const client_guest_emit = (data: any) => {
+        socket.emit("client_guest", data);
+      };
+
+      const client_guest_listener = joinRoom(
+        localStream || new MediaStream(),
+        remoteStream || new MediaStream(),
+        client_guest_emit
+      );
+
+      socket.on("client_guest", client_guest_listener);
+    });
   };
 
   return (
@@ -126,18 +110,7 @@ function App() {
           {!remoteStream && (
             <h1 style={{ color: "red" }}>remoteStream ERROR</h1>
           )}
-          <Grid container>
-            <button onClick={createRoomButton}>createRoom</button>{" "}
-            <div>{roomId}</div>
-          </Grid>
-          <Grid container>
-            <input
-              onChange={(e) => {
-                setRoomId(e.target.value);
-              }}
-            ></input>
-            <button onClick={joinRoomButton}>join</button>
-          </Grid>
+
           <Grid container>
             <Grid item>
               {localStream && (

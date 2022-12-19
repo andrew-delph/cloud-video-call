@@ -1,5 +1,3 @@
-import { db } from "../firebase";
-
 const configuration: RTCConfiguration = {
   iceServers: [
     {
@@ -9,46 +7,36 @@ const configuration: RTCConfiguration = {
   iceCandidatePoolSize: 10,
 };
 
-export const createRoom = async (
+export const createRoom = (
   localStream: MediaStream,
-  remoteStream: MediaStream
-): Promise<string> => {
-  const roomRef = await db.collection("rooms").doc();
-
-  // const roomRef: any = {}; // get from db_utils.ts
-
+  remoteStream: MediaStream,
+  socket_emit: (data: any) => void
+): ((data: any) => void) => {
   const peerConnection = new RTCPeerConnection();
-  peerConnection.onconnectionstatechange = (ev) => {
-    console.log("connection state change:", peerConnection.connectionState);
-  };
 
   localStream.getTracks().forEach((track) => {
     peerConnection.addTrack(track, localStream);
   });
 
-  // Code for collecting ICE candidates below
-  const callerCandidatesCollection = roomRef.collection("callerCandidates");
-
+  // collect and send icecandidates
   peerConnection.addEventListener("icecandidate", (event) => {
     if (!event.candidate) {
       return;
     }
-    callerCandidatesCollection.add(event.candidate.toJSON());
+    socket_emit({ icecandidate: event.candidate.toJSON() });
   });
-  // Code for collecting ICE candidates above
 
-  // Code for creating a room below
-  const offer = await peerConnection.createOffer();
-  await peerConnection.setLocalDescription(offer);
-
-  const roomWithOffer = {
-    offer: {
-      type: offer.type,
-      sdp: offer.sdp,
-    },
-  };
-  await roomRef.set(roomWithOffer);
-  const roomId: string = roomRef.id;
+  // create and send the offer
+  peerConnection.createOffer().then((offer) => {
+    const roomWithOffer = {
+      offer: {
+        type: offer.type,
+        sdp: offer.sdp,
+      },
+    };
+    socket_emit(roomWithOffer);
+    peerConnection.setLocalDescription(offer);
+  });
 
   // Code for creating a room above
 
@@ -58,68 +46,40 @@ export const createRoom = async (
     });
   });
 
-  // Listening for remote session description below
-  roomRef.onSnapshot(async (snapshot: any) => {
-    const data = snapshot.data();
-    if (!peerConnection.currentRemoteDescription && data && data.answer) {
+  return (data: any) => {
+    // Listening for answer
+    if (data && data.answer) {
+      console.log("got the answer", data.answer);
       const rtcSessionDescription = new RTCSessionDescription(data.answer);
-      await peerConnection.setRemoteDescription(rtcSessionDescription);
+      peerConnection.setRemoteDescription(rtcSessionDescription);
     }
-  });
-  // Listening for remote session description above
 
-  // Listen for remote ICE candidates below
-  roomRef.collection("calleeCandidates").onSnapshot((snapshot: any) => {
-    snapshot.docChanges().forEach(async (change: any) => {
-      if (change.type === "added") {
-        let data = change.doc.data();
-        await peerConnection.addIceCandidate(new RTCIceCandidate(data));
-      }
-    });
-  });
-
-  return roomId;
+    // Listen for remote ICE candidates below
+    if (data && data.icecandidate) {
+      console.log("got the icecandidate", data.icecandidate);
+      peerConnection.addIceCandidate(new RTCIceCandidate(data.icecandidate));
+    }
+  };
 };
 
-export const joinRoom = async (
-  roomId: String,
+export const joinRoom = (
   localStream: MediaStream,
-  remoteStream: MediaStream
-): Promise<void> => {
-  // const db = firebase.firestore();
-  const roomRef = db.collection("rooms").doc(`${roomId}`);
-
-  // const roomRef: any = {};
-  const roomSnapshot = await roomRef.get();
-
-  if (!roomSnapshot.exists) {
-    alert("room doesnt exist");
-    return;
-  }
-
-  const roomSnapshotData = roomSnapshot.data();
-
-  if (!roomSnapshotData) {
-    alert("roomSnapshotData is undefined");
-    return;
-  }
-
+  remoteStream: MediaStream,
+  socket_emit: (data: any) => void
+): ((data: any) => void) => {
   const peerConnection = new RTCPeerConnection(configuration);
-  peerConnection.onconnectionstatechange = (ev) => {
-    console.log("connection state change:", peerConnection.connectionState);
-  };
 
   localStream.getTracks().forEach((track) => {
     peerConnection.addTrack(track, localStream);
   });
 
   // Code for collecting ICE candidates below
-  const calleeCandidatesCollection = roomRef.collection("calleeCandidates");
   peerConnection.addEventListener("icecandidate", (event) => {
     if (!event.candidate) {
       return;
     }
-    calleeCandidatesCollection.add(event.candidate.toJSON());
+
+    socket_emit({ icecandidate: event.candidate.toJSON() });
   });
   // Code for collecting ICE candidates above
 
@@ -129,29 +89,32 @@ export const joinRoom = async (
     });
   });
 
-  // Code for creating SDP answer below
-  const offer = roomSnapshotData.offer;
-  await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-  const answer = await peerConnection.createAnswer();
-  await peerConnection.setLocalDescription(answer);
+  return async (data: any) => {
+    // Listening offer then send answer
+    if (data && data.offer) {
+      console.log("got the offer", data.offer);
+      await peerConnection.setRemoteDescription(
+        new RTCSessionDescription(data.offer)
+      );
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
 
-  const roomWithAnswer = {
-    answer: {
-      type: answer.type,
-      sdp: answer.sdp,
-    },
+      const roomWithAnswer = {
+        answer: {
+          type: answer.type,
+          sdp: answer.sdp,
+        },
+      };
+      socket_emit(roomWithAnswer);
+    }
+
+    // Listening for remote ICE candidates below
+
+    if (data && data.icecandidate) {
+      console.log("got the icecandidate", data.icecandidate);
+      await peerConnection.addIceCandidate(
+        new RTCIceCandidate(data.icecandidate)
+      );
+    }
   };
-  await roomRef.update(roomWithAnswer);
-  // Code for creating SDP answer above
-
-  // Listening for remote ICE candidates below
-  roomRef.collection("callerCandidates").onSnapshot((snapshot: any) => {
-    snapshot.docChanges().forEach(async (change: any) => {
-      if (change.type === "added") {
-        let data = change.doc.data();
-        await peerConnection.addIceCandidate(new RTCIceCandidate(data));
-      }
-    });
-  });
-  // Listening for remote ICE candidates above
 };
