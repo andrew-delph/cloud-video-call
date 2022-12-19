@@ -15,10 +15,8 @@ const io = new Server(httpServer, {
   // options
 });
 
-app.use(express.static(path.resolve(__dirname, "../../client/dist")));
-
 app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "../../client/dist", "index.html"));
+  res.send("This is the api server :)");
 });
 
 const clients = new Map<String, Client>();
