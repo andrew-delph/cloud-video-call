@@ -49,14 +49,12 @@ export const createRoom = (
   return (data: any) => {
     // Listening for answer
     if (data && data.answer) {
-      console.log("got the answer", data.answer);
       const rtcSessionDescription = new RTCSessionDescription(data.answer);
       peerConnection.setRemoteDescription(rtcSessionDescription);
     }
 
     // Listen for remote ICE candidates below
     if (data && data.icecandidate) {
-      console.log("got the icecandidate", data.icecandidate);
       peerConnection.addIceCandidate(new RTCIceCandidate(data.icecandidate));
     }
   };
@@ -92,7 +90,6 @@ export const joinRoom = (
   return async (data: any) => {
     // Listening offer then send answer
     if (data && data.offer) {
-      console.log("got the offer", data.offer);
       await peerConnection.setRemoteDescription(
         new RTCSessionDescription(data.offer)
       );
@@ -111,7 +108,6 @@ export const joinRoom = (
     // Listening for remote ICE candidates below
 
     if (data && data.icecandidate) {
-      console.log("got the icecandidate", data.icecandidate);
       await peerConnection.addIceCandidate(
         new RTCIceCandidate(data.icecandidate)
       );
