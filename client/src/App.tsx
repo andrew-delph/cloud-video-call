@@ -5,9 +5,7 @@ import { useEffect, useState } from "react";
 import { createRoom, joinRoom } from "./utils/firebase_webrtc_utils";
 import io, { Socket } from "socket.io-client";
 
-const socket: Socket = io("ws://localhost:4000", {
-  transports: ["websocket"],
-});
+const socket: Socket = io({});
 
 function App() {
   const [localStream, setLocalStream] = useState<MediaStream>();
