@@ -98,6 +98,7 @@ function App() {
 
   return (
     <div>
+      <p>test</p>
       {/* <button onClick={startButton}>Load</button> */}
       {loaded && (
         <div>
