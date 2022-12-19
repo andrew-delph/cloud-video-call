@@ -1,6 +1,11 @@
+name: Deploy server to gcloud run
+"on":
+  push:
+    branches:
+      - master
 jobs:
-  job_id:
-    # ...
+  build_and_deploy:
+    runs-on: ubuntu-latest
 
     permissions:
       contents: "read"
