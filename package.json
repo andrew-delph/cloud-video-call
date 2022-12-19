@@ -19,7 +19,6 @@
   "homepage": "https://github.com/thing72/react-video-call#readme",
   "dependencies": {},
   "devDependencies": {
-    "concurrently": "^7.6.0",
-    "postinstall": "^0.8.0"
+    "concurrently": "^7.6.0"
   }
 }
