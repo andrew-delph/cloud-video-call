@@ -10,7 +10,6 @@ const socket: Socket = io({});
 function App() {
   const [localStream, setLocalStream] = useState<MediaStream>();
   const [remoteStream, setRemoteStream] = useState<MediaStream>();
-  const [roomId, setRoomId] = useState<string>();
   const [loaded, setLoaded] = useState<boolean>(false);
   const [connected, setConnect] = useState<boolean>(false);
 
