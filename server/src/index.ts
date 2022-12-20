@@ -29,8 +29,10 @@ io.on("connection", (socket) => {
   console.log("got new connection ", `#${clients.size}`, socket.id);
   socket.emit("message", "hizzz111");
 
+  let updateCount = 0;
   const myInterval = setInterval(() => {
-    socket.emit("message", `sending update`);
+    socket.emit("message", `sending update ${updateCount}`);
+    updateCount = updateCount + 1;
   }, 1000);
 
   socket.on("disconnect", () => {
