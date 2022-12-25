@@ -8,7 +8,7 @@
     "postinstall": "concurrently \"cd client && npm install\" \"cd server && npm install\" \"cd common && npm install\" ",
     "build": "npm run build --prefix common && npm run build --prefix client && npm run build --prefix server",
     "prod": "npm run prod --prefix server",
-    "emulator": "firebase emulators:start"
+    "emulator": "firebase emulators:start",
   },
   "repository": {
     "type": "git",

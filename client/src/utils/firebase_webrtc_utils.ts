@@ -3,6 +3,11 @@ const configuration: RTCConfiguration = {
     {
       urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
     },
+    {
+      urls: ["turn:relay.metered.ca:80"],
+      username: 'db5611baf2f55446ccb6a207',
+      credential: '95Cmq0CBYp6WiHDA',
+    },
   ],
   iceCandidatePoolSize: 10,
 };
@@ -12,7 +17,7 @@ export const createRoom = (
   remoteStream: MediaStream,
   socket_emit: (data: any) => void
 ): ((data: any) => void) => {
-  const peerConnection = new RTCPeerConnection();
+  const peerConnection = new RTCPeerConnection(configuration);
 
   localStream.getTracks().forEach((track) => {
     peerConnection.addTrack(track, localStream);
