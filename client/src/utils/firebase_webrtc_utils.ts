@@ -5,8 +5,8 @@ const configuration: RTCConfiguration = {
     },
     {
       urls: ["turn:relay.metered.ca:80"],
-      username: 'db5611baf2f55446ccb6a207',
-      credential: '95Cmq0CBYp6WiHDA',
+      username: "db5611baf2f55446ccb6a207",
+      credential: "95Cmq0CBYp6WiHDA",
     },
   ],
   iceCandidatePoolSize: 10,

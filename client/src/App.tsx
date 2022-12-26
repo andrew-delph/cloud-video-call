@@ -32,8 +32,6 @@ function App() {
       console.log("message:", value);
     });
 
-    startButton();
-
     return () => {
       socket.off("connect");
       socket.off("disconnect");
@@ -41,7 +39,7 @@ function App() {
   }, []);
 
   const startButton = () => {
-    navigator.mediaDevices
+    return navigator.mediaDevices
       .getUserMedia({
         video: true,
         audio: true,
@@ -56,7 +54,9 @@ function App() {
   };
 
   const readyButton = () => {
-    socket.emit("ready");
+    startButton().then(() => {
+      socket.emit("ready");
+    });
 
     socket.on("set_client_host", (value) => {
       console.log("I am the host of room:", value);
@@ -97,7 +97,7 @@ function App() {
 
   return (
     <div>
-      {/* <button onClick={startButton}>Load</button> */}
+      {!loaded && <button onClick={startButton}>Load</button>}
       {loaded && (
         <div>
           {connected && <button onClick={readyButton}>Ready</button>}

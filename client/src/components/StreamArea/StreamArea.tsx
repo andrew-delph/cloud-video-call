@@ -45,13 +45,13 @@ export const StreamArea = (props: {
     </Grid>
   );
 
-  const mobileStreamStyle = {
+  const mobileStreamStyleRemote = {
     width: "100%",
     height: "100%",
     display: "block",
   };
 
-  const mobileStreamStyleRemote = {
+  const mobileStreamStyleLocal = {
     height: "30%",
     position: "absolute",
     bottom: "0px",
@@ -60,18 +60,18 @@ export const StreamArea = (props: {
 
   const mobileStreamArea = (
     <div>
-      {props.localStream && (
-        <StreamHolder
-          stream={props.localStream}
-          muted={true}
-          style={mobileStreamStyle}
-        />
-      )}
       {props.remoteStream && (
         <StreamHolder
           stream={props.remoteStream}
           muted={true}
           style={mobileStreamStyleRemote}
+        />
+      )}
+      {props.localStream && (
+        <StreamHolder
+          stream={props.localStream}
+          muted={true}
+          style={mobileStreamStyleLocal}
         />
       )}
     </div>
