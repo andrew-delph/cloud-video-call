@@ -1,9 +1,9 @@
 import React, { createRef, useEffect } from "react";
 
 function StreamHolder(props: {
-  title: string;
   stream: MediaStream;
   muted: boolean;
+  style: any;
 }) {
   const stream: MediaStream = props.stream;
 
@@ -16,16 +16,9 @@ function StreamHolder(props: {
 
   return (
     <div>
-      <h2>{props.title}</h2>
       <video
         ref={videoRef}
-        style={{
-          background: "black",
-          width: "640px",
-          height: "100%",
-          display: "block",
-          margin: "1em",
-        }}
+        style={props.style}
         id="localVideo"
         muted={props.muted}
         autoPlay

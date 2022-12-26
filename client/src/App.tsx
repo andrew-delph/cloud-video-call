@@ -4,6 +4,7 @@ import { Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import { createRoom, joinRoom } from "./utils/firebase_webrtc_utils";
 import io, { Socket } from "socket.io-client";
+import { StreamArea } from "./components/StreamArea/StreamArea";
 
 const socket: Socket = io({});
 
@@ -98,7 +99,6 @@ function App() {
 
   return (
     <div>
-      <p>test</p>
       {/* <button onClick={startButton}>Load</button> */}
       {loaded && (
         <div>
@@ -111,26 +111,10 @@ function App() {
             <h1 style={{ color: "red" }}>NOT CONNECTED TO SOCKETIO</h1>
           )}
 
-          <Grid container>
-            <Grid item>
-              {localStream && (
-                <StreamHolder
-                  title={"Local"}
-                  stream={localStream}
-                  muted={true}
-                />
-              )}
-            </Grid>
-            <Grid item>
-              {remoteStream && (
-                <StreamHolder
-                  title={"Remote"}
-                  stream={remoteStream}
-                  muted={false}
-                />
-              )}
-            </Grid>
-          </Grid>
+          <StreamArea
+            localStream={localStream}
+            remoteStream={remoteStream}
+          ></StreamArea>
         </div>
       )}
     </div>
