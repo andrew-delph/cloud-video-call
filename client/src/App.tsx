@@ -1,6 +1,4 @@
 import "./App.css";
-import StreamHolder from "./components/StreamHolder/StreamHolder";
-import { Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import { createRoom, joinRoom } from "./utils/firebase_webrtc_utils";
 import io, { Socket } from "socket.io-client";
