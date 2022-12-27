@@ -1,3 +1,4 @@
+import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import io, { Socket } from "socket.io-client";
@@ -22,6 +23,29 @@ function App() {
   const peerConnection = useSelector(
     (state: any) => state.stream.peerConnection
   );
+
+  const auth = getAuth();
+  signInAnonymously(auth)
+    .then(() => {
+      // Signed in..
+      console.log("signed in");
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+    });
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const uid = user.uid;
+      console.log("uid", uid);
+      // ...
+    } else {
+      // User is signed out
+      // ...
+    }
+  });
 
   useEffect(() => {
     socket.on("connect", () => {

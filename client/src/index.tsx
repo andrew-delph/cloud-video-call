@@ -1,10 +1,24 @@
+import { initializeApp } from "firebase/app";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
+import App from "./App";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
 import { store } from "./utils/store";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDYpgOSidu-ug4SJ3I6ktocbBQhA91DDR0",
+  authDomain: "react-video-call-thing72.firebaseapp.com",
+  projectId: "react-video-call-thing72",
+  storageBucket: "react-video-call-thing72.appspot.com",
+  messagingSenderId: "619217777312",
+  appId: "1:619217777312:web:2ef7fa42fd9bd1bed0cfc5",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
