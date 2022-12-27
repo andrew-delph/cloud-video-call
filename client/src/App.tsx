@@ -4,7 +4,12 @@ import { createRoom, joinRoom } from "./utils/firebase_webrtc_utils";
 import io, { Socket } from "socket.io-client";
 import { StreamArea } from "./components/StreamArea/StreamArea";
 import { useDispatch, useSelector } from "react-redux";
-import { setLocalStream, setRemoteStream, streamsSlice } from "./utils/store";
+import {
+  setLocalStream,
+  setPeerConnection,
+  setRemoteStream,
+  streamsSlice,
+} from "./utils/store";
 
 const socket: Socket = io({});
 
@@ -59,9 +64,7 @@ function App() {
   };
 
   const readyButton = () => {
-    startButton().then(() => {
-      socket.emit("ready");
-    });
+    socket.emit("ready");
 
     socket.on("set_client_host", (value) => {
       console.log("I am the host of room:", value);
@@ -72,7 +75,13 @@ function App() {
         socket.emit("client_host", data);
       };
 
-      if (!localStream || remoteStream) return;
+      if (!localStream || !remoteStream) {
+        console.log("here");
+        console.log("localStream", localStream);
+        console.log("remoteStream", remoteStream);
+        alert(1);
+        return;
+      }
 
       const createRoomResult = createRoom(
         localStream,
@@ -81,6 +90,7 @@ function App() {
       );
 
       socket.on("client_host", createRoomResult.listener);
+      dispatch(setPeerConnection(createRoomResult.peerConnection));
     });
 
     socket.on("set_client_guest", (value) => {
@@ -92,7 +102,13 @@ function App() {
         socket.emit("client_guest", data);
       };
 
-      if (!localStream || remoteStream) return;
+      if (!localStream || !remoteStream) {
+        console.log("here");
+        console.log("localStream", localStream);
+        console.log("remoteStream", remoteStream);
+        alert(2);
+        return;
+      }
 
       const joinRoomResult = joinRoom(
         localStream,
@@ -101,6 +117,7 @@ function App() {
       );
 
       socket.on("client_guest", joinRoomResult.listener);
+      dispatch(setPeerConnection(joinRoomResult.peerConnection));
     });
   };
 

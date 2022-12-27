@@ -9,15 +9,13 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 export interface StreamsState {
   localStream: MediaStream | null;
   remoteStream: MediaStream | null;
-  localPeerConnection: RTCPeerConnection | null;
-  remotePeerConnection: RTCPeerConnection | null;
+  peerConnection: RTCPeerConnection | null;
 }
 
 const initialState: StreamsState = {
   localStream: null,
   remoteStream: null,
-  localPeerConnection: null,
-  remotePeerConnection: null,
+  peerConnection: null,
 };
 
 export const streamsSlice = createSlice({
@@ -37,10 +35,17 @@ export const streamsSlice = createSlice({
     ) => {
       state.remoteStream = action.payload;
     },
+    setPeerConnection: (
+      state: StreamsState,
+      action: PayloadAction<RTCPeerConnection>
+    ) => {
+      state.peerConnection = action.payload;
+    },
   },
 });
 
-export const { setLocalStream, setRemoteStream } = streamsSlice.actions;
+export const { setLocalStream, setRemoteStream, setPeerConnection } =
+  streamsSlice.actions;
 
 export const store = configureStore({
   reducer: { stream: streamsSlice.reducer },
