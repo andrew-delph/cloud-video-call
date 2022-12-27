@@ -13,7 +13,7 @@ function StreamHolder(props: {
     if (videoRef && videoRef.current) {
       videoRef.current.srcObject = stream;
     }
-  }, [stream]);
+  }, [stream, videoRef]);
 
   return (
     <div>

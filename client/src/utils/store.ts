@@ -4,7 +4,6 @@ import {
   getDefaultMiddleware,
   PayloadAction,
 } from "@reduxjs/toolkit";
-import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 export interface StreamsState {
   localStream: MediaStream | null;

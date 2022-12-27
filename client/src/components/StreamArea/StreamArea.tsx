@@ -1,7 +1,5 @@
 import { Grid } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setLocalStream } from "../../utils/store";
+import { useSelector } from "react-redux";
 import StreamHolder from "../StreamHolder/StreamHolder";
 
 const isMobile = window.matchMedia(

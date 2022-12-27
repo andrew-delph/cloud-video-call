@@ -1,14 +1,13 @@
-import "./App.css";
 import { useEffect, useState } from "react";
-import { createRoom, joinRoom } from "./utils/firebase_webrtc_utils";
-import io, { Socket } from "socket.io-client";
-import { StreamArea } from "./components/StreamArea/StreamArea";
 import { useDispatch, useSelector } from "react-redux";
+import io, { Socket } from "socket.io-client";
+import "./App.css";
+import { StreamArea } from "./components/StreamArea/StreamArea";
+import { createRoom, joinRoom } from "./utils/firebase_webrtc_utils";
 import {
   setLocalStream,
   setPeerConnection,
   setRemoteStream,
-  streamsSlice,
 } from "./utils/store";
 
 const socket: Socket = io({});
