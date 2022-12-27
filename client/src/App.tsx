@@ -74,13 +74,13 @@ function App() {
 
       if (!localStream || remoteStream) return;
 
-      const client_host_listener = createRoom(
+      const createRoomResult = createRoom(
         localStream,
         remoteStream,
         client_host_emit
       );
 
-      socket.on("client_host", client_host_listener);
+      socket.on("client_host", createRoomResult.listener);
     });
 
     socket.on("set_client_guest", (value) => {
@@ -94,13 +94,13 @@ function App() {
 
       if (!localStream || remoteStream) return;
 
-      const client_guest_listener = joinRoom(
+      const joinRoomResult = joinRoom(
         localStream,
         remoteStream,
         client_guest_emit
       );
 
-      socket.on("client_guest", client_guest_listener);
+      socket.on("client_guest", joinRoomResult.listener);
     });
   };
 

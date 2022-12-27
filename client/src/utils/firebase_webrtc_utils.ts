@@ -16,7 +16,7 @@ export const createRoom = (
   localStream: MediaStream,
   remoteStream: MediaStream,
   socket_emit: (data: any) => void
-): ((data: any) => void) => {
+): { listener: (data: any) => void; peerConnection: RTCPeerConnection } => {
   const peerConnection = new RTCPeerConnection(configuration);
 
   localStream.getTracks().forEach((track) => {
@@ -51,17 +51,20 @@ export const createRoom = (
     });
   });
 
-  return (data: any) => {
-    // Listening for answer
-    if (data && data.answer) {
-      const rtcSessionDescription = new RTCSessionDescription(data.answer);
-      peerConnection.setRemoteDescription(rtcSessionDescription);
-    }
+  return {
+    listener: (data: any) => {
+      // Listening for answer
+      if (data && data.answer) {
+        const rtcSessionDescription = new RTCSessionDescription(data.answer);
+        peerConnection.setRemoteDescription(rtcSessionDescription);
+      }
 
-    // Listen for remote ICE candidates below
-    if (data && data.icecandidate) {
-      peerConnection.addIceCandidate(new RTCIceCandidate(data.icecandidate));
-    }
+      // Listen for remote ICE candidates below
+      if (data && data.icecandidate) {
+        peerConnection.addIceCandidate(new RTCIceCandidate(data.icecandidate));
+      }
+    },
+    peerConnection: peerConnection,
   };
 };
 
@@ -69,7 +72,7 @@ export const joinRoom = (
   localStream: MediaStream,
   remoteStream: MediaStream,
   socket_emit: (data: any) => void
-): ((data: any) => void) => {
+): { listener: (data: any) => void; peerConnection: RTCPeerConnection } => {
   const peerConnection = new RTCPeerConnection(configuration);
 
   localStream.getTracks().forEach((track) => {
@@ -92,30 +95,33 @@ export const joinRoom = (
     });
   });
 
-  return async (data: any) => {
-    // Listening offer then send answer
-    if (data && data.offer) {
-      await peerConnection.setRemoteDescription(
-        new RTCSessionDescription(data.offer)
-      );
-      const answer = await peerConnection.createAnswer();
-      await peerConnection.setLocalDescription(answer);
+  return {
+    listener: async (data: any) => {
+      // Listening offer then send answer
+      if (data && data.offer) {
+        await peerConnection.setRemoteDescription(
+          new RTCSessionDescription(data.offer)
+        );
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
 
-      const roomWithAnswer = {
-        answer: {
-          type: answer.type,
-          sdp: answer.sdp,
-        },
-      };
-      socket_emit(roomWithAnswer);
-    }
+        const roomWithAnswer = {
+          answer: {
+            type: answer.type,
+            sdp: answer.sdp,
+          },
+        };
+        socket_emit(roomWithAnswer);
+      }
 
-    // Listening for remote ICE candidates below
+      // Listening for remote ICE candidates below
 
-    if (data && data.icecandidate) {
-      await peerConnection.addIceCandidate(
-        new RTCIceCandidate(data.icecandidate)
-      );
-    }
+      if (data && data.icecandidate) {
+        await peerConnection.addIceCandidate(
+          new RTCIceCandidate(data.icecandidate)
+        );
+      }
+    },
+    peerConnection,
   };
 };
