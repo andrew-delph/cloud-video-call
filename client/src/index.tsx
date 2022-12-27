@@ -19,6 +19,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+console.log("app", app);
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
