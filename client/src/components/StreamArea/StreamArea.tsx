@@ -1,4 +1,5 @@
 import { Grid } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setLocalStream } from "../../utils/store";
 import StreamHolder from "../StreamHolder/StreamHolder";
@@ -9,14 +10,18 @@ const isMobile = window.matchMedia(
 
 export const StreamArea = () => {
   const desktopStreamStyle = {
-    width: "640px",
+    width: "340px",
     height: "100%",
     display: "block",
     margin: "1em",
   };
 
-  const localStream = useSelector((state: any) => state.stream.localStream);
-  const remoteStream = useSelector((state: any) => state.stream.remoteStream);
+  const localStream: MediaStream = useSelector(
+    (state: any) => state.stream.localStream
+  );
+  const remoteStream: MediaStream = useSelector(
+    (state: any) => state.stream.remoteStream
+  );
 
   const desktopStreamArea = (
     <Grid container>
@@ -72,7 +77,7 @@ export const StreamArea = () => {
       {localStream && (
         <StreamHolder
           stream={localStream}
-          muted={true}
+          muted={false}
           style={mobileStreamStyleLocal}
         />
       )}

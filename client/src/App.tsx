@@ -20,7 +20,9 @@ function App() {
   const dispatch = useDispatch();
 
   const localStream = useSelector((state: any) => state.stream.localStream);
-  const remoteStream = useSelector((state: any) => state.stream.remoteStream);
+  const peerConnection = useSelector(
+    (state: any) => state.stream.peerConnection
+  );
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -56,7 +58,6 @@ function App() {
       })
       .then((stream) => {
         dispatch(setLocalStream(stream));
-        dispatch(setRemoteStream(new MediaStream()));
       })
       .finally(() => {
         setLoaded(true);
@@ -64,6 +65,13 @@ function App() {
   };
 
   const readyButton = () => {
+    if (peerConnection) {
+      console.log("closing connection");
+      peerConnection.close();
+    }
+    socket.off("set_client_host");
+    socket.off("set_client_guest");
+
     socket.emit("ready");
 
     socket.on("set_client_host", (value) => {
@@ -75,17 +83,14 @@ function App() {
         socket.emit("client_host", data);
       };
 
-      if (!localStream || !remoteStream) {
-        console.log("here");
-        console.log("localStream", localStream);
-        console.log("remoteStream", remoteStream);
-        alert(1);
+      if (!localStream) {
+        alert("no local stream");
         return;
       }
 
       const createRoomResult = createRoom(
         localStream,
-        remoteStream,
+        dispatch(setRemoteStream(new MediaStream())).payload,
         client_host_emit
       );
 
@@ -102,17 +107,14 @@ function App() {
         socket.emit("client_guest", data);
       };
 
-      if (!localStream || !remoteStream) {
-        console.log("here");
-        console.log("localStream", localStream);
-        console.log("remoteStream", remoteStream);
-        alert(2);
+      if (!localStream) {
+        alert("no local stream");
         return;
       }
 
       const joinRoomResult = joinRoom(
         localStream,
-        remoteStream,
+        dispatch(setRemoteStream(new MediaStream())).payload,
         client_guest_emit
       );
 

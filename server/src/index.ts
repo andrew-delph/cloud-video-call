@@ -31,14 +31,14 @@ io.on("connection", (socket) => {
 
   let updateCount = 0;
   const myInterval = setInterval(() => {
-    socket.emit("message", `sending update ${updateCount}`);
+    // socket.emit("message", `sending update ${updateCount}`);
     updateCount = updateCount + 1;
   }, 10000);
 
   socket.on("disconnect", () => {
     clearInterval(myInterval);
     clients.delete(socket.id);
-    console.log("user disconnected "+socket.id);
+    console.log("user disconnected " + socket.id);
     readyQueue.remove(socket.id);
   });
 

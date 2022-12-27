@@ -10,9 +10,10 @@ function StreamHolder(props: {
   const videoRef = createRef<HTMLVideoElement>();
 
   useEffect(() => {
-    if (videoRef && videoRef.current && !videoRef.current.srcObject)
+    if (videoRef && videoRef.current) {
       videoRef.current.srcObject = stream;
-  });
+    }
+  }, [stream]);
 
   return (
     <div>
