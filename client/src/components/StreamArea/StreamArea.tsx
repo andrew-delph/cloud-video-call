@@ -68,14 +68,14 @@ export const StreamArea = () => {
       {remoteStream && (
         <StreamHolder
           stream={remoteStream}
-          muted={true}
+          muted={false}
           style={mobileStreamStyleRemote}
         />
       )}
       {localStream && (
         <StreamHolder
           stream={localStream}
-          muted={false}
+          muted={true}
           style={mobileStreamStyleLocal}
         />
       )}
