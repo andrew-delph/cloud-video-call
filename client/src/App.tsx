@@ -3,14 +3,19 @@ import { useEffect, useState } from "react";
 import { createRoom, joinRoom } from "./utils/firebase_webrtc_utils";
 import io, { Socket } from "socket.io-client";
 import { StreamArea } from "./components/StreamArea/StreamArea";
+import { useDispatch, useSelector } from "react-redux";
+import { setLocalStream, setRemoteStream, streamsSlice } from "./utils/store";
 
 const socket: Socket = io({});
 
 function App() {
-  const [localStream, setLocalStream] = useState<MediaStream>();
-  const [remoteStream, setRemoteStream] = useState<MediaStream>();
   const [loaded, setLoaded] = useState<boolean>(false);
   const [connected, setConnect] = useState<boolean>(false);
+
+  const dispatch = useDispatch();
+
+  const localStream = useSelector((state: any) => state.stream.localStream);
+  const remoteStream = useSelector((state: any) => state.stream.remoteStream);
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -45,8 +50,8 @@ function App() {
         audio: true,
       })
       .then((stream) => {
-        setLocalStream(stream);
-        setRemoteStream(new MediaStream());
+        dispatch(setLocalStream(stream));
+        dispatch(setRemoteStream(new MediaStream()));
       })
       .finally(() => {
         setLoaded(true);
@@ -67,9 +72,11 @@ function App() {
         socket.emit("client_host", data);
       };
 
+      if (!localStream || remoteStream) return;
+
       const client_host_listener = createRoom(
-        localStream || new MediaStream(),
-        remoteStream || new MediaStream(),
+        localStream,
+        remoteStream,
         client_host_emit
       );
 
@@ -85,9 +92,11 @@ function App() {
         socket.emit("client_guest", data);
       };
 
+      if (!localStream || remoteStream) return;
+
       const client_guest_listener = joinRoom(
-        localStream || new MediaStream(),
-        remoteStream || new MediaStream(),
+        localStream,
+        remoteStream,
         client_guest_emit
       );
 
@@ -101,18 +110,11 @@ function App() {
       {loaded && (
         <div>
           {connected && <button onClick={readyButton}>Ready</button>}
-          {!localStream && <h1 style={{ color: "red" }}>localStream ERROR</h1>}
-          {!remoteStream && (
-            <h1 style={{ color: "red" }}>remoteStream ERROR</h1>
-          )}
           {!connected && (
             <h1 style={{ color: "red" }}>NOT CONNECTED TO SOCKETIO</h1>
           )}
 
-          <StreamArea
-            localStream={localStream}
-            remoteStream={remoteStream}
-          ></StreamArea>
+          <StreamArea></StreamArea>
         </div>
       )}
     </div>

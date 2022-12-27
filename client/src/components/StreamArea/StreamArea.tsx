@@ -1,14 +1,13 @@
 import { Grid } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { setLocalStream } from "../../utils/store";
 import StreamHolder from "../StreamHolder/StreamHolder";
 
 const isMobile = window.matchMedia(
   "(pointer: coarse) and (hover: none)"
 ).matches;
 
-export const StreamArea = (props: {
-  localStream: MediaStream | undefined;
-  remoteStream: MediaStream | undefined;
-}) => {
+export const StreamArea = () => {
   const desktopStreamStyle = {
     width: "640px",
     height: "100%",
@@ -16,14 +15,17 @@ export const StreamArea = (props: {
     margin: "1em",
   };
 
+  const localStream = useSelector((state: any) => state.stream.localStream);
+  const remoteStream = useSelector((state: any) => state.stream.remoteStream);
+
   const desktopStreamArea = (
     <Grid container>
       <Grid item>
-        {props.localStream && (
+        {localStream && (
           <div>
             <h1>local</h1>
             <StreamHolder
-              stream={props.localStream}
+              stream={localStream}
               muted={true}
               style={desktopStreamStyle}
             />
@@ -31,11 +33,11 @@ export const StreamArea = (props: {
         )}
       </Grid>
       <Grid item>
-        {props.remoteStream && (
+        {remoteStream && (
           <div>
             <h1>remote</h1>
             <StreamHolder
-              stream={props.remoteStream}
+              stream={remoteStream}
               muted={false}
               style={desktopStreamStyle}
             />
@@ -60,16 +62,16 @@ export const StreamArea = (props: {
 
   const mobileStreamArea = (
     <div>
-      {props.remoteStream && (
+      {remoteStream && (
         <StreamHolder
-          stream={props.remoteStream}
+          stream={remoteStream}
           muted={true}
           style={mobileStreamStyleRemote}
         />
       )}
-      {props.localStream && (
+      {localStream && (
         <StreamHolder
-          stream={props.localStream}
+          stream={localStream}
           muted={true}
           style={mobileStreamStyleLocal}
         />
