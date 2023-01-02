@@ -1,16 +1,13 @@
+import { createAdapter } from "@socket.io/redis-adapter";
+import * as dotenv from "dotenv";
+import express from "express";
 import { createServer } from "http";
-import { Server, Socket } from "socket.io";
+import { createClient } from "redis";
+import { Server } from "socket.io";
 import { v4 as uuid } from "uuid";
 import { Client } from "./Client";
-import express from "express";
-import * as path from "path";
-
 import { DistinctPriorityQueue } from "./DistinctPriorityQueue";
 
-import { createAdapter } from "@socket.io/redis-adapter";
-import { createClient } from "redis";
-
-import * as dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
@@ -26,8 +23,8 @@ const pubClient = createClient({
 });
 
 pubClient.connect().then((data) => {
-  console.log("connected");
-  pubClient.set("key", "value").then((data) => {
+  console.log("connected1");
+  pubClient.set("key2", "value2").then((data) => {
     console.log("the set", data);
   });
 });
@@ -52,7 +49,7 @@ io.on("connection", (socket) => {
   clients.set(socket.id, new Client(socket));
 
   console.log("got new connection ", `#${clients.size}`, socket.id);
-  socket.emit("message", "hizzz111");
+  io.emit("message", "got new connection ", `#${socket.id}`);
 
   let updateCount = 0;
   const myInterval = setInterval(() => {
