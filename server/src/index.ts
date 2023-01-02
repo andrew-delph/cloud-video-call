@@ -7,6 +7,12 @@ import * as path from "path";
 
 import { DistinctPriorityQueue } from "./DistinctPriorityQueue";
 
+import { createAdapter } from "@socket.io/redis-adapter";
+import { createClient } from "redis";
+
+import * as dotenv from "dotenv";
+dotenv.config();
+
 const app = express();
 
 const httpServer = createServer(app);
@@ -14,6 +20,25 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   // options
 });
+
+const pubClient = createClient({
+  url: `redis://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@redis-19534.c1.us-east1-2.gce.cloud.redislabs.com:19534`,
+});
+
+pubClient.connect().then((data) => {
+  console.log("connected");
+  pubClient.set("key", "value").then((data) => {
+    console.log("the set", data);
+  });
+});
+
+console.log(
+  `redis://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@redis-19534.c1.us-east1-2.gce.cloud.redislabs.com:19534`
+);
+
+const subClient = pubClient.duplicate();
+
+io.adapter(createAdapter(pubClient, subClient));
 
 app.get("*", (req, res) => {
   res.send("This is the api server :)");
@@ -31,9 +56,13 @@ io.on("connection", (socket) => {
 
   let updateCount = 0;
   const myInterval = setInterval(() => {
-    // socket.emit("message", `sending update ${updateCount}`);
     updateCount = updateCount + 1;
-  }, 10000);
+    io.emit("message", `connected ${clients.size} .... ${updateCount}`);
+  }, 5000);
+
+  socket.on("message", (value) => {
+    console.log("message", value);
+  });
 
   socket.on("disconnect", () => {
     clearInterval(myInterval);
@@ -104,4 +133,4 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(4000);
+httpServer.listen(process.env.PORT);

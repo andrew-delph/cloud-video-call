@@ -30,3 +30,6 @@ ui-debug.log*
 
 
 .firebase
+
+
+.env
