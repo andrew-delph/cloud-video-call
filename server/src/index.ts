@@ -1,5 +1,4 @@
 import { createAdapter } from "@socket.io/redis-adapter";
-import { Emitter } from "@socket.io/redis-emitter";
 import * as dotenv from "dotenv";
 import express from "express";
 import { createServer } from "http";
@@ -23,15 +22,15 @@ const pubClient = createClient({
   url: `redis://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@redis-19534.c1.us-east1-2.gce.cloud.redislabs.com:19534`,
 });
 
-pubClient.connect().then((data) => {
-  console.log("connected1");
-  const emitter = new Emitter(pubClient);
-  setInterval(() => {
-    console.log("send date");
-    emitter.emit("message", new Date());
-    // io.emit("message", new Date());
-  }, 500);
-});
+// pubClient.connect().then((data) => {
+//   console.log("connected1");
+//   const emitter = new Emitter(pubClient);
+//   setInterval(() => {
+//     // console.log("send date");
+//     emitter.emit("message", new Date());
+//     // io.emit("message", new Date());
+//   }, 500);
+// });
 
 io.on("message", (arg) => {
   console.log(arg); // prints "world"
@@ -42,8 +41,6 @@ console.log(
 );
 
 const subClient = pubClient.duplicate();
-
-io.adapter(createAdapter(pubClient, subClient));
 
 app.get("*", (req, res) => {
   res.send("This is the api server :)");
@@ -138,4 +135,7 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(process.env.PORT);
+Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+  io.adapter(createAdapter(pubClient, subClient));
+  httpServer.listen(process.env.PORT);
+});
