@@ -32,14 +32,6 @@ const pubClient = createClient({
 //   }, 500);
 // });
 
-io.on("message", (arg) => {
-  console.log(arg); // prints "world"
-});
-
-console.log(
-  `redis://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@redis-19534.c1.us-east1-2.gce.cloud.redislabs.com:19534`
-);
-
 const subClient = pubClient.duplicate();
 
 app.get("*", (req, res) => {
@@ -53,14 +45,18 @@ var readyQueue: DistinctPriorityQueue<String> = new DistinctPriorityQueue();
 io.on("connection", (socket) => {
   clients.set(socket.id, new Client(socket));
 
-  console.log("got new connection ", `#${clients.size}`, socket.id);
   io.emit(`message`, `got new connection ${socket.id}`);
 
   let updateCount = 0;
   const myInterval = setInterval(() => {
     updateCount = updateCount + 1;
-    io.emit("message", `connected ${clients.size} .... ${updateCount}`);
-  }, 5000);
+    socket.emit(
+      "message",
+      `connected ${io.allSockets.length} .... ${updateCount}`
+    );
+
+    console.log("room", io.sockets.adapter.sids);
+  }, 500);
 
   socket.on("message", (value) => {
     console.log("message", value);
