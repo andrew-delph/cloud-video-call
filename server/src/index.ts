@@ -1,4 +1,5 @@
 import { createAdapter } from "@socket.io/redis-adapter";
+import { Emitter } from "@socket.io/redis-emitter";
 import * as dotenv from "dotenv";
 import express from "express";
 import { createServer } from "http";
@@ -24,9 +25,16 @@ const pubClient = createClient({
 
 pubClient.connect().then((data) => {
   console.log("connected1");
-  pubClient.set("key2", "value2").then((data) => {
-    console.log("the set", data);
-  });
+  const emitter = new Emitter(pubClient);
+  setInterval(() => {
+    console.log("send date");
+    emitter.emit("message", new Date());
+    // io.emit("message", new Date());
+  }, 500);
+});
+
+io.on("message", (arg) => {
+  console.log(arg); // prints "world"
 });
 
 console.log(
@@ -49,7 +57,7 @@ io.on("connection", (socket) => {
   clients.set(socket.id, new Client(socket));
 
   console.log("got new connection ", `#${clients.size}`, socket.id);
-  io.emit("message", "got new connection ", `#${socket.id}`);
+  io.emit(`message`, `got new connection ${socket.id}`);
 
   let updateCount = 0;
   const myInterval = setInterval(() => {

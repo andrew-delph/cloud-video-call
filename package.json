@@ -20,9 +20,11 @@
     "url": "https://github.com/thing72/react-video-call/issues"
   },
   "homepage": "https://github.com/thing72/react-video-call#readme",
-  "dependencies": {},
+  "dependencies": {
+    "@socket.io/redis-emitter": "^5.0.0"
+  },
   "devDependencies": {
-    "postinstall": "^0.8.0",
-    "concurrently": "^7.6.0"
+    "concurrently": "^7.6.0",
+    "postinstall": "^0.8.0"
   }
 }
