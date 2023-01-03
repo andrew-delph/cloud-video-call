@@ -113,24 +113,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: Stack(
-          children: [
-            const Text(
-              'test12333311ssssss121aa12',
+    return SizedBox(
+        height: 210,
+        child: Row(children: [
+          Flexible(
+            child: Container(
+              key: Key('local'),
+              // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+              decoration: BoxDecoration(color: Colors.black),
+              child: RTCVideoView(_localVideoRenderer),
             ),
-            Positioned(
-                // top: -210.0,
-                // right: 0.0,
-                // left: 0.0,
-                // bottom: 0.0,
-                child: RTCVideoView(_localVideoRenderer)),
-
-            // RTCVideoView(_localVideoRenderer),
-          ],
-        ));
+          ),
+          Flexible(
+            child: Container(
+              key: Key('remote'),
+              // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+              decoration: BoxDecoration(color: Colors.black),
+              child: RTCVideoView(_localVideoRenderer),
+            ),
+          ),
+        ]));
   }
 }
