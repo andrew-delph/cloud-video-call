@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const AppWidget(),
     );
   }
 }
@@ -56,35 +56,35 @@ class _MyHomePageState extends State<MyHomePage> {
 
   _MyHomePageState();
 
-  final _localVideoRenderer = RTCVideoRenderer();
+  // final _localVideoRenderer = RTCVideoRenderer();
+  //
+  // void initRenderers() async {
+  //   await _localVideoRenderer.initialize();
+  // }
 
-  void initRenderers() async {
-    await _localVideoRenderer.initialize();
-  }
+  // @override
+  // void initState() {
+  //   print("init");
+  //   initRenderers();
+  //   _getUserMedia();
+  //   super.initState();
+  // }
 
-  @override
-  void initState() {
-    print("init");
-    initRenderers();
-    _getUserMedia();
-    super.initState();
-  }
+  // @override
+  // void dispose() async {
+  //   // await _localVideoRenderer.dispose();
+  //   super.dispose();
+  // }
 
-  @override
-  void dispose() async {
-    // await _localVideoRenderer.dispose();
-    super.dispose();
-  }
-
-  _getUserMedia() async {
-    final Map<String, dynamic> mediaConstraints = {
-      'audio': true,
-      'video': true
-    };
-    MediaStream stream =
-        await navigator.mediaDevices.getUserMedia(mediaConstraints);
-    _localVideoRenderer.srcObject = stream;
-  }
+  // _getUserMedia() async {
+  //   final Map<String, dynamic> mediaConstraints = {
+  //     'audio': true,
+  //     'video': true
+  //   };
+  //   MediaStream stream =
+  //       await navigator.mediaDevices.getUserMedia(mediaConstraints);
+  //   _localVideoRenderer.srcObject = stream;
+  // }
 
   // void _incrementCounter() {
   //   setState(() {
@@ -145,24 +145,25 @@ class _MyHomePageState extends State<MyHomePage> {
           //   ),
           // ),
 
-          AppWidget(),
+          // AppWidget(),
+          Text("text now")
 
-          Flexible(
-            child: Container(
-              key: Key('local'),
-              // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-              decoration: BoxDecoration(color: Colors.black),
-              child: RTCVideoView(_localVideoRenderer),
-            ),
-          ),
-          Flexible(
-            child: Container(
-              key: Key('remote'),
-              // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-              decoration: BoxDecoration(color: Colors.black),
-              child: RTCVideoView(_localVideoRenderer),
-            ),
-          ),
+          // Flexible(
+          //   child: Container(
+          //     key: Key('local'),
+          //     // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+          //     decoration: BoxDecoration(color: Colors.black),
+          //     child: RTCVideoView(_localVideoRenderer),
+          //   ),
+          // ),
+          // Flexible(
+          //   child: Container(
+          //     key: Key('remote'),
+          //     // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+          //     decoration: BoxDecoration(color: Colors.black),
+          //     child: RTCVideoView(_localVideoRenderer),
+          //   ),
+          // ),
         ]));
   }
 }
