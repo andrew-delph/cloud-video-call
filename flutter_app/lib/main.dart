@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+
+import 'AppController.dart';
+import 'AppWidget.dart';
 
 void main() {
   final Map<String, dynamic> mediaConstraints = {'audio': true, 'video': true};
@@ -14,7 +18,12 @@ void main() {
   socket.on('message', (data) => print(data));
   socket.onDisconnect((_) => print('disconnect'));
   socket.on('fromServer', (_) => print(_));
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => AppController(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -24,7 +33,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Demo test',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
@@ -63,16 +72,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() async {
-    await _localVideoRenderer.dispose();
+    // await _localVideoRenderer.dispose();
     super.dispose();
   }
 
   _getUserMedia() async {
     final Map<String, dynamic> mediaConstraints = {
-      'audio': false,
+      'audio': true,
       'video': true
     };
-
     MediaStream stream =
         await navigator.mediaDevices.getUserMedia(mediaConstraints);
     _localVideoRenderer.srcObject = stream;
@@ -116,6 +124,29 @@ class _MyHomePageState extends State<MyHomePage> {
     return SizedBox(
         height: 210,
         child: Row(children: [
+          // Consumer<AppController>(
+          //   builder: (context, appController, child) => Stack(
+          //     children: [
+          //       TextButton(
+          //         onPressed: () {
+          //           appController.add("TESTSETTE");
+          //           print("pressed");
+          //         },
+          //         child: const Text('button test'),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+          // Consumer<AppController>(
+          //   builder: (context, appController, child) => Stack(
+          //     children: [
+          //       Text('Total price: ${appController.items}'),
+          //     ],
+          //   ),
+          // ),
+
+          AppWidget(),
+
           Flexible(
             child: Container(
               key: Key('local'),

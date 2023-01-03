@@ -38,6 +38,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   socket_io_client: ^2.0.0
   flutter_webrtc: ^0.9.18
+  provider: ^6.0.5
   
 
 dev_dependencies:
