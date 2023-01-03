@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -18,6 +20,7 @@ class AppWidget extends StatefulWidget {
 
 class AppWidgetState extends State<AppWidget> {
   late io.Socket socket;
+  bool connected = false;
 
   @protected
   @mustCallSuper
@@ -26,10 +29,14 @@ class AppWidgetState extends State<AppWidget> {
     socket = io.io('http://localhost:4000');
     socket.onConnect((_) {
       print('connect');
+      connected = true;
       socket.emit('message', 'test flutter');
     });
     socket.on('message', (data) => print(data));
-    socket.onDisconnect((_) => print('disconnect'));
+    socket.onDisconnect((_) {
+      connected = false;
+      print('disconnect');
+    });
   }
 
   @override
@@ -45,8 +52,8 @@ class AppWidgetState extends State<AppWidget> {
                 builder: (context, appController, child) => Stack(
                   children: [
                     TextButton(
-                      onPressed: () {
-                        appController.initLocal();
+                      onPressed: () async {
+                        await appController.initLocal();
                         print("pressed");
                       },
                       child: const Text('button test'),
@@ -56,22 +63,160 @@ class AppWidgetState extends State<AppWidget> {
               ),
               Flexible(
                 child: Container(
-                  key: Key('local'),
-                  // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                  decoration: BoxDecoration(color: Colors.black),
-                  child: RTCVideoView(appController.localVideoRenderer),
-                ),
+                    key: Key('local'),
+                    // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+                    decoration: BoxDecoration(color: Colors.black),
+                    child: RTCVideoView(appController.localVideoRenderer)),
               ),
               Flexible(
                 child: Container(
-                  key: Key('remote'),
-                  // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                  decoration: BoxDecoration(color: Colors.black),
-                  child: RTCVideoView(appController.localVideoRenderer),
-                ),
+                    key: Key('local'),
+                    // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+                    decoration: BoxDecoration(color: Colors.black),
+                    child: RTCVideoView(appController.remoteVideoRenderer)),
               ),
             ]));
       },
     );
   }
+}
+
+final Map<String, dynamic> rtcConfiguration = {
+  "iceServers": [
+    {
+      "urls": [
+        "stun:stun1.l.google.com:19302",
+        "stun:stun2.l.google.com:19302"
+      ],
+    },
+    {
+      "urls": ["turn:relay.metered.ca:80"],
+      "username": "db5611baf2f55446ccb6a207",
+      "credential": "95Cmq0CBYp6WiHDA",
+    },
+  ],
+  "iceCandidatePoolSize": 10,
+};
+
+final Map<String, dynamic> offerSdpConstraints = {
+  "mandatory": {
+    "OfferToReceiveAudio": true,
+    "OfferToReceiveVideo": true,
+  },
+  "optional": [],
+};
+
+Future<void> readyPress(AppProvider appProvider, io.Socket socket) async {
+  socket.on("set_client_host", (value) async {
+    await setClientHost(appProvider, socket, value);
+  });
+
+  socket.on("set_client_guest", (value) async {
+    await setClientGuest(appProvider, socket, value);
+  });
+}
+
+Future<void> setClientHost(
+    AppProvider appProvider, io.Socket socket, value) async {
+  socket.off("client_host");
+  socket.off("client_guest");
+
+  RTCPeerConnection peerConnection =
+      await createPeerConnection(rtcConfiguration, offerSdpConstraints);
+
+  peerConnection.addStream(appProvider.localMediaStream);
+
+  peerConnection.onIceCandidate = (event) {
+    socket.emit("client_host", {"icecandidate": json.encode(event.candidate)});
+  };
+
+  peerConnection.onAddStream = (MediaStream stream) {
+    print('addStream: ' + stream.id);
+    appProvider.remoteMediaStream = stream;
+  };
+
+  RTCSessionDescription offerDescription = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offerDescription);
+
+  // send the offer
+  socket.emit("client_host", {
+    "icecandidate": {
+      "offer": {
+        "type": offerDescription.type,
+        "sdp": offerDescription.sdp,
+      },
+    }
+  });
+
+  socket.on("client_host", (data) {
+    if (data && data.answer) {
+      RTCSessionDescription answerDescription =
+          RTCSessionDescription(data.sdp, data.type);
+      peerConnection.setRemoteDescription(answerDescription);
+    }
+
+    // Listen for remote ICE candidates below
+    if (data && data.icecandidate) {
+      RTCIceCandidate iceCandidate = RTCIceCandidate(
+          data.icecandidate['candidate'],
+          data.icecandidate['sdpMid'],
+          data.icecandidate['sdpMlineIndex']);
+      peerConnection.addCandidate(iceCandidate);
+    }
+  });
+
+  appProvider.peerConnection = peerConnection;
+}
+
+Future<void> setClientGuest(
+    AppProvider appProvider, io.Socket socket, value) async {
+  socket.off("client_host");
+  socket.off("client_guest");
+
+  RTCPeerConnection peerConnection =
+      await createPeerConnection(rtcConfiguration, offerSdpConstraints);
+
+  peerConnection.addStream(appProvider.localMediaStream);
+
+  peerConnection.onIceCandidate = (event) {
+    socket.emit("client_guest", {"icecandidate": json.encode(event.candidate)});
+  };
+
+  peerConnection.onAddStream = (MediaStream stream) {
+    print('addStream: ' + stream.id);
+    appProvider.remoteMediaStream = stream;
+  };
+
+  socket.on("client_guest", (data) async {
+    if (data && data.offer) {
+      await peerConnection.setRemoteDescription(
+          RTCSessionDescription(data.offer["sdp"], data.offer["type"]));
+
+      RTCSessionDescription answerDescription =
+          await peerConnection.createAnswer();
+
+      await peerConnection.setLocalDescription(answerDescription);
+
+      // send the offer
+      socket.emit("client_guest", {
+        "icecandidate": {
+          "offer": {
+            "type": answerDescription.type,
+            "sdp": answerDescription.sdp,
+          },
+        }
+      });
+    }
+
+    // Listen for remote ICE candidates below
+    if (data && data.icecandidate) {
+      RTCIceCandidate iceCandidate = RTCIceCandidate(
+          data.icecandidate['candidate'],
+          data.icecandidate['sdpMid'],
+          data.icecandidate['sdpMlineIndex']);
+      peerConnection.addCandidate(iceCandidate);
+    }
+  });
+
+  appProvider.peerConnection = peerConnection;
 }
