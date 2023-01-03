@@ -17,7 +17,7 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:2965",
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
@@ -42,6 +42,8 @@ var readyQueue: DistinctPriorityQueue<String> = new DistinctPriorityQueue();
 
 io.on("connection", (socket) => {
   clients.set(socket.id, new Client(socket));
+
+  socket.emit("message", `hey :)`);
 
   let updateCount = 0;
   const myInterval = setInterval(async () => {
