@@ -36,12 +36,10 @@ class AppProvider extends ChangeNotifier {
   }
 
   MediaStream get localMediaStream {
-    print("get localMediaStream");
     return _localMediaStream;
   }
 
   set localMediaStream(MediaStream value) {
-    print("set localMediaStream");
     _localMediaStream = value;
 
     localVideoRenderer.initialize();

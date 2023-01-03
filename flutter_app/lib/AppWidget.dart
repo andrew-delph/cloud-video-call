@@ -55,6 +55,8 @@ class AppWidgetState extends State<AppWidget> {
                       onPressed: () async {
                         await appController.initLocal();
                         print("pressed");
+                        await readyPress(appController, socket);
+                        print("done ready");
                       },
                       child: const Text('button test'),
                     ),
@@ -107,6 +109,7 @@ final Map<String, dynamic> offerSdpConstraints = {
 };
 
 Future<void> readyPress(AppProvider appProvider, io.Socket socket) async {
+  socket.emit("ready");
   socket.on("set_client_host", (value) async {
     await setClientHost(appProvider, socket, value);
   });
@@ -118,6 +121,7 @@ Future<void> readyPress(AppProvider appProvider, io.Socket socket) async {
 
 Future<void> setClientHost(
     AppProvider appProvider, io.Socket socket, value) async {
+  print("you are the host");
   socket.off("client_host");
   socket.off("client_guest");
 
@@ -127,7 +131,15 @@ Future<void> setClientHost(
   peerConnection.addStream(appProvider.localMediaStream);
 
   peerConnection.onIceCandidate = (event) {
-    socket.emit("client_host", {"icecandidate": json.encode(event.candidate)});
+    socket.emit(
+        "client_host",
+        jsonEncode({
+          "icecandidate": {
+            'candidate': event.candidate,
+            'sdpMid': event.sdpMid,
+            'sdpMlineIndex': event.sdpMLineIndex
+          }
+        }));
   };
 
   peerConnection.onAddStream = (MediaStream stream) {
@@ -139,28 +151,31 @@ Future<void> setClientHost(
   await peerConnection.setLocalDescription(offerDescription);
 
   // send the offer
-  socket.emit("client_host", {
-    "icecandidate": {
-      "offer": {
-        "type": offerDescription.type,
-        "sdp": offerDescription.sdp,
-      },
-    }
-  });
+  socket.emit(
+      "client_host",
+      jsonEncode({
+        "offer": {
+          "type": offerDescription.type,
+          "sdp": offerDescription.sdp,
+        },
+      }));
 
   socket.on("client_host", (data) {
-    if (data && data.answer) {
+    data = jsonDecode(data);
+
+    if (data['answer'] != null) {
+      print("got answer");
       RTCSessionDescription answerDescription =
-          RTCSessionDescription(data.sdp, data.type);
+          RTCSessionDescription(data['answer']["sdp"], data['answer']["type"]);
       peerConnection.setRemoteDescription(answerDescription);
     }
 
     // Listen for remote ICE candidates below
-    if (data && data.icecandidate) {
+    if (data["icecandidate"] != null) {
       RTCIceCandidate iceCandidate = RTCIceCandidate(
-          data.icecandidate['candidate'],
-          data.icecandidate['sdpMid'],
-          data.icecandidate['sdpMlineIndex']);
+          data["icecandidate"]['candidate'],
+          data["icecandidate"]['sdpMid'],
+          data["icecandidate"]['sdpMlineIndex']);
       peerConnection.addCandidate(iceCandidate);
     }
   });
@@ -170,6 +185,7 @@ Future<void> setClientHost(
 
 Future<void> setClientGuest(
     AppProvider appProvider, io.Socket socket, value) async {
+  print("you are the guest");
   socket.off("client_host");
   socket.off("client_guest");
 
@@ -179,7 +195,15 @@ Future<void> setClientGuest(
   peerConnection.addStream(appProvider.localMediaStream);
 
   peerConnection.onIceCandidate = (event) {
-    socket.emit("client_guest", {"icecandidate": json.encode(event.candidate)});
+    socket.emit(
+        "client_guest",
+        jsonEncode({
+          "icecandidate": {
+            'candidate': event.candidate,
+            'sdpMid': event.sdpMid,
+            'sdpMlineIndex': event.sdpMLineIndex
+          }
+        }));
   };
 
   peerConnection.onAddStream = (MediaStream stream) {
@@ -188,9 +212,11 @@ Future<void> setClientGuest(
   };
 
   socket.on("client_guest", (data) async {
-    if (data && data.offer) {
+    data = jsonDecode(data);
+
+    if (data["offer"] != null) {
       await peerConnection.setRemoteDescription(
-          RTCSessionDescription(data.offer["sdp"], data.offer["type"]));
+          RTCSessionDescription(data["offer"]["sdp"], data["offer"]["type"]));
 
       RTCSessionDescription answerDescription =
           await peerConnection.createAnswer();
@@ -198,22 +224,22 @@ Future<void> setClientGuest(
       await peerConnection.setLocalDescription(answerDescription);
 
       // send the offer
-      socket.emit("client_guest", {
-        "icecandidate": {
-          "offer": {
-            "type": answerDescription.type,
-            "sdp": answerDescription.sdp,
-          },
-        }
-      });
+      socket.emit(
+          "client_guest",
+          jsonEncode({
+            "answer": {
+              "type": answerDescription.type,
+              "sdp": answerDescription.sdp,
+            },
+          }));
     }
 
     // Listen for remote ICE candidates below
-    if (data && data.icecandidate) {
+    if (data["icecandidate"] != null) {
       RTCIceCandidate iceCandidate = RTCIceCandidate(
-          data.icecandidate['candidate'],
-          data.icecandidate['sdpMid'],
-          data.icecandidate['sdpMlineIndex']);
+          data["icecandidate"]['candidate'],
+          data["icecandidate"]['sdpMid'],
+          data["icecandidate"]['sdpMlineIndex']);
       peerConnection.addCandidate(iceCandidate);
     }
   });
