@@ -34,14 +34,14 @@ class AppWidgetState extends State<AppWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppController>(
+    return Consumer<AppProvider>(
       builder: (context, appController, child) {
         // appController.initLocal();
 
         return SizedBox(
             height: 200,
             child: Row(children: [
-              Consumer<AppController>(
+              Consumer<AppProvider>(
                 builder: (context, appController, child) => Stack(
                   children: [
                     TextButton(

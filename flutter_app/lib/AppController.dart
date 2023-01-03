@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
-class AppController extends ChangeNotifier {
+class AppProvider extends ChangeNotifier {
   RTCVideoRenderer _localVideoRenderer = RTCVideoRenderer();
   RTCVideoRenderer _remoteVideoRenderer = RTCVideoRenderer();
 
-  AppController() {
+  AppProvider() {
     // initLocal();
   }
 

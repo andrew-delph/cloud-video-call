@@ -9,7 +9,7 @@ void main() {
 
   runApp(
     ChangeNotifierProvider(
-      create: (context) => AppController(),
+      create: (context) => AppProvider(),
       child: const MyApp(),
     ),
   );
