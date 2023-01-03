@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 
-import 'package:socket_io_client/socket_io_client.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 void main() {
+  IO.Socket socket = IO.io('http://localhost:4000');
+  socket.onConnect((_) {
+    print('connect');
+    socket.emit('message', 'test flutter');
+  });
+  socket.on('message', (data) => print(data));
+  socket.onDisconnect((_) => print('disconnect'));
+  socket.on('fromServer', (_) => print(_));
   runApp(const MyApp());
 }
 

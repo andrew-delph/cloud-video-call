@@ -16,7 +16,10 @@ const app = express();
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
-  // options
+  cors: {
+    origin: "http://localhost:2965",
+    methods: ["GET", "POST"],
+  },
 });
 
 const pubClient = createClient({
