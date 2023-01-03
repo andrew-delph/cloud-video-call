@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:provider/provider.dart';
-import 'package:socket_io_client/socket_io_client.dart' as io;
 
 import 'AppController.dart';
 import 'AppWidget.dart';
@@ -9,15 +7,6 @@ import 'AppWidget.dart';
 void main() {
   final Map<String, dynamic> mediaConstraints = {'audio': true, 'video': true};
 
-  navigator.mediaDevices.getUserMedia(mediaConstraints);
-  io.Socket socket = io.io('http://localhost:4000');
-  socket.onConnect((_) {
-    print('connect');
-    socket.emit('message', 'test flutter');
-  });
-  socket.on('message', (data) => print(data));
-  socket.onDisconnect((_) => print('disconnect'));
-  socket.on('fromServer', (_) => print(_));
   runApp(
     ChangeNotifierProvider(
       create: (context) => AppController(),

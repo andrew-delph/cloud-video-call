@@ -6,7 +6,7 @@ class AppController extends ChangeNotifier {
   RTCVideoRenderer _remoteVideoRenderer = RTCVideoRenderer();
 
   AppController() {
-    initLocal();
+    // initLocal();
   }
 
   void initLocal() async {
