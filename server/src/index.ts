@@ -23,6 +23,10 @@ const pubClient = createClient({
   url: `redis://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@redis-19534.c1.us-east1-2.gce.cloud.redislabs.com:19534`,
 });
 
+pubClient.on("error", function (error) {
+  console.error(error);
+});
+
 const subClient = pubClient.duplicate();
 
 app.get("*", (req, res) => {
