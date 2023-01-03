@@ -7,6 +7,7 @@ import { Server } from "socket.io";
 import { v4 as uuid } from "uuid";
 import { Client } from "./Client";
 import { DistinctPriorityQueue } from "./DistinctPriorityQueue";
+// import { RedisAdapter } from "@socket.io/redis-adapter";
 
 dotenv.config();
 
@@ -21,16 +22,6 @@ const io = new Server(httpServer, {
 const pubClient = createClient({
   url: `redis://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@redis-19534.c1.us-east1-2.gce.cloud.redislabs.com:19534`,
 });
-
-// pubClient.connect().then((data) => {
-//   console.log("connected1");
-//   const emitter = new Emitter(pubClient);
-//   setInterval(() => {
-//     // console.log("send date");
-//     emitter.emit("message", new Date());
-//     // io.emit("message", new Date());
-//   }, 500);
-// });
 
 const subClient = pubClient.duplicate();
 
@@ -48,15 +39,14 @@ io.on("connection", (socket) => {
   io.emit(`message`, `got new connection ${socket.id}`);
 
   let updateCount = 0;
-  const myInterval = setInterval(() => {
+  const myInterval = setInterval(async () => {
     updateCount = updateCount + 1;
+    const connectedSockets = await io.fetchSockets();
     socket.emit(
       "message",
-      `connected ${io.allSockets.length} .... ${updateCount}`
+      `connected ${connectedSockets.length} .... ${updateCount}`
     );
-
-    console.log("room", io.sockets.adapter.sids);
-  }, 500);
+  }, 5000);
 
   socket.on("message", (value) => {
     console.log("message", value);
