@@ -40,8 +40,6 @@ var readyQueue: DistinctPriorityQueue<String> = new DistinctPriorityQueue();
 io.on("connection", (socket) => {
   clients.set(socket.id, new Client(socket));
 
-  io.emit(`message`, `got new connection ${socket.id}`);
-
   let updateCount = 0;
   const myInterval = setInterval(async () => {
     updateCount = updateCount + 1;
