@@ -8,19 +8,7 @@ import 'AppWidget.dart';
 
 void main() {
   print("new5");
-  print("hi!");
 
-  var x = jsonEncode({"x": "y"});
-
-  //
-  // print(x);
-  //
-  var y = jsonDecode(x);
-  print(y['z']);
-  if (y['z'] != null) print("hiii2");
-
-  //
-  // print(y['x']);2
 
   final Map<String, dynamic> mediaConstraints = {'audio': true, 'video': true};
 
