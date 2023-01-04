@@ -40,9 +40,15 @@ class AppWidgetState extends State<AppWidget> {
         defaultValue: 'http://localhost:4000');
 
     print("SOCKET_ADDRESS is " + SOCKET_ADDRESS);
+
+    // only websocket works on windows
     socket = io.io(SOCKET_ADDRESS, <String, dynamic>{
-      'transports': ['polling'],
+      'transports': ['websocket'],
     });
+
+
+    socket.emit("message", "I am a client");
+
     socket.onConnect((_) {
       print('connect');
       connected = true;
@@ -53,6 +59,11 @@ class AppWidgetState extends State<AppWidget> {
       connected = false;
       print('disconnect');
     });
+    socket.onError((data) {
+      print("error: "+data);
+    });
+
+
   }
 
   @override
