@@ -30,9 +30,7 @@ class AppProvider extends ChangeNotifier {
         await navigator.mediaDevices.getUserMedia(mediaConstraints);
 
     localMediaStream = stream;
-    // myVideo.srcObject = stream;
-    //
-    // localVideoRenderer = myVideo;
+
   }
 
   MediaStream get localMediaStream {
@@ -42,9 +40,11 @@ class AppProvider extends ChangeNotifier {
   set localMediaStream(MediaStream value) {
     _localMediaStream = value;
 
-    localVideoRenderer.initialize();
+    localVideoRenderer.initialize().then((value) {
+      print("init done");
 
-    localVideoRenderer.srcObject = _localMediaStream;
+      localVideoRenderer.srcObject = _localMediaStream;
+    });
   }
 
   RTCPeerConnection get peerConnection => _peerConnection;
@@ -59,8 +59,8 @@ class AppProvider extends ChangeNotifier {
   set remoteMediaStream(MediaStream value) {
     _remoteMediaStream = value;
 
-    remoteVideoRenderer.initialize();
-
-    remoteVideoRenderer.srcObject = _remoteMediaStream;
+    remoteVideoRenderer.initialize().then((value) {
+      remoteVideoRenderer.srcObject = _remoteMediaStream;
+    });
   }
 }

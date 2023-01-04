@@ -67,7 +67,7 @@ class AppWidgetState extends State<AppWidget> {
                       await readyPress(appController, socket);
                       print("done ready");
                     },
-                    child: const Text('button test'),
+                    child: const Text('button test3'),
                   ),
                 ],
               ),
