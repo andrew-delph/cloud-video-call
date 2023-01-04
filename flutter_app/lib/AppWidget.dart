@@ -30,7 +30,7 @@ class AppWidgetState extends State<AppWidget> {
 
     print("SOCKET_ADDRESS is " + SOCKET_ADDRESS);
     socket = io.io(SOCKET_ADDRESS, <String, dynamic>{
-      'transports': ['polling'],
+      'transports': ['websocket'],
     });
     socket.onConnect((_) {
       print('connect');

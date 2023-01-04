@@ -48,11 +48,12 @@ io.on("connection", (socket) => {
   let updateCount = 0;
   const myInterval = setInterval(async () => {
     updateCount = updateCount + 1;
-    const connectedSockets = await io.fetchSockets();
-    socket.emit(
-      "message",
-      `connected ${connectedSockets.length} .... ${updateCount}`
-    );
+    // const connectedSockets = await io.fetchSockets();
+    // socket.emit(
+    //   "message",
+    //   `connected ${connectedSockets.length} .... ${updateCount}`
+    // );
+    socket.emit("message", `connected .... ${updateCount}`);
   }, 5000);
 
   socket.on("message", (value) => {
