@@ -43,6 +43,8 @@ var readyQueue: DistinctPriorityQueue<String> = new DistinctPriorityQueue();
 io.on("connection", (socket) => {
   clients.set(socket.id, new Client(socket));
 
+  io.emit("message", "everyone welcome " + socket.id);
+
   socket.emit("message", `hey :)`);
 
   let updateCount = 0;
