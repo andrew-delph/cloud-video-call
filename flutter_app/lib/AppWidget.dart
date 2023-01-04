@@ -53,20 +53,18 @@ class AppWidgetState extends State<AppWidget> {
         return SizedBox(
             height: 200,
             child: Row(children: [
-              Consumer<AppProvider>(
-                builder: (context, appController, child) => Stack(
-                  children: [
-                    TextButton(
-                      onPressed: () async {
-                        await appController.initLocal();
-                        print("pressed");
-                        await readyPress(appController, socket);
-                        print("done ready");
-                      },
-                      child: const Text('button test'),
-                    ),
-                  ],
-                ),
+              Stack(
+                children: [
+                  TextButton(
+                    onPressed: () async {
+                      await appController.initLocal();
+                      print("pressed");
+                      await readyPress(appController, socket);
+                      print("done ready");
+                    },
+                    child: const Text('button test'),
+                  ),
+                ],
               ),
               Flexible(
                 child: Container(
