@@ -13,7 +13,6 @@ class AppWidget extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return AppWidgetState();
   }
 }
@@ -26,7 +25,11 @@ class AppWidgetState extends State<AppWidget> {
   @mustCallSuper
   void initState() {
     print("AppWidget initState1111111111111111111111111111");
-    socket = io.io('http://localhost:4000');
+    const SOCKET_ADDRESS = String.fromEnvironment('SOCKET_ADDRESS',
+        defaultValue: 'http://localhost:4000');
+
+    print("SOCKET_ADDRESS is "+ SOCKET_ADDRESS);
+    socket = io.io(SOCKET_ADDRESS);
     socket.onConnect((_) {
       print('connect');
       connected = true;
