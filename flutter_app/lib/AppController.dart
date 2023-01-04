@@ -44,6 +44,7 @@ class AppProvider extends ChangeNotifier {
       print("init done");
 
       localVideoRenderer.srcObject = _localMediaStream;
+      notifyListeners();
     });
   }
 
@@ -61,6 +62,7 @@ class AppProvider extends ChangeNotifier {
 
     remoteVideoRenderer.initialize().then((value) {
       remoteVideoRenderer.srcObject = _remoteMediaStream;
+      notifyListeners();
     });
   }
 }
