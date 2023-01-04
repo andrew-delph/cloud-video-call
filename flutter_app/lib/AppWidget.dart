@@ -28,8 +28,10 @@ class AppWidgetState extends State<AppWidget> {
     const SOCKET_ADDRESS = String.fromEnvironment('SOCKET_ADDRESS',
         defaultValue: 'http://localhost:4000');
 
-    print("SOCKET_ADDRESS is "+ SOCKET_ADDRESS);
-    socket = io.io(SOCKET_ADDRESS);
+    print("SOCKET_ADDRESS is " + SOCKET_ADDRESS);
+    socket = io.io(SOCKET_ADDRESS, <String, dynamic>{
+      'transports': ['polling'],
+    });
     socket.onConnect((_) {
       print('connect');
       connected = true;
