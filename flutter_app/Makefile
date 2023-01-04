@@ -1,0 +1,3 @@
+windows:
+	flutter build windows
+
