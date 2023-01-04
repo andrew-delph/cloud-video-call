@@ -2,7 +2,7 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on merge
-'on':
+"on":
   push:
     branches:
       - master
@@ -11,10 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm ci && npm run build
+      - uses: actions/setup-java@v1
+        with:
+          java-version: "14.0.1"
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: "3.3.10"
+      - name: Get dependencies
+        run: flutter pub get
+        working-directory: flutter_app
+      - name: Build app
+        run: flutter build web --dart-define="SOCKET_ADDRESS=https://react-video-call-thing72.web.app/"
+        working-directory: flutter_app
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_REACT_VIDEO_CALL_THING72 }}'
-          channelId: live
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_REACT_VIDEO_CALL_THING72 }}"
           projectId: react-video-call-thing72

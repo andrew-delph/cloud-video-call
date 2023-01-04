@@ -16,7 +16,10 @@ const app = express();
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
-  // options
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
 });
 
 const pubClient = createClient({
@@ -40,7 +43,7 @@ var readyQueue: DistinctPriorityQueue<String> = new DistinctPriorityQueue();
 io.on("connection", (socket) => {
   clients.set(socket.id, new Client(socket));
 
-  io.emit(`message`, `got new connection ${socket.id}`);
+  socket.emit("message", `hey :)`);
 
   let updateCount = 0;
   const myInterval = setInterval(async () => {
