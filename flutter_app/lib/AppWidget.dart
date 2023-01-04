@@ -21,8 +21,13 @@ class AppWidgetState extends State<AppWidget> {
   late io.Socket socket;
   bool connected = false;
 
-  @protected
-  @mustCallSuper
+  @override
+  void dispose() {
+    super.dispose();
+    print("AppWidgetState dispose");
+  }
+
+  @override
   void initState() {
     print("AppWidget initState1111111111111111111111111111");
     const SOCKET_ADDRESS = String.fromEnvironment('SOCKET_ADDRESS',
