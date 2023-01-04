@@ -28,6 +28,12 @@ class AppWidgetState extends State<AppWidget> {
   }
 
   @override
+  void deactivate() {
+    super.deactivate();
+    print("AppWidgetState deactivate");
+  }
+
+  @override
   void initState() {
     print("AppWidget initState1111111111111111111111111111");
     const SOCKET_ADDRESS = String.fromEnvironment('SOCKET_ADDRESS',
