@@ -61,6 +61,6 @@ class AppProvider extends ChangeNotifier {
 
     remoteVideoRenderer.initialize();
 
-    remoteVideoRenderer.srcObject = _localMediaStream;
+    remoteVideoRenderer.srcObject = _remoteMediaStream;
   }
 }
