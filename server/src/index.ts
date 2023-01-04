@@ -75,7 +75,7 @@ io.on("connection", (socket) => {
     const theRoom = myClient.getRoomId();
     if (!theRoom) return;
 
-    socket.to(theRoom).emit("client_guest", value);
+    io.to(theRoom).emit("client_guest", value);
   });
 
   socket.on("client_guest", (value) => {
@@ -84,7 +84,7 @@ io.on("connection", (socket) => {
     const theRoom = myClient.getRoomId();
     if (!theRoom) return;
 
-    socket.to(theRoom).emit("client_host", value);
+    io.to(theRoom).emit("client_host", value);
   });
 
   socket.on("ready", () => {
@@ -120,7 +120,7 @@ io.on("connection", (socket) => {
       firstClient.setRoomId(roomID);
       secondClient.setRoomId(roomID);
 
-      socket.to(roomID).emit("message", `Welcome to ${roomID}`);
+      io.to(roomID).emit("message", `Welcome to ${roomID}`);
 
       firstClient.getSocket().emit("message", `you are with ${secondID}`);
       secondClient.getSocket().emit("message", `you are with ${firstID}`);
