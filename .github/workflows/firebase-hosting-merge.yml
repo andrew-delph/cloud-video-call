@@ -28,3 +28,4 @@ jobs:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_REACT_VIDEO_CALL_THING72 }}"
           projectId: react-video-call-thing72
+          channelId: live
