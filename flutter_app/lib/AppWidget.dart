@@ -46,7 +46,6 @@ class AppWidgetState extends State<AppWidget> {
       'transports': ['websocket'],
     });
 
-
     socket.emit("message", "I am a client");
 
     socket.onConnect((_) {
@@ -63,7 +62,6 @@ class AppWidgetState extends State<AppWidget> {
       print("error: "+data);
     });
 
-
   }
 
   @override
@@ -79,7 +77,7 @@ class AppWidgetState extends State<AppWidget> {
                 children: [
                   TextButton(
                     onPressed: () async {
-                      await appController.initLocal();
+                      await appController.init();
                       print("pressed");
                       await readyPress(appController, socket);
                       print("done ready");
@@ -155,8 +153,8 @@ Future<void> setClientHost(
   RTCPeerConnection peerConnection =
       await createPeerConnection(rtcConfiguration, offerSdpConstraints);
 
-  appProvider.localMediaStream.getTracks().forEach((track) async {
-    await peerConnection.addTrack(track, appProvider.localMediaStream);
+  appProvider.localMediaStream!.getTracks().forEach((track) async {
+    await peerConnection.addTrack(track, appProvider.localMediaStream!);
   });
 
   peerConnection.onIceCandidate = (event) {
@@ -228,8 +226,8 @@ Future<void> setClientGuest(
 
 
 
-  appProvider.localMediaStream.getTracks().forEach((track) async {
-    await peerConnection.addTrack(track, appProvider.localMediaStream);
+  appProvider.localMediaStream!.getTracks().forEach((track) async {
+    await peerConnection.addTrack(track, appProvider.localMediaStream!);
   });
 
 
