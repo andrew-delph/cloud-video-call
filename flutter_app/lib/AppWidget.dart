@@ -171,7 +171,12 @@ Future<void> setClientHost(
         }));
   };
 
-
+// collect the streams/tracks from remote
+  peerConnection.onAddStream = (stream) {
+  };
+  peerConnection.onAddTrack = (stream, track) async{
+    await appProvider.addRemoteTrack(track);
+  };
   peerConnection.onTrack = (RTCTrackEvent track) async {
     await appProvider.addRemoteTrack(track.track);
   };
@@ -240,6 +245,13 @@ Future<void> setClientGuest(
         }));
   };
 
+
+  // collect the streams/tracks from remote
+  peerConnection.onAddStream = (stream) {
+  };
+  peerConnection.onAddTrack = (stream, track) async{
+    await appProvider.addRemoteTrack(track);
+  };
   peerConnection.onTrack = (RTCTrackEvent track) async {
     await appProvider.addRemoteTrack(track.track);
   };
