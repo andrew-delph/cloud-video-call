@@ -66,4 +66,9 @@ class AppProvider extends ChangeNotifier {
       notifyListeners();
     });
   }
+
+  Future<void> addRemoteTrack(MediaStreamTrack track) async{
+    await remoteMediaStream.addTrack(track);
+    notifyListeners();
+  }
 }

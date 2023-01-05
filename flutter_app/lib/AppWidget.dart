@@ -171,10 +171,8 @@ Future<void> setClientHost(
   };
 
 
-  peerConnection.onTrack = (RTCTrackEvent track) {
-    appProvider.remoteMediaStream.addTrack(track.track);
-    appProvider.remoteMediaStream = appProvider.remoteMediaStream;
-    appProvider.notifyListeners();
+  peerConnection.onTrack = (RTCTrackEvent track) async {
+    await appProvider.addRemoteTrack(track.track);
   };
 
   RTCSessionDescription offerDescription = await peerConnection.createOffer();
@@ -241,10 +239,8 @@ Future<void> setClientGuest(
         }));
   };
 
-  peerConnection.onTrack = (RTCTrackEvent track) {
-    appProvider.remoteMediaStream.addTrack(track.track);
-    appProvider.remoteMediaStream = appProvider.remoteMediaStream;
-    appProvider.notifyListeners();
+  peerConnection.onTrack = (RTCTrackEvent track) async {
+    await appProvider.addRemoteTrack(track.track);
   };
 
   socket.on("client_guest", (data) async {
