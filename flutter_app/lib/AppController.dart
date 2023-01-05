@@ -70,6 +70,10 @@ class AppProvider extends ChangeNotifier {
   Future<void> addRemoteTrack(MediaStreamTrack track) async{
     await remoteMediaStream.addTrack(track);
     notifyListeners();
+    remoteVideoRenderer.initialize().then((value) {
+      remoteVideoRenderer.srcObject = _remoteMediaStream;
+      notifyListeners();
+    });
   }
 
   Future<void> resetRemoteMediaStream() async{
