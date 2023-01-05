@@ -66,11 +66,11 @@ class AppWidgetState extends State<AppWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppProvider>(
+    var child = Consumer<AppProvider>(
       builder: (context, appController, child) {
         // appController.initLocal();
 
-        return SizedBox(
+        return  SizedBox(
             height: 200,
             child: Row(children: [
               Stack(
@@ -88,20 +88,25 @@ class AppWidgetState extends State<AppWidget> {
               ),
               Flexible(
                 child: Container(
-                    key: Key('local'),
+                    key: const Key('local'),
                     // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                    decoration: BoxDecoration(color: Colors.black),
+                    decoration: const BoxDecoration(color: Colors.black),
                     child: RTCVideoView(appController.localVideoRenderer)),
               ),
               Flexible(
                 child: Container(
-                    key: Key('local'),
+                    key: const Key('local'),
                     // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                    decoration: BoxDecoration(color: Colors.black),
+                    decoration: const BoxDecoration(color: Colors.black),
                     child: RTCVideoView(appController.remoteVideoRenderer)),
               ),
             ]));
       },
+    );
+
+    return ChangeNotifierProvider(
+      create: (context) => AppProvider(),
+      child: child,
     );
   }
 }

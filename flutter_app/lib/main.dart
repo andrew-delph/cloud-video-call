@@ -9,15 +9,7 @@ import 'AppWidget.dart';
 void main() {
   print("new5");
 
-
-  final Map<String, dynamic> mediaConstraints = {'audio': true, 'video': true};
-
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => AppProvider(),
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
