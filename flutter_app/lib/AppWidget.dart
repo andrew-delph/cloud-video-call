@@ -134,6 +134,11 @@ final Map<String, dynamic> offerSdpConstraints = {
 
 Future<void> readyPress(AppProvider appProvider, io.Socket socket) async {
   await appProvider.resetRemoteMediaStream();
+  socket.off("client_host");
+  socket.off("client_guest");
+  socket.off("set_client_host");
+  socket.off("set_client_guest");
+
   socket.emit("ready");
   socket.on("set_client_host", (value) async {
     await setClientHost(appProvider, socket, value);
@@ -147,8 +152,7 @@ Future<void> readyPress(AppProvider appProvider, io.Socket socket) async {
 Future<void> setClientHost(
     AppProvider appProvider, io.Socket socket, value) async {
   print("you are the host");
-  socket.off("client_host");
-  socket.off("client_guest");
+
 
   RTCPeerConnection peerConnection =
       await createPeerConnection(rtcConfiguration, offerSdpConstraints);
@@ -218,8 +222,6 @@ Future<void> setClientHost(
 Future<void> setClientGuest(
     AppProvider appProvider, io.Socket socket, value) async {
   print("you are the guest");
-  socket.off("client_host");
-  socket.off("client_guest");
 
   RTCPeerConnection peerConnection =
       await createPeerConnection(rtcConfiguration, offerSdpConstraints);
