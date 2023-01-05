@@ -135,6 +135,7 @@ final Map<String, dynamic> offerSdpConstraints = {
 };
 
 Future<void> readyPress(AppProvider appProvider, io.Socket socket) async {
+  await appProvider.resetRemoteMediaStream();
   socket.emit("ready");
   socket.on("set_client_host", (value) async {
     await setClientHost(appProvider, socket, value);

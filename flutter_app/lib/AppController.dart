@@ -71,4 +71,9 @@ class AppProvider extends ChangeNotifier {
     await remoteMediaStream.addTrack(track);
     notifyListeners();
   }
+
+  Future<void> resetRemoteMediaStream() async{
+    remoteMediaStream = await createLocalMediaStream("remote");
+    notifyListeners();
+  }
 }
