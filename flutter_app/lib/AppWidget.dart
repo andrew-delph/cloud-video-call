@@ -109,7 +109,8 @@ class AppWidgetState extends State<AppWidget> {
 }
 
 final Map<String, dynamic> rtcConfiguration = {
-  "iceServers": [
+"sdpSemantics" : "plan-b",
+"iceServers": [
     {
       "urls": [
         "stun:stun1.l.google.com:19302",
@@ -153,7 +154,9 @@ Future<void> setClientHost(
   RTCPeerConnection peerConnection =
       await createPeerConnection(rtcConfiguration, offerSdpConstraints);
 
-  peerConnection.addStream(appProvider.localMediaStream);
+  appProvider.localMediaStream.getTracks().forEach((track) async {
+    await peerConnection.addTrack(track, appProvider.localMediaStream);
+  });
 
   peerConnection.onIceCandidate = (event) {
     socket.emit(
@@ -167,9 +170,11 @@ Future<void> setClientHost(
         }));
   };
 
-  peerConnection.onAddStream = (MediaStream stream) {
-    print('addStream: ' + stream.id);
-    appProvider.remoteMediaStream = stream;
+
+  peerConnection.onTrack = (RTCTrackEvent track) {
+    appProvider.remoteMediaStream.addTrack(track.track);
+    appProvider.remoteMediaStream = appProvider.remoteMediaStream;
+    appProvider.notifyListeners();
   };
 
   RTCSessionDescription offerDescription = await peerConnection.createOffer();
@@ -217,7 +222,12 @@ Future<void> setClientGuest(
   RTCPeerConnection peerConnection =
       await createPeerConnection(rtcConfiguration, offerSdpConstraints);
 
-  peerConnection.addStream(appProvider.localMediaStream);
+
+
+  appProvider.localMediaStream.getTracks().forEach((track) async {
+    await peerConnection.addTrack(track, appProvider.localMediaStream);
+  });
+
 
   peerConnection.onIceCandidate = (event) {
     socket.emit(
@@ -231,9 +241,10 @@ Future<void> setClientGuest(
         }));
   };
 
-  peerConnection.onAddStream = (MediaStream stream) {
-    print('addStream: ' + stream.id);
-    appProvider.remoteMediaStream = stream;
+  peerConnection.onTrack = (RTCTrackEvent track) {
+    appProvider.remoteMediaStream.addTrack(track.track);
+    appProvider.remoteMediaStream = appProvider.remoteMediaStream;
+    appProvider.notifyListeners();
   };
 
   socket.on("client_guest", (data) async {

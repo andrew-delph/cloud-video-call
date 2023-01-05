@@ -29,8 +29,9 @@ class AppProvider extends ChangeNotifier {
     MediaStream stream =
         await navigator.mediaDevices.getUserMedia(mediaConstraints);
 
-    localMediaStream = stream;
 
+    localMediaStream = stream;
+    remoteMediaStream = await createLocalMediaStream("remote");
   }
 
   MediaStream get localMediaStream {
