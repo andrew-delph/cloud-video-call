@@ -169,6 +169,7 @@ class AppProvider extends ChangeNotifier {
 
     socket!.on("client_guest", (data) async {
       if (data["offer"] != null) {
+        print("got offer");
         await peerConnection!.setRemoteDescription(
             RTCSessionDescription(data["offer"]["sdp"], data["offer"]["type"]));
 
