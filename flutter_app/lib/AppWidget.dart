@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/Factory.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:provider/provider.dart';
-import 'package:socket_io_client/socket_io_client.dart' as io;
 
 import 'AppProvider.dart';
 
@@ -19,7 +15,6 @@ class AppWidget extends StatefulWidget {
 }
 
 class AppWidgetState extends State<AppWidget> {
-
   @override
   void dispose() {
     super.dispose();
@@ -43,7 +38,7 @@ class AppWidgetState extends State<AppWidget> {
       builder: (context, appProvider, child) {
         appProvider.init();
 
-        return  SizedBox(
+        return SizedBox(
             height: 200,
             child: Row(children: [
               Stack(
@@ -84,8 +79,6 @@ class AppWidgetState extends State<AppWidget> {
   }
 }
 
-
 Future<void> readyPress(AppProvider appProvider) async {
   await appProvider.ready();
 }
-

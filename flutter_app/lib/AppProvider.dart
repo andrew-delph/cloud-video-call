@@ -31,8 +31,8 @@ class AppProvider extends ChangeNotifier {
     await _peerConnection?.close();
   }
 
-  Future<void> init() async{
-    if(socket == null) initSocket();
+  Future<void> init() async {
+    if (socket == null) initSocket();
   }
 
   Future<void> initSocket() async {
@@ -57,7 +57,7 @@ class AppProvider extends ChangeNotifier {
       print('disconnect');
     });
     socket!.onError((data) {
-      print("error: "+data);
+      print("error: " + data);
     });
   }
 
@@ -72,18 +72,17 @@ class AppProvider extends ChangeNotifier {
       'video': true
     };
 
-    MediaStream stream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+    MediaStream stream =
+        await navigator.mediaDevices.getUserMedia(mediaConstraints);
 
     localMediaStream = stream;
     remoteMediaStream = await createLocalMediaStream("remote");
     notifyListeners();
   }
 
-  Future<void> ready() async{
-
+  Future<void> ready() async {
     print("peerConnection");
     print(peerConnection);
-
 
     await peerConnection?.close();
     await resetRemoteMediaStream();
@@ -124,16 +123,16 @@ class AppProvider extends ChangeNotifier {
     };
 
     // collect the streams/tracks from remote
-    peerConnection!.onAddStream = (stream) {
-    };
-    peerConnection!.onAddTrack = (stream, track) async{
+    peerConnection!.onAddStream = (stream) {};
+    peerConnection!.onAddTrack = (stream, track) async {
       await addRemoteTrack(track);
     };
     peerConnection!.onTrack = (RTCTrackEvent track) async {
       await addRemoteTrack(track.track);
     };
 
-    RTCSessionDescription offerDescription = await peerConnection!.createOffer();
+    RTCSessionDescription offerDescription =
+        await peerConnection!.createOffer();
     await peerConnection!.setLocalDescription(offerDescription);
 
     // send the offer
@@ -151,8 +150,8 @@ class AppProvider extends ChangeNotifier {
 
       if (data['answer'] != null) {
         print("got answer");
-        RTCSessionDescription answerDescription =
-        RTCSessionDescription(data['answer']["sdp"], data['answer']["type"]);
+        RTCSessionDescription answerDescription = RTCSessionDescription(
+            data['answer']["sdp"], data['answer']["type"]);
         peerConnection!.setRemoteDescription(answerDescription);
       }
 
@@ -165,7 +164,6 @@ class AppProvider extends ChangeNotifier {
         peerConnection!.addCandidate(iceCandidate);
       }
     });
-
   }
 
   Future<void> setClientGuest(value) async {
@@ -176,7 +174,6 @@ class AppProvider extends ChangeNotifier {
     localMediaStream!.getTracks().forEach((track) async {
       await peerConnection!.addTrack(track, localMediaStream!);
     });
-
 
     peerConnection!.onIceCandidate = (event) {
       socket!.emit(
@@ -190,11 +187,9 @@ class AppProvider extends ChangeNotifier {
           }));
     };
 
-
     // collect the streams/tracks from remote
-    peerConnection!.onAddStream = (stream) {
-    };
-    peerConnection!.onAddTrack = (stream, track) async{
+    peerConnection!.onAddStream = (stream) {};
+    peerConnection!.onAddTrack = (stream, track) async {
       await addRemoteTrack(track);
     };
     peerConnection!.onTrack = (RTCTrackEvent track) async {
@@ -209,7 +204,7 @@ class AppProvider extends ChangeNotifier {
             RTCSessionDescription(data["offer"]["sdp"], data["offer"]["type"]));
 
         RTCSessionDescription answerDescription =
-        await peerConnection!.createAnswer();
+            await peerConnection!.createAnswer();
 
         await peerConnection!.setLocalDescription(answerDescription);
 
@@ -233,11 +228,9 @@ class AppProvider extends ChangeNotifier {
         peerConnection!.addCandidate(iceCandidate);
       }
     });
-
   }
 
-
-  Future<void> addRemoteTrack(MediaStreamTrack track) async{
+  Future<void> addRemoteTrack(MediaStreamTrack track) async {
     await remoteMediaStream!.addTrack(track);
     notifyListeners(); // todo remove
     remoteVideoRenderer.initialize().then((value) {
@@ -246,11 +239,10 @@ class AppProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> resetRemoteMediaStream() async{
+  Future<void> resetRemoteMediaStream() async {
     remoteMediaStream = await createLocalMediaStream("remote");
     notifyListeners();
   }
-
 
   set localMediaStream(MediaStream? value) {
     _localMediaStream = value;
@@ -272,5 +264,4 @@ class AppProvider extends ChangeNotifier {
     _peerConnection = value;
     notifyListeners();
   }
-
 }

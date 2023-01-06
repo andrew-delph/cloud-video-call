@@ -1,8 +1,7 @@
-
 import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
 
 final Map<String, dynamic> rtcConfiguration = {
-  "sdpSemantics" : "plan-b",
+  "sdpSemantics": "plan-b",
   "iceServers": [
     {
       "urls": [
@@ -27,11 +26,11 @@ final Map<String, dynamic> offerSdpConstraints = {
   "optional": [],
 };
 
-
-class Factory{
-  static Future<webrtc.RTCPeerConnection> createPeerConnection() async{
-    webrtc.RTCPeerConnection peerConnection = await webrtc.createPeerConnection(rtcConfiguration, offerSdpConstraints);
-    peerConnection.onConnectionState = (state){
+class Factory {
+  static Future<webrtc.RTCPeerConnection> createPeerConnection() async {
+    webrtc.RTCPeerConnection peerConnection = await webrtc.createPeerConnection(
+        rtcConfiguration, offerSdpConstraints);
+    peerConnection.onConnectionState = (state) {
       print("peer connection change state");
       print(state);
     };
