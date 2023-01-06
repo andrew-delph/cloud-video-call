@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -110,19 +108,16 @@ class AppProvider extends ChangeNotifier {
 
     // START HANDLE ICE CANDIDATES
     peerConnection!.onIceCandidate = (event) {
-      socket!.emit(
-          "icecandidate",
-          jsonEncode({
-            "icecandidate": {
-              'candidate': event.candidate,
-              'sdpMid': event.sdpMid,
-              'sdpMlineIndex': event.sdpMLineIndex
-            }
-          }));
+      socket!.emit("icecandidate", {
+        "icecandidate": {
+          'candidate': event.candidate,
+          'sdpMid': event.sdpMid,
+          'sdpMlineIndex': event.sdpMLineIndex
+        }
+      });
     };
-    socket!.on("icecandidate", (value) async {
+    socket!.on("icecandidate", (data) async {
       print("got ice!");
-      var data = jsonDecode(value);
       RTCIceCandidate iceCandidate = RTCIceCandidate(
           data["icecandidate"]['candidate'],
           data["icecandidate"]['sdpMid'],
@@ -152,18 +147,14 @@ class AppProvider extends ChangeNotifier {
     await peerConnection!.setLocalDescription(offerDescription);
 
     // send the offer
-    socket!.emit(
-        "client_host",
-        jsonEncode({
-          "offer": {
-            "type": offerDescription.type,
-            "sdp": offerDescription.sdp,
-          },
-        }));
+    socket!.emit("client_host", {
+      "offer": {
+        "type": offerDescription.type,
+        "sdp": offerDescription.sdp,
+      },
+    });
 
     socket!.on("client_host", (data) {
-      data = jsonDecode(data);
-
       if (data['answer'] != null) {
         print("got answer");
         RTCSessionDescription answerDescription = RTCSessionDescription(
@@ -177,8 +168,6 @@ class AppProvider extends ChangeNotifier {
     print("you are the guest");
 
     socket!.on("client_guest", (data) async {
-      data = jsonDecode(data);
-
       if (data["offer"] != null) {
         await peerConnection!.setRemoteDescription(
             RTCSessionDescription(data["offer"]["sdp"], data["offer"]["type"]));
@@ -189,14 +178,12 @@ class AppProvider extends ChangeNotifier {
         await peerConnection!.setLocalDescription(answerDescription);
 
         // send the offer
-        socket!.emit(
-            "client_guest",
-            jsonEncode({
-              "answer": {
-                "type": answerDescription.type,
-                "sdp": answerDescription.sdp,
-              },
-            }));
+        socket!.emit("client_guest", {
+          "answer": {
+            "type": answerDescription.type,
+            "sdp": answerDescription.sdp,
+          },
+        });
       }
     });
   }
