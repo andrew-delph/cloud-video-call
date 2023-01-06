@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+
+import 'Factory.dart';
 
 class AppProvider extends ChangeNotifier {
   MediaStream? _localMediaStream;
@@ -75,7 +79,160 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> ready() async{
+    await resetRemoteMediaStream();
+    socket!.off("client_host");
+    socket!.off("client_guest");
+    socket!.off("set_client_host");
+    socket!.off("set_client_guest");
 
+    socket!.emit("ready");
+    socket!.on("set_client_host", (value) async {
+      await setClientHost(value);
+    });
+
+    socket!.on("set_client_guest", (value) async {
+      await setClientGuest(value);
+    });
+  }
+
+  Future<void> setClientHost(value) async {
+    print("you are the host");
+
+    RTCPeerConnection peerConnection = await Factory.createPeerConnection();
+
+    localMediaStream!.getTracks().forEach((track) async {
+      await peerConnection.addTrack(track, localMediaStream!);
+    });
+
+    peerConnection.onIceCandidate = (event) {
+      socket!.emit(
+          "client_host",
+          jsonEncode({
+            "icecandidate": {
+              'candidate': event.candidate,
+              'sdpMid': event.sdpMid,
+              'sdpMlineIndex': event.sdpMLineIndex
+            }
+          }));
+    };
+
+// collect the streams/tracks from remote
+    peerConnection.onAddStream = (stream) {
+    };
+    peerConnection.onAddTrack = (stream, track) async{
+      await addRemoteTrack(track);
+    };
+    peerConnection.onTrack = (RTCTrackEvent track) async {
+      await addRemoteTrack(track.track);
+    };
+
+    RTCSessionDescription offerDescription = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offerDescription);
+
+    // send the offer
+    socket!.emit(
+        "client_host",
+        jsonEncode({
+          "offer": {
+            "type": offerDescription.type,
+            "sdp": offerDescription.sdp,
+          },
+        }));
+
+    socket!.on("client_host", (data) {
+      data = jsonDecode(data);
+
+      if (data['answer'] != null) {
+        print("got answer");
+        RTCSessionDescription answerDescription =
+        RTCSessionDescription(data['answer']["sdp"], data['answer']["type"]);
+        peerConnection.setRemoteDescription(answerDescription);
+      }
+
+      // Listen for remote ICE candidates below
+      if (data["icecandidate"] != null) {
+        RTCIceCandidate iceCandidate = RTCIceCandidate(
+            data["icecandidate"]['candidate'],
+            data["icecandidate"]['sdpMid'],
+            data["icecandidate"]['sdpMlineIndex']);
+        peerConnection.addCandidate(iceCandidate);
+      }
+    });
+
+    peerConnection = peerConnection;
+  }
+
+  Future<void> setClientGuest(value) async {
+    print("you are the guest");
+
+    RTCPeerConnection peerConnection = await Factory.createPeerConnection();
+
+
+
+    localMediaStream!.getTracks().forEach((track) async {
+      await peerConnection.addTrack(track, localMediaStream!);
+    });
+
+
+    peerConnection.onIceCandidate = (event) {
+      socket!.emit(
+          "client_guest",
+          jsonEncode({
+            "icecandidate": {
+              'candidate': event.candidate,
+              'sdpMid': event.sdpMid,
+              'sdpMlineIndex': event.sdpMLineIndex
+            }
+          }));
+    };
+
+
+    // collect the streams/tracks from remote
+    peerConnection.onAddStream = (stream) {
+    };
+    peerConnection.onAddTrack = (stream, track) async{
+      await addRemoteTrack(track);
+    };
+    peerConnection.onTrack = (RTCTrackEvent track) async {
+      await addRemoteTrack(track.track);
+    };
+
+    socket!.on("client_guest", (data) async {
+      data = jsonDecode(data);
+
+      if (data["offer"] != null) {
+        await peerConnection.setRemoteDescription(
+            RTCSessionDescription(data["offer"]["sdp"], data["offer"]["type"]));
+
+        RTCSessionDescription answerDescription =
+        await peerConnection.createAnswer();
+
+        await peerConnection.setLocalDescription(answerDescription);
+
+        // send the offer
+        socket!.emit(
+            "client_guest",
+            jsonEncode({
+              "answer": {
+                "type": answerDescription.type,
+                "sdp": answerDescription.sdp,
+              },
+            }));
+      }
+
+      // Listen for remote ICE candidates below
+      if (data["icecandidate"] != null) {
+        RTCIceCandidate iceCandidate = RTCIceCandidate(
+            data["icecandidate"]['candidate'],
+            data["icecandidate"]['sdpMid'],
+            data["icecandidate"]['sdpMlineIndex']);
+        peerConnection.addCandidate(iceCandidate);
+      }
+    });
+
+    peerConnection = peerConnection;
+  }
 
 
   Future<void> addRemoteTrack(MediaStreamTrack track) async{
