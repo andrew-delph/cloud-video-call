@@ -110,7 +110,7 @@ class AppProvider extends ChangeNotifier {
       await addRemoteTrack(track);
     };
     peerConnection!.onTrack = (RTCTrackEvent track) async {
-      print("onAddTrack");
+      print("onTrack");
       await addRemoteTrack(track.track);
     };
     // END collect the streams/tracks from remote
