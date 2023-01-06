@@ -71,8 +71,8 @@ class AppProvider extends ChangeNotifier {
       'audio': true,
       'video': true
     };
-    MediaStream stream =
-    await navigator.mediaDevices.getUserMedia(mediaConstraints);
+
+    MediaStream stream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
 
     localMediaStream = stream;
     remoteMediaStream = await createLocalMediaStream("remote");
@@ -80,6 +80,12 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> ready() async{
+
+    print("peerConnection");
+    print(peerConnection);
+
+
+    await peerConnection?.close();
     await resetRemoteMediaStream();
     socket!.off("client_host");
     socket!.off("client_guest");
@@ -99,13 +105,13 @@ class AppProvider extends ChangeNotifier {
   Future<void> setClientHost(value) async {
     print("you are the host");
 
-    RTCPeerConnection peerConnection = await Factory.createPeerConnection();
+    peerConnection = await Factory.createPeerConnection();
 
     localMediaStream!.getTracks().forEach((track) async {
-      await peerConnection.addTrack(track, localMediaStream!);
+      await peerConnection!.addTrack(track, localMediaStream!);
     });
 
-    peerConnection.onIceCandidate = (event) {
+    peerConnection!.onIceCandidate = (event) {
       socket!.emit(
           "client_host",
           jsonEncode({
@@ -117,18 +123,18 @@ class AppProvider extends ChangeNotifier {
           }));
     };
 
-// collect the streams/tracks from remote
-    peerConnection.onAddStream = (stream) {
+    // collect the streams/tracks from remote
+    peerConnection!.onAddStream = (stream) {
     };
-    peerConnection.onAddTrack = (stream, track) async{
+    peerConnection!.onAddTrack = (stream, track) async{
       await addRemoteTrack(track);
     };
-    peerConnection.onTrack = (RTCTrackEvent track) async {
+    peerConnection!.onTrack = (RTCTrackEvent track) async {
       await addRemoteTrack(track.track);
     };
 
-    RTCSessionDescription offerDescription = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offerDescription);
+    RTCSessionDescription offerDescription = await peerConnection!.createOffer();
+    await peerConnection!.setLocalDescription(offerDescription);
 
     // send the offer
     socket!.emit(
@@ -147,7 +153,7 @@ class AppProvider extends ChangeNotifier {
         print("got answer");
         RTCSessionDescription answerDescription =
         RTCSessionDescription(data['answer']["sdp"], data['answer']["type"]);
-        peerConnection.setRemoteDescription(answerDescription);
+        peerConnection!.setRemoteDescription(answerDescription);
       }
 
       // Listen for remote ICE candidates below
@@ -156,26 +162,23 @@ class AppProvider extends ChangeNotifier {
             data["icecandidate"]['candidate'],
             data["icecandidate"]['sdpMid'],
             data["icecandidate"]['sdpMlineIndex']);
-        peerConnection.addCandidate(iceCandidate);
+        peerConnection!.addCandidate(iceCandidate);
       }
     });
 
-    peerConnection = peerConnection;
   }
 
   Future<void> setClientGuest(value) async {
     print("you are the guest");
 
-    RTCPeerConnection peerConnection = await Factory.createPeerConnection();
-
-
+    peerConnection = await Factory.createPeerConnection();
 
     localMediaStream!.getTracks().forEach((track) async {
-      await peerConnection.addTrack(track, localMediaStream!);
+      await peerConnection!.addTrack(track, localMediaStream!);
     });
 
 
-    peerConnection.onIceCandidate = (event) {
+    peerConnection!.onIceCandidate = (event) {
       socket!.emit(
           "client_guest",
           jsonEncode({
@@ -189,12 +192,12 @@ class AppProvider extends ChangeNotifier {
 
 
     // collect the streams/tracks from remote
-    peerConnection.onAddStream = (stream) {
+    peerConnection!.onAddStream = (stream) {
     };
-    peerConnection.onAddTrack = (stream, track) async{
+    peerConnection!.onAddTrack = (stream, track) async{
       await addRemoteTrack(track);
     };
-    peerConnection.onTrack = (RTCTrackEvent track) async {
+    peerConnection!.onTrack = (RTCTrackEvent track) async {
       await addRemoteTrack(track.track);
     };
 
@@ -202,13 +205,13 @@ class AppProvider extends ChangeNotifier {
       data = jsonDecode(data);
 
       if (data["offer"] != null) {
-        await peerConnection.setRemoteDescription(
+        await peerConnection!.setRemoteDescription(
             RTCSessionDescription(data["offer"]["sdp"], data["offer"]["type"]));
 
         RTCSessionDescription answerDescription =
-        await peerConnection.createAnswer();
+        await peerConnection!.createAnswer();
 
-        await peerConnection.setLocalDescription(answerDescription);
+        await peerConnection!.setLocalDescription(answerDescription);
 
         // send the offer
         socket!.emit(
@@ -227,11 +230,10 @@ class AppProvider extends ChangeNotifier {
             data["icecandidate"]['candidate'],
             data["icecandidate"]['sdpMid'],
             data["icecandidate"]['sdpMlineIndex']);
-        peerConnection.addCandidate(iceCandidate);
+        peerConnection!.addCandidate(iceCandidate);
       }
     });
 
-    peerConnection = peerConnection;
   }
 
 
@@ -266,11 +268,9 @@ class AppProvider extends ChangeNotifier {
     });
   }
 
-
   set peerConnection(RTCPeerConnection? value) {
     _peerConnection = value;
     notifyListeners();
   }
-
 
 }
