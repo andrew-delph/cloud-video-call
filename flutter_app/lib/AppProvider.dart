@@ -101,11 +101,16 @@ class AppProvider extends ChangeNotifier {
     // START add localMediaStream to peerConnection
 
     // START collect the streams/tracks from remote
-    peerConnection!.onAddStream = (stream) {};
+    peerConnection!.onAddStream = (stream) {
+      print("onAddStream");
+      remoteMediaStream = stream;
+    };
     peerConnection!.onAddTrack = (stream, track) async {
+      print("onAddTrack");
       await addRemoteTrack(track);
     };
     peerConnection!.onTrack = (RTCTrackEvent track) async {
+      print("onAddTrack");
       await addRemoteTrack(track.track);
     };
     // END collect the streams/tracks from remote
