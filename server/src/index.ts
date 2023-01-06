@@ -45,7 +45,7 @@ io.on("connection", (socket) => {
 
   io.emit("message", "everyone welcome " + socket.id);
 
-  socket.emit("message", `hey :)`);
+  socket.emit("message", `hey from server :)`);
 
   let updateCount = 0;
   const myInterval = setInterval(async () => {
