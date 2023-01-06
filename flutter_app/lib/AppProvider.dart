@@ -60,6 +60,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> initLocalStream() async {
+    if (_localMediaStream != null) return;
     await _localMediaStream?.dispose();
 
     _localVideoRenderer = RTCVideoRenderer();
@@ -74,7 +75,6 @@ class AppProvider extends ChangeNotifier {
         await navigator.mediaDevices.getUserMedia(mediaConstraints);
 
     localMediaStream = stream;
-    remoteMediaStream = await createLocalMediaStream("remote");
     notifyListeners();
   }
 
