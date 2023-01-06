@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/factory.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -83,31 +84,6 @@ class AppWidgetState extends State<AppWidget> {
   }
 }
 
-final Map<String, dynamic> rtcConfiguration = {
-"sdpSemantics" : "plan-b",
-"iceServers": [
-    {
-      "urls": [
-        "stun:stun1.l.google.com:19302",
-        "stun:stun2.l.google.com:19302"
-      ],
-    },
-    {
-      "urls": ["turn:relay.metered.ca:80"],
-      "username": "db5611baf2f55446ccb6a207",
-      "credential": "95Cmq0CBYp6WiHDA",
-    },
-  ],
-  "iceCandidatePoolSize": 10,
-};
-
-final Map<String, dynamic> offerSdpConstraints = {
-  "mandatory": {
-    "OfferToReceiveAudio": true,
-    "OfferToReceiveVideo": true,
-  },
-  "optional": [],
-};
 
 Future<void> readyPress(AppProvider appProvider) async {
   await appProvider.resetRemoteMediaStream();
@@ -131,8 +107,7 @@ Future<void> setClientHost(
   print("you are the host");
 
 
-  RTCPeerConnection peerConnection =
-      await createPeerConnection(rtcConfiguration, offerSdpConstraints);
+  RTCPeerConnection peerConnection = await Factory.createPeerConnection();
 
   appProvider.localMediaStream!.getTracks().forEach((track) async {
     await peerConnection.addTrack(track, appProvider.localMediaStream!);
@@ -200,8 +175,7 @@ Future<void> setClientGuest(
     AppProvider appProvider, value) async {
   print("you are the guest");
 
-  RTCPeerConnection peerConnection =
-      await createPeerConnection(rtcConfiguration, offerSdpConstraints);
+  RTCPeerConnection peerConnection = await Factory.createPeerConnection();
 
 
 
