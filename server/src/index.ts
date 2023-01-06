@@ -75,7 +75,7 @@ io.on("connection", (socket) => {
     const theRoom = myClient.getRoomId();
     if (!theRoom) return;
 
-    io.to(theRoom).emit("client_guest", value);
+    socket.to(theRoom).emit("client_guest", value);
   });
 
   socket.on("client_guest", (value) => {
@@ -84,7 +84,16 @@ io.on("connection", (socket) => {
     const theRoom = myClient.getRoomId();
     if (!theRoom) return;
 
-    io.to(theRoom).emit("client_host", value);
+    socket.to(theRoom).emit("client_host", value);
+  });
+
+  socket.on("icecandidate", (value) => {
+    const myClient = clients.get(socket.id);
+    if (!myClient) return;
+    const theRoom = myClient.getRoomId();
+    if (!theRoom) return;
+
+    socket.to(theRoom).emit("icecandidate", value);
   });
 
   socket.on("ready", () => {
