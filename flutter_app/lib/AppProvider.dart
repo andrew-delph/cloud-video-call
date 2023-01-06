@@ -84,14 +84,22 @@ class AppProvider extends ChangeNotifier {
     print("peerConnection");
     print(peerConnection);
 
+    // START SETUP PEER CONNECTION
     await peerConnection?.close();
+    peerConnection = await Factory.createPeerConnection();
+
+    localMediaStream!.getTracks().forEach((track) async {
+      await peerConnection!.addTrack(track, localMediaStream!);
+    });
+    // END SETUP PEER CONNECTION
+
     await resetRemoteMediaStream();
     socket!.off("client_host");
     socket!.off("client_guest");
     socket!.off("set_client_host");
     socket!.off("set_client_guest");
+    socket!.off("icecandidate");
 
-    socket!.emit("ready");
     socket!.on("set_client_host", (value) async {
       await setClientHost(value);
     });
@@ -99,20 +107,11 @@ class AppProvider extends ChangeNotifier {
     socket!.on("set_client_guest", (value) async {
       await setClientGuest(value);
     });
-  }
 
-  Future<void> setClientHost(value) async {
-    print("you are the host");
-
-    peerConnection = await Factory.createPeerConnection();
-
-    localMediaStream!.getTracks().forEach((track) async {
-      await peerConnection!.addTrack(track, localMediaStream!);
-    });
-
+    // START HANDLE ICE CANDIDATES
     peerConnection!.onIceCandidate = (event) {
       socket!.emit(
-          "client_host",
+          "icecandidate",
           jsonEncode({
             "icecandidate": {
               'candidate': event.candidate,
@@ -121,8 +120,18 @@ class AppProvider extends ChangeNotifier {
             }
           }));
     };
+    socket!.on("icecandidate", (value) async {
+      print("got ice!");
+      var data = jsonDecode(value);
+      RTCIceCandidate iceCandidate = RTCIceCandidate(
+          data["icecandidate"]['candidate'],
+          data["icecandidate"]['sdpMid'],
+          data["icecandidate"]['sdpMlineIndex']);
+      peerConnection!.addCandidate(iceCandidate);
+    });
+    // END HANDLE ICE CANDIDATES
 
-    // collect the streams/tracks from remote
+    // START collect the streams/tracks from remote
     peerConnection!.onAddStream = (stream) {};
     peerConnection!.onAddTrack = (stream, track) async {
       await addRemoteTrack(track);
@@ -130,6 +139,13 @@ class AppProvider extends ChangeNotifier {
     peerConnection!.onTrack = (RTCTrackEvent track) async {
       await addRemoteTrack(track.track);
     };
+    // END collect the streams/tracks from remote
+
+    socket!.emit("ready");
+  }
+
+  Future<void> setClientHost(value) async {
+    print("you are the host");
 
     RTCSessionDescription offerDescription =
         await peerConnection!.createOffer();
@@ -154,47 +170,11 @@ class AppProvider extends ChangeNotifier {
             data['answer']["sdp"], data['answer']["type"]);
         peerConnection!.setRemoteDescription(answerDescription);
       }
-
-      // Listen for remote ICE candidates below
-      if (data["icecandidate"] != null) {
-        RTCIceCandidate iceCandidate = RTCIceCandidate(
-            data["icecandidate"]['candidate'],
-            data["icecandidate"]['sdpMid'],
-            data["icecandidate"]['sdpMlineIndex']);
-        peerConnection!.addCandidate(iceCandidate);
-      }
     });
   }
 
   Future<void> setClientGuest(value) async {
     print("you are the guest");
-
-    peerConnection = await Factory.createPeerConnection();
-
-    localMediaStream!.getTracks().forEach((track) async {
-      await peerConnection!.addTrack(track, localMediaStream!);
-    });
-
-    peerConnection!.onIceCandidate = (event) {
-      socket!.emit(
-          "client_guest",
-          jsonEncode({
-            "icecandidate": {
-              'candidate': event.candidate,
-              'sdpMid': event.sdpMid,
-              'sdpMlineIndex': event.sdpMLineIndex
-            }
-          }));
-    };
-
-    // collect the streams/tracks from remote
-    peerConnection!.onAddStream = (stream) {};
-    peerConnection!.onAddTrack = (stream, track) async {
-      await addRemoteTrack(track);
-    };
-    peerConnection!.onTrack = (RTCTrackEvent track) async {
-      await addRemoteTrack(track.track);
-    };
 
     socket!.on("client_guest", (data) async {
       data = jsonDecode(data);
@@ -217,15 +197,6 @@ class AppProvider extends ChangeNotifier {
                 "sdp": answerDescription.sdp,
               },
             }));
-      }
-
-      // Listen for remote ICE candidates below
-      if (data["icecandidate"] != null) {
-        RTCIceCandidate iceCandidate = RTCIceCandidate(
-            data["icecandidate"]['candidate'],
-            data["icecandidate"]['sdpMid'],
-            data["icecandidate"]['sdpMlineIndex']);
-        peerConnection!.addCandidate(iceCandidate);
       }
     });
   }
