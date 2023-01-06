@@ -82,21 +82,33 @@ class AppProvider extends ChangeNotifier {
     print("peerConnection");
     print(peerConnection);
 
-    // START SETUP PEER CONNECTION
-    await peerConnection?.close();
-    peerConnection = await Factory.createPeerConnection();
-
-    localMediaStream!.getTracks().forEach((track) async {
-      await peerConnection!.addTrack(track, localMediaStream!);
-    });
-    // END SETUP PEER CONNECTION
-
     await resetRemoteMediaStream();
     socket!.off("client_host");
     socket!.off("client_guest");
     socket!.off("set_client_host");
     socket!.off("set_client_guest");
     socket!.off("icecandidate");
+
+    // START SETUP PEER CONNECTION
+    await peerConnection?.close();
+    peerConnection = await Factory.createPeerConnection();
+    // END SETUP PEER CONNECTION
+
+    // START add localMediaStream to peerConnection
+    localMediaStream!.getTracks().forEach((track) async {
+      await peerConnection!.addTrack(track, localMediaStream!);
+    });
+    // START add localMediaStream to peerConnection
+
+    // START collect the streams/tracks from remote
+    peerConnection!.onAddStream = (stream) {};
+    peerConnection!.onAddTrack = (stream, track) async {
+      await addRemoteTrack(track);
+    };
+    peerConnection!.onTrack = (RTCTrackEvent track) async {
+      await addRemoteTrack(track.track);
+    };
+    // END collect the streams/tracks from remote
 
     socket!.on("set_client_host", (value) async {
       await setClientHost(value);
@@ -125,16 +137,6 @@ class AppProvider extends ChangeNotifier {
       peerConnection!.addCandidate(iceCandidate);
     });
     // END HANDLE ICE CANDIDATES
-
-    // START collect the streams/tracks from remote
-    peerConnection!.onAddStream = (stream) {};
-    peerConnection!.onAddTrack = (stream, track) async {
-      await addRemoteTrack(track);
-    };
-    peerConnection!.onTrack = (RTCTrackEvent track) async {
-      await addRemoteTrack(track.track);
-    };
-    // END collect the streams/tracks from remote
 
     socket!.emit("ready");
   }
@@ -191,7 +193,6 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> addRemoteTrack(MediaStreamTrack track) async {
     await remoteMediaStream!.addTrack(track);
-    notifyListeners(); // todo remove
     remoteVideoRenderer.initialize().then((value) {
       remoteVideoRenderer.srcObject = _remoteMediaStream;
       notifyListeners();
