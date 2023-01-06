@@ -18,8 +18,6 @@ class AppWidget extends StatefulWidget {
 }
 
 class AppWidgetState extends State<AppWidget> {
-  late io.Socket socket;
-  bool connected = false;
 
   @override
   void dispose() {
@@ -35,40 +33,14 @@ class AppWidgetState extends State<AppWidget> {
 
   @override
   void initState() {
-    print("AppWidget initState1111111111111111111111111111");
-    const SOCKET_ADDRESS = String.fromEnvironment('SOCKET_ADDRESS',
-        defaultValue: 'http://localhost:4000');
-
-    print("SOCKET_ADDRESS is " + SOCKET_ADDRESS);
-
-    // only websocket works on windows
-    socket = io.io(SOCKET_ADDRESS, <String, dynamic>{
-      'transports': ['websocket'],
-    });
-
-    socket.emit("message", "I am a client");
-
-    socket.onConnect((_) {
-      print('connect');
-      connected = true;
-      socket.emit('message', 'test flutter');
-    });
-    socket.on('message', (data) => print(data));
-    socket.onDisconnect((_) {
-      connected = false;
-      print('disconnect');
-    });
-    socket.onError((data) {
-      print("error: "+data);
-    });
-
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     var child = Consumer<AppProvider>(
-      builder: (context, appController, child) {
-        // appController.initLocal();
+      builder: (context, appProvider, child) {
+        appProvider.init();
 
         return  SizedBox(
             height: 200,
@@ -77,9 +49,9 @@ class AppWidgetState extends State<AppWidget> {
                 children: [
                   TextButton(
                     onPressed: () async {
-                      await appController.init();
+                      await appProvider.initLocalStream();
                       print("pressed");
-                      await readyPress(appController, socket);
+                      await readyPress(appProvider);
                       print("done ready");
                     },
                     child: const Text('button test3'),
@@ -91,14 +63,14 @@ class AppWidgetState extends State<AppWidget> {
                     key: const Key('local'),
                     // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
                     decoration: const BoxDecoration(color: Colors.black),
-                    child: RTCVideoView(appController.localVideoRenderer)),
+                    child: RTCVideoView(appProvider.localVideoRenderer)),
               ),
               Flexible(
                 child: Container(
                     key: const Key('local'),
                     // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
                     decoration: const BoxDecoration(color: Colors.black),
-                    child: RTCVideoView(appController.remoteVideoRenderer)),
+                    child: RTCVideoView(appProvider.remoteVideoRenderer)),
               ),
             ]));
       },
@@ -137,25 +109,25 @@ final Map<String, dynamic> offerSdpConstraints = {
   "optional": [],
 };
 
-Future<void> readyPress(AppProvider appProvider, io.Socket socket) async {
+Future<void> readyPress(AppProvider appProvider) async {
   await appProvider.resetRemoteMediaStream();
-  socket.off("client_host");
-  socket.off("client_guest");
-  socket.off("set_client_host");
-  socket.off("set_client_guest");
+  appProvider.socket!.off("client_host");
+  appProvider.socket!.off("client_guest");
+  appProvider.socket!.off("set_client_host");
+  appProvider.socket!.off("set_client_guest");
 
-  socket.emit("ready");
-  socket.on("set_client_host", (value) async {
-    await setClientHost(appProvider, socket, value);
+  appProvider.socket!.emit("ready");
+  appProvider.socket!.on("set_client_host", (value) async {
+    await setClientHost(appProvider, value);
   });
 
-  socket.on("set_client_guest", (value) async {
-    await setClientGuest(appProvider, socket, value);
+  appProvider.socket!.on("set_client_guest", (value) async {
+    await setClientGuest(appProvider, value);
   });
 }
 
 Future<void> setClientHost(
-    AppProvider appProvider, io.Socket socket, value) async {
+    AppProvider appProvider, value) async {
   print("you are the host");
 
 
@@ -167,7 +139,7 @@ Future<void> setClientHost(
   });
 
   peerConnection.onIceCandidate = (event) {
-    socket.emit(
+    appProvider.socket!.emit(
         "client_host",
         jsonEncode({
           "icecandidate": {
@@ -192,7 +164,7 @@ Future<void> setClientHost(
   await peerConnection.setLocalDescription(offerDescription);
 
   // send the offer
-  socket.emit(
+  appProvider.socket!.emit(
       "client_host",
       jsonEncode({
         "offer": {
@@ -201,7 +173,7 @@ Future<void> setClientHost(
         },
       }));
 
-  socket.on("client_host", (data) {
+  appProvider.socket!.on("client_host", (data) {
     data = jsonDecode(data);
 
     if (data['answer'] != null) {
@@ -225,7 +197,7 @@ Future<void> setClientHost(
 }
 
 Future<void> setClientGuest(
-    AppProvider appProvider, io.Socket socket, value) async {
+    AppProvider appProvider, value) async {
   print("you are the guest");
 
   RTCPeerConnection peerConnection =
@@ -239,7 +211,7 @@ Future<void> setClientGuest(
 
 
   peerConnection.onIceCandidate = (event) {
-    socket.emit(
+    appProvider.socket!.emit(
         "client_guest",
         jsonEncode({
           "icecandidate": {
@@ -261,7 +233,7 @@ Future<void> setClientGuest(
     await appProvider.addRemoteTrack(track.track);
   };
 
-  socket.on("client_guest", (data) async {
+  appProvider.socket!.on("client_guest", (data) async {
     data = jsonDecode(data);
 
     if (data["offer"] != null) {
@@ -274,7 +246,7 @@ Future<void> setClientGuest(
       await peerConnection.setLocalDescription(answerDescription);
 
       // send the offer
-      socket.emit(
+      appProvider.socket!.emit(
           "client_guest",
           jsonEncode({
             "answer": {
