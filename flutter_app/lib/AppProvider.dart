@@ -18,6 +18,15 @@ class AppProvider extends ChangeNotifier {
 
   io.Socket? socket;
 
+  @override
+  @mustCallSuper
+  Future<void> dispose() async {
+    super.dispose();
+    await _localMediaStream?.dispose();
+    await _remoteMediaStream?.dispose();
+    await _peerConnection?.close();
+  }
+
   Future<void> init() async{
     if(socket == null) initSocket();
   }
@@ -67,13 +76,20 @@ class AppProvider extends ChangeNotifier {
   }
 
 
-  @override
-  @mustCallSuper
-  Future<void> dispose() async {
-    super.dispose();
-    await _localMediaStream?.dispose();
-    await _remoteMediaStream?.dispose();
-    await _peerConnection?.close();
+
+
+  Future<void> addRemoteTrack(MediaStreamTrack track) async{
+    await remoteMediaStream!.addTrack(track);
+    notifyListeners(); // todo remove
+    remoteVideoRenderer.initialize().then((value) {
+      remoteVideoRenderer.srcObject = _remoteMediaStream;
+      notifyListeners();
+    });
+  }
+
+  Future<void> resetRemoteMediaStream() async{
+    remoteMediaStream = await createLocalMediaStream("remote");
+    notifyListeners();
   }
 
 
@@ -99,17 +115,5 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addRemoteTrack(MediaStreamTrack track) async{
-    await remoteMediaStream!.addTrack(track);
-    notifyListeners(); // todo remove
-    remoteVideoRenderer.initialize().then((value) {
-      remoteVideoRenderer.srcObject = _remoteMediaStream;
-      notifyListeners();
-    });
-  }
 
-  Future<void> resetRemoteMediaStream() async{
-    remoteMediaStream = await createLocalMediaStream("remote");
-    notifyListeners();
-  }
 }
