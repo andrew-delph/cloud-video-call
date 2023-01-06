@@ -1,9 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'AppController.dart';
 import 'AppWidget.dart';
 
 void main() {

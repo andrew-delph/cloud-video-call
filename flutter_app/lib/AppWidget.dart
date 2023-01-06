@@ -7,7 +7,7 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
-import 'AppController.dart';
+import 'AppProvider.dart';
 
 class AppWidget extends StatefulWidget {
   const AppWidget({super.key});
