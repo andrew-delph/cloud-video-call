@@ -79,8 +79,6 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> ready() async {
-    print("peerConnection");
-    print(peerConnection);
 
     await resetRemoteMediaStream();
     socket!.off("client_host");
@@ -107,20 +105,11 @@ class AppProvider extends ChangeNotifier {
     };
     peerConnection!.onAddTrack = (stream, track) async {
       print("onAddTrack");
-      stream.getTracks().forEach((element) {
-        print(element);
-      });
       await addRemoteTrack(track);
     };
     peerConnection!.onTrack = (RTCTrackEvent track) async {
       print("onTrack");
       await addRemoteTrack(track.track);
-      print("before");
-      peerConnection!.getRemoteStreams().forEach((element) {
-        print("getRemoteStreams");
-        print(element);
-      });
-      print("after");
     };
     // END collect the streams/tracks from remote
 
@@ -209,6 +198,11 @@ class AppProvider extends ChangeNotifier {
     await remoteMediaStream!.addTrack(track);
     remoteVideoRenderer.initialize().then((value) {
       remoteVideoRenderer.srcObject = _remoteMediaStream;
+
+      // TODO open pr or issue on https://github.com/flutter-webrtc/flutter-webrtc
+      // you cannot create a MediaStream
+      if(WebRTC.platformIsWeb ) _remoteVideoRenderer!.muted = false;
+
       notifyListeners();
     });
   }
