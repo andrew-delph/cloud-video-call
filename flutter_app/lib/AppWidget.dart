@@ -50,7 +50,7 @@ class AppWidgetState extends State<AppWidget> {
                       await readyPress(appProvider);
                       print("done ready");
                     },
-                    child: const Text('button test3'),
+                    child: const Text('button test4'),
                   ),
                 ],
               ),
