@@ -23,7 +23,7 @@ platform :android do
 
   desc "Submit a new Beta Build to Crashlytics Beta"
   lane :beta do
-    sh "flutter build appbundle -v"
+    sh "flutter build apk"
 
     firebase_app_distribution(
           app: "1:619217777312:android:7b2974724d142e3bd0cfc5",
