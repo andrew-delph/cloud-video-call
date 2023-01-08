@@ -16,7 +16,6 @@ jobs:
         shell: bash
         working-directory: flutter_app/android
     steps:
-      - run: echo $FIREBASE_TOKEN
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
         with:
