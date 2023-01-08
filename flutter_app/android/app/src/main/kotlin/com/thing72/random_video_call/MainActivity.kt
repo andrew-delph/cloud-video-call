@@ -1,4 +1,4 @@
-package com.example.flutter_app
+package com.thing72.random_video_call
 
 import io.flutter.embedding.android.FlutterActivity
 
