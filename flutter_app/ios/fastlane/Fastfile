@@ -19,7 +19,7 @@ platform :ios do
   desc "Description of what the lane does"
   lane :beta do
 
-    sh 'flutter build ios --no-codesign'
+    sh 'flutter build ipa --no-codesign'
 
     # sh 'flutter build ipa --dart-define="SOCKET_ADDRESS=https://react-video-call-fjutjsrlaa-uc.a.run.app"'
 
