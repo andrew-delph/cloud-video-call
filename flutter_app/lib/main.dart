@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'AppWidget.dart';
 
 void main() {
-  print("start main.");
+  print("start main...");
 
   runApp(const MyApp());
 }
