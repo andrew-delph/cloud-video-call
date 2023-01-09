@@ -19,13 +19,20 @@ platform :ios do
   desc "Description of what the lane does"
   lane :beta do
 
-    sh 'flutter build ipa --no-codesign'
+    get_certificates(username: "andrewdelph@live.ca")           # invokes cert
+    get_provisioning_profile(username: "andrewdelph@live.ca")   # invokes sigh
+
+    # sync_code_signing
+
+    build_app
+
+    # sh 'flutter build ipa --no-codesign'
 
     # sh 'flutter build ipa --dart-define="SOCKET_ADDRESS=https://react-video-call-fjutjsrlaa-uc.a.run.app"'
 
     firebase_app_distribution(
           app: "1:619217777312:ios:c2e305e9e4d2ca8fd0cfc5",
-          ipa_path: "../build/ios/ipa/flutter_app.ipa",
+          ipa_path: "../ios/Runner.ipa",
           testers: "andrewdelph@live.ca"
       )
 
