@@ -6,6 +6,7 @@ env:
   FIREBASE_TOKEN: "${{ secrets.FIREBASE_TOKEN }}"
   FASTLANE_USER: "${{ secrets.FASTLANE_USER }}"
   FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: "${{ secrets.FASTLANE_PASSWORD }}"
+  APPLE_KEY: "${{ secrets.APPLE_KEY }}"
 "on":
   push:
     branches:
