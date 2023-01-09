@@ -19,8 +19,8 @@ platform :ios do
   desc "Description of what the lane does"
   lane :beta do
 
-    get_certificates(username: "andrewdelph@live.ca")           # invokes cert
-    get_provisioning_profile(username: "andrewdelph@live.ca")   # invokes sigh
+    get_certificates()           # invokes cert
+    get_provisioning_profile()   # invokes sigh
 
     # sync_code_signing
 
