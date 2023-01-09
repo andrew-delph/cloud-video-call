@@ -5,7 +5,7 @@ name: Distribute ios test app
 env:
   FIREBASE_TOKEN: "${{ secrets.FIREBASE_TOKEN }}"
   FASTLANE_USER: "${{ secrets.FASTLANE_USER }}"
-  FASTLANE_PASSWORD: "${{ secrets.FASTLANE_PASSWORD }}"
+  FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: "${{ secrets.FASTLANE_PASSWORD }}"
 "on":
   push:
     branches:
