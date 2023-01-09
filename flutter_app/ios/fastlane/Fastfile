@@ -31,10 +31,10 @@ platform :ios do
     get_provisioning_profile(api_key: api_key)   # invokes sigh
 
 
-    build_app(
-      skip_build_archive: true,
-      archive_path: "../build/ios/archive/Runner.xcarchive",
-    )
+    # build_app(
+    #   skip_build_archive: true,
+    #   archive_path: "../build/ios/archive/Runner.xcarchive",
+    # )
 
     # build_app
 
@@ -43,13 +43,13 @@ platform :ios do
 
     # sh 'flutter build ipa --no-codesign'
 
-    # sh 'flutter build ipa --dart-define="SOCKET_ADDRESS=https://react-video-call-fjutjsrlaa-uc.a.run.app"'
+    sh 'flutter build ipa --dart-define="SOCKET_ADDRESS=https://react-video-call-fjutjsrlaa-uc.a.run.app"'
 
-    firebase_app_distribution(
-          app: "1:619217777312:ios:c2e305e9e4d2ca8fd0cfc5",
-          ipa_path: "../ios/Runner.ipa",
-          testers: "andrewdelph@live.ca"
-      )
+    # firebase_app_distribution(
+    #       app: "1:619217777312:ios:c2e305e9e4d2ca8fd0cfc5",
+    #       ipa_path: "../ios/Runner.ipa",
+    #       testers: "andrewdelph@live.ca"
+    #   )
 
     # add actions here: https://docs.fastlane.tools/actions
   end
