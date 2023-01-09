@@ -19,13 +19,15 @@ platform :ios do
   desc "Description of what the lane does"
   lane :beta do
 
-    sh 'flutter build ipa --dart-define="SOCKET_ADDRESS=https://react-video-call-fjutjsrlaa-uc.a.run.app"'
+    sh 'flutter build ios --no-codesign'
 
-    firebase_app_distribution(
-          app: "1:619217777312:ios:c2e305e9e4d2ca8fd0cfc5",
-          ipa_path: "../build/ios/ipa/flutter_app.ipa",
-          testers: "andrewdelph@live.ca"
-      )
+    # sh 'flutter build ipa --dart-define="SOCKET_ADDRESS=https://react-video-call-fjutjsrlaa-uc.a.run.app"'
+
+    # firebase_app_distribution(
+    #       app: "1:619217777312:ios:c2e305e9e4d2ca8fd0cfc5",
+    #       ipa_path: "../build/ios/ipa/flutter_app.ipa",
+    #       testers: "andrewdelph@live.ca"
+    #   )
 
     # add actions here: https://docs.fastlane.tools/actions
   end
