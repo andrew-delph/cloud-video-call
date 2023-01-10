@@ -54,7 +54,7 @@ class AppWidgetState extends State<AppWidget> {
                       await readyPress(appProvider);
                       print("done ready");
                     },
-                    child: const Text('New chat'),
+                    child: Text('New chat: ${appProvider?.socket?.connected}'),
                   ),
                 ],
               ),
