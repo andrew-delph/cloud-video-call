@@ -40,8 +40,7 @@ platform :ios do
 
     build_app(
       # skip_build_archive: true,
-      # skip_archive: true,
-      archive_path: "./",
+      # archive_path: "./",
       xcargs: "-allowProvisioningUpdates"
     )
 
