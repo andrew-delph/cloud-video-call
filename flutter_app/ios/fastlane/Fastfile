@@ -21,6 +21,11 @@ platform :ios do
 
     puts "Starting beta"
 
+    sh 'flutter pub get'
+
+    puts "Finished flutter pub get"
+
+
     cocoapods(
       clean_install: true,
     )
