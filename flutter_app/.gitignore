@@ -31,13 +31,16 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 
-!build/
-build/*
 
-!build/ios/
-build/ios/*
+build
 
-!build/ios/archive
+# !build/
+# build/*
+
+# !build/ios/
+# build/ios/*
+
+# !build/ios/archive
 
 # Symbolication related
 app.*.symbols
