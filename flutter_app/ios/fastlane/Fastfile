@@ -38,15 +38,15 @@ platform :ios do
     puts "Finished match"
 
 
-    build_app(
-      skip_build_archive: true,
-      archive_path: "../build/ios/archive/Runner.xcarchive",
-      xcargs: "-allowProvisioningUpdates"
-    )
+    # build_app(
+    #   skip_build_archive: true,
+    #   archive_path: "../build/ios/archive/Runner.xcarchive",
+    #   xcargs: "-allowProvisioningUpdates"
+    # )
 
 
 
-    # sh 'flutter build ipa --no-codesign'
+    sh 'flutter build ipa'
 
     # sh 'flutter build ipa --dart-define="SOCKET_ADDRESS=https://react-video-call-fjutjsrlaa-uc.a.run.app"'
 
