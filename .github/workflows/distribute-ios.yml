@@ -13,7 +13,6 @@ env:
   push:
     branches:
       - master
-      - ios_test
 jobs:
   build_and_deploy:
     runs-on: macos-latest
