@@ -8,6 +8,7 @@ env:
   FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: "${{ secrets.FASTLANE_PASSWORD }}"
   APPLE_KEY: "${{ secrets.APPLE_KEY }}"
   MATCH_GIT_BASIC_AUTHORIZATION: "${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}"
+  MATCH_PASSWORD: "${{ secrets.MATCH_PASSWORD }}"
 "on":
   push:
     branches:
