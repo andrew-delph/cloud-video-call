@@ -98,6 +98,7 @@ io.on("connection", (socket) => {
 
   socket.on("ready", () => {
     readyQueue.add(socket.id);
+    io.emit("message", socket.id + " is ready!");
     console.log(`${readyQueue.size()}  ready!`);
 
     if (readyQueue.size() >= 2) {
