@@ -38,8 +38,12 @@ class AppWidgetState extends State<AppWidget> {
       builder: (context, appProvider, child) {
         appProvider.init();
 
+        // bool? socketActive = appProvider?.socket?.connected;
+        // appProvider.peerConnection.connectionState
+        // "${appProvider?.socket?.connected} ${appProvider?.peerConnection?.connectionState}"
+
         return SizedBox(
-            height: 200,
+            height: 1000,
             child: Row(children: [
               Stack(
                 children: [

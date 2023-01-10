@@ -30,10 +30,6 @@ class Factory {
   static Future<webrtc.RTCPeerConnection> createPeerConnection() async {
     webrtc.RTCPeerConnection peerConnection = await webrtc.createPeerConnection(
         rtcConfiguration, offerSdpConstraints);
-    peerConnection.onConnectionState = (state) {
-      print("peer connection change state");
-      print(state);
-    };
     return peerConnection;
   }
 }

@@ -49,13 +49,18 @@ class AppProvider extends ChangeNotifier {
     socket!.onConnect((_) {
       print('connect');
       socket!.emit('message', 'test flutter');
+      notifyListeners();
     });
     socket!.on('message', (data) => print(data));
     socket!.onDisconnect((_) {
       print('disconnect');
+
+      notifyListeners();
     });
     socket!.onError((data) {
       print("error: " + data);
+
+      notifyListeners();
     });
   }
 
@@ -79,7 +84,6 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> ready() async {
-
     await resetRemoteMediaStream();
     socket!.off("client_host");
     socket!.off("client_guest");
@@ -90,6 +94,10 @@ class AppProvider extends ChangeNotifier {
     // START SETUP PEER CONNECTION
     await peerConnection?.close();
     peerConnection = await Factory.createPeerConnection();
+    peerConnection?.onConnectionState = (state) {
+      print("peerConnection changed state: $state");
+      notifyListeners();
+    };
     // END SETUP PEER CONNECTION
 
     // START add localMediaStream to peerConnection
@@ -201,7 +209,7 @@ class AppProvider extends ChangeNotifier {
 
       // TODO open pr or issue on https://github.com/flutter-webrtc/flutter-webrtc
       // you cannot create a MediaStream
-      if(WebRTC.platformIsWeb ) _remoteVideoRenderer!.muted = false;
+      if (WebRTC.platformIsWeb) _remoteVideoRenderer!.muted = false;
 
       notifyListeners();
     });
