@@ -19,11 +19,9 @@ platform :ios do
   desc "Description of what the lane does"
   lane :beta do
 
+    ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "180"
+
     puts "Starting beta"
-
-    sh 'xcodebuild -showBuildSettings -workspace ./../Runner.xcworkspace -scheme Runner'
-
-    next
 
     sh 'flutter pub get'
 
