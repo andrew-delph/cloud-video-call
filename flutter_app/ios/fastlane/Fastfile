@@ -21,6 +21,12 @@ platform :ios do
 
     puts "Starting beta"
 
+    cocoapods(
+      clean_install: true,
+    )
+
+    puts "Finished cocoapods"
+
 
     match(type: "appstore", readonly: true)
 
