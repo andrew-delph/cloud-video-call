@@ -19,13 +19,37 @@ platform :ios do
   desc "Description of what the lane does"
   lane :beta do
 
-    sh 'flutter build ipa --dart-define="SOCKET_ADDRESS=https://react-video-call-fjutjsrlaa-uc.a.run.app"'
+    # api_key = app_store_connect_api_key(
+    #   key_id: "FZQK2DX8CT",
+    #   issuer_id: "9bae7d22-cd94-455e-9639-b124101571e9",
+    #   key_content: ENV['APPLE_KEY'],
+    #   duration: 1200, # optional (maximum 1200)
+    #   in_house: false # optional but may be required if using match/sigh
+    # ) 
 
-    firebase_app_distribution(
-          app: "1:619217777312:ios:c2e305e9e4d2ca8fd0cfc5",
-          ipa_path: "../build/ios/ipa/flutter_app.ipa",
-          testers: "andrewdelph@live.ca"
-      )
+    # get_certificates(api_key: api_key)           # invokes cert
+    # get_provisioning_profile(api_key: api_key)   # invokes sigh
+
+
+    build_app(
+      skip_build_archive: true,
+      archive_path: "../build/ios/archive/Runner.xcarchive",
+    )
+
+    # build_app
+
+    # sync_code_signing
+
+
+    # sh 'flutter build ipa --no-codesign'
+
+    # sh 'flutter build ipa --dart-define="SOCKET_ADDRESS=https://react-video-call-fjutjsrlaa-uc.a.run.app"'
+
+    # firebase_app_distribution(
+    #       app: "1:619217777312:ios:c2e305e9e4d2ca8fd0cfc5",
+    #       ipa_path: "../ios/Runner.ipa",
+    #       testers: "andrewdelph@live.ca"
+    #   )
 
     # add actions here: https://docs.fastlane.tools/actions
   end
