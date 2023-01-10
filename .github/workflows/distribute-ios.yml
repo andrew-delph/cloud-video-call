@@ -41,3 +41,4 @@ jobs:
         with:
           subdirectory: flutter_app/ios
           lane: beta
+          verbose: true
