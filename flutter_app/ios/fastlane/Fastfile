@@ -21,6 +21,10 @@ platform :ios do
 
     puts "Starting beta"
 
+    sh 'xcodebuild -showBuildSettings -workspace ./../Runner.xcworkspace -scheme Runner'
+
+    next
+
     sh 'flutter pub get'
 
     puts "Finished flutter pub get"
