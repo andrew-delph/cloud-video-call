@@ -103,8 +103,18 @@ class AppWidgetState extends State<AppWidget> {
           child: Text('New chat'),
         );
 
+        Widget endChatButton = TextButton(
+          onPressed: () async {
+            print("pressed");
+            await appProvider.ready();
+            print("done ready");
+          },
+          child: Text('New chat'),
+        );
+
         // if connected to socket. newChatButton
-        // if not connected to socket.
+        // if not connected to socket. show error
+        // if connected to peerconnection. show end chat
 
         return SizedBox(
             height: 1000,

@@ -48,8 +48,9 @@ class AppProvider extends ChangeNotifier {
 
   void handlePeerConnectionStateChange(
       RTCPeerConnectionState peerConnectionState) {
-    if (onPeerConnectionStateChange != null)
+    if (onPeerConnectionStateChange != null) {
       onPeerConnectionStateChange!(peerConnectionState);
+    }
   }
 
   Future<void> initSocket() async {
@@ -112,9 +113,14 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> ready() async {
-    await initLocalStream();
+  Future<void> tryResetRemote() async {
+    await peerConnection?.close();
     await resetRemoteMediaStream();
+  }
+
+  Future<void> ready() async {
+    await tryResetRemote();
+    await initLocalStream();
     socket!.off("client_host");
     socket!.off("client_guest");
     socket!.off("set_client_host");
@@ -122,7 +128,6 @@ class AppProvider extends ChangeNotifier {
     socket!.off("icecandidate");
 
     // START SETUP PEER CONNECTION
-    await peerConnection?.close();
     peerConnection = await Factory.createPeerConnection();
     peerConnection?.onConnectionState = (state) {
       print("peerConnection changed state: $state");
