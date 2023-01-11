@@ -69,7 +69,12 @@ class AppWidgetState extends State<AppWidget> {
         // TODO: Handle this case.
         break;
       case SocketConnectionState.error:
-        // TODO: Handle this case.
+        showDialogAlert(const Text("Socket Error"),
+            Text("Socket Address: ${Factory.getSocketAddress()}"));
+        break;
+      case SocketConnectionState.connectionError:
+        showDialogAlert(const Text("Socket Connection Error"),
+            Text("Socket Address: ${Factory.getSocketAddress()}"));
         break;
     }
   }

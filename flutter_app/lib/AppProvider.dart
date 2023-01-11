@@ -4,7 +4,7 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 
 import 'Factory.dart';
 
-enum SocketConnectionState { connected, error, disconnected }
+enum SocketConnectionState { connected, connectionError, error, disconnected }
 
 class AppProvider extends ChangeNotifier {
   MediaStream? _localMediaStream;
@@ -67,6 +67,7 @@ class AppProvider extends ChangeNotifier {
 
     socket!.onConnectError((_) {
       print('connectError');
+      handleSocketStateChange(SocketConnectionState.connectionError);
       notifyListeners();
     });
 
@@ -83,6 +84,8 @@ class AppProvider extends ChangeNotifier {
     });
     socket!.onError((data) {
       print("error: " + data);
+
+      handleSocketStateChange(SocketConnectionState.error);
 
       notifyListeners();
     });
