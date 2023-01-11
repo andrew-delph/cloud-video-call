@@ -1,0 +1,27 @@
+name: Version Flutter
+"on":
+  push:
+    branches:
+      - master
+    paths:
+      - "flutter_app/**"
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: flutter_app/android
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+          cache: "pip"
+      - uses: jannekem/run-python-script-action@v1
+        with:
+          script: |
+            print("running python script")
+            import os
+            print("Directory contents:")
+            for f in os.listdir():
+                print(f)
