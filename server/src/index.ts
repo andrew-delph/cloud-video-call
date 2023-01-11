@@ -50,12 +50,7 @@ io.on("connection", (socket) => {
   let updateCount = 0;
   const myInterval = setInterval(async () => {
     updateCount = updateCount + 1;
-    // const connectedSockets = await io.fetchSockets();
-    // socket.emit(
-    //   "message",
-    //   `connected ${connectedSockets.length} .... ${updateCount}`
-    // );
-    socket.emit("message", `connected .... ${updateCount}`);
+    socket.emit("message", `updateCount: ${updateCount}`);
   }, 5000);
 
   socket.on("message", (value) => {
@@ -145,3 +140,13 @@ Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
   io.adapter(createAdapter(pubClient, subClient));
   httpServer.listen(process.env.PORT);
 });
+
+setInterval(async () => {
+  console.log("interval");
+  const connectedSockets = await io.fetchSockets();
+
+  console.log(connectedSockets);
+
+  console.log(connectedSockets.length);
+  io.local.emit("message", `users connected: ${connectedSockets.length}`);
+}, 5000);
