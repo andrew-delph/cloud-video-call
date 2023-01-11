@@ -16,12 +16,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Random video chat',
-        theme: ThemeData(
-          primarySwatch: Colors.green,
-        ),
+        theme: ThemeData(primarySwatch: Colors.green),
         home: Scaffold(
           appBar: AppBar(
-            title: const Text('Flutter layout demo'),
+            title: const Text('Random video chat'),
           ),
           body: const Center(
             child: AppWidget(),

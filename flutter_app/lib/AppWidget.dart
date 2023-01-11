@@ -15,6 +15,8 @@ class AppWidget extends StatefulWidget {
 }
 
 class AppWidgetState extends State<AppWidget> {
+  bool _hasShownAlert = false;
+
   @override
   void dispose() {
     super.dispose();
@@ -32,11 +34,55 @@ class AppWidgetState extends State<AppWidget> {
     super.initState();
   }
 
+  void showDialogAlert(Widget title, Widget content) {
+    func() => showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: title,
+              content: content,
+              actions: <Widget>[
+                TextButton(
+                  child: const Text("OK"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+    // Future.delayed(const Duration(seconds: 0), func);
+    Future.microtask(func);
+  }
+
+  void handleSocketStateChange(SocketConnectionState socketState) {
+    switch (socketState) {
+      case SocketConnectionState.disconnected:
+        {
+          showDialogAlert(
+              const Text("Socket Disconnect"), const Text("Popup message"));
+        }
+        break;
+      case SocketConnectionState.connected:
+        // TODO: Handle this case.
+        break;
+      case SocketConnectionState.error:
+        // TODO: Handle this case.
+        break;
+    }
+  }
+
+  void handlePeerConnectionStateChange(
+      RTCPeerConnectionState peerConnectionState) {}
+
   @override
   Widget build(BuildContext context) {
     var child = Consumer<AppProvider>(
-      builder: (context, appProvider, child) {
-        appProvider.init();
+      builder: (consumerContext, appProvider, child) {
+        appProvider.init(
+            onSocketStateChange: handleSocketStateChange,
+            onPeerConnectionStateChange: handlePeerConnectionStateChange);
 
         // bool? socketActive = appProvider?.socket?.connected;
         // appProvider.peerConnection.connectionState

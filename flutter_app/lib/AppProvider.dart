@@ -4,6 +4,8 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 
 import 'Factory.dart';
 
+enum SocketConnectionState { connected, error, disconnected }
+
 class AppProvider extends ChangeNotifier {
   MediaStream? _localMediaStream;
   MediaStream? _remoteMediaStream;
@@ -20,6 +22,9 @@ class AppProvider extends ChangeNotifier {
 
   io.Socket? socket;
 
+  Function(SocketConnectionState)? onSocketStateChange;
+  Function(RTCPeerConnectionState)? onPeerConnectionStateChange;
+
   @override
   @mustCallSuper
   Future<void> dispose() async {
@@ -29,8 +34,22 @@ class AppProvider extends ChangeNotifier {
     await _peerConnection?.close();
   }
 
-  Future<void> init() async {
-    if (socket == null) initSocket();
+  Future<void> init(
+      {Function(SocketConnectionState)? onSocketStateChange,
+      Function(RTCPeerConnectionState)? onPeerConnectionStateChange}) async {
+    this.onSocketStateChange = onSocketStateChange;
+    this.onPeerConnectionStateChange = onPeerConnectionStateChange;
+    socket ?? initSocket();
+  }
+
+  void handleSocketStateChange(SocketConnectionState socketState) {
+    if (onSocketStateChange != null) onSocketStateChange!(socketState);
+  }
+
+  void handlePeerConnectionStateChange(
+      RTCPeerConnectionState peerConnectionState) {
+    if (onPeerConnectionStateChange != null)
+      onPeerConnectionStateChange!(peerConnectionState);
   }
 
   Future<void> initSocket() async {
@@ -40,11 +59,18 @@ class AppProvider extends ChangeNotifier {
     print("SOCKET_ADDRESS is " + SOCKET_ADDRESS);
 
     // only websocket works on windows
+
     socket = io.io(SOCKET_ADDRESS, <String, dynamic>{
       'transports': ['websocket'],
+      'autoConnect': false
     });
 
     socket!.emit("message", "I am a client");
+
+    socket!.onConnectError((_) {
+      print('connectError');
+      notifyListeners();
+    });
 
     socket!.onConnect((_) {
       print('connect');
@@ -54,7 +80,7 @@ class AppProvider extends ChangeNotifier {
     socket!.on('message', (data) => print(data));
     socket!.onDisconnect((_) {
       print('disconnect');
-
+      handleSocketStateChange(SocketConnectionState.disconnected);
       notifyListeners();
     });
     socket!.onError((data) {
@@ -62,6 +88,8 @@ class AppProvider extends ChangeNotifier {
 
       notifyListeners();
     });
+
+    socket!.connect();
   }
 
   Future<void> initLocalStream() async {
@@ -96,6 +124,7 @@ class AppProvider extends ChangeNotifier {
     peerConnection = await Factory.createPeerConnection();
     peerConnection?.onConnectionState = (state) {
       print("peerConnection changed state: $state");
+      handlePeerConnectionStateChange(state);
       notifyListeners();
     };
     // END SETUP PEER CONNECTION
