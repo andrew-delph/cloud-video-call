@@ -115,6 +115,7 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> tryResetRemote() async {
     await peerConnection?.close();
+    peerConnection = null;
     await resetRemoteMediaStream();
   }
 

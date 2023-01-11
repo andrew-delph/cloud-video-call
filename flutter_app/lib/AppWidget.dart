@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Factory.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import 'AppProvider.dart';
@@ -90,39 +91,61 @@ class AppWidgetState extends State<AppWidget> {
             onSocketStateChange: handleSocketStateChange,
             onPeerConnectionStateChange: handlePeerConnectionStateChange);
 
-        // bool? socketActive = appProvider?.socket?.connected;
-        // appProvider.peerConnection.connectionState
-        // "${appProvider?.socket?.connected} ${appProvider?.peerConnection?.connectionState}"
+        // if connected to peerconnection. show end chat
+        // if not connected to peerconnection
+        //      if not connected to socket. show new chat
+        //      if not connected to socket. show error
+
+        Widget loadingWidget = Scaffold(
+            body: Center(
+          child: LoadingAnimationWidget.staggeredDotsWave(
+            color: Colors.blue,
+            size: 200,
+          ),
+        ));
+
+        isInChat() {
+          if (appProvider.peerConnection?.connectionState ==
+              RTCPeerConnectionState.RTCPeerConnectionStateConnecting) {
+            return true;
+          }
+          if (appProvider.peerConnection?.connectionState ==
+              RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
+            return true;
+          }
+          return false;
+        }
+
+        // display loading if socket not connected and not in a chat
+        isDisplayLoading() {
+          if (!appProvider.socket!.connected) {
+            return !isInChat();
+          }
+          return false;
+        }
+
+        if (isDisplayLoading()) return loadingWidget;
 
         Widget newChatButton = TextButton(
           onPressed: () async {
-            print("pressed");
             await appProvider.ready();
-            print("done ready");
           },
-          child: Text('New chat'),
+          child: const Text('New chat'),
         );
 
         Widget endChatButton = TextButton(
           onPressed: () async {
-            print("pressed");
-            await appProvider.ready();
-            print("done ready");
+            await appProvider.tryResetRemote();
           },
-          child: Text('New chat'),
+          child: const Text('End chat'),
         );
 
-        // if connected to socket. newChatButton
-        // if not connected to socket. show error
-        // if connected to peerconnection. show end chat
+        Widget buttonToDisplay = (isInChat()) ? endChatButton : newChatButton;
 
         return SizedBox(
             height: 1000,
             child: Row(children: [
-              // Stack(
-              //   children: [readyWidget],
-              // ),
-              newChatButton,
+              buttonToDisplay,
               Flexible(
                 child: Container(
                     key: const Key('local'),
