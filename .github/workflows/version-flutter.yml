@@ -9,18 +9,11 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     defaults:
-      run:
-        working-directory: flutter_app/android
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: "3.9"
-      - uses: jannekem/run-python-script-action@v1
-        with:
-          script: |
-            print("running python script")
-            import os
-            print("Directory contents:")
-            for f in os.listdir():
-                print(f)
+      - run: pip install PyYAML
+      - run: python flutter_version_update.py
+      - uses: stefanzweifel/git-auto-commit-action@v4
