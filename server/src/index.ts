@@ -150,4 +150,4 @@ setInterval(async () => {
     console.log("error");
     console.error(e);
   }
-}, 5000);
+}, 10000);
