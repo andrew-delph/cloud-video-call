@@ -140,6 +140,7 @@ Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
   io.adapter(createAdapter(pubClient, subClient));
   httpServer.listen(process.env.PORT);
 });
+
 setInterval(async () => {
   try {
     const connectedSockets = await io.fetchSockets();
