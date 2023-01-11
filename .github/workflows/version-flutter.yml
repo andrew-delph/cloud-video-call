@@ -8,7 +8,6 @@ name: Version Flutter
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
-    defaults:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
