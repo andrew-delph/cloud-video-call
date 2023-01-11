@@ -94,22 +94,25 @@ class AppWidgetState extends State<AppWidget> {
         // appProvider.peerConnection.connectionState
         // "${appProvider?.socket?.connected} ${appProvider?.peerConnection?.connectionState}"
 
+        Widget newChatButton = TextButton(
+          onPressed: () async {
+            print("pressed");
+            await appProvider.ready();
+            print("done ready");
+          },
+          child: Text('New chat'),
+        );
+
+        // if connected to socket. newChatButton
+        // if not connected to socket.
+
         return SizedBox(
             height: 1000,
             child: Row(children: [
-              Stack(
-                children: [
-                  TextButton(
-                    onPressed: () async {
-                      await appProvider.initLocalStream();
-                      print("pressed");
-                      await readyPress(appProvider);
-                      print("done ready");
-                    },
-                    child: Text('New chat: ${appProvider?.socket?.connected}'),
-                  ),
-                ],
-              ),
+              // Stack(
+              //   children: [readyWidget],
+              // ),
+              newChatButton,
               Flexible(
                 child: Container(
                     key: const Key('local'),
@@ -133,8 +136,4 @@ class AppWidgetState extends State<AppWidget> {
       child: child,
     );
   }
-}
-
-Future<void> readyPress(AppProvider appProvider) async {
-  await appProvider.ready();
 }

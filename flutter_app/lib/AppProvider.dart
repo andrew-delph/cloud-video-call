@@ -113,6 +113,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> ready() async {
+    await initLocalStream();
     await resetRemoteMediaStream();
     socket!.off("client_host");
     socket!.off("client_guest");
