@@ -53,14 +53,12 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> initSocket() async {
-    const SOCKET_ADDRESS = String.fromEnvironment('SOCKET_ADDRESS',
-        defaultValue: 'http://localhost:4000');
+    String socketAddress = Factory.getSocketAddress();
 
-    print("SOCKET_ADDRESS is " + SOCKET_ADDRESS);
+    print("SOCKET_ADDRESS is $socketAddress");
 
     // only websocket works on windows
-
-    socket = io.io(SOCKET_ADDRESS, <String, dynamic>{
+    socket = io.io(socketAddress, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false
     });

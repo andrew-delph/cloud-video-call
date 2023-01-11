@@ -32,4 +32,9 @@ class Factory {
         rtcConfiguration, offerSdpConstraints);
     return peerConnection;
   }
+
+  static String getSocketAddress() {
+    return const String.fromEnvironment('SOCKET_ADDRESS',
+        defaultValue: 'http://localhost:4000');
+  }
 }

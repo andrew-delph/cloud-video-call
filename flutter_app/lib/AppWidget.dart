@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/Factory.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:provider/provider.dart';
 
@@ -60,8 +61,8 @@ class AppWidgetState extends State<AppWidget> {
     switch (socketState) {
       case SocketConnectionState.disconnected:
         {
-          showDialogAlert(
-              const Text("Socket Disconnect"), const Text("Popup message"));
+          showDialogAlert(const Text("Socket Disconnect"),
+              Text("Socket Address: ${Factory.getSocketAddress()}"));
         }
         break;
       case SocketConnectionState.connected:
