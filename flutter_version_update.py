@@ -5,7 +5,7 @@ import os
 files = os.listdir(os.curdir)
 print(files)
 
-file_name = 'flutter_app\pubspec.yaml'
+file_name = 'flutter_app/pubspec.yaml'
 with open(file_name, 'r') as file:
     pubspec = yaml.safe_load(file)
 
