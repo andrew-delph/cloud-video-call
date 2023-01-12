@@ -41,7 +41,7 @@ async function createSocketServer() {
 }
 
 export const periodicMaintenanceTask = functions.pubsub
-  .schedule("every 30 seconds")
+  .schedule("*/30 * * * *")
   .onRun(async (context) => {
     try {
       const io = await createSocketServer();
