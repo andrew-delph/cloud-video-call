@@ -7,7 +7,9 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-async function createRedisClient() {
+type RedisClientType = ReturnType<typeof createClient>;
+
+async function createRedisClient(): Promise<RedisClientType> {
   const redisClient = createClient({
     url: `redis://${functions.config().redis.user}:${
       functions.config().redis.pass
@@ -46,9 +48,15 @@ export const periodicMaintenanceTask = functions.pubsub
     try {
       const io = await createSocketServer();
 
+      const redisClient: RedisClientType = await createRedisClient();
+
+      redisClient.connect();
+
       const connectedSockets = await io.fetchSockets();
 
       io.emit("message", `users connected: ${connectedSockets.length}`);
+
+      await redisClient.set("connectedNum", connectedSockets.length);
     } catch (e) {
       functions.logger.error(e);
       return;
