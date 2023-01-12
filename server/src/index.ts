@@ -42,14 +42,14 @@ const clients = new Map<String, Client>();
 
 var readyQueue: DistinctPriorityQueue<String> = new DistinctPriorityQueue();
 
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
   clients.set(socket.id, new Client(socket));
 
   io.emit("message", "everyone welcome " + socket.id);
 
   socket.emit(
     "message",
-    `hey from server :) I am ${serverID}. Redis says there is ${pubClient.get(
+    `hey from server :) I am ${serverID}. Redis says there is ${await pubClient.get(
       "connectedNum"
     )} connected sockets.`
   );
