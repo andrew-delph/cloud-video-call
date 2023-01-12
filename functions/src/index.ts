@@ -40,9 +40,9 @@ async function createSocketServer() {
   return io;
 }
 
-export const helloWorld = functions.https.onRequest(
-  async (request, response) => {
-    console.log(functions.config());
+export const periodicMaintenanceTask = functions.pubsub
+  .schedule("every 30 seconds")
+  .onRun(async (context) => {
     try {
       const io = await createSocketServer();
 
@@ -50,12 +50,9 @@ export const helloWorld = functions.https.onRequest(
 
       io.emit("message", `users connected: ${connectedSockets.length}`);
     } catch (e) {
-      console.error(e);
-      response.status(500).send({ error: e });
+      functions.logger.error(e);
       return;
     }
 
     functions.logger.info("completed");
-    response.send("completed");
-  }
-);
+  });
