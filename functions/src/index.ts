@@ -31,7 +31,11 @@ async function createSocketServer() {
 
   await Promise.all([pubClient.connect(), subClient.connect()]).then(() => {});
 
-  io.adapter(createAdapter(pubClient, subClient));
+  io.adapter(
+    createAdapter(pubClient, subClient, {
+      requestsTimeout: 10000,
+    })
+  );
 
   httpServer.listen(3000);
   return io;
