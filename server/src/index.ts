@@ -11,6 +11,8 @@ import { DistinctPriorityQueue } from "./DistinctPriorityQueue";
 
 dotenv.config();
 
+const serverID = uuid();
+
 const app = express();
 
 const httpServer = createServer(app);
@@ -45,7 +47,7 @@ io.on("connection", (socket) => {
 
   io.emit("message", "everyone welcome " + socket.id);
 
-  socket.emit("message", `hey from server :)`);
+  socket.emit("message", `hey from server :) I am ${serverID}`);
 
   let updateCount = 0;
   const myInterval = setInterval(async () => {
@@ -60,6 +62,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     clearInterval(myInterval);
     clients.delete(socket.id);
+    io.emit("message", `user disconnected: ${socket.id}}`);
     console.log("user disconnected " + socket.id);
     readyQueue.remove(socket.id);
   });
