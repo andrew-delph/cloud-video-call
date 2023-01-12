@@ -47,7 +47,7 @@ export const helloWorld = functions.https.onRequest(
     try {
       const io = await createSocketServer();
 
-      io.emit("message", `hi from cloud function.`);
+      io.emit("message", `Hi from cloud function.`);
 
       const connectedSockets = await io.fetchSockets();
 
