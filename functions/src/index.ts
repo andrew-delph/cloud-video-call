@@ -5,6 +5,14 @@ import { Server } from "socket.io";
 import { createClient } from "redis";
 import * as dotenv from "dotenv";
 
+import { initializeApp } from "firebase-admin/app";
+
+import { getFirestore } from "firebase-admin/firestore";
+
+initializeApp();
+
+const db = getFirestore();
+
 dotenv.config();
 
 type RedisClientType = ReturnType<typeof createClient>;
@@ -47,16 +55,22 @@ export const periodicMaintenanceTask = functions.pubsub
   .onRun(async (context) => {
     try {
       const io = await createSocketServer();
-
       const redisClient: RedisClientType = await createRedisClient();
-
       redisClient.connect();
 
       const connectedSockets = await io.fetchSockets();
 
-      io.emit("message", `users connected: ${connectedSockets.length}`);
+      const connectedNum = connectedSockets.length;
 
-      await redisClient.set("connectedNum", connectedSockets.length);
+      io.emit("message", `users connected: ${connectedNum}`);
+
+      await redisClient.set("connectedNum", connectedNum);
+
+      const docRef = db.collection("users").doc("count");
+
+      await docRef.set({
+        sockets: connectedNum,
+      });
     } catch (e) {
       functions.logger.error(e);
       return;

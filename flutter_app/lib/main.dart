@@ -14,27 +14,14 @@ void main() async {
 
   var db = FirebaseFirestore.instance;
 
-  final user = <String, dynamic>{
-    "first": "Ada",
-    "last": "Lovelace",
-    "born": 1815
-  };
+  // await db.collection("users").doc("count").get().then((value) {
+  //   print("count from firestore ${value.data()}");
+  // });
 
-// Add a new document with a generated ID
-  db.collection("users").add(user).then((DocumentReference doc) {
-    print('DocumentSnapshot added with ID: ${doc.id}');
-  }).catchError((onError) {
-    print("error1.");
-    print(onError);
-  });
-
-  await db.collection("users").get().then((event) {
-    for (var doc in event.docs) {
-      print("${doc.id} => ${doc.data()}");
-    }
-  }).catchError((onError) {
-    print("error2.");
-  });
+  db.collection("users").doc("count").snapshots().listen(
+        (event) => print("live count from firestore: ${event.data()}"),
+        onError: (error) => print("Listen failed: $error"),
+      );
 
   runApp(const MyApp());
 }
