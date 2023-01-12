@@ -12,6 +12,12 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
+
+      - name: set config
+        uses: w9jds/firebase-action@master
+        with:
+          args: functions:config:set redis.user="${{ secrets.REDIS_USER }}" redis.pass="${{ secrets.REDIS_PASS }}"
+
       - name: Deploy to Firebase Functions
         uses: w9jds/firebase-action@master
         with:

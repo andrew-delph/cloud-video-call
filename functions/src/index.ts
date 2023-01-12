@@ -9,7 +9,9 @@ dotenv.config();
 
 async function createRedisClient() {
   const redisClient = createClient({
-    url: `redis://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@redis-19534.c1.us-east1-2.gce.cloud.redislabs.com:19534`,
+    url: `redis://${functions.config().redis.user}:${
+      functions.config().redis.pass
+    }@redis-19534.c1.us-east1-2.gce.cloud.redislabs.com:19534`,
   });
 
   redisClient.on("error", function (error) {
@@ -39,6 +41,7 @@ async function createSocketServer() {
 
 export const helloWorld = functions.https.onRequest(
   async (request, response) => {
+    console.log(functions.config());
     try {
       const io = await createSocketServer();
       io.emit("message", "hello from a cloud function1");
