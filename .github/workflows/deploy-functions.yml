@@ -17,6 +17,8 @@ jobs:
         uses: w9jds/firebase-action@master
         with:
           args: functions:config:set redis.user="${{ secrets.REDIS_USER }}" redis.pass="${{ secrets.REDIS_PASS }}"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
       - name: Deploy to Firebase Functions
         uses: w9jds/firebase-action@master

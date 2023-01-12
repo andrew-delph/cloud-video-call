@@ -25,8 +25,6 @@ async function createSocketServer() {
   const httpServer = createServer();
   const io = new Server(httpServer, {});
 
-  io.on("connection", (socket) => {});
-
   const pubClient = await createRedisClient();
 
   const subClient = pubClient.duplicate();
