@@ -48,7 +48,7 @@ export const helloWorld = functions.https.onRequest(
       io.emit("message", `users connected: ${connectedSockets.length}`);
     } catch (e) {
       console.error(e);
-      response.status(500).send(e);
+      response.status(500).send({ error: e });
       return;
     }
 
