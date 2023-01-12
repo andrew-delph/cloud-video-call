@@ -37,7 +37,7 @@ async function createSocketServer() {
     })
   );
 
-  httpServer.listen(3000);
+  // httpServer.listen(3000);
   return io;
 }
 
