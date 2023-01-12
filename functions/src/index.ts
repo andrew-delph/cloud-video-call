@@ -29,7 +29,7 @@ async function createSocketServer() {
 
   const subClient = pubClient.duplicate();
 
-  await Promise.all([pubClient.connect(), subClient.connect()]).then(() => {});
+  await Promise.all([pubClient.connect(), subClient.connect()]);
 
   io.adapter(
     createAdapter(pubClient, subClient, {
@@ -37,7 +37,6 @@ async function createSocketServer() {
     })
   );
 
-  // httpServer.listen(3000);
   return io;
 }
 
@@ -46,8 +45,6 @@ export const helloWorld = functions.https.onRequest(
     console.log(functions.config());
     try {
       const io = await createSocketServer();
-
-      io.emit("message", `Hi from cloud function.`);
 
       const connectedSockets = await io.fetchSockets();
 
