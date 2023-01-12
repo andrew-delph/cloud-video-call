@@ -12,9 +12,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  print(1);
   var db = FirebaseFirestore.instance;
-  print(1);
 
   final user = <String, dynamic>{
     "first": "Ada",
@@ -29,16 +27,14 @@ void main() async {
     print("error1.");
     print(onError);
   });
-  print(1);
 
-  // await db.collection("users").get().then((event) {
-  //   for (var doc in event.docs) {
-  //     print("${doc.id} => ${doc.data()}");
-  //   }
-  // }).catchError((onError) {
-  //   print("error2.");
-  // });
-  print(1);
+  await db.collection("users").get().then((event) {
+    for (var doc in event.docs) {
+      print("${doc.id} => ${doc.data()}");
+    }
+  }).catchError((onError) {
+    print("error2.");
+  });
 
   runApp(const MyApp());
 }
