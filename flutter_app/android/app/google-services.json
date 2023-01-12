@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "619217777312",
+    "project_id": "react-video-call-thing72",
+    "storage_bucket": "react-video-call-thing72.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:619217777312:android:7b2974724d142e3bd0cfc5",
+        "android_client_info": {
+          "package_name": "com.thing72.random_video_call"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "619217777312-22osksscaob6t1g452n6fv1imgcgo2ud.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9SplYhSsBHz6j2JucKx6SSEtSI-llng4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "619217777312-22osksscaob6t1g452n6fv1imgcgo2ud.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "619217777312-tp9gb6q5cl100ujj19nga53bj72cqa3i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.thing72.random-video-call"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -21,15 +21,9 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -54,8 +48,28 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyDYpgOSidu-ug4SJ3I6ktocbBQhA91DDR0',
-    googleAppID: '1:619217777312:web:2ef7fa42fd9bd1bed0cfc5',
-    gcmSenderID: '619217777312',
-    projectID: 'react-video-call-thing72',
+    appId: '1:619217777312:web:2ef7fa42fd9bd1bed0cfc5',
+    messagingSenderId: '619217777312',
+    projectId: 'react-video-call-thing72',
+    authDomain: 'react-video-call-thing72.firebaseapp.com',
+    storageBucket: 'react-video-call-thing72.appspot.com',
+  );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyB9SplYhSsBHz6j2JucKx6SSEtSI-llng4',
+    appId: '1:619217777312:android:7b2974724d142e3bd0cfc5',
+    messagingSenderId: '619217777312',
+    projectId: 'react-video-call-thing72',
+    storageBucket: 'react-video-call-thing72.appspot.com',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyBY0OUg18y9mLKq2zcgO51G4ih5wlC_yaY',
+    appId: '1:619217777312:ios:c2e305e9e4d2ca8fd0cfc5',
+    messagingSenderId: '619217777312',
+    projectId: 'react-video-call-thing72',
+    storageBucket: 'react-video-call-thing72.appspot.com',
+    iosClientId: '619217777312-tp9gb6q5cl100ujj19nga53bj72cqa3i.apps.googleusercontent.com',
+    iosBundleId: 'com.thing72.random-video-call',
   );
 }

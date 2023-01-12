@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>619217777312-tp9gb6q5cl100ujj19nga53bj72cqa3i.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.619217777312-tp9gb6q5cl100ujj19nga53bj72cqa3i</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBY0OUg18y9mLKq2zcgO51G4ih5wlC_yaY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>619217777312</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.thing72.random-video-call</string>
+	<key>PROJECT_ID</key>
+	<string>react-video-call-thing72</string>
+	<key>STORAGE_BUCKET</key>
+	<string>react-video-call-thing72.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:619217777312:ios:c2e305e9e4d2ca8fd0cfc5</string>
+</dict>
+</plist>
