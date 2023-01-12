@@ -42,15 +42,17 @@ export const helloWorld = functions.https.onRequest(
     console.log(functions.config());
     try {
       const io = await createSocketServer();
-      io.emit("message", "hello from a cloud function1");
+
+      const connectedSockets = await io.fetchSockets();
+
+      io.emit("message", `users connected: ${connectedSockets.length}`);
     } catch (e) {
-      console.log("errror1");
-      console.log(e);
-      response.send(e);
+      console.error(e);
+      response.status(500).send(e);
       return;
     }
 
-    functions.logger.info("Hello logs!", { structuredData: true });
-    response.send("Hello from Firebase!12");
+    functions.logger.info("completed");
+    response.send("completed");
   }
 );

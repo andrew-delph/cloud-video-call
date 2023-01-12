@@ -146,14 +146,3 @@ Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
   io.adapter(createAdapter(pubClient, subClient));
   httpServer.listen(process.env.PORT);
 });
-
-setInterval(async () => {
-  try {
-    const connectedSockets = await io.fetchSockets();
-
-    io.local.emit("message", `users connected: ${connectedSockets.length}`);
-  } catch (e) {
-    console.log("error");
-    console.error(e);
-  }
-}, 10000);
