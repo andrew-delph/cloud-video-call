@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +11,35 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  print(1);
+  var db = FirebaseFirestore.instance;
+  print(1);
+
+  final user = <String, dynamic>{
+    "first": "Ada",
+    "last": "Lovelace",
+    "born": 1815
+  };
+
+// Add a new document with a generated ID
+  db.collection("users").add(user).then((DocumentReference doc) {
+    print('DocumentSnapshot added with ID: ${doc.id}');
+  }).catchError((onError) {
+    print("error1.");
+    print(onError);
+  });
+  print(1);
+
+  // await db.collection("users").get().then((event) {
+  //   for (var doc in event.docs) {
+  //     print("${doc.id} => ${doc.data()}");
+  //   }
+  // }).catchError((onError) {
+  //   print("error2.");
+  // });
+  print(1);
+
   runApp(const MyApp());
 }
 
