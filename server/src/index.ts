@@ -15,7 +15,6 @@ dotenv.config();
 const serverID = uuid();
 
 const app = express();
-
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
