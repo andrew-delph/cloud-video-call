@@ -84,7 +84,7 @@ class AppProvider extends ChangeNotifier {
       notifyListeners();
     });
     socket!.onError((data) {
-      print("error: " + data);
+      print("error: " + data.toString());
 
       handleSocketStateChange(SocketConnectionState.error);
 
