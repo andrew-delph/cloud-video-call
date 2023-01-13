@@ -23,9 +23,9 @@
         "firebase-debug.*.log"
       ],
       "predeploy": [
-        "npm install",
+        "cd common && npm install && npm run build",
         "cd functions && npm run copy-common && npm install",
-        "npm  run --prefix functions build"
+        "cd functions && npm run build"
       ]
     }
   ],

@@ -127,7 +127,7 @@ io.on("connection", async (socket) => {
 
       if (!firstClient || !secondClient) {
         console.log(
-          `error with null socket first:${firstClient} second:${secondID}`
+          `error with null socket first:${firstClient} second:${secondID}.`
         );
         return;
       }
