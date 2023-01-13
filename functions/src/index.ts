@@ -79,6 +79,8 @@ export const periodicMaintenanceTask = functions.pubsub
       );
       const connectedNum = connectedSockets.length;
 
+      console.log("active ids: ", connectedSocketsIdList);
+
       // update activeSet start
       await mainRedisClient.del("temp_activeSet");
       await mainRedisClient.sAdd("activeSet", connectedSocketsIdList);
