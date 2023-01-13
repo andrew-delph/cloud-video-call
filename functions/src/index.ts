@@ -31,18 +31,18 @@ async function createRedisClient(): Promise<RedisClientType> {
   return redisClient;
 }
 
-async function createSocketServer() {
+async function createSocketServer(redisClient: RedisClientType) {
   const httpServer = createServer();
   const io = new Server(httpServer, {});
 
-  const pubClient = await createRedisClient();
+  // const pubClient = await createRedisClient();
 
-  const subClient = pubClient.duplicate();
+  // const subClient = pubClient.duplicate();
 
-  await Promise.all([pubClient.connect(), subClient.connect()]);
+  // await Promise.all([pubClient.connect(), subClient.connect()]);
 
   io.adapter(
-    createAdapter(pubClient, subClient, {
+    createAdapter(redisClient, redisClient, {
       requestsTimeout: 20000,
     })
   );
@@ -55,9 +55,10 @@ export const periodicMaintenanceTask = functions.pubsub
   .onRun(async (context) => {
     let redisClient: RedisClientType | null = null;
     try {
-      const io = await createSocketServer();
       redisClient = await createRedisClient();
-      redisClient.connect();
+      await redisClient.connect();
+
+      const io = await createSocketServer(redisClient);
 
       const connectedSockets = await io.fetchSockets();
 
