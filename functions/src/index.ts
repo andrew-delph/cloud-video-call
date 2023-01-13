@@ -43,7 +43,7 @@ async function createSocketServer() {
 
   io.adapter(
     createAdapter(pubClient, subClient, {
-      requestsTimeout: 10000,
+      requestsTimeout: 20000,
     })
   );
 
@@ -59,6 +59,12 @@ export const periodicMaintenanceTask = functions.pubsub
       redisClient.connect();
 
       const connectedSockets = await io.fetchSockets();
+
+      const connectedSocketsIdList = connectedSockets.map(
+        (socket: any) => socket.id
+      );
+
+      redisClient.sAdd("activeSet", connectedSocketsIdList);
 
       const connectedNum = connectedSockets.length;
 
