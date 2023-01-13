@@ -47,6 +47,8 @@ io.on("connection", async (socket) => {
 
   console.log(`${socket.id} connected`);
 
+  pubClient.sAdd("activeSet", socket.id);
+
   io.emit("message", "everyone welcome " + socket.id);
 
   socket.emit(
@@ -72,6 +74,7 @@ io.on("connection", async (socket) => {
     io.emit("message", `user disconnected: ${socket.id}}`);
     console.log("user disconnected " + socket.id);
     readyQueue.remove(socket.id);
+    pubClient.sRem("activeSet", socket.id);
   });
 
   socket.on("client_host", (value) => {
