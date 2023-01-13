@@ -53,14 +53,15 @@ async function createSocketServer() {
 export const periodicMaintenanceTask = functions.pubsub
   .schedule("every minute")
   .onRun(async (context) => {
+    let redisClient: RedisClientType | null = null;
     try {
       const io = await createSocketServer();
-      const redisClient: RedisClientType = await createRedisClient();
+      redisClient = await createRedisClient();
       redisClient.connect();
 
       const connectedSockets = await io.fetchSockets();
 
-      const connectedSocketsIdList = connectedSockets.map(
+      const connectedSocketsIdList: any = connectedSockets.map(
         (socket: any) => socket.id
       );
 
@@ -80,6 +81,9 @@ export const periodicMaintenanceTask = functions.pubsub
     } catch (e) {
       functions.logger.error(e);
       return;
+    } finally {
+      functions.logger.info("closing redis connection");
+      redisClient?.quit();
     }
 
     functions.logger.info("completed");
