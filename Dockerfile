@@ -9,7 +9,6 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 COPY common/package*.json ./common/
 COPY server/package*.json ./server/
-COPY client/package*.json ./client/
 
 # Install production dependencies.
 RUN npm install

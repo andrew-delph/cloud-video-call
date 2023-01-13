@@ -134,7 +134,7 @@ io.on("connection", async (socket) => {
 
       const roomID = uuid();
 
-      console.log(`grouping ${firstID} and ${secondID} in room: ${roomID}`);
+      console.log(`grouping ${firstID} and ${secondID} in room: ${roomID}.`);
 
       firstClient.getSocket().join(roomID);
       secondClient.getSocket().join(roomID);
