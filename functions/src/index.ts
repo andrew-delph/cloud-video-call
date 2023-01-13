@@ -77,27 +77,22 @@ export const periodicMaintenanceTask = functions.pubsub
       const connectedSocketsIdList: any = connectedSockets.map(
         (socket: any) => socket.id
       );
+      const connectedNum = connectedSockets.length;
 
+      // update activeSet start
       await mainRedisClient.del("temp_activeSet");
       await mainRedisClient.sAdd("activeSet", connectedSocketsIdList);
       await mainRedisClient.sAdd("temp_activeSet", connectedSocketsIdList);
-
       const activeSetDiff = await mainRedisClient.sDiff([
         "activeSet",
         "temp_activeSet",
       ]);
-
       console.log(activeSetDiff, "activeSetDiff");
-
       await mainRedisClient.sRem("activeSet", activeSetDiff);
-
       await mainRedisClient.del("temp_activeSet");
-
-      const connectedNum = connectedSockets.length;
+      // update activeSet end
 
       io.emit("message", `users connected: ${connectedNum}`);
-
-      await mainRedisClient.set("connectedNum", connectedNum);
 
       const docRef = db.collection("users").doc("count");
 
