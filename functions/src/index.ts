@@ -110,7 +110,7 @@ export const periodicMaintenanceTask = functions.pubsub
         try {
           await client.quit();
         } catch (e) {
-          functions.logger.error("failed to close a client");
+          functions.logger.error("failed to close a client.");
           functions.logger.error(e);
         }
       });
