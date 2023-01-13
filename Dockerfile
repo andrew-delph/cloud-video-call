@@ -18,9 +18,7 @@ RUN npm install
 
 COPY . ./
 
-RUN npm run build --prefix common
-RUN npm run build --prefix server
-RUN npm run build --prefix client
+RUN npm run build
 
 
 # # Run the web service on container startup.
