@@ -85,7 +85,6 @@ export const periodicMaintenanceTask = functions.pubsub
 
       // update activeSet start
       await mainRedisClient.del("temp_activeSet");
-      await mainRedisClient.sAdd(common.activeSetName, connectedSocketsIdList);
       await mainRedisClient.sAdd("temp_activeSet", connectedSocketsIdList);
       await mainRedisClient.sInterStore(common.activeSetName, [
         common.activeSetName,
