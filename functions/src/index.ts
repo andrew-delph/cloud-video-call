@@ -17,6 +17,8 @@ dotenv.config();
 
 type RedisClientType = ReturnType<typeof createClient>;
 
+const redisClientList: RedisClientType[] = [];
+
 async function createRedisClient(): Promise<RedisClientType> {
   const redisClient = createClient({
     url: `redis://${functions.config().redis.user}:${
@@ -27,6 +29,8 @@ async function createRedisClient(): Promise<RedisClientType> {
   redisClient.on("error", function (error) {
     console.error(error);
   });
+
+  redisClientList.push(redisClient);
 
   return redisClient;
 }
@@ -101,6 +105,15 @@ export const periodicMaintenanceTask = functions.pubsub
       mainRedisClient?.quit();
       pubRedisClient?.quit();
       subRedisClient?.quit();
+
+      redisClientList.forEach((client) => {
+        try {
+          client.quit();
+        } catch (e) {
+          functions.logger.error("failed to close a client");
+          functions.logger.error(e);
+        }
+      });
     }
 
     functions.logger.info("completed");
