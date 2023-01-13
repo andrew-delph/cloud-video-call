@@ -87,12 +87,10 @@ export const periodicMaintenanceTask = functions.pubsub
       await mainRedisClient.del("temp_activeSet");
       await mainRedisClient.sAdd(common.activeSetName, connectedSocketsIdList);
       await mainRedisClient.sAdd("temp_activeSet", connectedSocketsIdList);
-      const activeSetDiff = await mainRedisClient.sDiff([
+      await mainRedisClient.sInterStore(common.activeSetName, [
         common.activeSetName,
         "temp_activeSet",
       ]);
-      console.log(activeSetDiff, "activeSetDiff");
-      await mainRedisClient.sRem(common.activeSetName, activeSetDiff);
       await mainRedisClient.del("temp_activeSet");
       // update activeSet end
 
