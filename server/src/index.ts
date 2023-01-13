@@ -36,7 +36,7 @@ pubClient.on("error", function (error) {
 const subClient = pubClient.duplicate();
 
 app.get("*", (req, res) => {
-  res.send("This is the api server :)");
+  res.send("This is the API server :)");
 });
 
 const clients = new Map<String, Client>();

@@ -11,14 +11,16 @@ COPY common/package*.json ./common/
 COPY server/package*.json ./server/
 
 # Install production dependencies.
-RUN npm install
+RUN cd common && npm install
+RUN cd server && npm install
 
 # Copy local code to the container image.
 
 COPY . ./
 
-RUN npm run build
+RUN cd common && npm run build
+RUN cd server && npm run build
 
-
+WORKDIR /usr/src/app/server
 # # Run the web service on container startup.
 CMD [ "npm", "run" , "prod" ]

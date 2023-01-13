@@ -116,5 +116,5 @@ export const periodicMaintenanceTask = functions.pubsub
       });
     }
 
-    functions.logger.info("completed.");
+    functions.logger.info("completed...");
   });
