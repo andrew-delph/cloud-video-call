@@ -74,7 +74,13 @@ export const periodicMaintenanceTask = functions.pubsub
         (socket: any) => socket.id
       );
 
+      mainRedisClient.del("temp_activeSet");
       mainRedisClient.sAdd("activeSet", connectedSocketsIdList);
+      mainRedisClient.sAdd("temp_activeSet", connectedSocketsIdList);
+
+      mainRedisClient.sDiffStore("activeSet", ["activeSet", "temp_activeSet"]);
+
+      mainRedisClient.del("temp_activeSet");
 
       const connectedNum = connectedSockets.length;
 
