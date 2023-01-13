@@ -23,8 +23,10 @@
         "firebase-debug.*.log"
       ],
       "predeploy": [
+        "npm cache clean --force",
         "cd common && npm install && npm run build",
-        "cd functions && npm run copy-common && ls && npm install",
+        "cd functions && npm run copy-common",
+        "cd functions && npm install",
         "cd functions && npm run build"
       ]
     }
