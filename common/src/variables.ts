@@ -1,1 +1,1 @@
-export const newTest = "lalala";
+export const activeSetName = "activeSet";

@@ -9,6 +9,8 @@ import { initializeApp } from "firebase-admin/app";
 
 import { getFirestore } from "firebase-admin/firestore";
 
+import * as common from "react-video-call-common";
+
 initializeApp();
 
 const db = getFirestore();
@@ -83,14 +85,14 @@ export const periodicMaintenanceTask = functions.pubsub
 
       // update activeSet start
       await mainRedisClient.del("temp_activeSet");
-      await mainRedisClient.sAdd("activeSet", connectedSocketsIdList);
+      await mainRedisClient.sAdd(common.activeSetName, connectedSocketsIdList);
       await mainRedisClient.sAdd("temp_activeSet", connectedSocketsIdList);
       const activeSetDiff = await mainRedisClient.sDiff([
-        "activeSet",
+        common.activeSetName,
         "temp_activeSet",
       ]);
       console.log(activeSetDiff, "activeSetDiff");
-      await mainRedisClient.sRem("activeSet", activeSetDiff);
+      await mainRedisClient.sRem(common.activeSetName, activeSetDiff);
       await mainRedisClient.del("temp_activeSet");
       // update activeSet end
 
