@@ -5,8 +5,8 @@
   "main": "server/dist/index.js",
   "scripts": {
     "dev": "concurrently  \"cd server && npm run dev\" \"cd common && npm run dev\" ",
-    "postinstall": "concurrently \"cd common && npm install\" \"cd server && npm install\" \"cd functions && npm install\" ",
-    "build": "npm run build --prefix common && npm run build --prefix server",
+    "postinstall": "concurrently \"cd common && npm install && npm run build\" \"cd server && npm install\"",
+    "build": "npm run build --prefix common && npm run build --prefix server && npm run build --prefix functions",
     "prod": "npm run prod --prefix server",
     "emulator": "firebase emulators:start"
   },
