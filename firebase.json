@@ -25,6 +25,7 @@
       "predeploy": [
         "npm cache clean --force",
         "cd common && npm install && npm run build",
+        "cd functions && npm install --only=dev",
         "cd functions && npm run copy-common",
         "cd functions && npm install",
         "cd functions && npm run build"
