@@ -110,7 +110,7 @@ export const periodicMaintenanceTask = functions.pubsub
     } finally {
       functions.logger.info("closing redis connection");
 
-      redisClientList.forEach((client) => {
+      redisClientList.forEach(async (client) => {
         try {
           await client.quit();
         } catch (e) {
