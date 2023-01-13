@@ -24,7 +24,7 @@
       ],
       "predeploy": [
         "cd common && npm install && npm run build",
-        "cd functions && npm run copy-common && npm install",
+        "cd functions && npm run copy-common && ls && npm install",
         "cd functions && npm run build"
       ]
     }
