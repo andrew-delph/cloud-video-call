@@ -78,13 +78,20 @@ export const periodicMaintenanceTask = functions.pubsub
         (socket: any) => socket.id
       );
 
-      mainRedisClient.del("temp_activeSet");
-      mainRedisClient.sAdd("activeSet", connectedSocketsIdList);
-      mainRedisClient.sAdd("temp_activeSet", connectedSocketsIdList);
+      await mainRedisClient.del("temp_activeSet");
+      await mainRedisClient.sAdd("activeSet", connectedSocketsIdList);
+      await mainRedisClient.sAdd("temp_activeSet", connectedSocketsIdList);
 
-      mainRedisClient.sDiffStore("activeSet", ["activeSet", "temp_activeSet"]);
+      const activeSetDiff = await mainRedisClient.sDiff([
+        "activeSet",
+        "temp_activeSet",
+      ]);
 
-      mainRedisClient.del("temp_activeSet");
+      console.log(activeSetDiff, "activeSetDiff");
+
+      await mainRedisClient.sRem("activeSet", activeSetDiff);
+
+      await mainRedisClient.del("temp_activeSet");
 
       const connectedNum = connectedSockets.length;
 
@@ -102,13 +109,10 @@ export const periodicMaintenanceTask = functions.pubsub
       return;
     } finally {
       functions.logger.info("closing redis connection");
-      mainRedisClient?.quit();
-      pubRedisClient?.quit();
-      subRedisClient?.quit();
 
       redisClientList.forEach((client) => {
         try {
-          client.quit();
+          await client.quit();
         } catch (e) {
           functions.logger.error("failed to close a client");
           functions.logger.error(e);
