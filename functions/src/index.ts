@@ -31,18 +31,15 @@ async function createRedisClient(): Promise<RedisClientType> {
   return redisClient;
 }
 
-async function createSocketServer(redisClient: RedisClientType) {
+async function createSocketServer(
+  pubRedisClient: RedisClientType,
+  subRedisClient: RedisClientType
+) {
   const httpServer = createServer();
   const io = new Server(httpServer, {});
 
-  // const pubClient = await createRedisClient();
-
-  // const subClient = pubClient.duplicate();
-
-  // await Promise.all([pubClient.connect(), subClient.connect()]);
-
   io.adapter(
-    createAdapter(redisClient, redisClient, {
+    createAdapter(pubRedisClient, subRedisClient, {
       requestsTimeout: 20000,
     })
   );
@@ -53,12 +50,23 @@ async function createSocketServer(redisClient: RedisClientType) {
 export const periodicMaintenanceTask = functions.pubsub
   .schedule("every minute")
   .onRun(async (context) => {
-    let redisClient: RedisClientType | null = null;
-    try {
-      redisClient = await createRedisClient();
-      await redisClient.connect();
+    let mainRedisClient: RedisClientType | null = null;
 
-      const io = await createSocketServer(redisClient);
+    let pubRedisClient: RedisClientType | null = null;
+
+    let subRedisClient: RedisClientType | null = null;
+
+    try {
+      mainRedisClient = await createRedisClient();
+
+      pubRedisClient = await createRedisClient();
+      subRedisClient = await createRedisClient();
+
+      await mainRedisClient.connect();
+      await pubRedisClient.connect();
+      await subRedisClient.connect();
+
+      const io = await createSocketServer(pubRedisClient, subRedisClient);
 
       const connectedSockets = await io.fetchSockets();
 
@@ -66,13 +74,13 @@ export const periodicMaintenanceTask = functions.pubsub
         (socket: any) => socket.id
       );
 
-      redisClient.sAdd("activeSet", connectedSocketsIdList);
+      mainRedisClient.sAdd("activeSet", connectedSocketsIdList);
 
       const connectedNum = connectedSockets.length;
 
       io.emit("message", `users connected: ${connectedNum}`);
 
-      await redisClient.set("connectedNum", connectedNum);
+      await mainRedisClient.set("connectedNum", connectedNum);
 
       const docRef = db.collection("users").doc("count");
 
@@ -84,7 +92,9 @@ export const periodicMaintenanceTask = functions.pubsub
       return;
     } finally {
       functions.logger.info("closing redis connection");
-      redisClient?.quit();
+      mainRedisClient?.quit();
+      pubRedisClient?.quit();
+      subRedisClient?.quit();
     }
 
     functions.logger.info("completed");
