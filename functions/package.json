@@ -9,7 +9,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "copy-common": "npm install --save-dev copyfiles && copyfiles -f ../common/react-video-call-common-1.0.0.tgz ."
+    "copy-common": "npm install -g copyfiles && copyfiles -f ../common/react-video-call-common-1.0.0.tgz ."
   },
   "engines": {
     "node": "16"
