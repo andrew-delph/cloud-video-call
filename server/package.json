@@ -4,9 +4,9 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "tsc-watch --onSuccess \"node ./dist/index.js\" --onCompilationStarted \"echo 'watching server'\"",
+    "dev": "tsc-watch --onSuccess \"node ./dist/server.js\" --onCompilationStarted \"echo 'watching server'\"",
     "build": "tsc",
-    "prod": "node ./dist/index.js"
+    "prod": "node ./dist/server.js"
   },
   "author": "",
   "license": "ISC",

@@ -91,6 +91,10 @@ export const periodicMaintenanceTask = functions.pubsub
           common.activeSetName,
           "temp_activeSet",
         ]);
+        await mainRedisClient.sInterStore(common.readySetName, [
+          common.readySetName,
+          "temp_activeSet",
+        ]);
         await mainRedisClient.del("temp_activeSet");
         // update activeSet end
       }
