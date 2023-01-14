@@ -47,7 +47,7 @@ io.on("connection", async (socket) => {
 
   console.log(`${socket.id} connected`);
 
-  pubClient.sAdd("activeSet", socket.id);
+  pubClient.sAdd(common.activeSetName, socket.id);
 
   io.emit("message", "everyone welcome " + socket.id);
 
@@ -74,7 +74,8 @@ io.on("connection", async (socket) => {
     io.emit("message", `user disconnected: ${socket.id}}`);
     console.log("user disconnected " + socket.id);
     readyQueue.remove(socket.id);
-    pubClient.sRem("activeSet", socket.id);
+    pubClient.sRem(common.activeSetName, socket.id);
+    pubClient.sRem(common.readySetName, socket.id);
   });
 
   socket.on("client_host", (value) => {
@@ -105,6 +106,7 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("ready", () => {
+    pubClient.sAdd(common.readySetName, socket.id);
     readyQueue.add(socket.id);
     io.emit(
       "message",
