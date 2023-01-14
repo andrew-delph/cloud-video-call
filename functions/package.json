@@ -9,7 +9,9 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "copy-common": "npx copyfiles -f ../common/react-video-call-common-1.0.0.tgz ."
+    "copy-common": "npx copyfiles -f ../common/react-video-call-common-1.0.0.tgz .",
+    "copy-install": "npm run copy-common && npm install react-video-call-common-1.0.0.tgz",
+    "dev": "nodemon --watch ../common/react-video-call-common-1.0.0.tgz --exec \"npm run copy-install\""
   },
   "engines": {
     "node": "16"
@@ -32,6 +34,7 @@
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-import": "^2.25.4",
     "firebase-functions-test": "^0.2.0",
+    "nodemon": "^2.0.20",
     "typescript": "^4.5.4"
   },
   "private": true
