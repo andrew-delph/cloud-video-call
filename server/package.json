@@ -2,7 +2,7 @@
   "name": "react-video-call-server",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
     "dev": "tsc-watch --onSuccess \"node ./dist/server.js\" --onCompilationStarted \"echo 'watching server'\"",
     "build": "tsc",
