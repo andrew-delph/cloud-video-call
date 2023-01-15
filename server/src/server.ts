@@ -49,8 +49,6 @@ app.get("*", (req, res) => {
 
 const clients = new Map<String, Client>();
 
-var readyQueue: DistinctPriorityQueue<String> = new DistinctPriorityQueue();
-
 io.on("connection", async (socket) => {
   clients.set(socket.id, new Client(socket));
 
@@ -82,7 +80,6 @@ io.on("connection", async (socket) => {
     clients.delete(socket.id);
     io.emit("message", `user disconnected: ${socket.id}}`);
     console.log("user disconnected " + socket.id);
-    readyQueue.remove(socket.id);
     pubClient.sRem(common.activeSetName, socket.id);
     pubClient.sRem(common.readySetName, socket.id);
   });
@@ -116,55 +113,56 @@ io.on("connection", async (socket) => {
 
   socket.on("ready", async () => {
     console.log("ready!");
-    const x = await getFunctions()
-      .taskQueue("readyEvent")
-      .enqueue({ test: "test msg" });
-    console.log("x", x);
     pubClient.sAdd(common.readySetName, socket.id);
-    readyQueue.add(socket.id);
-    io.emit(
-      "message",
-      `${socket.id}  is ready! #readyQueue.size() ${readyQueue.size()}`
-    );
-    console.log(`${readyQueue.size()}  ready!`);
 
-    if (readyQueue.size() >= 2) {
-      const firstID = readyQueue.pop();
-      const secondID = readyQueue.pop();
+    const readyEventResponse = await getFunctions()
+      .taskQueue("readyEvent")
+      .enqueue({ id: socket.id });
+    console.log("readyEventResponse", readyEventResponse);
 
-      if (!firstID || !secondID) {
-        console.log(`error with null ID first:${firstID} second:${secondID}`);
-        return;
-      }
+    // io.emit(
+    //   "message",
+    //   `${socket.id}  is ready! #readyQueue.size() ${readyQueue.size()}`
+    // );
+    // console.log(`${readyQueue.size()}  ready!`);
 
-      const firstClient = clients.get(firstID);
-      const secondClient = clients.get(secondID);
+    // if (readyQueue.size() >= 2) {
+    //   const firstID = readyQueue.pop();
+    //   const secondID = readyQueue.pop();
 
-      if (!firstClient || !secondClient) {
-        console.log(
-          `error with null socket first:${firstClient} second:${secondID}.`
-        );
-        return;
-      }
+    //   if (!firstID || !secondID) {
+    //     console.log(`error with null ID first:${firstID} second:${secondID}`);
+    //     return;
+    //   }
 
-      const roomID = uuid();
+    //   const firstClient = clients.get(firstID);
+    //   const secondClient = clients.get(secondID);
 
-      console.log(`grouping ${firstID} and ${secondID} in room: ${roomID}.`);
+    //   if (!firstClient || !secondClient) {
+    //     console.log(
+    //       `error with null socket first:${firstClient} second:${secondID}.`
+    //     );
+    //     return;
+    //   }
 
-      firstClient.getSocket().join(roomID);
-      secondClient.getSocket().join(roomID);
+    //   const roomID = uuid();
 
-      firstClient.setRoomId(roomID);
-      secondClient.setRoomId(roomID);
+    //   console.log(`grouping ${firstID} and ${secondID} in room: ${roomID}.`);
 
-      io.to(roomID).emit("message", `Welcome to ${roomID}`);
+    //   firstClient.getSocket().join(roomID);
+    //   secondClient.getSocket().join(roomID);
 
-      firstClient.getSocket().emit("message", `you are with ${secondID}`);
-      secondClient.getSocket().emit("message", `you are with ${firstID}`);
+    //   firstClient.setRoomId(roomID);
+    //   secondClient.setRoomId(roomID);
 
-      firstClient.getSocket().emit("set_client_host", roomID);
-      secondClient.getSocket().emit("set_client_guest", roomID);
-    }
+    //   io.to(roomID).emit("message", `Welcome to ${roomID}`);
+
+    //   firstClient.getSocket().emit("message", `you are with ${secondID}`);
+    //   secondClient.getSocket().emit("message", `you are with ${firstID}`);
+
+    //   firstClient.getSocket().emit("set_client_host", roomID);
+    //   secondClient.getSocket().emit("set_client_guest", roomID);
+    // }
   });
 });
 

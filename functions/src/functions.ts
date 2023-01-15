@@ -122,23 +122,18 @@ exports.readyEvent = functions
   })
   .onDispatch(async (data: any, context: any) => {
     let mainRedisClient: RedisClientType | null = null;
-
     let pubRedisClient: RedisClientType | null = null;
-
     let subRedisClient: RedisClientType | null = null;
-
     mainRedisClient = await createRedisClient();
-
     pubRedisClient = await createRedisClient();
     subRedisClient = await createRedisClient();
-
     await mainRedisClient.connect();
     await pubRedisClient.connect();
     await subRedisClient.connect();
 
     const io = await createSocketServer(pubRedisClient, subRedisClient);
 
-    io.emit("message", `readyEvent task!`);
+    io.emit("message", `readyEvent task! socketid: ${data.id}`);
 
     console.log("data", data);
     console.log("context", context);
