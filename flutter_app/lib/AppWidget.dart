@@ -17,7 +17,7 @@ class AppWidget extends StatefulWidget {
 }
 
 class AppWidgetState extends State<AppWidget> {
-  bool _hasShownAlert = false;
+  Set<int> dialogLock = {};
 
   @override
   void dispose() {
@@ -37,6 +37,8 @@ class AppWidgetState extends State<AppWidget> {
   }
 
   void showDialogAlert(int lockID, Widget title, Widget content) {
+    if (dialogLock.contains(lockID) == true) return;
+    dialogLock.add(lockID);
     func() => showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -47,6 +49,7 @@ class AppWidgetState extends State<AppWidget> {
                 TextButton(
                   child: const Text("OK"),
                   onPressed: () {
+                    dialogLock.remove(lockID);
                     Navigator.of(context).pop();
                   },
                 ),
