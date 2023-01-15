@@ -156,6 +156,9 @@ exports.readyEvent = functions
       console.log(roomMsg);
       io.emit("message", roomMsg);
 
+      io.socketsLeave(`room-${otherID}`);
+      io.socketsLeave(`room-${socketID}`);
+
       io.in(socketID).socketsJoin(`room-${otherID}`);
       io.in(otherID).socketsJoin(`room-${socketID}`);
 
