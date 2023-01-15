@@ -4,7 +4,6 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { createClient } from "redis";
 import * as dotenv from "dotenv";
-import { v4 as uuid } from "uuid";
 
 import { initializeApp } from "firebase-admin/app";
 
