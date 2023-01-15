@@ -16,10 +16,7 @@ import { getFunctions } from "firebase-admin/functions";
 
 dotenv.config();
 
-console.log(process.env.FIREBASE_CONFIG);
-
 initializeApp();
-console.log(getFunctions().taskQueue("readyEvent"));
 
 const serverID = uuid();
 
