@@ -10,8 +10,8 @@
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "copy-common": "npx copyfiles -f ../common/react-video-call-common-1.0.0.tgz .",
-    "copy-install": "npm run copy-common && npm install react-video-call-common-1.0.0.tgz",
-    "dev": "nodemon --watch ../common/react-video-call-common-1.0.0.tgz --exec \"npm run copy-install\""
+    "reset-dev": "npm run copy-common && npm install",
+    "dev": "nodemon --config nodemon.json"
   },
   "engines": {
     "node": "16"

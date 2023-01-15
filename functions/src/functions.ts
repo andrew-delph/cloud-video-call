@@ -123,3 +123,19 @@ export const periodicMaintenanceTask = functions.pubsub
 
     functions.logger.info("completed...");
   });
+
+exports.readyEvent = functions
+  .runWith({})
+  .tasks.taskQueue({
+    retryConfig: {
+      maxAttempts: 5,
+      minBackoffSeconds: 60,
+    },
+    rateLimits: {
+      maxConcurrentDispatches: 6,
+    },
+  })
+  .onDispatch(async (data: any, context: any) => {
+    console.log("data", data);
+    console.log("context", context);
+  });
