@@ -4,6 +4,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { createClient } from "redis";
 import * as dotenv from "dotenv";
+import { v4 as uuid } from "uuid";
 
 import { initializeApp } from "firebase-admin/app";
 
@@ -121,6 +122,8 @@ exports.readyEvent = functions
     },
   })
   .onDispatch(async (data: any, context: any) => {
+    const socketID: string = data.id;
+
     let mainRedisClient: RedisClientType | null = null;
     let pubRedisClient: RedisClientType | null = null;
     let subRedisClient: RedisClientType | null = null;
@@ -133,7 +136,40 @@ exports.readyEvent = functions
 
     const io = await createSocketServer(pubRedisClient, subRedisClient);
 
-    io.emit("message", `readyEvent task! socketid: ${data.id}`);
+    const readyNum = await mainRedisClient.sCard(common.readySetName);
+
+    io.emit("message", `${socketID}  is ready! #readyNum ${readyNum}`);
+    await mainRedisClient.sRem(common.readySetName, socketID);
+
+    if (readyNum > 1) {
+      const otherID = (
+        await mainRedisClient.sPop(common.readySetName, 1)
+      ).pop();
+
+      if (otherID == null) {
+        io.emit("message", `otherID is null`);
+        return;
+      }
+
+      const roomID = uuid();
+
+      const roomMsg = `grouping ${socketID} and ${otherID} in room: ${roomID}.`;
+
+      console.log(roomMsg);
+
+      io.emit("message", roomMsg);
+
+      io.in(socketID).socketsJoin(roomID);
+      io.in(otherID).socketsJoin(roomID);
+
+      io.to(roomID).emit("message", `Welcome to ${roomID}`);
+
+      io.in(socketID).emit("message", `you are with ${otherID}`);
+      io.in(otherID).emit("message", `you are with ${socketID}`);
+
+      io.in(socketID).emit("set_client_host", roomID);
+      io.in(otherID).emit("set_client_guest", roomID);
+    }
 
     console.log("data", data);
     console.log("context", context);

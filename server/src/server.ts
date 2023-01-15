@@ -50,6 +50,8 @@ app.get("*", (req, res) => {
 const clients = new Map<String, Client>();
 
 io.on("connection", async (socket) => {
+  // io.in(socket.id).socketsJoin("room1");
+
   clients.set(socket.id, new Client(socket));
 
   console.log(`${socket.id} connected`);
