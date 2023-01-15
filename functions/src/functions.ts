@@ -118,7 +118,7 @@ exports.readyEvent = functions
       minBackoffSeconds: 60,
     },
     rateLimits: {
-      maxConcurrentDispatches: 6,
+      maxConcurrentDispatches: 1,
     },
   })
   .onDispatch(async (data: any, context: any) => {
@@ -139,9 +139,10 @@ exports.readyEvent = functions
     const readyNum = await mainRedisClient.sCard(common.readySetName);
 
     io.emit("message", `${socketID}  is ready! #readyNum ${readyNum}`);
-    await mainRedisClient.sRem(common.readySetName, socketID);
 
-    if (readyNum > 1) {
+    if (readyNum > 2) {
+      await mainRedisClient.sRem(common.readySetName, socketID);
+
       const otherID = (
         await mainRedisClient.sPop(common.readySetName, 1)
       ).pop();

@@ -36,7 +36,7 @@ class AppWidgetState extends State<AppWidget> {
     super.initState();
   }
 
-  void showDialogAlert(Widget title, Widget content) {
+  void showDialogAlert(int lockID, Widget title, Widget content) {
     func() => showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -62,7 +62,7 @@ class AppWidgetState extends State<AppWidget> {
     switch (socketState) {
       case SocketConnectionState.disconnected:
         {
-          showDialogAlert(const Text("Socket Disconnect"),
+          showDialogAlert(1, const Text("Socket Disconnect"),
               Text("Socket Address: ${Factory.getSocketAddress()}"));
         }
         break;
@@ -70,11 +70,11 @@ class AppWidgetState extends State<AppWidget> {
         // TODO: Handle this case.
         break;
       case SocketConnectionState.error:
-        showDialogAlert(const Text("Socket Error"),
+        showDialogAlert(2, const Text("Socket Error"),
             Text("Socket Address: ${Factory.getSocketAddress()}"));
         break;
       case SocketConnectionState.connectionError:
-        showDialogAlert(const Text("Socket Connection Error"),
+        showDialogAlert(3, const Text("Socket Connection Error"),
             Text("Socket Address: ${Factory.getSocketAddress()}"));
         break;
     }
