@@ -87,30 +87,15 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("client_host", (value) => {
-    const myClient = clients.get(socket.id);
-    if (!myClient) return;
-    const theRoom = myClient.getRoomId();
-    if (!theRoom) return;
-
-    socket.to(theRoom).emit("client_guest", value);
+    socket.to(`room-${socket.id}`).emit("client_guest", value);
   });
 
   socket.on("client_guest", (value) => {
-    const myClient = clients.get(socket.id);
-    if (!myClient) return;
-    const theRoom = myClient.getRoomId();
-    if (!theRoom) return;
-
-    socket.to(theRoom).emit("client_host", value);
+    socket.to(`room-${socket.id}`).emit("client_host", value);
   });
 
   socket.on("icecandidate", (value) => {
-    const myClient = clients.get(socket.id);
-    if (!myClient) return;
-    const theRoom = myClient.getRoomId();
-    if (!theRoom) return;
-
-    socket.to(theRoom).emit("icecandidate", value);
+    socket.to(`room-${socket.id}`).emit("icecandidate", value);
   });
 
   socket.on("ready", async () => {

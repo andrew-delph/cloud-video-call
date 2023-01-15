@@ -159,11 +159,11 @@ class AppProvider extends ChangeNotifier {
     // END collect the streams/tracks from remote
 
     socket!.on("set_client_host", (value) async {
-      await setClientHost(value);
+      await setClientHost();
     });
 
     socket!.on("set_client_guest", (value) async {
-      await setClientGuest(value);
+      await setClientGuest();
     });
 
     // START HANDLE ICE CANDIDATES
@@ -189,7 +189,7 @@ class AppProvider extends ChangeNotifier {
     socket!.emit("ready");
   }
 
-  Future<void> setClientHost(value) async {
+  Future<void> setClientHost() async {
     print("you are the host");
 
     RTCSessionDescription offerDescription =
@@ -214,7 +214,7 @@ class AppProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> setClientGuest(value) async {
+  Future<void> setClientGuest() async {
     print("you are the guest");
 
     socket!.on("client_guest", (data) async {

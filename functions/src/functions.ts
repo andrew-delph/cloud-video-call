@@ -140,7 +140,7 @@ exports.readyEvent = functions
 
     io.emit("message", `${socketID}  is ready! #readyNum ${readyNum}`);
 
-    if (readyNum > 2) {
+    if (readyNum >= 2) {
       await mainRedisClient.sRem(common.readySetName, socketID);
 
       const otherID = (
@@ -152,24 +152,19 @@ exports.readyEvent = functions
         return;
       }
 
-      const roomID = uuid();
-
-      const roomMsg = `grouping ${socketID} and ${otherID} in room: ${roomID}.`;
+      const roomMsg = `grouping ${socketID} and ${otherID}.`;
 
       console.log(roomMsg);
-
       io.emit("message", roomMsg);
 
-      io.in(socketID).socketsJoin(roomID);
-      io.in(otherID).socketsJoin(roomID);
-
-      io.to(roomID).emit("message", `Welcome to ${roomID}`);
+      io.in(socketID).socketsJoin(`room-${otherID}`);
+      io.in(otherID).socketsJoin(`room-${socketID}`);
 
       io.in(socketID).emit("message", `you are with ${otherID}`);
       io.in(otherID).emit("message", `you are with ${socketID}`);
 
-      io.in(socketID).emit("set_client_host", roomID);
-      io.in(otherID).emit("set_client_guest", roomID);
+      io.in(socketID).emit("set_client_host");
+      io.in(otherID).emit("set_client_guest");
     }
 
     console.log("data", data);
