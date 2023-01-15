@@ -10,7 +10,16 @@ import { DistinctPriorityQueue } from "./DistinctPriorityQueue";
 // import { RedisAdapter } from "@socket.io/redis-adapter";
 import * as common from "react-video-call-common";
 
+import { initializeApp } from "firebase-admin/app";
+// import { getFirestore } from "firebase-admin/firestore";
+import { getFunctions } from "firebase-admin/functions";
+
 dotenv.config();
+
+console.log(process.env.FIREBASE_CONFIG);
+
+initializeApp();
+console.log(getFunctions().taskQueue("readyEvent"));
 
 const serverID = uuid();
 
@@ -105,7 +114,12 @@ io.on("connection", async (socket) => {
     socket.to(theRoom).emit("icecandidate", value);
   });
 
-  socket.on("ready", () => {
+  socket.on("ready", async () => {
+    console.log("ready!");
+    const x = await getFunctions()
+      .taskQueue("readyEvent")
+      .enqueue({ test: "test msg" });
+    console.log("x", x);
     pubClient.sAdd(common.readySetName, socket.id);
     readyQueue.add(socket.id);
     io.emit(
