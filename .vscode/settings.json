@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["predeploy", "pubspec"]
+  "cSpell.words": ["predeploy", "pubspec"],
+  "search.useIgnoreFiles": false
 }
