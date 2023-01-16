@@ -4,75 +4,52 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { createClient } from "redis";
 import * as dotenv from "dotenv";
-
 import { initializeApp } from "firebase-admin/app";
-
 import { getFirestore } from "firebase-admin/firestore";
-
 import * as common from "react-video-call-common";
 
-initializeApp();
-
-const db = getFirestore();
-
 dotenv.config();
+initializeApp();
+const db = getFirestore();
 
 type RedisClientType = ReturnType<typeof createClient>;
 
-const redisClientList: RedisClientType[] = [];
-
-async function createRedisClient(): Promise<RedisClientType> {
+function createRedisClient(): RedisClientType {
   const redisClient = createClient({
     url: `redis://${functions.config().redis.user}:${
       functions.config().redis.pass
     }@redis-19534.c1.us-east1-2.gce.cloud.redislabs.com:19534`,
     name: "functions",
   });
-
   redisClient.on("error", function (error) {
     console.error(error);
   });
-
-  redisClientList.push(redisClient);
-
   return redisClient;
 }
 
-async function createSocketServer(
-  pubRedisClient: RedisClientType,
-  subRedisClient: RedisClientType
-) {
-  const httpServer = createServer();
-  const io = new Server(httpServer, {});
+let mainRedisClient: RedisClientType = createRedisClient();
+let pubRedisClient: RedisClientType = createRedisClient();
+let subRedisClient: RedisClientType = createRedisClient();
+const httpServer = createServer();
+const io = new Server(httpServer, {});
 
+const init = Promise.all([
+  mainRedisClient.connect(),
+  mainRedisClient.connect(),
+  subRedisClient.connect(),
+]).then(async () => {
   io.adapter(
     createAdapter(pubRedisClient, subRedisClient, {
       requestsTimeout: 20000,
     })
   );
-
-  return io;
-}
+  return;
+});
 
 export const periodicMaintenanceTask = functions.pubsub
   .schedule("every minute")
   .onRun(async (context) => {
-    let mainRedisClient: RedisClientType | null = null;
-
-    let pubRedisClient: RedisClientType | null = null;
-
-    let subRedisClient: RedisClientType | null = null;
-
-    mainRedisClient = await createRedisClient();
-
-    pubRedisClient = await createRedisClient();
-    subRedisClient = await createRedisClient();
-
-    await mainRedisClient.connect();
-    await pubRedisClient.connect();
-    await subRedisClient.connect();
-
-    const io = await createSocketServer(pubRedisClient, subRedisClient);
+    await init;
 
     const connectedSockets = await io.fetchSockets();
 
@@ -122,19 +99,9 @@ exports.readyEvent = functions
     },
   })
   .onDispatch(async (data: any, context: any) => {
+    await init;
+
     const socketID: string = data.id;
-
-    let mainRedisClient: RedisClientType | null = null;
-    let pubRedisClient: RedisClientType | null = null;
-    let subRedisClient: RedisClientType | null = null;
-    mainRedisClient = await createRedisClient();
-    pubRedisClient = await createRedisClient();
-    subRedisClient = await createRedisClient();
-    await mainRedisClient.connect();
-    await pubRedisClient.connect();
-    await subRedisClient.connect();
-
-    const io = await createSocketServer(pubRedisClient, subRedisClient);
 
     const readyNum = await mainRedisClient.sCard(common.readySetName);
 
