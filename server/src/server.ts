@@ -6,7 +6,6 @@ import { createClient } from "redis";
 import { Server } from "socket.io";
 import { v4 as uuid } from "uuid";
 import { Client } from "./Client";
-import { DistinctPriorityQueue } from "./DistinctPriorityQueue";
 // import { RedisAdapter } from "@socket.io/redis-adapter";
 import * as common from "react-video-call-common";
 
