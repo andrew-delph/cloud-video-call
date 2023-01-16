@@ -8,11 +8,6 @@ on:
       - "server/**"
       - ".github/workflows/deploy-server.yml"
 
-env:
-  PROJECT_ID: YOUR_PROJECT_ID # TODO: update Google Cloud project id
-  SERVICE: YOUR_SERVICE_NAME # TODO: update Cloud Run service name
-  REGION: YOUR_SERVICE_REGION # TODO: update Cloud Run service region
-
 jobs:
   deploy:
     # Add 'id-token' with the intended permissions for workload identity federation
@@ -38,7 +33,7 @@ jobs:
           service: react-video-call
           region: us-central1
           # NOTE: If required, update to the appropriate source folder
-          source: ./server/
+          source: ./
 
       # If required, use the Cloud Run url output in later steps
       - name: Show Output
