@@ -56,7 +56,7 @@ io.on("connection", async (socket) => {
 
   pubClient.sAdd(common.activeSetName, socket.id);
 
-  io.emit("message", "everyone welcome " + socket.id);
+  io.emit("message", "Everyone welcome " + socket.id);
 
   socket.emit(
     "message",
