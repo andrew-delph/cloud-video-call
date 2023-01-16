@@ -26,6 +26,7 @@ async function createRedisClient(): Promise<RedisClientType> {
     url: `redis://${functions.config().redis.user}:${
       functions.config().redis.pass
     }@redis-19534.c1.us-east1-2.gce.cloud.redislabs.com:19534`,
+    name: "functions",
   });
 
   redisClient.on("error", function (error) {

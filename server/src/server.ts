@@ -32,6 +32,7 @@ const io = new Server(httpServer, {
 
 const pubClient = createClient({
   url: `redis://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@redis-19534.c1.us-east1-2.gce.cloud.redislabs.com:19534`,
+  name: "socket-server",
 });
 
 pubClient.on("error", function (error) {
