@@ -35,7 +35,7 @@ const io = new Server(httpServer, {});
 
 const init = Promise.all([
   mainRedisClient.connect(),
-  mainRedisClient.connect(),
+  pubRedisClient.connect(),
   subRedisClient.connect(),
 ]).then(async () => {
   io.adapter(
