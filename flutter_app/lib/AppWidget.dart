@@ -61,24 +61,36 @@ class AppWidgetState extends State<AppWidget> {
     Future.microtask(func);
   }
 
-  void handleSocketStateChange(SocketConnectionState socketState) {
+  void handleSocketStateChange(
+      SocketConnectionState socketState, dynamic details) {
+    var content = IntrinsicHeight(
+      child: Column(
+        children: [
+          Text("Socket Address: ${Factory.getSocketAddress()}"),
+          const Text(""),
+          Text(
+              style: const TextStyle(
+                color: Colors.red,
+              ),
+              details.toString()),
+        ],
+      ),
+    );
+
     switch (socketState) {
       case SocketConnectionState.disconnected:
         {
-          showDialogAlert(1, const Text("Socket Disconnect"),
-              Text("Socket Address: ${Factory.getSocketAddress()}"));
+          showDialogAlert(1, const Text("Socket Disconnect"), content);
         }
         break;
       case SocketConnectionState.connected:
         // TODO: Handle this case.
         break;
       case SocketConnectionState.error:
-        showDialogAlert(2, const Text("Socket Error"),
-            Text("Socket Address: ${Factory.getSocketAddress()}"));
+        showDialogAlert(2, const Text("Socket Error"), content);
         break;
       case SocketConnectionState.connectionError:
-        showDialogAlert(3, const Text("Socket Connection Error"),
-            Text("Socket Address: ${Factory.getSocketAddress()}"));
+        showDialogAlert(3, const Text("Socket Connection Error"), content);
         break;
     }
   }

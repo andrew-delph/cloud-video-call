@@ -22,7 +22,7 @@ class AppProvider extends ChangeNotifier {
 
   io.Socket? socket;
 
-  Function(SocketConnectionState)? onSocketStateChange;
+  Function(SocketConnectionState, dynamic)? onSocketStateChange;
   Function(RTCPeerConnectionState)? onPeerConnectionStateChange;
 
   @override
@@ -35,15 +35,16 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> init(
-      {Function(SocketConnectionState)? onSocketStateChange,
+      {Function(SocketConnectionState, dynamic)? onSocketStateChange,
       Function(RTCPeerConnectionState)? onPeerConnectionStateChange}) async {
     this.onSocketStateChange = onSocketStateChange;
     this.onPeerConnectionStateChange = onPeerConnectionStateChange;
     socket ?? initSocket();
   }
 
-  void handleSocketStateChange(SocketConnectionState socketState) {
-    if (onSocketStateChange != null) onSocketStateChange!(socketState);
+  void handleSocketStateChange(
+      SocketConnectionState socketState, dynamic details) {
+    if (onSocketStateChange != null) onSocketStateChange!(socketState, details);
   }
 
   void handlePeerConnectionStateChange(
@@ -66,27 +67,23 @@ class AppProvider extends ChangeNotifier {
 
     socket!.emit("message", "I am a client");
 
-    socket!.onConnectError((_) {
+    socket!.onConnectError((details) {
       print('connectError');
-      handleSocketStateChange(SocketConnectionState.connectionError);
+      handleSocketStateChange(SocketConnectionState.connectionError, details);
       notifyListeners();
     });
 
     socket!.onConnect((_) {
-      print('connect');
-      socket!.emit('message', 'test flutter');
+      socket!.emit('message', 'from flutter app connected');
       notifyListeners();
     });
     socket!.on('message', (data) => print(data));
-    socket!.onDisconnect((_) {
-      print('disconnect');
-      handleSocketStateChange(SocketConnectionState.disconnected);
+    socket!.onDisconnect((details) {
+      handleSocketStateChange(SocketConnectionState.disconnected, details);
       notifyListeners();
     });
-    socket!.onError((data) {
-      print("error: " + data.toString());
-
-      handleSocketStateChange(SocketConnectionState.error);
+    socket!.onError((details) {
+      handleSocketStateChange(SocketConnectionState.error, details);
 
       notifyListeners();
     });
