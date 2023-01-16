@@ -37,14 +37,18 @@ const init = Promise.all([
   mainRedisClient.connect(),
   pubRedisClient.connect(),
   subRedisClient.connect(),
-]).then(async () => {
-  io.adapter(
-    createAdapter(pubRedisClient, subRedisClient, {
-      requestsTimeout: 20000,
-    })
-  );
-  return;
-});
+])
+  .then(async () => {
+    io.adapter(
+      createAdapter(pubRedisClient, subRedisClient, {
+        requestsTimeout: 20000,
+      })
+    );
+    return;
+  })
+  .then(() => {
+    console.log("loaded init");
+  });
 
 export const periodicMaintenanceTask = functions.pubsub
   .schedule("every minute")
