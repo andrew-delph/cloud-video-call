@@ -67,6 +67,9 @@ class AppProvider extends ChangeNotifier {
 
     socket!.emit("message", "I am a client");
 
+    socket!
+        .emitWithAck("myping", "I am a client", ack: () => print("ping ack"));
+
     socket!.onConnectError((details) {
       print('connectError');
       handleSocketStateChange(SocketConnectionState.connectionError, details);

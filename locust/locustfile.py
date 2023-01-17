@@ -120,7 +120,7 @@ class SocketIOTasks(TaskSet):
 
         while ready_event[0] == False:
             if time.time() - start_time > 15:
-                print("Time limit exceeded")
+                print("Ready Time limit exceeded")
                 break
             time.sleep(1)
 
@@ -137,10 +137,40 @@ class SocketIOTasks(TaskSet):
                 context=None,
             )
 
-    # @task
-    # def finish(self):
-    #     print("finish")
-    #     self.interrupt()
+    @task
+    def ping(self):
+        print("ping")
+        ping_event = [False]
+
+        def ping_callback(ping_event, start_time):
+            ping_event[0] = True
+            events.request.fire(
+                request_type="socketio",
+                name="ping",
+                response_time=time.time() - start_time,
+                response_length=0,
+                exception=None,
+                context=None,
+            )
+
+        start_time = time.time()
+        self.sio.emit("myping", callback=lambda: ping_callback(ping_event, start_time))
+
+        while ping_event[0] == False:
+            if time.time() - start_time > 15:
+                print("Ping Time limit exceeded")
+                break
+            time.sleep(1)
+
+        if ping_event[0] == False:
+            events.request.fire(
+                request_type="socketio",
+                name="ping",
+                response_time=None,
+                response_length=0,
+                exception="not ping event received",
+                context=None,
+            )
 
 
 class SocketIOUser(User):

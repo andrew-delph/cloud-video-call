@@ -47,7 +47,9 @@ app.get("*", (req, res) => {
 const clients = new Map<String, Client>();
 
 io.on("connection", async (socket) => {
-  // io.in(socket.id).socketsJoin("room1");
+  socket.on("myping", (arg, callback) => {
+    if (callback != null) callback();
+  });
 
   clients.set(socket.id, new Client(socket));
 
