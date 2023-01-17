@@ -27,10 +27,9 @@ class SocketIOTasks(TaskSet):
         self.sio.connect(self.user.host, transports=["websocket"])
 
     def disconnect(self):
+        print("disconnect.")
         if self.sio.connected:
             self.sio.disconnect()
-        self.interrupt()
-        print("disconnected.")
 
     def on_connect(self):
         print("on_connect")
@@ -92,13 +91,18 @@ class SocketIOTasks(TaskSet):
 
     @task
     def sleep(self):
-        # print("sleeping")
-        time.sleep(5)
+        # print("sleep")
+        time.sleep(1)
 
     @task
     def ready(self):
         # print("ready")
         time.sleep(5)
+
+    # @task
+    # def finish(self):
+    #     print("finish")
+    #     self.interrupt()
 
 
 class SocketIOUser(User):
