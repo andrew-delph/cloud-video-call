@@ -117,13 +117,21 @@ class SocketIOTasks(TaskSet):
         self.sio.on("set_client_host", lambda: ready_callback(ready_event, start_time))
 
         self.sio.emit("ready")
-        time.sleep(15)
+
+        while ready_event[0] == False:
+            if time.time() - start_time > 15:
+                print("Time limit exceeded")
+                break
+            time.sleep(1)
+
+        self.sio.on("set_client_guest", lambda: None)
+        self.sio.on("set_client_host", lambda: None)
 
         if ready_event[0] == False:
             events.request.fire(
                 request_type="socketio",
                 name="ready",
-                response_time=time.time() - start_time,
+                response_time=None,
                 response_length=0,
                 exception="not ready event received",
                 context=None,
