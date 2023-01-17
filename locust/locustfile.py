@@ -31,7 +31,8 @@ class SocketIOTasks(TaskSet):
         print("disconnected.")
 
     def on_connect(self):
-        events.request_success.fire(
+        print("on_connect")
+        events.request.fire(
             request_type="socketio",
             name="connection",
             response_time=time.time() - self.connection_start,
@@ -41,7 +42,7 @@ class SocketIOTasks(TaskSet):
         )
 
     def on_connect_error(self, data):
-        print("The connection failed!")
+        print("connect_error: " + data)
         events.request.fire(
             request_type="socketio",
             name="connection",
@@ -64,7 +65,7 @@ class SocketIOTasks(TaskSet):
         )
 
     def on_error(self, data):
-        events.request_failure.fire(
+        events.request.fire(
             request_type="socketio",
             name="error",
             response_time=1,
