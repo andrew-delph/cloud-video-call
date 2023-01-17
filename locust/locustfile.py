@@ -28,6 +28,7 @@ class SocketIOTasks(TaskSet):
 
     def disconnect(self):
         print("disconnect.")
+        # NOTE we can turn off the disconnect handle here to not report the disconnection
         if self.sio.connected:
             self.sio.disconnect()
 
@@ -68,14 +69,14 @@ class SocketIOTasks(TaskSet):
 
     def on_message(self, data):
         print("got msg: " + data)
-        events.request.fire(
-            request_type="socketio",
-            name="message",
-            response_time=1,
-            response_length=0,
-            context=None,
-            exception=None,
-        )
+        # events.request.fire(
+        #     request_type="socketio",
+        #     name="message",
+        #     response_time=1,
+        #     response_length=0,
+        #     context=None,
+        #     exception=None,
+        # )
 
     def on_error(self, data):
         print("on_error")
@@ -96,8 +97,37 @@ class SocketIOTasks(TaskSet):
 
     @task
     def ready(self):
-        # print("ready")
-        time.sleep(5)
+        print("ready")
+        start_time = time.time()
+
+        ready_event = [False]
+
+        def ready_callback(ready_event, start_time):
+            ready_event[0] = True
+            events.request.fire(
+                request_type="socketio",
+                name="ready",
+                response_time=time.time() - start_time,
+                response_length=0,
+                exception=None,
+                context=None,
+            )
+
+        self.sio.on("set_client_guest", lambda: ready_callback(ready_event, start_time))
+        self.sio.on("set_client_host", lambda: ready_callback(ready_event, start_time))
+
+        self.sio.emit("ready")
+        time.sleep(15)
+
+        if ready_event[0] == False:
+            events.request.fire(
+                request_type="socketio",
+                name="ready",
+                response_time=time.time() - start_time,
+                response_length=0,
+                exception="not ready event received",
+                context=None,
+            )
 
     # @task
     # def finish(self):
