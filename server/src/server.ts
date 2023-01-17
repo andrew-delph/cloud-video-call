@@ -48,7 +48,11 @@ const clients = new Map<String, Client>();
 
 io.on("connection", async (socket) => {
   socket.on("myping", (arg, callback) => {
-    if (callback != null) callback();
+    try {
+      callback();
+    } catch (e) {
+      console.error(e);
+    }
   });
 
   clients.set(socket.id, new Client(socket));

@@ -13,7 +13,7 @@ class SocketIOTasks(TaskSet):
         self.sio = socketio.Client(reconnection=False)
         self.sio.on("connect", self.on_connect)
         self.sio.on("connect_error", self.on_connect_error)
-        self.sio.on("message", self.on_message)
+        # self.sio.on("message", self.on_message)
         self.sio.on("error", self.on_error)
         self.sio.on("disconnect", self.on_disconnect)
         self.connect()
@@ -154,7 +154,7 @@ class SocketIOTasks(TaskSet):
             )
 
         start_time = time.time()
-        self.sio.emit("myping", callback=lambda: ping_callback(ping_event, start_time))
+        self.sio.emit("myping","I am a locust.", callback=lambda: ping_callback(ping_event, start_time))
 
         while ping_event[0] == False:
             if time.time() - start_time > 15:
