@@ -92,8 +92,7 @@ class SocketIOTasks(TaskSet):
 
     @task
     def sleep(self):
-        # print("sleep")
-        time.sleep(1)
+        time.sleep(5)
 
     @task
     def ready(self):
