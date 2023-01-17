@@ -15,6 +15,7 @@ class SocketIOTasks(TaskSet):
         self.sio.on("connect_error", self.on_connect_error)
         self.sio.on("message", self.on_message)
         self.sio.on("error", self.on_error)
+        self.sio.on("disconnect", self.on_disconnect)
         self.connect()
 
     def on_stop(self, env=None):
@@ -26,8 +27,9 @@ class SocketIOTasks(TaskSet):
         self.sio.connect(self.user.host, transports=["websocket"])
 
     def disconnect(self):
-        self.sio.disconnect()
-        self.interrupt(False)
+        if self.sio.connected:
+            self.sio.disconnect()
+        self.interrupt()
         print("disconnected.")
 
     def on_connect(self):
@@ -42,7 +44,7 @@ class SocketIOTasks(TaskSet):
         )
 
     def on_connect_error(self, data):
-        print("connect_error: " + data)
+        print("on_connect_error: " + data)
         events.request.fire(
             request_type="socketio",
             name="connection",
@@ -51,7 +53,19 @@ class SocketIOTasks(TaskSet):
             exception="connection failed",
             context=None,
         )
-        self.interrupt(False)
+        self.interrupt()
+
+    def on_disconnect(self):
+        print("on_disconnect.")
+        events.request.fire(
+            request_type="socketio",
+            name="on_disconnect",
+            response_time=time.time() - self.connection_start,
+            response_length=0,
+            exception="on_disconnect",
+            context=None,
+        )
+        self.interrupt()
 
     def on_message(self, data):
         print("got msg: " + data)
@@ -65,6 +79,7 @@ class SocketIOTasks(TaskSet):
         )
 
     def on_error(self, data):
+        print("on_error")
         events.request.fire(
             request_type="socketio",
             name="error",
@@ -77,12 +92,12 @@ class SocketIOTasks(TaskSet):
 
     @task
     def sleep(self):
-        print("sleeping")
+        # print("sleeping")
         time.sleep(5)
 
     @task
     def ready(self):
-        print("ready")
+        # print("ready")
         time.sleep(5)
 
 
