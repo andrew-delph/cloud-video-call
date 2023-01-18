@@ -62,8 +62,6 @@ export const periodicMaintenanceTask = functions.pubsub
     );
     const connectedNum = connectedSockets.length;
 
-    console.log("active ids: ", connectedSocketsIdList);
-
     if (connectedSocketsIdList.length > 0) {
       // update activeSet start
       await mainRedisClient.del("temp_activeSet");
@@ -79,8 +77,6 @@ export const periodicMaintenanceTask = functions.pubsub
       await mainRedisClient.del("temp_activeSet");
       // update activeSet end
     }
-
-    io.emit("message", `users connected: ${connectedNum}`);
 
     const docRef = db.collection("users").doc("count");
 
@@ -109,8 +105,6 @@ exports.readyEvent = functions
 
     const readyNum = await mainRedisClient.sCard(common.readySetName);
 
-    io.emit("message", `${socketID}  is ready! #readyNum ${readyNum}`);
-
     if (readyNum >= 2) {
       await mainRedisClient.sRem(common.readySetName, socketID);
 
@@ -119,14 +113,13 @@ exports.readyEvent = functions
       ).pop();
 
       if (otherID == null) {
-        io.emit("message", `otherID is null`);
+        console.error(`otherID is null`);
         return;
       }
 
       const roomMsg = `grouping ${socketID} and ${otherID}.`;
 
       console.log(roomMsg);
-      io.emit("message", roomMsg);
 
       io.socketsLeave(`room-${otherID}`);
       io.socketsLeave(`room-${socketID}`);
@@ -140,7 +133,4 @@ exports.readyEvent = functions
       io.in(socketID).emit("set_client_host");
       io.in(otherID).emit("set_client_guest");
     }
-
-    console.log("data", data);
-    console.log("context", context);
   });
