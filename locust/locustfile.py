@@ -30,6 +30,7 @@ class SocketIOTasks(TaskSet):
         print("disconnect.")
         # NOTE we can turn off the disconnect handle here to not report the disconnection
         if self.sio.connected:
+            self.sio.on("disconnect", lambda: None)
             self.sio.disconnect()
 
     def on_connect(self):
