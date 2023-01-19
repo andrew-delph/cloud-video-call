@@ -15,6 +15,8 @@ export SERVICE_ACCOUNT=dist-locust-svc-acc
 export LOCUST_IMAGE_NAME=locust-tasks
 export LOCUST_IMAGE_TAG=latest
 
+export APP_TARGET=wss://react-video-call-fjutjsrlaa-uc.a.run.app
+
 gcloud config set compute/zone ${ZONE}
 
 
