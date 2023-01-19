@@ -105,9 +105,6 @@ exports.readyEvent = functions
       maxAttempts: 5,
       minBackoffSeconds: 5,
     },
-    rateLimits: {
-      maxConcurrentDispatches: 1,
-    },
   })
   .onDispatch(async (data: any, context: any) => {
     await init;
