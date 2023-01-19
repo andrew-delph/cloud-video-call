@@ -8,6 +8,8 @@ class SocketIOTasks(TaskSet):
 
     connection_start = None
 
+    manual_disconnect = False
+
     def on_start(self):
         self.sio = socketio.Client(reconnection=False)
         self.sio.on("connect", self.on_connect)
@@ -15,6 +17,7 @@ class SocketIOTasks(TaskSet):
         # self.sio.on("message", self.on_message)
         self.sio.on("error", self.on_error)
         self.sio.on("disconnect", self.on_disconnect)
+        self.manual_disconnect = False
         self.connect()
 
     def on_stop(self, env=None):
@@ -26,8 +29,8 @@ class SocketIOTasks(TaskSet):
 
     def disconnect(self):
         # NOTE we can turn off the disconnect handle here to not report the disconnection
+        self.manual_disconnect = True
         if self.sio.connected:
-            self.sio.on("disconnect", lambda: None)
             self.sio.disconnect()
 
     def on_connect(self):
@@ -52,15 +55,16 @@ class SocketIOTasks(TaskSet):
         self.interrupt()
 
     def on_disconnect(self):
-        events.request.fire(
-            request_type="socketio",
-            name="on_disconnect",
-            response_time=time.time() - self.connection_start,
-            response_length=0,
-            exception="on_disconnect",
-            context=None,
-        )
-        self.interrupt()
+        if self.manual_disconnect == False:
+            events.request.fire(
+                request_type="socketio",
+                name="on_disconnect",
+                response_time=time.time() - self.connection_start,
+                response_length=0,
+                exception="on_disconnect",
+                context=None,
+            )
+            self.interrupt()
 
     def on_message(self, data):
         pass
