@@ -103,7 +103,7 @@ exports.readyEvent = functions
   .tasks.taskQueue({
     retryConfig: {
       maxAttempts: 5,
-      minBackoffSeconds: 60,
+      minBackoffSeconds: 5,
     },
     rateLimits: {
       maxConcurrentDispatches: 1,
@@ -113,8 +113,6 @@ exports.readyEvent = functions
     await init;
 
     const socketId: string = data.id;
-
-    // const readyNum = await mainRedisClient.sCard(common.readySetName);
 
     const randomMembers = (
       await mainRedisClient.sRandMemberCount(common.readySetName, 2)
