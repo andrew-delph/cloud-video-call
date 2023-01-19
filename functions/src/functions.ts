@@ -8,6 +8,7 @@ import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import * as common from "react-video-call-common";
 import Redlock from "redlock";
+import { Redis } from "ioredis";
 
 dotenv.config();
 initializeApp();
@@ -31,8 +32,14 @@ function createRedisClient(): RedisClientType {
 const mainRedisClient: RedisClientType = createRedisClient();
 const pubRedisClient: RedisClientType = createRedisClient();
 const subRedisClient: RedisClientType = createRedisClient();
+const lockRedisClient = new Redis({
+  port: 19534,
+  host: "redis-19534.c1.us-east1-2.gce.cloud.redislabs.com",
+  username: functions.config().redis.user,
+  password: functions.config().redis.pass,
+});
 
-const redlock = new Redlock([mainRedisClient]);
+const redlock = new Redlock([lockRedisClient]);
 
 const httpServer = createServer();
 const io = new Server(httpServer, {});
