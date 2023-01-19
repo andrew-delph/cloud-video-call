@@ -112,13 +112,6 @@ exports.readyEvent = functions
   .onDispatch(async (data: any, context: any) => {
     await init;
 
-    // let lock = await redlock.acquire(["a"], 5000);
-
-    // console.log("lock", lock);
-    // console.log("lock.value", lock.value);
-
-    // await lock.release();
-
     const socketId: string = data.id;
 
     // const readyNum = await mainRedisClient.sCard(common.readySetName);
