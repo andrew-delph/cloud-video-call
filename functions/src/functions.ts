@@ -127,7 +127,21 @@ exports.readyEvent = functions
       return;
     }
 
+    const randomNums = await mainRedisClient.sRandMemberCount(
+      common.readySetName,
+      2
+    );
+
+    console.log("random num", randomNums);
+
     await mainRedisClient.sRem(common.readySetName, socketID);
+
+    const randomNums2 = await mainRedisClient.sRandMemberCount(
+      common.readySetName,
+      2
+    );
+
+    console.log("randomNums2", randomNums2);
 
     const otherID = (await mainRedisClient.sPop(common.readySetName, 1)).pop();
 
