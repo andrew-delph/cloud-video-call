@@ -3,12 +3,21 @@ import json
 from locust import task, User, events, TaskSet
 import socketio
 
+from threading import Timer
+
+class RepeatTimer(Timer):
+    def run(self):
+        while not self.finished.wait(self.interval):
+            self.function(*self.args, **self.kwargs)
+
 
 class SocketIOTasks(TaskSet):
 
     connection_start = None
 
     manual_disconnect = False
+
+    connected_rps_task = None
 
     def on_start(self):
         self.sio = socketio.Client(reconnection=False)
@@ -19,6 +28,17 @@ class SocketIOTasks(TaskSet):
         self.sio.on("disconnect", self.on_disconnect)
         self.manual_disconnect = False
         self.connect()
+
+    
+    def connected_rps_interval(self):
+        events.request.fire(
+            request_type="socketio",
+            name="connected_rps",
+            response_time=0,
+            response_length=0,
+            exception=None,
+            context=None,
+        )
 
     def on_stop(self, env=None):
         self.disconnect()
@@ -42,6 +62,9 @@ class SocketIOTasks(TaskSet):
             exception=None,
             context=None,
         )
+        self.connected_rps_task = RepeatTimer(1, self.connected_rps_interval)
+        self.connected_rps_task.start()
+
 
     def on_connect_error(self, data):
         events.request.fire(
@@ -55,6 +78,7 @@ class SocketIOTasks(TaskSet):
         self.interrupt()
 
     def on_disconnect(self):
+        self.connected_rps_task.cancel()
         if self.manual_disconnect == False:
             events.request.fire(
                 request_type="socketio",
