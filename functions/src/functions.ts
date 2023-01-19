@@ -112,57 +112,51 @@ exports.readyEvent = functions
   .onDispatch(async (data: any, context: any) => {
     await init;
 
-    let lock = await redlock.acquire(["a"], 5000);
+    // let lock = await redlock.acquire(["a"], 5000);
 
-    console.log("lock", lock);
-    console.log("lock.value", lock.value);
+    // console.log("lock", lock);
+    // console.log("lock.value", lock.value);
 
-    await lock.release();
+    // await lock.release();
 
     const socketID: string = data.id;
 
-    const readyNum = await mainRedisClient.sCard(common.readySetName);
+    // const readyNum = await mainRedisClient.sCard(common.readySetName);
 
-    if (readyNum < 2) {
-      return;
-    }
+    const randomMembers = (
+      await mainRedisClient.sRandMemberCount(common.readySetName, 2)
+    ).filter((val) => val != socketID);
 
-    const randomNums = await mainRedisClient.sRandMemberCount(
-      common.readySetName,
-      2
-    );
-
-    console.log("random num", randomNums);
-
-    await mainRedisClient.sRem(common.readySetName, socketID);
-
-    const randomNums2 = await mainRedisClient.sRandMemberCount(
-      common.readySetName,
-      2
-    );
-
-    console.log("randomNums2", randomNums2);
-
-    const otherID = (await mainRedisClient.sPop(common.readySetName, 1)).pop();
+    const otherID = randomMembers.pop();
 
     if (otherID == null) {
       console.error(`otherID is null`);
       return;
     }
 
-    const roomMsg = `grouping ${socketID} and ${otherID}.`;
+    redlock.using(
+      [socketID, otherID],
+      5000,
+      { retryCount: 5 },
+      async (signal) => {
+        const roomMsg = `locked ${socketID} and ${otherID}.`;
 
-    console.log(roomMsg);
+        console.log(roomMsg);
 
-    io.socketsLeave(`room-${otherID}`);
-    io.socketsLeave(`room-${socketID}`);
+        io.socketsLeave(`room-${otherID}`);
+        io.socketsLeave(`room-${socketID}`);
 
-    io.in(socketID).socketsJoin(`room-${otherID}`);
-    io.in(otherID).socketsJoin(`room-${socketID}`);
+        io.in(socketID).socketsJoin(`room-${otherID}`);
+        io.in(otherID).socketsJoin(`room-${socketID}`);
 
-    io.in(socketID).emit("message", `you are with ${otherID}`);
-    io.in(otherID).emit("message", `you are with ${socketID}`);
+        io.in(socketID).emit("message", `you are with ${otherID}`);
+        io.in(otherID).emit("message", `you are with ${socketID}`);
 
-    io.in(socketID).emit("set_client_host");
-    io.in(otherID).emit("set_client_guest");
+        io.in(socketID).emit("set_client_host");
+        io.in(otherID).emit("set_client_guest");
+
+        await mainRedisClient.sRem(common.readySetName, socketID);
+        await mainRedisClient.sRem(common.readySetName, otherID);
+      }
+    );
   });
