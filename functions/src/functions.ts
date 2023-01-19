@@ -112,43 +112,43 @@ exports.readyEvent = functions
   .onDispatch(async (data: any, context: any) => {
     await init;
 
-    let lock = await redlock.acquire(["a"], 5000);
+    // let lock = await redlock.acquire(["a"], 5000);
 
-    console.log("lock", lock);
-    console.log("lock.value", lock.value);
+    // console.log("lock", lock);
+    // console.log("lock.value", lock.value);
 
-    await lock.release();
+    // await lock.release();
 
     const socketID: string = data.id;
 
     const readyNum = await mainRedisClient.sCard(common.readySetName);
 
-    if (readyNum >= 2) {
-      await mainRedisClient.sRem(common.readySetName, socketID);
-
-      const otherID = (
-        await mainRedisClient.sPop(common.readySetName, 1)
-      ).pop();
-
-      if (otherID == null) {
-        console.error(`otherID is null`);
-        return;
-      }
-
-      const roomMsg = `grouping ${socketID} and ${otherID}.`;
-
-      console.log(roomMsg);
-
-      io.socketsLeave(`room-${otherID}`);
-      io.socketsLeave(`room-${socketID}`);
-
-      io.in(socketID).socketsJoin(`room-${otherID}`);
-      io.in(otherID).socketsJoin(`room-${socketID}`);
-
-      io.in(socketID).emit("message", `you are with ${otherID}`);
-      io.in(otherID).emit("message", `you are with ${socketID}`);
-
-      io.in(socketID).emit("set_client_host");
-      io.in(otherID).emit("set_client_guest");
+    if (readyNum < 2) {
+      return;
     }
+
+    await mainRedisClient.sRem(common.readySetName, socketID);
+
+    const otherID = (await mainRedisClient.sPop(common.readySetName, 1)).pop();
+
+    if (otherID == null) {
+      console.error(`otherID is null`);
+      return;
+    }
+
+    const roomMsg = `grouping ${socketID} and ${otherID}.`;
+
+    console.log(roomMsg);
+
+    io.socketsLeave(`room-${otherID}`);
+    io.socketsLeave(`room-${socketID}`);
+
+    io.in(socketID).socketsJoin(`room-${otherID}`);
+    io.in(otherID).socketsJoin(`room-${socketID}`);
+
+    io.in(socketID).emit("message", `you are with ${otherID}`);
+    io.in(otherID).emit("message", `you are with ${socketID}`);
+
+    io.in(socketID).emit("set_client_host");
+    io.in(otherID).emit("set_client_guest");
   });
