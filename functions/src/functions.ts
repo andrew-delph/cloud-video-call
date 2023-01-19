@@ -7,6 +7,7 @@ import * as dotenv from "dotenv";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import * as common from "react-video-call-common";
+import Redlock from "redlock";
 
 dotenv.config();
 initializeApp();
@@ -27,9 +28,12 @@ function createRedisClient(): RedisClientType {
   return redisClient;
 }
 
-let mainRedisClient: RedisClientType = createRedisClient();
-let pubRedisClient: RedisClientType = createRedisClient();
-let subRedisClient: RedisClientType = createRedisClient();
+const mainRedisClient: RedisClientType = createRedisClient();
+const pubRedisClient: RedisClientType = createRedisClient();
+const subRedisClient: RedisClientType = createRedisClient();
+
+const redlock = new Redlock([mainRedisClient]);
+
 const httpServer = createServer();
 const io = new Server(httpServer, {});
 
@@ -100,6 +104,13 @@ exports.readyEvent = functions
   })
   .onDispatch(async (data: any, context: any) => {
     await init;
+
+    let lock = await redlock.acquire(["a"], 5000);
+
+    console.log("lock", lock);
+    console.log("lock.value", lock.value);
+
+    await lock.release();
 
     const socketID: string = data.id;
 
