@@ -118,8 +118,8 @@ exports.readyEvent = functions
     const otherId = randomMembers.pop();
 
     if (otherId == null) {
-      console.error(`otherID is null`);
-      return;
+      // console.error(`otherID is null`);
+      throw "other id is null";
     }
 
     redlock.using(
