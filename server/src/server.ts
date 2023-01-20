@@ -86,8 +86,6 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("ready", async (data, callback) => {
-    console.log("ready callback", callback);
-
     pubClient.sAdd(common.readySetName, socket.id);
 
     try {
