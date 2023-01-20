@@ -226,6 +226,14 @@ exports.readyEvent = functions
             await mainRedisClient.sRem(common.readySetName, otherId);
           })
           .catch((value) => {
+            io.in(socketId).emit(
+              "message",
+              `host paring: failed with ${value}`
+            );
+            io.in(otherId).emit(
+              "message",
+              `guest paring: failed with ${value}`
+            );
             throw `match failed with ${value}`;
           });
       }
