@@ -186,7 +186,7 @@ class AppProvider extends ChangeNotifier {
     });
     // END HANDLE ICE CANDIDATES
 
-    socket!.emit("ready");
+    socket!.emitWithAck("ready", {}, ack: () => print("ready ack"));
   }
 
   Future<void> setClientHost() async {

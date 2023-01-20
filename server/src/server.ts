@@ -85,10 +85,17 @@ io.on("connection", async (socket) => {
     socket.to(`room-${socket.id}`).emit("icecandidate", value);
   });
 
-  socket.on("ready", async () => {
+  socket.on("ready", async (data, callback) => {
+    console.log("ready callback", callback);
+
     pubClient.sAdd(common.readySetName, socket.id);
 
-    await getFunctions().taskQueue("readyEvent").enqueue({ id: socket.id });
+    try {
+      await getFunctions().taskQueue("readyEvent").enqueue({ id: socket.id });
+      callback();
+    } catch (e) {
+      console.error(e);
+    }
   });
 });
 
