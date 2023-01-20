@@ -165,8 +165,8 @@ exports.readyEvent = functions
         io.in(socketId).emit("message", `you are with ${otherId}`);
         io.in(otherId).emit("message", `you are with ${socketId}`);
 
-        io.in(socketId).emit("set_client_host");
-        io.in(otherId).emit("set_client_guest");
+        io.in(socketId).emit("match", "host");
+        io.in(otherId).emit("match", "guest");
 
         await mainRedisClient.sRem(common.readySetName, socketId);
         await mainRedisClient.sRem(common.readySetName, otherId);

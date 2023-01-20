@@ -124,8 +124,7 @@ class AppProvider extends ChangeNotifier {
     await initLocalStream();
     socket!.off("client_host");
     socket!.off("client_guest");
-    socket!.off("set_client_host");
-    socket!.off("set_client_guest");
+    socket!.off("match");
     socket!.off("icecandidate");
 
     // START SETUP PEER CONNECTION
@@ -158,12 +157,24 @@ class AppProvider extends ChangeNotifier {
     };
     // END collect the streams/tracks from remote
 
-    socket!.on("set_client_host", (value) async {
-      await setClientHost();
-    });
-
-    socket!.on("set_client_guest", (value) async {
-      await setClientGuest();
+    socket!.on("match", (value) async {
+      switch (value) {
+        case "host":
+          {
+            await setClientHost();
+          }
+          break;
+        case "guest":
+          {
+            await setClientGuest();
+          }
+          break;
+        default:
+          {
+            print("match is not host/guest: $value");
+          }
+          break;
+      }
     });
 
     // START HANDLE ICE CANDIDATES
