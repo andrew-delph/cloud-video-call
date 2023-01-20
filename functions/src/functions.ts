@@ -172,6 +172,7 @@ exports.readyEvent = functions
             .timeout(matchTimeout)
             .emit("match", "guest", (err: any, response: any) => {
               if (err) {
+                console.error(err);
                 reject("guest");
               } else {
                 resolve();
@@ -184,6 +185,7 @@ exports.readyEvent = functions
             .timeout(matchTimeout)
             .emit("match", "host", (err: any, response: any) => {
               if (err) {
+                console.error(err);
                 reject("host");
               } else {
                 resolve();
