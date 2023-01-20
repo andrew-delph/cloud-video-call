@@ -165,7 +165,7 @@ exports.readyEvent = functions
         io.in(socketId).emit("message", `you are with ${otherId}`);
         io.in(otherId).emit("message", `you are with ${socketId}`);
 
-        const matchTimeout = 5000;
+        const matchTimeout = 20000;
 
         const guestCallback = (resolve: any, reject: any) => {
           io.in(otherId)
