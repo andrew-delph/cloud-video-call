@@ -165,11 +165,44 @@ exports.readyEvent = functions
         io.in(socketId).emit("message", `you are with ${otherId}`);
         io.in(otherId).emit("message", `you are with ${socketId}`);
 
-        io.in(socketId).emit("match", "host");
-        io.in(otherId).emit("match", "guest");
+        const matchTimeout = 5000;
 
-        await mainRedisClient.sRem(common.readySetName, socketId);
-        await mainRedisClient.sRem(common.readySetName, otherId);
+        const guestCallback = (resolve: any, reject: any) => {
+          io.in(otherId)
+            .timeout(matchTimeout)
+            .emit("match", "guest", (err: any, response: any) => {
+              if (err) {
+                reject("guest");
+              } else {
+                resolve();
+              }
+            });
+        };
+
+        const hostCallback = (resolve: any, reject: any) => {
+          io.in(socketId)
+            .timeout(matchTimeout)
+            .emit("match", "host", (err: any, response: any) => {
+              if (err) {
+                reject("host");
+              } else {
+                resolve();
+              }
+            });
+        };
+
+        await new Promise(guestCallback)
+          .then(() => {
+            return new Promise(hostCallback);
+          })
+          .then(async () => {
+            // if both acks are acked. we can remove them from the ready set.
+            await mainRedisClient.sRem(common.readySetName, socketId);
+            await mainRedisClient.sRem(common.readySetName, otherId);
+          })
+          .catch((value) => {
+            throw `match failed with ${value}`;
+          });
       }
     );
   });
