@@ -151,7 +151,7 @@ exports.readyEvent = functions
     redlock.using(
       [socketId, otherId],
       5000,
-      { retryCount: 1 },
+      { retryCount: 0 },
       async (signal) => {
         const roomMsg = `locked ${socketId} and ${otherId}.`;
 
