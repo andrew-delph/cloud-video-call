@@ -7,7 +7,7 @@ import * as dotenv from "dotenv";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import * as common from "react-video-call-common";
-import Redlock from "redlock";
+import Redlock, { ResourceLockedError } from "redlock";
 import { Redis } from "ioredis";
 
 dotenv.config();
@@ -40,6 +40,16 @@ const lockRedisClient = new Redis({
 });
 
 const redlock = new Redlock([lockRedisClient]);
+
+redlock.on("error", (error) => {
+  // Ignore cases where a resource is explicitly marked as locked on a client.
+  if (error instanceof ResourceLockedError) {
+    return;
+  }
+
+  // Log all other errors.
+  console.error(error);
+});
 
 const httpServer = createServer();
 const io = new Server(httpServer, {});
@@ -104,7 +114,7 @@ exports.readyEvent = functions
     retryConfig: {
       maxAttempts: 5,
       minBackoffSeconds: 1,
-      maxDoublings: 1
+      maxDoublings: 1,
     },
     rateLimits: {
       maxConcurrentDispatches: 50,
