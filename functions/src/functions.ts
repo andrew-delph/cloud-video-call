@@ -125,6 +125,8 @@ exports.readyEvent = functions
 
     const socketId: string = data.id;
 
+    io.in(socketId).emit("message", `readyEvent ${socketId}`);
+
     const randomMembers = (
       await mainRedisClient.sRandMemberCount(common.readySetName, 2)
     ).filter((val) => val != socketId);
