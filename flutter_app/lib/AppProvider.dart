@@ -157,7 +157,10 @@ class AppProvider extends ChangeNotifier {
     };
     // END collect the streams/tracks from remote
 
-    socket!.on("match", (value) async {
+    socket!.on("match", (request) async {
+      List data = request as List;
+      String value = data[0] as String;
+      Function callback = data[1] as Function;
       switch (value) {
         case "host":
           {
@@ -172,9 +175,11 @@ class AppProvider extends ChangeNotifier {
         default:
           {
             print("match is not host/guest: $value");
+            return;
           }
           break;
       }
+      callback(null);
     });
 
     // START HANDLE ICE CANDIDATES
