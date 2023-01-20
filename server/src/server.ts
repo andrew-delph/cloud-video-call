@@ -69,14 +69,14 @@ io.on("connection", async (socket) => {
     )} connected sockets.`
   );
 
-  let updateCount = 0;
-  const myInterval = setInterval(async () => {
-    updateCount = updateCount + 1;
-    socket.emit("message", `updateCount: ${updateCount}`);
-  }, 5000);
+  // let updateCount = 0;
+  // const myInterval = setInterval(async () => {
+  //   updateCount = updateCount + 1;
+  //   socket.emit("message", `updateCount: ${updateCount}`);
+  // }, 5000);
 
   socket.on("disconnect", () => {
-    clearInterval(myInterval);
+    // clearInterval(myInterval);
     pubClient.sRem(common.activeSetName, socket.id);
     pubClient.sRem(common.readySetName, socket.id);
   });
