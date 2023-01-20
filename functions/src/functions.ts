@@ -103,7 +103,7 @@ exports.readyEvent = functions
   .tasks.taskQueue({
     retryConfig: {
       maxAttempts: 5,
-      minBackoffSeconds: 5,
+      minBackoffSeconds: 1,
     },
     rateLimits: {
       maxConcurrentDispatches: 50,
@@ -128,7 +128,7 @@ exports.readyEvent = functions
     redlock.using(
       [socketId, otherId],
       5000,
-      { retryCount: 5 },
+      { retryCount: 1 },
       async (signal) => {
         const roomMsg = `locked ${socketId} and ${otherId}.`;
 

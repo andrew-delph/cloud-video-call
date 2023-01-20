@@ -126,7 +126,7 @@ class SocketIOTasks(TaskSet):
 
         match_event = [False]
 
-        def match_callback(match_event, start_time):
+        def match_callback(match_event, start_time, data):
             match_event[0] = True
             events.request.fire(
                 request_type="socketio",
@@ -136,9 +136,9 @@ class SocketIOTasks(TaskSet):
                 exception=None,
                 context=None,
             )
+            return None
 
-        self.sio.on("set_client_guest", lambda: match_callback(match_event, start_time))
-        self.sio.on("set_client_host", lambda: match_callback(match_event, start_time))
+        self.sio.on("match", lambda data: match_callback(match_event, start_time, data))
 
         ready_event = [False]
 
@@ -160,8 +160,7 @@ class SocketIOTasks(TaskSet):
                 break
             time.sleep(1)
 
-        self.sio.on("set_client_guest", lambda: None)
-        self.sio.on("set_client_host", lambda: None)
+        self.sio.on("match", lambda: None)
 
         if ready_event[0] == False:
             events.request.fire(
