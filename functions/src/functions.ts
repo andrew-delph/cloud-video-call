@@ -127,6 +127,16 @@ exports.readyEvent = functions
 
     io.in(socketId).emit("message", `readyEvent ${socketId}`);
 
+    const isReady = await mainRedisClient.sIsMember(
+      common.readySetName,
+      socketId
+    );
+
+    if (!isReady) {
+      console.log("socketId does not exist in the set.");
+      return;
+    }
+
     const randomMembers = (
       await mainRedisClient.sRandMemberCount(common.readySetName, 2)
     ).filter((val) => val != socketId);
