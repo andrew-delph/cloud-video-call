@@ -156,7 +156,7 @@ class SocketIOTasks(TaskSet):
         self.sio.emit("ready", "locust is ready", callback=lambda: ready_callback(ready_event, start_time))
 
         while match_event[0] == False:
-            if time.time() - start_time > 15:
+            if time.time() - start_time > 30:
                 break
             time.sleep(1)
 

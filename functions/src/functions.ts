@@ -104,6 +104,7 @@ exports.readyEvent = functions
     retryConfig: {
       maxAttempts: 5,
       minBackoffSeconds: 1,
+      maxDoublings: 1
     },
     rateLimits: {
       maxConcurrentDispatches: 50,
