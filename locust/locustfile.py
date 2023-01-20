@@ -27,6 +27,11 @@ class SocketIOTasks(TaskSet):
         # self.sio.on("message", self.on_message)
         self.sio.on("error", self.on_error)
         self.sio.on("disconnect", self.on_disconnect)
+        
+        def on_myping(data):
+            return "this is from locust"
+        self.sio.on("myping", on_myping)
+
         self.manual_disconnect = False
         self.connect()
 
@@ -120,7 +125,7 @@ class SocketIOTasks(TaskSet):
     def sleep(self):
         time.sleep(5)
 
-    @task
+    # @task
     def ready(self):
         start_time = time.time()
 
@@ -160,7 +165,7 @@ class SocketIOTasks(TaskSet):
                 break
             time.sleep(1)
 
-        self.sio.on("match", lambda: None)
+        self.sio.on("match", lambda data: None)
 
         if ready_event[0] == False:
             events.request.fire(

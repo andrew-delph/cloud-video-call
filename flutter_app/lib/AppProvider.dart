@@ -67,6 +67,14 @@ class AppProvider extends ChangeNotifier {
 
     socket!.emit("message", "I am a client");
 
+    socket!.on("myping", (request) async {
+      List data = request as List;
+      String value = data[0] as String;
+      Function callback = data[1] as Function;
+
+      callback("flutter responded");
+    });
+
     socket!
         .emitWithAck("myping", "I am a client", ack: () => print("ping ack"));
 
