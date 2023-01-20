@@ -162,8 +162,8 @@ exports.readyEvent = functions
         io.in(socketId).socketsJoin(`room-${otherId}`);
         io.in(otherId).socketsJoin(`room-${socketId}`);
 
-        io.in(socketId).emit("message", `you are with ${otherId}`);
-        io.in(otherId).emit("message", `you are with ${socketId}`);
+        io.in(socketId).emit("message", `pairing with ${otherId}`);
+        io.in(otherId).emit("message", `pairing with ${socketId}`);
 
         const matchTimeout = 5000;
 
