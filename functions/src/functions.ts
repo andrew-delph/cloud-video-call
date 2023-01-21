@@ -114,11 +114,12 @@ exports.readyEvent = functions
     retryConfig: {
       maxAttempts: 5,
       minBackoffSeconds: 1,
-      maxDoublings: 1,
+      maxDoublings: 2,
     },
     rateLimits: {
       maxConcurrentDispatches: 50,
     },
+    
   })
   .onDispatch(async (data: any, context: any) => {
     await init;
@@ -188,7 +189,7 @@ exports.readyEvent = functions
         io.in(socketId).emit("message", `pairing with ${otherId}`);
         io.in(otherId).emit("message", `pairing with ${socketId}`);
 
-        const matchTimeout = 5000;
+        const matchTimeout = 50000;
 
         const guestCallback = (resolve: any, reject: any) => {
           io.in(otherId)

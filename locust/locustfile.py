@@ -123,7 +123,7 @@ class SocketIOTasks(TaskSet):
 
     @task
     def sleep(self):
-        time.sleep(5)
+        self.sio.sleep(10)
 
     @task
     def ready(self):
@@ -160,10 +160,12 @@ class SocketIOTasks(TaskSet):
 
         self.sio.emit("ready", "locust is ready", callback=lambda: ready_callback(ready_event, start_time))
 
+        
+
         while match_event[0] == False:
             if time.time() - start_time > 300:
                 break
-            time.sleep(1)
+            self.sio.sleep(1)
 
         self.sio.on("match", lambda data: None)
 
@@ -208,7 +210,7 @@ class SocketIOTasks(TaskSet):
         while ping_event[0] == False:
             if time.time() - start_time > 15:
                 break
-            time.sleep(1)
+            self.sio.sleep(10)
 
         if ping_event[0] == False:
             events.request.fire(
