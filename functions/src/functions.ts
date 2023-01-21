@@ -119,7 +119,6 @@ exports.readyEvent = functions
     rateLimits: {
       maxConcurrentDispatches: 50,
     },
-    
   })
   .onDispatch(async (data: any, context: any) => {
     await init;
@@ -188,6 +187,29 @@ exports.readyEvent = functions
 
         io.in(socketId).emit("message", `pairing with ${otherId}`);
         io.in(otherId).emit("message", `pairing with ${socketId}`);
+
+        // start try without ack
+
+        io.in(otherId).emit("match", "guest", (err: any, response: any) => {
+          if (err) {
+            console.error(err);
+          } else {
+          }
+        });
+
+        io.in(socketId).emit("match", "host", (err: any, response: any) => {
+          if (err) {
+            console.error(err);
+          } else {
+          }
+        });
+
+        await mainRedisClient.sRem(common.readySetName, socketId);
+        await mainRedisClient.sRem(common.readySetName, otherId);
+
+        return;
+
+        // end try without ack
 
         const matchTimeout = 50000;
 

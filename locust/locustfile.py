@@ -96,7 +96,7 @@ class SocketIOTasks(TaskSet):
                 exception="on_disconnect",
                 context=None,
             )
-            self.interrupt()
+            self.interrupt(False)
 
     def on_message(self, data):
         pass
