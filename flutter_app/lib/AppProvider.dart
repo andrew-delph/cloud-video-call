@@ -25,6 +25,8 @@ class AppProvider extends ChangeNotifier {
   Function(SocketConnectionState, dynamic)? onSocketStateChange;
   Function(RTCPeerConnectionState)? onPeerConnectionStateChange;
 
+  int activeCount = 0;
+
   @override
   @mustCallSuper
   Future<void> dispose() async {
@@ -81,6 +83,11 @@ class AppProvider extends ChangeNotifier {
     socket!.onConnectError((details) {
       print('connectError');
       handleSocketStateChange(SocketConnectionState.connectionError, details);
+      notifyListeners();
+    });
+
+    socket!.on('activeCount', (data) {
+      activeCount = int.tryParse(data.toString()) ?? -1;
       notifyListeners();
     });
 
@@ -183,7 +190,6 @@ class AppProvider extends ChangeNotifier {
         default:
           {
             print("match is not host/guest: $value");
-            return;
           }
           break;
       }

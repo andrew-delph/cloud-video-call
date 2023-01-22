@@ -44,6 +44,8 @@ app.get("*", (req, res) => {
 });
 
 io.on("connection", async (socket) => {
+  pubClient.sAdd(common.activeSetName, socket.id);
+
   socket.on("myping", (arg, callback) => {
     try {
       callback();
@@ -60,7 +62,10 @@ io.on("connection", async (socket) => {
     }
   });
 
-  pubClient.sAdd(common.activeSetName, socket.id);
+  pubClient.publish(
+    common.activeCountChannel,
+    `${await pubClient.sCard(common.activeSetName)}`
+  );
 
   socket.emit(
     "message",
@@ -75,10 +80,14 @@ io.on("connection", async (socket) => {
   //   socket.emit("message", `updateCount: ${updateCount}`);
   // }, 5000);
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     // clearInterval(myInterval);
     pubClient.sRem(common.activeSetName, socket.id);
     pubClient.sRem(common.readySetName, socket.id);
+    pubClient.publish(
+      common.activeCountChannel,
+      `${await pubClient.sCard(common.activeSetName)}`
+    );
   });
 
   socket.on("client_host", (value) => {
@@ -105,7 +114,13 @@ io.on("connection", async (socket) => {
   });
 });
 
-Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
-  io.adapter(createAdapter(pubClient, subClient));
-  httpServer.listen(process.env.PORT);
-});
+Promise.all([pubClient.connect(), subClient.connect()])
+  .then(() => {
+    io.adapter(createAdapter(pubClient, subClient));
+    httpServer.listen(process.env.PORT);
+  })
+  .then(() => {
+    subClient.subscribe(common.activeCountChannel, (msg) => {
+      io.emit("activeCount", msg);
+    });
+  });

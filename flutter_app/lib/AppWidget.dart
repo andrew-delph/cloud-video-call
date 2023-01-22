@@ -200,9 +200,6 @@ class AppWidgetState extends State<AppWidget> {
       },
     );
 
-    return ChangeNotifierProvider(
-      create: (context) => AppProvider(),
-      child: child,
-    );
+    return child;
   }
 }
