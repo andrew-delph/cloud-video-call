@@ -47,6 +47,14 @@ class SocketIOTasks(TaskSet):
         )
 
     def on_stop(self, env=None):
+        events.request.fire(
+            request_type="socketio",
+            name="on_stop",
+            response_time=0,
+            response_length=0,
+            exception=None,
+            context=None,
+        )
         self.disconnect()
 
     def connect(self):
@@ -96,7 +104,7 @@ class SocketIOTasks(TaskSet):
                 exception="on_disconnect",
                 context=None,
             )
-            self.interrupt(False)
+            self.interrupt()
 
     def on_message(self, data):
         pass

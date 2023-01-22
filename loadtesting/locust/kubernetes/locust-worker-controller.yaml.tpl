@@ -5,7 +5,7 @@ metadata:
   labels:
     name: locust-worker
 spec:
-  replicas: 5
+  replicas: 15
   selector:
     matchLabels:
       app: locust-worker
