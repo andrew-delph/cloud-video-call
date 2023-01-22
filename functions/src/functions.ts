@@ -190,75 +190,73 @@ exports.readyEvent = functions
 
         // start try without ack
 
-        io.in(otherId).emit("match", "guest", (err: any, response: any) => {
-          if (err) {
-            console.error(err);
-          } else {
-          }
-        });
+        // io.in(otherId).emit("match", "guest", (err: any, response: any) => {
+        //   if (err) {
+        //     console.error(err);
+        //   } else {
+        //   }
+        // });
 
-        io.in(socketId).emit("match", "host", (err: any, response: any) => {
-          if (err) {
-            console.error(err);
-          } else {
-          }
-        });
+        // io.in(socketId).emit("match", "host", (err: any, response: any) => {
+        //   if (err) {
+        //     console.error(err);
+        //   } else {
+        //   }
+        // });
 
-        await mainRedisClient.sRem(common.readySetName, socketId);
-        await mainRedisClient.sRem(common.readySetName, otherId);
-
-        return;
+        // await mainRedisClient.sRem(common.readySetName, socketId);
+        // await mainRedisClient.sRem(common.readySetName, otherId);
 
         // end try without ack
 
-        // const matchTimeout = 50000;
+        const matchTimeout = 50000;
 
-        // const guestCallback = (resolve: any, reject: any) => {
-        //   io.in(otherId)
-        //     .timeout(matchTimeout)
-        //     .emit("match", "guest", (err: any, response: any) => {
-        //       if (err) {
-        //         console.error(err);
-        //         reject("guest");
-        //       } else {
-        //         resolve();
-        //       }
-        //     });
-        // };
+        const guestCallback = (resolve: any, reject: any) => {
+          io.in(otherId)
+            .timeout(matchTimeout)
+            .emit("match", "guest", (err: any, response: any) => {
+              if (err) {
+                console.error(err);
+                reject("guest");
+              } else {
+                resolve();
+              }
+            });
+        };
 
-        // const hostCallback = (resolve: any, reject: any) => {
-        //   io.in(socketId)
-        //     .timeout(matchTimeout)
-        //     .emit("match", "host", (err: any, response: any) => {
-        //       if (err) {
-        //         console.error(err);
-        //         reject("host");
-        //       } else {
-        //         resolve();
-        //       }
-        //     });
-        // };
+        const hostCallback = (resolve: any, reject: any) => {
+          io.in(socketId)
+            .timeout(matchTimeout)
+            .emit("match", "host", (err: any, response: any) => {
+              if (err) {
+                console.error(err);
+                reject("host");
+              } else {
+                resolve();
+              }
+            });
+        };
 
-        // await new Promise(guestCallback)
-        //   .then(() => {
-        //     return new Promise(hostCallback);
-        //   })
-        //   .then(async () => {
-        //     // if both acks are acked. we can remove them from the ready set.
-        //     await mainRedisClient.sRem(common.readySetName, socketId);
-        //     await mainRedisClient.sRem(common.readySetName, otherId);
-        //   })
-        //   .catch((value) => {
-        //     io.in(socketId).emit(
-        //       "message",
-        //       `host paring: failed with ${value}`
-        //     );
-        //     io.in(otherId).emit(
-        //       "message",
-        //       `guest paring: failed with ${value}`
-        //     );
-        //     throw `match failed with ${value}`;
-        //   });
+        await new Promise(guestCallback)
+          .then(() => {
+            return new Promise(hostCallback);
+          })
+          .then(async () => {
+            // if both acks are acked. we can remove them from the ready set.
+            await mainRedisClient.sRem(common.readySetName, socketId);
+            await mainRedisClient.sRem(common.readySetName, otherId);
+          })
+          .catch((value) => {
+            io.in(socketId).emit(
+              "message",
+              `host paring: failed with ${value}`
+            );
+            io.in(otherId).emit(
+              "message",
+              `guest paring: failed with ${value}`
+            );
+            throw `match failed with ${value}`;
+          });
       }
     );
   });
