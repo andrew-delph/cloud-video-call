@@ -1,5 +1,8 @@
 # distribution guide
 
+# DEPRECIATED.
+using locust with sockets sucks!
+
 https://cloud.google.com/architecture/distributed-load-testing-using-gke
 
 . ./variable.sh
