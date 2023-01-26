@@ -12,7 +12,7 @@ export function makeConnection(domain: string): string {
 
   // Establishing a `polling` transport and getting the `sid`.
   res = http.get(
-    `http://${domain}/socket.io/?EIO=4&transport=polling&t=${hashDate()}`
+    `https://${domain}/socket.io/?EIO=4&transport=polling&t=${hashDate()}`
   );
 
   const sid = getSid(res.body as string);
@@ -22,13 +22,14 @@ export function makeConnection(domain: string): string {
 
   // `message connect` event
   res = http.post(
-    `http://${domain}/socket.io/?EIO=4&transport=polling&t=${hashDate()}&sid=${sid}`,
+    `https://${domain}/socket.io/?EIO=4&transport=polling&t=${hashDate()}&sid=${sid}`,
     data,
     { headers: headers }
   );
+
   // also seems to be needed...
   res = http.get(
-    `http://${domain}/socket.io/?EIO=4&transport=polling&t=${hashDate()}&sid=${sid}`
+    `https://${domain}/socket.io/?EIO=4&transport=polling&t=${hashDate()}&sid=${sid}`
   );
 
   return sid;
