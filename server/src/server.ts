@@ -44,7 +44,7 @@ app.get("*", (req, res) => {
 });
 
 io.on("connection", async (socket) => {
-  console.log("new connection");
+  console.log("connected");
 
   pubClient.sAdd(common.activeSetName, socket.id);
 
@@ -83,6 +83,7 @@ io.on("connection", async (socket) => {
   }, 5000);
 
   socket.on("disconnect", async () => {
+    console.log("disconnected");
     clearInterval(myInterval);
     pubClient.sRem(common.activeSetName, socket.id);
     pubClient.sRem(common.readySetName, socket.id);
