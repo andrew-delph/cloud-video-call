@@ -1,5 +1,5 @@
-import ws from "k6/ws";
-import { check } from "k6";
+import ws, { Socket } from "k6/ws";
+import { check, sleep } from "k6";
 import { makeConnection } from "../libs/socket.io";
 import { checkForEventMessages } from "../libs/socket.io";
 import { socketResponseCode, socketResponseType } from "../libs/constants";
@@ -34,6 +34,26 @@ export default function (): void {
   }://${domain}/socket.io/?EIO=4&transport=websocket&sid=${sid}`;
 
   let response = ws.connect(url, {}, function (socket) {
+    let callbackCount = 0;
+
+    function send(event: string, data: any, callback?: () => void) {
+      callbackCount++;
+      console.log("callbackCount", callbackCount);
+      if (callback == null) {
+        socket.send(
+          `${socketResponseType.message}${
+            socketResponseCode.event
+          }["${event}",${JSON.stringify(data)}]`
+        );
+      } else {
+        socket.send(
+          `${socketResponseType.message}${
+            socketResponseCode.event
+          }${callbackCount}["${event}",${JSON.stringify(data)}]`
+        );
+      }
+    }
+
     socket.on("open", function open() {
       console.log("connected");
       socket.send("2probe");
@@ -42,9 +62,24 @@ export default function (): void {
 
       // send an event message
       startTime = Date.now();
-      socket.send(
-        `${socketResponseType.message}${socketResponseCode.event}["chat message","hello k6"]`
-      );
+
+      // socket.send(
+      //   `${socketResponseType.message}${socketResponseCode.event}1["ready",{"test":"test2"}]`
+      // );
+
+      send("ready", { test: "test1" });
+
+      // socket.send(
+      //   `${socketResponseType.message}${socketResponseCode.event}["myping","2222!"]`
+      // );
+
+      // socket.send(
+      //   `${socketResponseType.message}${socketResponseCode.event}["message","second message..."]`
+      // );
+
+      // socket.send(
+      //   `${socketResponseType.message}${socketResponseCode.event}["ready1",{}]`
+      // );
 
       // socket.setInterval(function timeout() {
       //   socket.ping();

@@ -49,11 +49,16 @@ io.on("connection", async (socket) => {
   pubClient.sAdd(common.activeSetName, socket.id);
 
   socket.on("myping", (arg, callback) => {
+    console.log("myping", arg, callback);
     try {
-      callback();
+      if (callback != undefined) callback();
     } catch (e) {
       console.error(e);
     }
+  });
+
+  socket.on("message", (msg) => {
+    console.log("message:", msg);
   });
 
   // socket.timeout(1000).emit("myping", "hello", (err: any, response: any) => {
@@ -64,27 +69,33 @@ io.on("connection", async (socket) => {
   //   }
   // });
 
-  pubClient.publish(
-    common.activeCountChannel,
-    `${await pubClient.sCard(common.activeSetName)}`
-  );
+  socket.on("ready", async (data, callback) => {
+    console.log("ready data:", data);
+    console.log("ready callback:", callback);
+    pubClient.sAdd(common.readySetName, socket.id);
 
-  socket.emit(
-    "message",
-    `hey from server :) I am ${serverID}. Redis says there is ${await pubClient.get(
-      "connectedNum"
-    )} connected sockets.`
-  );
+    if (process.env.LOCAL == undefined) {
+      try {
+        await getFunctions().taskQueue("readyEvent").enqueue({ id: socket.id });
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      console.log("local ready");
+    }
 
-  let updateCount = 0;
-  const myInterval = setInterval(async () => {
-    updateCount = updateCount + 1;
-    socket.emit("message", `updateCount: ${updateCount}`);
-  }, 5000);
+    if (callback != undefined) callback();
+  });
+
+  // let updateCount = 0;
+  // const myInterval = setInterval(async () => {
+  //   updateCount = updateCount + 1;
+  //   socket.emit("message", `updateCount: ${updateCount}`);
+  // }, 5000);
 
   socket.on("disconnect", async () => {
     console.log("disconnected");
-    clearInterval(myInterval);
+    // clearInterval(myInterval);
     pubClient.sRem(common.activeSetName, socket.id);
     pubClient.sRem(common.readySetName, socket.id);
     pubClient.publish(
@@ -105,16 +116,17 @@ io.on("connection", async (socket) => {
     socket.to(`room-${socket.id}`).emit("icecandidate", value);
   });
 
-  socket.on("ready", async (data, callback) => {
-    pubClient.sAdd(common.readySetName, socket.id);
+  pubClient.publish(
+    common.activeCountChannel,
+    `${await pubClient.sCard(common.activeSetName)}`
+  );
 
-    try {
-      await getFunctions().taskQueue("readyEvent").enqueue({ id: socket.id });
-      callback();
-    } catch (e) {
-      console.error(e);
-    }
-  });
+  socket.emit(
+    "message",
+    `hey from server :) I am ${serverID}. Redis says there is ${await pubClient.get(
+      "connectedNum"
+    )} connected sockets.`
+  );
 });
 
 Promise.all([pubClient.connect(), subClient.connect()])
