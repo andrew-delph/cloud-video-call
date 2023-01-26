@@ -7,12 +7,14 @@ import http from "k6/http";
  * @param domain the domain you're testing
  * @returns the sid for your socket connection
  */
-export function makeConnection(domain: string): string {
+export function makeConnection(domain: string, secure: boolean): string {
   let res;
 
   // Establishing a `polling` transport and getting the `sid`.
   res = http.get(
-    `https://${domain}/socket.io/?EIO=4&transport=polling&t=${hashDate()}`
+    `${
+      secure ? "https" : "http"
+    }://${domain}/socket.io/?EIO=4&transport=polling&t=${hashDate()}`
   );
 
   const sid = getSid(res.body as string);
@@ -22,14 +24,18 @@ export function makeConnection(domain: string): string {
 
   // `message connect` event
   res = http.post(
-    `https://${domain}/socket.io/?EIO=4&transport=polling&t=${hashDate()}&sid=${sid}`,
+    `${
+      secure ? "https" : "http"
+    }://${domain}/socket.io/?EIO=4&transport=polling&t=${hashDate()}&sid=${sid}`,
     data,
     { headers: headers }
   );
 
   // also seems to be needed...
   res = http.get(
-    `https://${domain}/socket.io/?EIO=4&transport=polling&t=${hashDate()}&sid=${sid}`
+    `${
+      secure ? "https" : "http"
+    }://${domain}/socket.io/?EIO=4&transport=polling&t=${hashDate()}&sid=${sid}`
   );
 
   return sid;

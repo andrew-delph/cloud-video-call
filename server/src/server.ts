@@ -44,6 +44,8 @@ app.get("*", (req, res) => {
 });
 
 io.on("connection", async (socket) => {
+  console.log("new connection");
+
   pubClient.sAdd(common.activeSetName, socket.id);
 
   socket.on("myping", (arg, callback) => {

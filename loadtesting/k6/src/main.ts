@@ -17,15 +17,21 @@ export const options = {
 let messageTime = new Trend("socketio_message_duration_ms");
 
 export default function (): void {
-  const domain = `react-video-call-fjutjsrlaa-uc.a.run.app`;
-  // const domain = `localhost:4000`;
+  const secure = false;
+
+  const domain = secure
+    ? `react-video-call-fjutjsrlaa-uc.a.run.app`
+    : `localhost:4000`;
+
   let startTime = 0;
   let endTime = 0;
 
-  const sid = makeConnection(domain);
+  const sid = makeConnection(domain, secure);
 
   // Let's do some websockets
-  const url = `wss://${domain}/socket.io/?EIO=4&transport=websocket&sid=${sid}`;
+  const url = `${
+    secure ? "wss" : "ws"
+  }://${domain}/socket.io/?EIO=4&transport=websocket&sid=${sid}`;
 
   let response = ws.connect(url, {}, function (socket) {
     socket.on("open", function open() {
