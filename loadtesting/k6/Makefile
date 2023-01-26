@@ -26,15 +26,14 @@ init:
 	cd dependencies/k6-operator && make deploy
 
 setup:
+	npm run webpack
+
 	kubectl delete namespace k6-tests --ignore-not-found
 
 	kubectl create namespace k6-tests
 
 	kubectl create configmap test-scripts -n k6-tests \
-		--from-file=./test-scripts/simple.js \
-		--from-file=./test-scripts/simple-checks.js \
-		--from-file=./test-scripts/multi-scenario.js \
-		--from-file=./test-scripts/door-buster-sale.js
+		--from-file=./dist/main.js
 
 	kubectl create configmap -n k6-tests prometheus-config --from-literal="K6_PROMETHEUS_RW_SERVER_URL=https://prometheus-us-central1.grafana.net/api/prom/push"
 
@@ -55,5 +54,5 @@ delete:
 
 
 local:
-	./run-local.sh test-scripts/simple.js
+	./run-local.sh dist/main.js
 
