@@ -17,7 +17,7 @@ export const options = {
 let messageTime = new Trend("socketio_message_duration_ms");
 
 export default function (): void {
-  const secure = false;
+  const secure = __ENV.MY_HOSTNAME != undefined ? true : false;
 
   const domain = secure
     ? `react-video-call-fjutjsrlaa-uc.a.run.app`
@@ -79,10 +79,10 @@ export default function (): void {
       }
     });
 
-    // socket.setTimeout(function () {
-    //   console.log('2 seconds passed, closing the socket');
-    //   socket.close();
-    // }, 1000 * 2);
+    socket.setTimeout(function () {
+      console.log("2 seconds passed, closing the socket");
+      socket.close();
+    }, 1000 * 2);
   });
 
   check(response, { "status is 101": (r) => r && r.status === 101 });
