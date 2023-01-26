@@ -36,6 +36,22 @@ export default function (): void {
   let response = ws.connect(url, {}, function (socket) {
     let callbackCount = 0;
 
+    // This will constantly poll for any messages received
+    socket.on("message", function incoming(msg) {
+      // checking for event messages
+      checkForEventMessages<string[]>(msg, function (messageData) {
+        endTime = Date.now();
+        console.log(`
+              ------------------------ 
+              event=${messageData[0]}
+              message=${messageData[1]}
+              vu=${__VU.toString()} 
+              iter=${__ITER.toString()} 
+              time=${Date.now().toString()}
+            `);
+      });
+    });
+
     function send(event: string, data: any, callback?: () => void) {
       callbackCount++;
       console.log("callbackCount", callbackCount);
@@ -85,22 +101,6 @@ export default function (): void {
       //   socket.ping();
       //   console.log('Pinging every 1sec (setInterval test)');
       // }, 1000 * 5);
-    });
-
-    // This will constantly poll for any messages received
-    socket.on("message", function incoming(msg) {
-      // checking for event messages
-      checkForEventMessages<string[]>(msg, function (messageData) {
-        endTime = Date.now();
-        console.log(`
-          ------------------------ 
-          event=${messageData[0]}
-          message=${messageData[1]}
-          vu=${__VU.toString()} 
-          iter=${__ITER.toString()} 
-          time=${Date.now().toString()}
-        `);
-      });
     });
 
     socket.on("close", function close() {
