@@ -1,5 +1,5 @@
-import { checkResponseBodyIsString } from './check-responses';
-import { RefinedResponse } from 'k6/http';
+import { checkResponseBodyIsString } from "./check-responses";
+import { RefinedResponse } from "k6/http";
 
 /**
  * This will parse the JSON object of any HTTP response body.
@@ -10,7 +10,7 @@ import { RefinedResponse } from 'k6/http';
  * @returns the parsed JSON body
  */
 export function parseJsonResponse<T>(
-  res: RefinedResponse<'text'>,
+  res: RefinedResponse<"text">,
   defaultData: T
 ): T {
   // Check our response body is a string and parse it

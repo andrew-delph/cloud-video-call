@@ -26,7 +26,7 @@
     "node": ">=16 <17"
   },
   "scripts": {
-    "webpack": "webpack --watch",
+    "webpack": "webpack --watch --progress",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

@@ -5,7 +5,7 @@ export enum socketResponseType {
   pong,
   message,
   upgrade,
-  noop
+  noop,
 }
 
 export enum socketResponseCode {
@@ -13,5 +13,5 @@ export enum socketResponseCode {
   disconnect,
   event,
   ack,
-  error
+  error,
 }

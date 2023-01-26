@@ -1,6 +1,6 @@
-import { socketResponseType, socketResponseCode } from './constants';
-import { soResponse } from './types';
-import http from 'k6/http';
+import { socketResponseType, socketResponseCode } from "./constants";
+import { soResponse } from "./types";
+import http from "k6/http";
 
 /**
  * This sets up your socket client connection with the backend client
@@ -18,7 +18,7 @@ export function makeConnection(domain: string): string {
   const sid = getSid(res.body as string);
 
   const data = `${socketResponseType.message}${socketResponseCode.connect}`;
-  const headers = { 'Content-type': 'text/plain;charset=UTF-8' };
+  const headers = { "Content-type": "text/plain;charset=UTF-8" };
 
   // `message connect` event
   res = http.post(
@@ -54,7 +54,7 @@ export function checkResponse(response: string): soResponse {
 export function getArrayFromRequest<T>(response: string): T {
   const match = /\[.+\]/;
   const parsedResponse = response.match(match);
-  return parsedResponse ? JSON.parse(parsedResponse[0]) : 'No Response';
+  return parsedResponse ? JSON.parse(parsedResponse[0]) : "No Response";
 }
 
 /**
@@ -88,5 +88,5 @@ function hashDate(): string {
 function getSid(parserEncoding: string): string {
   const match = /{.+?}/;
   const response = parserEncoding.match(match);
-  return response ? JSON.parse(response[0]).sid : 'No Response';
+  return response ? JSON.parse(response[0]).sid : "No Response";
 }

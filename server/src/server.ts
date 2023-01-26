@@ -54,13 +54,13 @@ io.on("connection", async (socket) => {
     }
   });
 
-  socket.timeout(1000).emit("myping", "hello", (err: any, response: any) => {
-    if (err) {
-      console.error("err", err);
-    } else {
-      console.log("response", response);
-    }
-  });
+  // socket.timeout(1000).emit("myping", "hello", (err: any, response: any) => {
+  //   if (err) {
+  //     console.error("err", err);
+  //   } else {
+  //     console.log("response", response);
+  //   }
+  // });
 
   pubClient.publish(
     common.activeCountChannel,

@@ -6,8 +6,8 @@ import { socketResponseCode, socketResponseType } from "../libs/constants";
 import { Trend } from "k6/metrics";
 
 export const options = {
-  vus: 2,
-  duration: "10s",
+  vus: 1,
+  duration: "50s",
   tags: {
     testName: "socketsio poc",
   },
@@ -17,6 +17,7 @@ export const options = {
 let messageTime = new Trend("socketio_message_duration_ms");
 
 export default function (): void {
+  // const domain = `react-video-call-fjutjsrlaa-uc.a.run.app`;
   const domain = `localhost:4000`;
   let startTime = 0;
   let endTime = 0;
