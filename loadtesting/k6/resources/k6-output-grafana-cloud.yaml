@@ -25,7 +25,7 @@ spec:
       - name: K6_OUT
         value: xk6-prometheus-rw
       - name: REMOTE
-        value: true
+        value: "true"
     envFrom:
       - configMapRef:
           name: prometheus-config
