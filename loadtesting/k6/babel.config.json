@@ -1,0 +1,8 @@
+{
+  "presets": ["@babel/env", "@babel/typescript"],
+  "plugins": [
+    "@babel/proposal-class-properties",
+    "@babel/plugin-transform-block-scoping",
+    "@babel/proposal-object-rest-spread"
+  ]
+}
