@@ -6,8 +6,8 @@ import { socketResponseCode, socketResponseType } from "../libs/constants";
 import { Trend } from "k6/metrics";
 
 export const options = {
-  vus: 1,
-  duration: "2m",
+  vus: 50,
+  duration: "15s",
   tags: {
     testName: "socketsio poc",
   },
