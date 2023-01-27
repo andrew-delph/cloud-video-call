@@ -44,15 +44,15 @@ export default function (): void {
     socket.on("message", function incoming(msg) {
       // checking for event messages
       checkForEventMessages<string[]>(msg, callbackMap, function (messageData) {
-        endTime = Date.now();
-        console.log(`
-              ------------------------
-              event=${messageData[0]}
-              message=${messageData[1]}
-              vu=${__VU.toString()}
-              iter=${__ITER.toString()}
-              time=${Date.now().toString()}
-            `);
+        // endTime = Date.now();
+        // console.log(`
+        //       ------------------------
+        //       event=${messageData[0]}
+        //       message=${messageData[1]}
+        //       vu=${__VU.toString()}
+        //       iter=${__ITER.toString()}
+        //       time=${Date.now().toString()}
+        //     `);
       });
     });
 
@@ -90,7 +90,7 @@ export default function (): void {
     }
 
     socket.on("open", function open() {
-      console.log("connected");
+      // console.log("connected");
       socket.send("2probe");
       socket.send("5");
       socket.send("3");
@@ -121,7 +121,7 @@ export default function (): void {
     });
 
     socket.on("close", function close() {
-      console.log("disconnected");
+      // console.log("disconnected");
     });
 
     socket.on("error", function (e) {
@@ -132,7 +132,7 @@ export default function (): void {
     });
 
     socket.setTimeout(function () {
-      console.log("2 seconds passed, closing the socket");
+      // console.log("2 seconds passed, closing the socket");
       socket.close();
     }, 1000 * 2);
   });
