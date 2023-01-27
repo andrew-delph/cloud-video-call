@@ -43,11 +43,11 @@ export default function (): void {
       checkForEventMessages<string[]>(msg, callbackMap, function (messageData) {
         endTime = Date.now();
         console.log(`
-              ------------------------ 
+              ------------------------
               event=${messageData[0]}
               message=${messageData[1]}
-              vu=${__VU.toString()} 
-              iter=${__ITER.toString()} 
+              vu=${__VU.toString()}
+              iter=${__ITER.toString()}
               time=${Date.now().toString()}
             `);
       });
@@ -77,23 +77,17 @@ export default function (): void {
       timeout: number,
       success?: () => void,
       error?: () => void
-    ): boolean {
-      const ack = [false];
+    ) {
+      const startTime = Date.now();
 
       send(event, data, () => {
-        console.log("sendWaitAck got the ack andrew");
-        ack[0] = true;
+        const elapsed = Date.now() - startTime;
+        if (elapsed < timeout) {
+          if (success != undefined) success();
+        } else {
+          if (error != undefined) error();
+        }
       });
-
-      sleep(timeout);
-
-      return ack[0];
-
-      // if (ack[0] == false) {
-      //   if (error != undefined) error();
-      // } else {
-      //   if (success != undefined) success();
-      // }
     }
 
     socket.on("open", function open() {
@@ -117,8 +111,29 @@ export default function (): void {
       //   console.log("ack andrew2");
       // });
 
-      const readyAck = sendWaitAck("ready", { test: "looking for ack" }, 5);
-      console.log("readyAck", readyAck);
+      sendWaitAck(
+        "ready",
+        { test: "looking for ack" },
+        5,
+        () => {
+          console.log("ready1 success");
+        },
+        () => {
+          console.log("ready1 error");
+        }
+      );
+
+      sendWaitAck(
+        "ready",
+        { test: "looking for ack" },
+        0,
+        () => {
+          console.log("ready2 success");
+        },
+        () => {
+          console.log("ready2 error");
+        }
+      );
 
       // socket.send(
       //   `${socketResponseType.message}${socketResponseCode.event}["myping","2222!"]`

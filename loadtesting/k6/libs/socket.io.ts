@@ -81,7 +81,7 @@ export function checkForEventMessages<T>(
   checks: (messageData: T) => void
 ): void {
   // check if callback
-  console.log("mssg", msg);
+  // console.log("mssg", msg);
   if (
     checkResponse(msg).type === socketResponseType.message &&
     checkResponse(msg).code === socketResponseCode.ack
