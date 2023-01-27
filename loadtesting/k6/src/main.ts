@@ -35,6 +35,7 @@ export default function (): void {
 
   let response = ws.connect(url, {}, function (socket) {
     let callbackCount = 0;
+    const callbackMap: { [key: number]: () => void } = {};
 
     // This will constantly poll for any messages received
     socket.on("message", function incoming(msg) {
@@ -53,8 +54,6 @@ export default function (): void {
     });
 
     function send(event: string, data: any, callback?: () => void) {
-      callbackCount++;
-      console.log("callbackCount", callbackCount);
       if (callback == null) {
         socket.send(
           `${socketResponseType.message}${
@@ -62,6 +61,11 @@ export default function (): void {
           }["${event}",${JSON.stringify(data)}]`
         );
       } else {
+        callbackCount++;
+        console.log("callbackCount", callbackCount);
+
+        callbackMap[callbackCount] = callback;
+
         socket.send(
           `${socketResponseType.message}${
             socketResponseCode.event
@@ -83,7 +87,9 @@ export default function (): void {
       //   `${socketResponseType.message}${socketResponseCode.event}1["ready",{"test":"test2"}]`
       // );
 
-      send("ready", { test: "test1" });
+      send("ready", { test: "test1" }, () => {
+        console.log("ack");
+      });
 
       // socket.send(
       //   `${socketResponseType.message}${socketResponseCode.event}["myping","2222!"]`
