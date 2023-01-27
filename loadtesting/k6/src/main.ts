@@ -74,23 +74,18 @@ export default function (): void {
       }
     }
 
-    function sendWaitAck(
+    function sendWithAck(
       event: string,
       data: any,
       timeout: number,
-      successCallback?: () => void,
-      failureCallback?: () => void
+      callback: (isSuccess: boolean, elapsed: number, data: any) => void
     ) {
       const startTime = Date.now();
 
       send(event, data, () => {
         const elapsed = Date.now() - startTime;
-
-        if (elapsed < timeout) {
-          if (successCallback != undefined) successCallback();
-        } else {
-          if (failureCallback != undefined) failureCallback();
-        }
+        const isSuccess = elapsed < timeout;
+        callback(isSuccess, elapsed, {});
       });
     }
 
@@ -104,15 +99,13 @@ export default function (): void {
       startTime = Date.now();
 
       const readyEvent = () => {
-        sendWaitAck(
+        sendWithAck(
           "ready",
           { test: "looking for ack" },
           5000,
-          () => {
-            ready_success.add(1);
-          },
-          () => {
-            ready_failure.add(1);
+          (isSuccess: boolean, elapsed: number, data: any) => {
+            if (isSuccess) ready_success.add(1);
+            else ready_failure.add(1);
           }
         );
       };
