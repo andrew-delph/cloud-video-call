@@ -78,17 +78,18 @@ export default function (): void {
       event: string,
       data: any,
       timeout: number,
-      success?: () => void,
-      failure?: () => void
+      successCallback?: () => void,
+      failureCallback?: () => void
     ) {
       const startTime = Date.now();
 
       send(event, data, () => {
         const elapsed = Date.now() - startTime;
+
         if (elapsed < timeout) {
-          if (success != undefined) success();
+          if (successCallback != undefined) successCallback();
         } else {
-          if (failure != undefined) failure();
+          if (failureCallback != undefined) failureCallback();
         }
       });
     }
