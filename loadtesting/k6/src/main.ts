@@ -20,7 +20,7 @@ const ready_failure = new Counter("ready_failure");
 let messageTime = new Trend("socketio_message_duration_ms");
 
 export default function (): void {
-  const secure = __ENV.MY_HOSTNAME != undefined ? true : false;
+  const secure = __ENV.REMOTE != undefined ? true : false;
 
   const domain = secure
     ? `react-video-call-fjutjsrlaa-uc.a.run.app`
