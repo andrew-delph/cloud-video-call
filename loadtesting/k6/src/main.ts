@@ -3,7 +3,7 @@ import { check, sleep } from "k6";
 import { makeConnection } from "../libs/socket.io";
 import { checkForEventMessages } from "../libs/socket.io";
 import { socketResponseCode, socketResponseType } from "../libs/constants";
-import { Trend } from "k6/metrics";
+import { Counter, Trend } from "k6/metrics";
 
 export const options = {
   vus: 50,
@@ -12,6 +12,9 @@ export const options = {
     testName: "socketsio poc",
   },
 };
+
+const ready_success = new Counter("ready_success");
+const ready_failure = new Counter("ready_failure");
 
 // this trend will show up in the k6 output results
 let messageTime = new Trend("socketio_message_duration_ms");
@@ -76,7 +79,7 @@ export default function (): void {
       data: any,
       timeout: number,
       success?: () => void,
-      error?: () => void
+      failure?: () => void
     ) {
       const startTime = Date.now();
 
@@ -85,7 +88,7 @@ export default function (): void {
         if (elapsed < timeout) {
           if (success != undefined) success();
         } else {
-          if (error != undefined) error();
+          if (failure != undefined) failure();
         }
       });
     }
@@ -103,37 +106,26 @@ export default function (): void {
       //   `${socketResponseType.message}${socketResponseCode.event}1["ready",{"test":"test2"}]`
       // );
 
-      send("ready", { test: "test1" }, () => {
-        console.log("ack andrew1xx");
-      });
-
       // send("ready", { test: "test1" }, () => {
       //   console.log("ack andrew2");
       // });
 
-      sendWaitAck(
-        "ready",
-        { test: "looking for ack" },
-        5,
-        () => {
-          console.log("ready1 success");
-        },
-        () => {
-          console.log("ready1 error");
-        }
-      );
+      const readyEvent = () => {
+        sendWaitAck(
+          "ready",
+          { test: "looking for ack" },
+          5000,
+          () => {
+            ready_success.add(1);
+          },
+          () => {
+            ready_failure.add(1);
+          }
+        );
+      };
 
-      sendWaitAck(
-        "ready",
-        { test: "looking for ack" },
-        0,
-        () => {
-          console.log("ready2 success");
-        },
-        () => {
-          console.log("ready2 error");
-        }
-      );
+      readyEvent();
+      readyEvent();
 
       // socket.send(
       //   `${socketResponseType.message}${socketResponseCode.event}["myping","2222!"]`
