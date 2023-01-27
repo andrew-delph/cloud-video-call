@@ -40,7 +40,7 @@ export default function (): void {
     // This will constantly poll for any messages received
     socket.on("message", function incoming(msg) {
       // checking for event messages
-      checkForEventMessages<string[]>(msg, function (messageData) {
+      checkForEventMessages<string[]>(msg, callbackMap, function (messageData) {
         endTime = Date.now();
         console.log(`
               ------------------------ 
@@ -88,7 +88,11 @@ export default function (): void {
       // );
 
       send("ready", { test: "test1" }, () => {
-        console.log("ack");
+        console.log("ack andrew1");
+      });
+
+      send("ready", { test: "test1" }, () => {
+        console.log("ack andrew2");
       });
 
       // socket.send(

@@ -52,6 +52,10 @@ export function checkResponse(response: string): soResponse {
   return { type: parseInt(response[0]), code: parseInt(response[1]) };
 }
 
+export function getCallbackId(response: string): number {
+  return parseInt(response.slice(2));
+}
+
 /**
  * In our message we're returning an array, but this may not be the case your app.
  * If that's the case, change the regex in the 'match' const.
@@ -73,8 +77,20 @@ export function getArrayFromRequest<T>(response: string): T {
  */
 export function checkForEventMessages<T>(
   msg: string,
+  callbackMap: { [key: number]: () => void },
   checks: (messageData: T) => void
 ): void {
+  // check if callback
+  if (
+    checkResponse(msg).type === socketResponseType.message &&
+    checkResponse(msg).code === socketResponseCode.ack
+  ) {
+    const callbackId = getCallbackId(msg);
+    const callback = callbackMap[callbackId];
+    if (callback != undefined) callback();
+    return;
+  }
+
   // Check for event messages
   const msgObject =
     // you can change this to check for other message types
