@@ -103,14 +103,6 @@ export default function (): void {
       // send an event message
       startTime = Date.now();
 
-      // socket.send(
-      //   `${socketResponseType.message}${socketResponseCode.event}1["ready",{"test":"test2"}]`
-      // );
-
-      // send("ready", { test: "test1" }, () => {
-      //   console.log("ack andrew2");
-      // });
-
       const readyEvent = () => {
         sendWaitAck(
           "ready",
@@ -128,18 +120,6 @@ export default function (): void {
       for (var i = 0; i < 50; i++) {
         readyEvent();
       }
-
-      // socket.send(
-      //   `${socketResponseType.message}${socketResponseCode.event}["myping","2222!"]`
-      // );
-
-      // socket.send(
-      //   `${socketResponseType.message}${socketResponseCode.event}["message","second message..."]`
-      // );
-
-      // socket.send(
-      //   `${socketResponseType.message}${socketResponseCode.event}["ready1",{}]`
-      // );
 
       // socket.setInterval(function timeout() {
       //   socket.ping();
