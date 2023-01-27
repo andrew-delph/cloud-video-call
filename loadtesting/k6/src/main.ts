@@ -122,7 +122,6 @@ export default function (): void {
     });
 
     socket.setTimeout(function () {
-      // console.log("2 seconds passed, closing the socket");
       socket.close();
     }, 1000 * 2);
   });
