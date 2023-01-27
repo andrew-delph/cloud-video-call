@@ -62,10 +62,7 @@ export default function (): void {
         );
       } else {
         callbackCount++;
-        console.log("callbackCount", callbackCount);
-
         callbackMap[callbackCount] = callback;
-
         socket.send(
           `${socketResponseType.message}${
             socketResponseCode.event
