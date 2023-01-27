@@ -14,6 +14,8 @@ import { getFunctions } from "firebase-admin/functions";
 
 dotenv.config();
 
+const LOCAL = process.env.LOCAL != undefined;
+
 initializeApp();
 
 const serverID = uuid();
@@ -70,11 +72,9 @@ io.on("connection", async (socket) => {
   // });
 
   socket.on("ready", async (data, callback) => {
-    console.log("ready data:", data);
-    console.log("ready callback:", callback);
     pubClient.sAdd(common.readySetName, socket.id);
 
-    if (process.env.LOCAL == undefined) {
+    if (!LOCAL) {
       try {
         await getFunctions().taskQueue("readyEvent").enqueue({ id: socket.id });
       } catch (e) {

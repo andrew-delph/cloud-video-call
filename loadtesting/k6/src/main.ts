@@ -110,9 +110,7 @@ export default function (): void {
         );
       };
 
-      for (var i = 0; i < 50; i++) {
-        readyEvent();
-      }
+      readyEvent();
 
       // socket.setInterval(function timeout() {
       //   socket.ping();
