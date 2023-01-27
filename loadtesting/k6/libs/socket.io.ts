@@ -81,13 +81,17 @@ export function checkForEventMessages<T>(
   checks: (messageData: T) => void
 ): void {
   // check if callback
+  console.log("mssg", msg);
   if (
     checkResponse(msg).type === socketResponseType.message &&
     checkResponse(msg).code === socketResponseCode.ack
   ) {
     const callbackId = getCallbackId(msg);
     const callback = callbackMap[callbackId];
-    if (callback != undefined) callback();
+    if (callback != undefined) {
+      delete callbackMap[callbackId];
+      callback();
+    }
     return;
   }
 

@@ -71,6 +71,31 @@ export default function (): void {
       }
     }
 
+    function sendWaitAck(
+      event: string,
+      data: any,
+      timeout: number,
+      success?: () => void,
+      error?: () => void
+    ): boolean {
+      const ack = [false];
+
+      send(event, data, () => {
+        console.log("sendWaitAck got the ack andrew");
+        ack[0] = true;
+      });
+
+      sleep(timeout);
+
+      return ack[0];
+
+      // if (ack[0] == false) {
+      //   if (error != undefined) error();
+      // } else {
+      //   if (success != undefined) success();
+      // }
+    }
+
     socket.on("open", function open() {
       console.log("connected");
       socket.send("2probe");
@@ -85,12 +110,15 @@ export default function (): void {
       // );
 
       send("ready", { test: "test1" }, () => {
-        console.log("ack andrew1");
+        console.log("ack andrew1xx");
       });
 
-      send("ready", { test: "test1" }, () => {
-        console.log("ack andrew2");
-      });
+      // send("ready", { test: "test1" }, () => {
+      //   console.log("ack andrew2");
+      // });
+
+      const readyAck = sendWaitAck("ready", { test: "looking for ack" }, 5);
+      console.log("readyAck", readyAck);
 
       // socket.send(
       //   `${socketResponseType.message}${socketResponseCode.event}["myping","2222!"]`

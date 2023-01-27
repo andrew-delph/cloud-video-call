@@ -84,7 +84,9 @@ io.on("connection", async (socket) => {
       console.log("local ready");
     }
 
-    if (callback != undefined) callback();
+    if (callback != undefined) {
+      callback();
+    }
   });
 
   // let updateCount = 0;
