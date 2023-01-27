@@ -16,18 +16,12 @@ export const options = {
 const ready_success = new Counter("ready_success");
 const ready_failure = new Counter("ready_failure");
 
-// this trend will show up in the k6 output results
-let messageTime = new Trend("socketio_message_duration_ms");
-
 export default function (): void {
   const secure = __ENV.REMOTE != undefined ? true : false;
 
   const domain = secure
     ? `react-video-call-fjutjsrlaa-uc.a.run.app`
     : `localhost:4000`;
-
-  let startTime = 0;
-  let endTime = 0;
 
   const sid = makeConnection(domain, secure);
 
@@ -39,6 +33,17 @@ export default function (): void {
   let response = ws.connect(url, {}, function (socket) {
     let callbackCount = 0;
     const callbackMap: { [key: number]: () => void } = {};
+
+    socket.on("close", function close() {
+      // console.log("disconnected");
+    });
+
+    socket.on("error", function (e) {
+      console.log("error", JSON.stringify(e));
+      if (e.error() != "websocket: close sent") {
+        console.log("An unexpected error occured: ", e.error());
+      }
+    });
 
     // This will constantly poll for any messages received
     socket.on("message", function incoming(msg) {
@@ -56,6 +61,7 @@ export default function (): void {
       });
     });
 
+    // FUNCTIONS
     function send(event: string, data: any, callback?: () => void) {
       if (callback == null) {
         socket.send(
@@ -88,15 +94,12 @@ export default function (): void {
         callback(isSuccess, elapsed, {});
       });
     }
+    // FUNCTIONS END
 
     socket.on("open", function open() {
-      // console.log("connected");
       socket.send("2probe");
       socket.send("5");
       socket.send("3");
-
-      // send an event message
-      startTime = Date.now();
 
       const readyEvent = () => {
         sendWithAck(
@@ -118,17 +121,6 @@ export default function (): void {
       // }, 1000 * 5);
     });
 
-    socket.on("close", function close() {
-      // console.log("disconnected");
-    });
-
-    socket.on("error", function (e) {
-      console.log("error", JSON.stringify(e));
-      if (e.error() != "websocket: close sent") {
-        console.log("An unexpected error occured: ", e.error());
-      }
-    });
-
     socket.setTimeout(function () {
       // console.log("2 seconds passed, closing the socket");
       socket.close();
@@ -136,7 +128,4 @@ export default function (): void {
   });
 
   check(response, { "status is 101": (r) => r && r.status === 101 });
-
-  // Log message time
-  messageTime.add(endTime - startTime);
 }
