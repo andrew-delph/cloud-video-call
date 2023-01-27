@@ -125,8 +125,9 @@ export default function (): void {
         );
       };
 
-      readyEvent();
-      readyEvent();
+      for (var i = 0; i < 50; i++) {
+        readyEvent();
+      }
 
       // socket.send(
       //   `${socketResponseType.message}${socketResponseCode.event}["myping","2222!"]`
