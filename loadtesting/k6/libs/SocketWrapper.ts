@@ -1,6 +1,7 @@
 import { Socket } from "k6/ws";
 import { socketResponseCode, socketResponseType } from "./constants";
 import { checkResponse, getArrayFromRequest, getCallbackId } from "./socket.io";
+import { uuidv4 as uuid } from "https://jslib.k6.io/k6-utils/1.4.0/index.js";
 
 export class SocketWrapper {
   socket: Socket;
@@ -11,7 +12,7 @@ export class SocketWrapper {
     (data: any, callback?: (data: any) => void) => void
   > = {};
 
-  waitingEvent: Record<
+  waitingEventMap: Record<
     string,
     (isSuccess: boolean, elapsed: number, data: any) => void
   > = {};
@@ -83,11 +84,16 @@ export class SocketWrapper {
   ) {
     const startTime = Date.now();
 
+    const waitingEventId = uuid();
+
     const eventMessageHandle = (data: any, callback?: (data: any) => void) => {
       const elapsed = Date.now() - startTime;
       const isSuccess = elapsed < timeout;
       handler(isSuccess, elapsed, data, callback);
+      delete this.waitingEventMap[waitingEventId];
     };
+
+    this.waitingEventMap[waitingEventId] = handler;
 
     this.eventMessageHandleMap[event] = eventMessageHandle;
   }
@@ -118,11 +124,16 @@ export class SocketWrapper {
   ) {
     const startTime = Date.now();
 
+    const waitingEventId = uuid();
+
     this.send(event, data, (callbackData) => {
       const elapsed = Date.now() - startTime;
       const isSuccess = elapsed < timeout;
       callback(isSuccess, elapsed, callbackData);
+      delete this.waitingEventMap[waitingEventId];
     });
+
+    this.waitingEventMap[waitingEventId] = callback;
   }
 
   sendAck(callbackId: number, data: any) {
@@ -131,5 +142,11 @@ export class SocketWrapper {
         socketResponseCode.ack
       }${callbackId}[${JSON.stringify(data)}]`
     );
+  }
+
+  failWaitingEvents() {
+    for (const waitingEvent of Object.values(this.waitingEventMap)) {
+      waitingEvent(false, 0, {});
+    }
   }
 }

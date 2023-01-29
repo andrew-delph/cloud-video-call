@@ -44,7 +44,7 @@ export default function (): void {
     });
 
     socket.on("close", function close() {
-      // console.log("disconnected");
+      socketWrapper.failWaitingEvents();
     });
 
     socket.on("error", function (e) {
