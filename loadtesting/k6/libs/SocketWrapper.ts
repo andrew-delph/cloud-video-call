@@ -59,7 +59,7 @@ export class SocketWrapper {
     }
   }
 
-  setEventMessageHandle(
+  listen(
     event: string,
     handler: (message: any, callback?: (data: any) => void) => void
   ) {
