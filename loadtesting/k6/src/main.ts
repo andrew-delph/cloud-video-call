@@ -53,6 +53,10 @@ export default function (): void {
       socket.send("3");
 
       const readyEvent = () => {
+        socketWrapper.setEventMessageHandle("match", (msg: any) => {
+          console.log("match:", msg);
+        });
+
         socketWrapper.sendWithAck(
           "ready",
           { test: "looking for ack" },
@@ -60,21 +64,10 @@ export default function (): void {
           (isSuccess: boolean, elapsed: number, data: any) => {
             if (isSuccess) ready_success.add(1);
             else ready_failure.add(1);
-            console.log("Ready ack data:", data);
+            // console.log("Ready ack data:", data);
           }
         );
       };
-
-      socketWrapper.sendWithAck(
-        "myping",
-        { test: "looking for ack" },
-        5000,
-        (isSuccess: boolean, elapsed: number, data: any) => {
-          if (isSuccess) ready_success.add(1);
-          else ready_failure.add(1);
-          console.log("myping ack data:", data);
-        }
-      );
 
       readyEvent();
 
@@ -86,7 +79,7 @@ export default function (): void {
 
     socket.setTimeout(function () {
       socket.close();
-    }, 1000 * 2);
+    }, 1000 * 10);
   });
 
   check(response, { "status is 101": (r) => r && r.status === 101 });

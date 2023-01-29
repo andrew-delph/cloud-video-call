@@ -18,6 +18,7 @@ export class SocketWrapper {
   }
 
   handleMessage(msg: string) {
+    // console.log("handlemsg:", msg);
     const response = checkResponse(msg);
     const type = response.type;
     const code = response.code;
@@ -42,6 +43,8 @@ export class SocketWrapper {
         const callback = this.eventMessageHandleMap[event];
         if (callback != undefined) {
           callback(message);
+        } else {
+          console.debug("no eventMessageHandle:", event);
         }
         break;
       }
