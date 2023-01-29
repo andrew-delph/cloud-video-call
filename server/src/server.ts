@@ -53,7 +53,7 @@ io.on("connection", async (socket) => {
   socket.on("myping", (arg, callback) => {
     console.log("myping", arg, callback);
     try {
-      if (callback != undefined) callback();
+      if (callback != undefined) callback("ping ding dong");
     } catch (e) {
       console.error(e);
     }
