@@ -5,8 +5,8 @@ import { checkResponse, getArrayFromRequest, getCallbackId } from "./socket.io";
 export class SocketWrapper {
   socket: Socket;
   callbackCount: number = 0;
-  ackCallbackMap: { [key: number]: () => void } = {};
-  eventMessageHandleMap: { [key: string]: () => void } = {};
+  ackCallbackMap: Record<string, () => void> = {};
+  eventMessageHandleMap: Record<string, (message: any) => void> = {};
 
   constructor(socket: Socket) {
     this.socket = socket;
@@ -36,13 +36,18 @@ export class SocketWrapper {
       }
       case socketResponseCode.event: {
         const msgObject = getArrayFromRequest(msg);
-        console.log("msgObject", msgObject);
+        const event = msgObject[0];
+        const message = msgObject[1];
+        const callback = this.eventMessageHandleMap[event];
+        if (callback != undefined) {
+          callback(message);
+        }
         break;
       }
     }
   }
 
-  setEventMessageHandle(event: string, handler: () => void) {
+  setEventMessageHandle(event: string, handler: (message: any) => void) {
     this.eventMessageHandleMap[event] = handler;
   }
 
