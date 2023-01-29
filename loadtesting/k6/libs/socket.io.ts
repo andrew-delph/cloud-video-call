@@ -62,10 +62,10 @@ export function getCallbackId(response: string): number {
  * @param response socketio response message
  * @returns the data from the response message
  */
-export function getArrayFromRequest<T>(response: string): T {
+export function getArrayFromRequest(response: string): string[] {
   const match = /\[.+\]/;
   const parsedResponse = response.match(match);
-  return parsedResponse ? JSON.parse(parsedResponse[0]) : "No Response";
+  return parsedResponse ? JSON.parse(parsedResponse[0]) : [];
 }
 
 /**
@@ -75,10 +75,10 @@ export function getArrayFromRequest<T>(response: string): T {
  * @param msg message sent from socket.io backend client
  * @param checks a function that you pass through which performs checks on the parsed message
  */
-export function checkForEventMessages<T>(
+export function checkForEventMessages(
   msg: string,
   callbackMap: { [key: number]: () => void },
-  checks: (messageData: T) => void
+  checks: (messageData: string[]) => void
 ): void {
   // check if callback
   // console.log("mssg", msg);
@@ -100,7 +100,7 @@ export function checkForEventMessages<T>(
     // you can change this to check for other message types
     checkResponse(msg).type === socketResponseType.message &&
     checkResponse(msg).code === socketResponseCode.event
-      ? getArrayFromRequest<T>(msg) // get data from message
+      ? getArrayFromRequest(msg) // get data from message
       : null;
 
   if (msgObject) {

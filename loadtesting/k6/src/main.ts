@@ -1,9 +1,8 @@
 import ws, { Socket } from "k6/ws";
 import { check, sleep } from "k6";
 import { makeConnection } from "../libs/socket.io";
-import { checkForEventMessages } from "../libs/socket.io";
-import { socketResponseCode, socketResponseType } from "../libs/constants";
 import { Counter, Trend } from "k6/metrics";
+import { SocketWrapper } from "../libs/SocketWrapper";
 
 export const options = {
   vus: 50,
@@ -31,8 +30,7 @@ export default function (): void {
   }://${domain}/socket.io/?EIO=4&transport=websocket&sid=${sid}`;
 
   let response = ws.connect(url, {}, function (socket) {
-    let callbackCount = 0;
-    const callbackMap: { [key: number]: () => void } = {};
+    const socketWrapper = new SocketWrapper(socket);
 
     socket.on("close", function close() {
       // console.log("disconnected");
@@ -45,64 +43,13 @@ export default function (): void {
       }
     });
 
-    // This will constantly poll for any messages received
-    socket.on("message", function incoming(msg) {
-      // checking for event messages
-      checkForEventMessages<string[]>(msg, callbackMap, function (messageData) {
-        // endTime = Date.now();
-        // console.log(`
-        //       ------------------------
-        //       event=${messageData[0]}
-        //       message=${messageData[1]}
-        //       vu=${__VU.toString()}
-        //       iter=${__ITER.toString()}
-        //       time=${Date.now().toString()}
-        //     `);
-      });
-    });
-
-    // FUNCTIONS
-    function send(event: string, data: any, callback?: () => void) {
-      if (callback == null) {
-        socket.send(
-          `${socketResponseType.message}${
-            socketResponseCode.event
-          }["${event}",${JSON.stringify(data)}]`
-        );
-      } else {
-        callbackCount++;
-        callbackMap[callbackCount] = callback;
-        socket.send(
-          `${socketResponseType.message}${
-            socketResponseCode.event
-          }${callbackCount}["${event}",${JSON.stringify(data)}]`
-        );
-      }
-    }
-
-    function sendWithAck(
-      event: string,
-      data: any,
-      timeout: number,
-      callback: (isSuccess: boolean, elapsed: number, data: any) => void
-    ) {
-      const startTime = Date.now();
-
-      send(event, data, () => {
-        const elapsed = Date.now() - startTime;
-        const isSuccess = elapsed < timeout;
-        callback(isSuccess, elapsed, {});
-      });
-    }
-    // FUNCTIONS END
-
     socket.on("open", function open() {
       socket.send("2probe");
       socket.send("5");
       socket.send("3");
 
       const readyEvent = () => {
-        sendWithAck(
+        socketWrapper.sendWithAck(
           "ready",
           { test: "looking for ack" },
           5000,
