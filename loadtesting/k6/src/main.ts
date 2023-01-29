@@ -14,9 +14,11 @@ export const options = {
 
 const ready_success = new Counter("ready_success");
 const ready_failure = new Counter("ready_failure");
+const ready_waiting_time = new Trend("ready_waiting_time", true);
 
 const match_success = new Counter("match_success");
 const match_failure = new Counter("match_failure");
+const match_waiting_time = new Trend("match_waiting_time", true);
 
 export default function (): void {
   const secure = __ENV.REMOTE == "true" ? true : false;
@@ -71,6 +73,7 @@ export default function (): void {
           ) => {
             if (isSuccess) {
               match_success.add(1);
+              match_waiting_time.add(elapsed);
             } else {
               match_failure.add(1);
             }
@@ -84,8 +87,10 @@ export default function (): void {
           { test: "looking for ack" },
           5000,
           (isSuccess: boolean, elapsed: number, data: any) => {
-            if (isSuccess) ready_success.add(1);
-            else ready_failure.add(1);
+            if (isSuccess) {
+              ready_success.add(1);
+              ready_waiting_time.add(elapsed);
+            } else ready_failure.add(1);
             // console.log("Ready ack data:", data);
           }
         );
