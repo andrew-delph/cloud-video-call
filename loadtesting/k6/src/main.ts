@@ -15,8 +15,11 @@ export const options = {
 const ready_success = new Counter("ready_success");
 const ready_failure = new Counter("ready_failure");
 
+const match_success = new Counter("match_success");
+const match_failure = new Counter("match_failure");
+
 export default function (): void {
-  const secure = __ENV.REMOTE != undefined ? true : false;
+  const secure = __ENV.REMOTE == "true" ? true : false;
 
   const domain = secure
     ? `react-video-call-fjutjsrlaa-uc.a.run.app`
@@ -36,6 +39,10 @@ export default function (): void {
       console.log("message:", msg);
     });
 
+    socketWrapper.setEventMessageHandle("myping", (msg: any, callback) => {
+      if (callback) callback("k6 myping ack");
+    });
+
     socket.on("close", function close() {
       // console.log("disconnected");
     });
@@ -53,8 +60,11 @@ export default function (): void {
       socket.send("3");
 
       const readyEvent = () => {
-        socketWrapper.setEventMessageHandle("match", (msg: any) => {
-          console.log("match:", msg);
+        socketWrapper.setEventMessageHandle("match", (msg: any, callback) => {
+          console.log("match", msg);
+          match_success.add(1);
+          if (callback) callback({});
+          // console.log("match:", msg);
         });
 
         socketWrapper.sendWithAck(

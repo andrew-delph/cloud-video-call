@@ -6,19 +6,20 @@ export class SocketWrapper {
   socket: Socket;
   callbackCount: number = 0;
   ackCallbackMap: Record<string, (data: any) => void> = {};
-  eventMessageHandleMap: Record<string, (data: any) => void> = {};
+  eventMessageHandleMap: Record<
+    string,
+    (data: any, callback?: (data: any) => void) => void
+  > = {};
 
   constructor(socket: Socket) {
     this.socket = socket;
-    const self = this;
 
-    socket.on("message", function incoming(msg) {
-      self.handleMessage(msg);
+    socket.on("message", (msg) => {
+      this.handleMessage(msg);
     });
   }
 
   handleMessage(msg: string) {
-    // console.log("handlemsg:", msg);
     const response = checkResponse(msg);
     const type = response.type;
     const code = response.code;
@@ -40,9 +41,16 @@ export class SocketWrapper {
         const msgObject = getArrayFromRequest(msg);
         const event = msgObject[0];
         const message = msgObject[1];
-        const callback = this.eventMessageHandleMap[event];
-        if (callback != undefined) {
-          callback(message);
+        const callbackId = getCallbackId(msg);
+        const callback = !Number.isNaN(callbackId)
+          ? (data: any) => {
+              this.sendAck(callbackId, data);
+            }
+          : undefined;
+
+        const eventMessageHandle = this.eventMessageHandleMap[event];
+        if (eventMessageHandle != undefined) {
+          eventMessageHandle(message, callback);
         } else {
           console.debug("no eventMessageHandle:", event);
         }
@@ -51,7 +59,10 @@ export class SocketWrapper {
     }
   }
 
-  setEventMessageHandle(event: string, handler: (message: any) => void) {
+  setEventMessageHandle(
+    event: string,
+    handler: (message: any, callback?: (data: any) => void) => void
+  ) {
     this.eventMessageHandleMap[event] = handler;
   }
 
@@ -86,5 +97,13 @@ export class SocketWrapper {
       const isSuccess = elapsed < timeout;
       callback(isSuccess, elapsed, callbackData);
     });
+  }
+
+  sendAck(callbackId: number, data: any) {
+    this.socket.send(
+      `${socketResponseType.message}${
+        socketResponseCode.ack
+      }${callbackId}[${JSON.stringify(data)}]`
+    );
   }
 }

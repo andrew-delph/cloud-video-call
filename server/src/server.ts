@@ -63,14 +63,6 @@ io.on("connection", async (socket) => {
     console.log("message:", msg);
   });
 
-  // socket.timeout(1000).emit("myping", "hello", (err: any, response: any) => {
-  //   if (err) {
-  //     console.error("err", err);
-  //   } else {
-  //     console.log("response", response);
-  //   }
-  // });
-
   socket.on("ready", async (data, callback) => {
     pubClient.sAdd(common.readySetName, socket.id);
 
@@ -123,12 +115,17 @@ io.on("connection", async (socket) => {
     `${await pubClient.sCard(common.activeSetName)}`
   );
 
-  socket.emit(
-    "message",
-    `hey from server :) I am ${serverID}. Redis says there is ${await pubClient.get(
-      "connectedNum"
-    )} connected sockets.`
-  );
+  socket.emit("message", `hey from server :) I am ${serverID}.`);
+
+  setTimeout(() => {
+    socket.timeout(1000).emit("myping", "hello", (err: any, response: any) => {
+      if (err) {
+        console.error("err", err);
+      } else {
+        console.log("response", response);
+      }
+    });
+  }, 1000);
 });
 
 Promise.all([pubClient.connect(), subClient.connect()])
