@@ -60,20 +60,24 @@ export default function (): void {
       socket.send("3");
 
       const readyEvent = () => {
-        const match_callback = [false];
+        socketWrapper.listen(
+          "match",
+          15000,
+          (
+            isSuccess: boolean,
+            elapsed: number,
+            data: any,
+            callback?: (data: any) => void
+          ) => {
+            if (isSuccess) {
+              match_success.add(1);
+            } else {
+              match_failure.add(1);
+            }
 
-        socket.setTimeout(() => {
-          if (match_callback[0] == false) {
-            match_failure.add(1);
+            if (callback) callback({});
           }
-        }, 15000);
-
-        socketWrapper.setEventMessageHandle("match", (msg: any, callback) => {
-          match_success.add(1);
-          if (callback) callback({});
-          match_callback[0] = true;
-          // console.log("match:", msg);
-        });
+        );
 
         socketWrapper.sendWithAck(
           "ready",

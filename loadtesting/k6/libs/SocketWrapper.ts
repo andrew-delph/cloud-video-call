@@ -11,6 +11,11 @@ export class SocketWrapper {
     (data: any, callback?: (data: any) => void) => void
   > = {};
 
+  waitingEvent: Record<
+    string,
+    (isSuccess: boolean, elapsed: number, data: any) => void
+  > = {};
+
   constructor(socket: Socket) {
     this.socket = socket;
 
@@ -64,6 +69,27 @@ export class SocketWrapper {
     handler: (message: any, callback?: (data: any) => void) => void
   ) {
     this.eventMessageHandleMap[event] = handler;
+  }
+
+  listen(
+    event: string,
+    timeout: number,
+    handler: (
+      isSuccess: boolean,
+      elapsed: number,
+      data: any,
+      callback?: (data: any) => void
+    ) => void
+  ) {
+    const startTime = Date.now();
+
+    const eventMessageHandle = (data: any, callback?: (data: any) => void) => {
+      const elapsed = Date.now() - startTime;
+      const isSuccess = elapsed < timeout;
+      handler(isSuccess, elapsed, data, callback);
+    };
+
+    this.eventMessageHandleMap[event] = eventMessageHandle;
   }
 
   send(event: string, data: any, callback?: (data: any) => void) {
