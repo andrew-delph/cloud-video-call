@@ -35,11 +35,11 @@ export default function (): void {
   let response = ws.connect(url, {}, function (socket) {
     const socketWrapper = new SocketWrapper(socket);
 
-    socketWrapper.listen("message", (msg: any) => {
+    socketWrapper.setEventMessageHandle("message", (msg: any) => {
       // console.log("message:", msg);
     });
 
-    socketWrapper.listen("myping", (msg: any, callback) => {
+    socketWrapper.setEventMessageHandle("myping", (msg: any, callback) => {
       if (callback) callback("k6 myping ack");
     });
 
@@ -68,7 +68,7 @@ export default function (): void {
           }
         }, 15000);
 
-        socketWrapper.listen("match", (msg: any, callback) => {
+        socketWrapper.setEventMessageHandle("match", (msg: any, callback) => {
           match_success.add(1);
           if (callback) callback({});
           match_callback[0] = true;
