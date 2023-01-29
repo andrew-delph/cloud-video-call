@@ -9,4 +9,4 @@ fi
 
 IMAGE_NAME=${IMAGE_NAME:="andrewdelph/k6_tests:latest"}
 
-docker run -v $PWD:/scripts -it --rm $IMAGE_NAME run /scripts/$1
+docker run --env REMOTE=true -v $PWD:/scripts -it --rm $IMAGE_NAME run /scripts/$1
