@@ -36,7 +36,7 @@ export default function (): void {
     const socketWrapper = new SocketWrapper(socket);
 
     socketWrapper.setEventMessageHandle("message", (msg: any) => {
-      console.log("message:", msg);
+      // console.log("message:", msg);
     });
 
     socketWrapper.setEventMessageHandle("myping", (msg: any, callback) => {
@@ -54,16 +54,24 @@ export default function (): void {
       }
     });
 
-    socket.on("open", function open() {
+    socket.on("open", () => {
       socket.send("2probe");
       socket.send("5");
       socket.send("3");
 
       const readyEvent = () => {
+        const match_callback = [false];
+
+        socket.setTimeout(() => {
+          if (match_callback[0] == false) {
+            match_failure.add(1);
+          }
+        }, 15000);
+
         socketWrapper.setEventMessageHandle("match", (msg: any, callback) => {
-          console.log("match", msg);
           match_success.add(1);
           if (callback) callback({});
+          match_callback[0] = true;
           // console.log("match:", msg);
         });
 
@@ -89,7 +97,7 @@ export default function (): void {
 
     socket.setTimeout(function () {
       socket.close();
-    }, 1000 * 10);
+    }, 1000 * 20);
   });
 
   check(response, { "status is 101": (r) => r && r.status === 101 });
