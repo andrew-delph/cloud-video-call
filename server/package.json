@@ -12,10 +12,12 @@
   "license": "ISC",
   "dependencies": {
     "@socket.io/redis-adapter": "^8.0.0",
+    "@types/lodash.throttle": "^4.1.7",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "firebase-admin": "^11.4.1",
     "immutable": "^4.1.0",
+    "lodash.throttle": "^4.1.1",
     "react-video-call-common": "file:../common",
     "redis": "^4.5.1",
     "socket.io": "^4.5.4",

@@ -12,6 +12,8 @@ import { initializeApp } from "firebase-admin/app";
 // import { getFirestore } from "firebase-admin/firestore";
 import { getFunctions } from "firebase-admin/functions";
 
+import { throttle } from "lodash";
+
 dotenv.config();
 
 const LOCAL = process.env.LOCAL != undefined;
@@ -92,10 +94,7 @@ io.on("connection", async (socket) => {
     // clearInterval(myInterval);
     pubClient.sRem(common.activeSetName, socket.id);
     pubClient.sRem(common.readySetName, socket.id);
-    pubClient.publish(
-      common.activeCountChannel,
-      `${await pubClient.sCard(common.activeSetName)}`
-    );
+    pubClient.publish(common.activeCountChannel, `change`);
   });
 
   socket.on("client_host", (value) => {
@@ -110,10 +109,7 @@ io.on("connection", async (socket) => {
     socket.to(`room-${socket.id}`).emit("icecandidate", value);
   });
 
-  pubClient.publish(
-    common.activeCountChannel,
-    `${await pubClient.sCard(common.activeSetName)}`
-  );
+  pubClient.publish(common.activeCountChannel, `change`);
 
   socket.emit("message", `hey from server :) I am ${serverID}.`);
 
@@ -134,7 +130,10 @@ Promise.all([pubClient.connect(), subClient.connect()])
     httpServer.listen(process.env.PORT);
   })
   .then(() => {
-    subClient.subscribe(common.activeCountChannel, (msg) => {
-      io.emit("activeCount", msg);
-    });
+    subClient.subscribe(
+      common.activeCountChannel,
+      throttle(async (msg) => {
+        io.emit("activeCount", await pubClient.sCard(common.activeSetName));
+      }, 1000)
+    );
   });
