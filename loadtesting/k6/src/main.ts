@@ -32,6 +32,10 @@ export default function (): void {
   let response = ws.connect(url, {}, function (socket) {
     const socketWrapper = new SocketWrapper(socket);
 
+    socketWrapper.setEventMessageHandle("message", (msg: any) => {
+      console.log("message:", msg);
+    });
+
     socket.on("close", function close() {
       // console.log("disconnected");
     });
@@ -56,9 +60,21 @@ export default function (): void {
           (isSuccess: boolean, elapsed: number, data: any) => {
             if (isSuccess) ready_success.add(1);
             else ready_failure.add(1);
+            console.log("Ready ack data:", data);
           }
         );
       };
+
+      socketWrapper.sendWithAck(
+        "myping",
+        { test: "looking for ack" },
+        5000,
+        (isSuccess: boolean, elapsed: number, data: any) => {
+          if (isSuccess) ready_success.add(1);
+          else ready_failure.add(1);
+          console.log("myping ack data:", data);
+        }
+      );
 
       readyEvent();
 

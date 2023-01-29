@@ -5,8 +5,8 @@ import { checkResponse, getArrayFromRequest, getCallbackId } from "./socket.io";
 export class SocketWrapper {
   socket: Socket;
   callbackCount: number = 0;
-  ackCallbackMap: Record<string, () => void> = {};
-  eventMessageHandleMap: Record<string, (message: any) => void> = {};
+  ackCallbackMap: Record<string, (data: any) => void> = {};
+  eventMessageHandleMap: Record<string, (data: any) => void> = {};
 
   constructor(socket: Socket) {
     this.socket = socket;
@@ -26,11 +26,12 @@ export class SocketWrapper {
 
     switch (code) {
       case socketResponseCode.ack: {
+        const msgObject = getArrayFromRequest(msg);
         const callbackId = getCallbackId(msg);
         const callback = this.ackCallbackMap[callbackId];
         if (callback != undefined) {
           delete this.ackCallbackMap[callbackId];
-          callback();
+          callback(msgObject);
         }
         break;
       }
@@ -51,7 +52,7 @@ export class SocketWrapper {
     this.eventMessageHandleMap[event] = handler;
   }
 
-  send(event: string, data: any, callback?: () => void) {
+  send(event: string, data: any, callback?: (data: any) => void) {
     if (callback == null) {
       this.socket.send(
         `${socketResponseType.message}${
@@ -77,10 +78,10 @@ export class SocketWrapper {
   ) {
     const startTime = Date.now();
 
-    this.send(event, data, () => {
+    this.send(event, data, (callbackData) => {
       const elapsed = Date.now() - startTime;
       const isSuccess = elapsed < timeout;
-      callback(isSuccess, elapsed, {});
+      callback(isSuccess, elapsed, callbackData);
     });
   }
 }
