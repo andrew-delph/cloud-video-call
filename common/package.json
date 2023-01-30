@@ -8,10 +8,24 @@
     "dev": "tsc-watch --onCompilationStarted \"echo 'watching common'\" --onSuccess \"npm pack\"",
     "build": "tsc && npm pack"
   },
+  "engines": {
+    "node": "16"
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^18.11.18",
     "tsc-watch": "^6.0.0",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "@types/uuid": "^9.0.0"
+  },
+  "dependencies": {
+    "neo4j-driver": "^5.5.0",
+    "uuid": "^9.0.0"
   }
 }
