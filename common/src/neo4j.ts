@@ -2,9 +2,9 @@ import * as neo4j from "neo4j-driver";
 
 import { v4 as uuid } from "uuid";
 
-const nodesNum = 0;
+const nodesNum = 1000;
 
-const edgesNum = 0;
+const edgesNum = nodesNum * 20;
 
 let result;
 
@@ -73,7 +73,7 @@ function printResults(result: any) {
 
     for (var i = 0; i < edges.length; i++) {
       const edge = edges[i];
-      console.log(edge);
+      // console.log(edge);
       await session.run(
         "MATCH (a:Person), (b:Person) WHERE a.name = $a AND b.name = $b CREATE (a)-[:KNOWS]->(b), (b)-[:KNOWS]->(a)",
         edge
@@ -96,16 +96,18 @@ function printResults(result: any) {
       console.log("graph doesn't exist");
     }
 
+    const start_time = performance.now();
     // create myGraph
+    console.log("creating graph");
     result = await session.run(
       "CALL gds.graph.project( 'myGraph', '*', '*' );"
     );
-    console.log("created graph");
+    console.log("created graph", performance.now() - start_time);
 
     // run simularity
 
     const query1 = `
-    CALL gds.nodeSimilarity.stream('myGraph' , { similarityCutoff: 0 , degreeCutoff: 2})
+    CALL gds.nodeSimilarity.stream('myGraph' , {})
         YIELD node1, node2, similarity
         RETURN gds.util.asNode(node1).name
         AS Person1, gds.util.asNode(node2).name
@@ -130,10 +132,20 @@ function printResults(result: any) {
         RETURN gds.util.asNode(nodeId).name AS name, score
         ORDER BY score DESC, name ASC`;
 
-    result = await session.run(query3);
+    const query4 = `
+        CALL gds.betweenness.stream('myGraph')
+          YIELD nodeId, score
+          RETURN gds.util.asNode(nodeId).name AS name, score
+          ORDER BY score ASC`;
+
+    result = await session.run(query1);
+
+    const end_time = performance.now();
+
+    console.log("it took: ", end_time - start_time);
 
     // console.log(result);
-    printResults(result);
+    // printResults(result);
   } finally {
     await session.close();
   }
