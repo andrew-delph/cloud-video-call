@@ -33,7 +33,7 @@ const io = new Server(httpServer, {
 });
 
 const pubClient = createClient({
-  url: `redis://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@redis-19534.c1.us-east1-2.gce.cloud.redislabs.com:19534`,
+  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
   name: "socket-server",
 });
 
@@ -127,7 +127,7 @@ io.on("connection", async (socket) => {
 Promise.all([pubClient.connect(), subClient.connect()])
   .then(() => {
     io.adapter(createAdapter(pubClient, subClient));
-    httpServer.listen(process.env.PORT);
+    httpServer.listen(4000);
   })
   .then(() => {
     subClient.subscribe(

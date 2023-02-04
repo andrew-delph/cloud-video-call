@@ -1,0 +1,28 @@
+version: "3"
+services:
+  nginx:
+    build:
+      context: ./nginx/
+      dockerfile: ./Dockerfile
+    ports:
+      - "80:80"
+  websocket:
+    build:
+      context: .
+      dockerfile: ./server/Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      # - REDIS_USER=redis
+      # - REDIS_PASSWORD=redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - FIREBASE_CONFIG={"projectId":"react-video-call-thing72","storageBucket":"react-video-call-thing72.appspot.com","locationId":"us-central"}
+    depends_on:
+      - redis
+  redis:
+    image: redis:latest
+    # environment:
+    # - REDIS_PASSWORD=redis
+    ports:
+      - "6379:6379"
