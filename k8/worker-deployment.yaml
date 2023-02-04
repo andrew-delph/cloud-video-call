@@ -25,17 +25,17 @@ spec:
         io.kompose.service: worker
     spec:
       containers:
-        # - env:
-        #     - name: FIREBASE_CONFIG
-        #       value: '{"projectId":"react-video-call-thing72","storageBucket":"react-video-call-thing72.appspot.com","locationId":"us-central"}'
-        #     - name: REDIS_HOST
-        #       value: redis
-        #     - name: REDIS_PORT
-        #       value: "6379"
-        image: andrewdelph/video-call-worker:latest
-        name: worker
-        ports:
-          - containerPort: 4000
-        resources: {}
+        - env:
+            - name: FIREBASE_CONFIG
+              value: '{"projectId":"react-video-call-thing72","storageBucket":"react-video-call-thing72.appspot.com","locationId":"us-central"}'
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: "6379"
+          image: andrewdelph/video-call-worker:latest
+          name: worker
+          ports:
+            - containerPort: 4000
+          resources: {}
       restartPolicy: Always
 status: {}
