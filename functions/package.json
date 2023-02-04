@@ -11,7 +11,9 @@
     "logs": "firebase functions:log",
     "copy-common": "npx copyfiles -f ../common/react-video-call-common-1.0.0.tgz . && npm install react-video-call-common-1.0.0.tgz",
     "reset-dev": "npm run copy-common && npm install",
-    "dev": "nodemon --config nodemon.json"
+    "dev": "nodemon --config nodemon.json",
+    "docker": "docker build -f . -t video-call-worker:latest ../",
+    "prod": "node ./lib/index.js"
   },
   "engines": {
     "node": "16"
@@ -19,12 +21,14 @@
   "main": "lib/index.js",
   "dependencies": {
     "@socket.io/redis-adapter": "^8.0.1",
+    "@types/amqplib": "^0.10.1",
     "@types/redlock": "^4.0.4",
+    "amqplib": "^0.10.3",
     "dotenv": "^16.0.3",
     "firebase-admin": "^10.3.0",
     "firebase-functions": "^4.1.1",
     "ioredis": "^5.2.5",
-    "react-video-call-common": "file:react-video-call-common-1.0.0.tgz",
+    "react-video-call-common": "file:../common",
     "redis": "^4.5.1",
     "redlock": "^5.0.0-beta.2",
     "socket.io": "^4.5.4",
