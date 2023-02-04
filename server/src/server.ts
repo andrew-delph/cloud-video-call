@@ -20,7 +20,7 @@ async function sendMessage(message: string) {
   try {
     const connection = await amqp.connect("amqp://rabbitmq");
     const channel = await connection.createChannel();
-    const queue = "test_queue";
+    const queue = "task_queue";
 
     await channel.assertQueue(queue, { durable: false });
     channel.sendToQueue(queue, Buffer.from(message));
