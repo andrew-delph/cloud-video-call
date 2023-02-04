@@ -14,6 +14,25 @@ import { getFunctions } from "firebase-admin/functions";
 
 import { throttle } from "lodash";
 
+import amqp from "amqplib";
+
+async function sendMessage(message: string) {
+  try {
+    const connection = await amqp.connect("amqp://localhost");
+    const channel = await connection.createChannel();
+    const queue = "test_queue";
+
+    await channel.assertQueue(queue, { durable: false });
+    channel.sendToQueue(queue, Buffer.from(message));
+
+    console.log(` [x] Sent message: ${message}`);
+    await channel.close();
+    connection.close();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 dotenv.config();
 
 const LOCAL = process.env.LOCAL != undefined;
@@ -68,15 +87,7 @@ io.on("connection", async (socket) => {
   socket.on("ready", async (data, callback) => {
     pubClient.sAdd(common.readySetName, socket.id);
 
-    if (!LOCAL) {
-      try {
-        await getFunctions().taskQueue("readyEvent").enqueue({ id: socket.id });
-      } catch (e) {
-        console.error(e);
-      }
-    } else {
-      console.log("local ready");
-    }
+    sendMessage("TESTISETNIESTNESITNISE");
 
     if (callback != undefined) {
       callback();
