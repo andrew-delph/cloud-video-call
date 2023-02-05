@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "tsc-watch --onCompilationStarted \"echo 'watching common'\" --onSuccess \"npm pack\"",
-    "build": "tsc && npm pack"
+    "dev": "tsc-watch --onCompilationStarted \"echo 'watching common'\"",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
