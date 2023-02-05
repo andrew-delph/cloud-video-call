@@ -6,7 +6,7 @@ metadata:
     kompose.version: 1.28.0 (c4137012e)
   creationTimestamp: null
   labels:
-    io.kompose.service: nginx
+    app: nginx
   name: nginx
 spec:
   ports:
@@ -14,7 +14,7 @@ spec:
       port: 80
       targetPort: 80
   selector:
-    io.kompose.service: nginx
+    app: nginx
   type: LoadBalancer
 status:
   loadBalancer: {}

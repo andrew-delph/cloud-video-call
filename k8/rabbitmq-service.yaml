@@ -6,7 +6,7 @@ metadata:
     kompose.version: 1.28.0 (HEAD)
   creationTimestamp: null
   labels:
-    io.kompose.service: rabbitmq
+    app: rabbitmq
   name: rabbitmq
 spec:
   ports:
@@ -17,6 +17,6 @@ spec:
       port: 15672
       targetPort: 15672
   selector:
-    io.kompose.service: rabbitmq
+    app: rabbitmq
 status:
   loadBalancer: {}

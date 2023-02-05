@@ -6,13 +6,13 @@ metadata:
     kompose.version: 1.28.0 (HEAD)
   creationTimestamp: null
   labels:
-    io.kompose.service: rabbitmq
+    app: rabbitmq
   name: rabbitmq
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: rabbitmq
+      app: rabbitmq
   strategy: {}
   template:
     metadata:
@@ -22,7 +22,7 @@ spec:
       creationTimestamp: null
       labels:
         io.kompose.network/backend-demo-default: "true"
-        io.kompose.service: rabbitmq
+        app: rabbitmq
     spec:
       containers:
         - args:

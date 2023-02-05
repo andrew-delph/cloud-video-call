@@ -6,13 +6,13 @@ metadata:
     kompose.version: 1.28.0 (c4137012e)
   creationTimestamp: null
   labels:
-    io.kompose.service: worker
+    app: worker
   name: worker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: worker
+      app: worker
   strategy: {}
   template:
     metadata:
@@ -22,7 +22,7 @@ spec:
       creationTimestamp: null
       labels:
         io.kompose.network/react-video-call-default: "true"
-        io.kompose.service: worker
+        app: worker
     spec:
       containers:
         - env:

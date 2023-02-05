@@ -6,7 +6,7 @@ metadata:
     kompose.version: 1.28.0 (c4137012e)
   creationTimestamp: null
   labels:
-    io.kompose.service: websocket
+    app: websocket
   name: websocket
 spec:
   ports:
@@ -14,6 +14,6 @@ spec:
       port: 4000
       targetPort: 4000
   selector:
-    io.kompose.service: websocket
+    app: websocket
 status:
   loadBalancer: {}
