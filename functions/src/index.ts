@@ -1,13 +1,13 @@
 import { connect, ConsumeMessage } from "amqplib";
 import { readyEvent } from "./functions";
+import * as common from "react-video-call-common";
 
 async function worker() {
   try {
     const connection = await connect("amqp://rabbitmq");
     const channel = await connection.createChannel();
-    const queue = "task_queue";
 
-    await channel.assertQueue(queue, {
+    await channel.assertQueue(common.readyQueueName, {
       durable: true,
     });
 
@@ -15,21 +15,20 @@ async function worker() {
     console.log(" [x] Awaiting RPC requests");
 
     channel.consume(
-      queue,
-      (msg: ConsumeMessage | null) => {
+      common.readyQueueName,
+      async (msg: ConsumeMessage | null) => {
         if (msg == null) {
           console.log("msg is null");
           return;
         }
 
-        readyEvent(msg, channel);
-        // const secs = msg.content.toString().split(".").length - 1;
-
-        console.log(" [x] Received %s", msg.content.toString());
-        setTimeout(() => {
-          console.log(" [x] Done");
+        try {
+          await readyEvent(msg, channel);
           channel.ack(msg);
-        }, 5 * 1000);
+        } catch (e) {
+          console.log("readyEvent error=" + e);
+          channel.nack(msg, false, false);
+        }
       },
       {
         noAck: false,

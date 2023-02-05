@@ -27,10 +27,8 @@ const connectRabbit = async () => {
 
 const sendMessage = async (message: string) => {
   try {
-    const queue = "task_queue";
-
-    await rabbitChannel.assertQueue(queue, { durable: true });
-    rabbitChannel.sendToQueue(queue, Buffer.from(message));
+    await rabbitChannel.assertQueue(common.readyQueueName, { durable: true });
+    rabbitChannel.sendToQueue(common.readyQueueName, Buffer.from(message));
 
     console.log(` [x] Sent message: ${message}`);
   } catch (error) {
