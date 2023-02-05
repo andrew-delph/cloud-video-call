@@ -16,9 +16,9 @@ RUN cd functions && npm install
 # Copy local code to the container image.
 
 COPY common common
-COPY functions functions
-
 RUN cd common && npm run build
+
+COPY functions functions
 RUN cd functions && npm run build
 
 WORKDIR /usr/src/app/functions

@@ -16,9 +16,9 @@ RUN cd server && npm install
 # Copy local code to the container image.
 
 COPY common common
-COPY server server
-
 RUN cd common && npm run build
+
+COPY server server
 RUN cd server && npm run build
 
 WORKDIR /usr/src/app/server
