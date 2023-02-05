@@ -16,8 +16,6 @@ const ready_success = new Counter("ready_success");
 const ready_failure = new Counter("ready_failure");
 const ready_waiting_time = new Trend("ready_waiting_time", true);
 
-const match_success = new Counter("match_success");
-const match_failure = new Counter("match_failure");
 const match_waiting_time = new Trend("match_waiting_time", true);
 
 export default function (): void {
@@ -72,11 +70,11 @@ export default function (): void {
             callback?: (data: any) => void
           ) => {
             if (isSuccess) {
-              match_success.add(1);
               match_waiting_time.add(elapsed);
             } else {
-              match_failure.add(1);
             }
+
+            check(isSuccess, { "match event": (r) => r });
 
             if (callback) callback({});
           }
@@ -88,9 +86,10 @@ export default function (): void {
           5000,
           (isSuccess: boolean, elapsed: number, data: any) => {
             if (isSuccess) {
-              ready_success.add(1);
               ready_waiting_time.add(elapsed);
-            } else ready_failure.add(1);
+            } else {
+            }
+            check(isSuccess, { "ready event": (r) => r });
             // console.log("Ready ack data:", data);
           }
         );

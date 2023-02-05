@@ -28,7 +28,8 @@
   "scripts": {
     "webpack": "webpack --progress",
     "webpack:watch": "webpack --progress --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "main": "k6 run dist/main.js"
   },
   "keywords": [
     "k6"

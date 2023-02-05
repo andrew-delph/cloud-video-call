@@ -44,7 +44,7 @@ redlock.on("error", (error) => {
   }
 
   // Log all other errors.
-  console.error(error);
+  console.error("redlock error", error);
 });
 
 const httpServer = createServer();
