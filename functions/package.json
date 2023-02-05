@@ -11,8 +11,8 @@
     "logs": "firebase functions:log",
     "copy-common": "npx copyfiles -f ../common/react-video-call-common-1.0.0.tgz . && npm install react-video-call-common-1.0.0.tgz",
     "reset-dev": "npm run copy-common && npm install",
-    "dev": "nodemon --config nodemon.json",
-    "docker": "docker build -f . -t video-call-worker:latest ../",
+    "dev": "tsc-watch --onSuccess \"npm run docker\" --onCompilationStarted \"echo 'watching worker'\"",
+    "docker": "docker build -f .  -t andrewdelph/video-call-worker:latest ../ && docker push andrewdelph/video-call-worker:latest",
     "prod": "node ./lib/index.js"
   },
   "engines": {
@@ -20,9 +20,6 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@socket.io/redis-adapter": "^8.0.1",
-    "@types/amqplib": "^0.10.1",
-    "@types/redlock": "^4.0.4",
     "amqplib": "^0.10.3",
     "dotenv": "^16.0.3",
     "firebase-admin": "^10.3.0",
@@ -35,6 +32,10 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@socket.io/redis-adapter": "^8.0.1",
+    "@types/amqplib": "^0.10.1",
+    "@types/redlock": "^4.0.4",
+    "tsc-watch": "^6.0.0",
     "@types/node": "^18.11.18",
     "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^5.12.0",

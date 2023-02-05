@@ -58,7 +58,7 @@ const io = new Server(httpServer, {
 
 const pubClient = createClient({
   url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
-  name: "socket-server",
+  name: "websocket",
 });
 
 pubClient.on("error", function (error) {

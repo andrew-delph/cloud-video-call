@@ -1,4 +1,4 @@
-import * as functions from "firebase-functions";
+// import * as functions from "firebase-functions";
 import { createAdapter } from "@socket.io/redis-adapter";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -9,7 +9,7 @@ import { initializeApp } from "firebase-admin/app";
 import * as common from "react-video-call-common";
 import Redlock, { ResourceLockedError } from "redlock";
 import { Redis } from "ioredis";
-import { Channel } from "amqplib";
+import { Channel, ConsumeMessage } from "amqplib";
 
 dotenv.config();
 initializeApp();
@@ -19,9 +19,7 @@ type RedisClientType = ReturnType<typeof createClient>;
 
 function createRedisClient(): RedisClientType {
   const redisClient = createClient({
-    url: `redis://${functions.config().redis.user}:${
-      functions.config().redis.pass
-    }@redis-19534.c1.us-east1-2.gce.cloud.redislabs.com:19534`,
+    url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
     name: "functions",
   });
   redisClient.on("error", function (error) {
@@ -34,10 +32,7 @@ const mainRedisClient: RedisClientType = createRedisClient();
 const pubRedisClient: RedisClientType = createRedisClient();
 const subRedisClient: RedisClientType = createRedisClient();
 const lockRedisClient = new Redis({
-  port: 19534,
-  host: "redis-19534.c1.us-east1-2.gce.cloud.redislabs.com",
-  username: functions.config().redis.user,
-  password: functions.config().redis.pass,
+  host: `${process.env.REDIS_HOST}`,
 });
 
 const redlock = new Redlock([lockRedisClient]);
@@ -109,10 +104,10 @@ const init = Promise.all([
 //     functions.logger.info("completed...");
 //   });
 
-export const readyEvent = async (data: any, channel: Channel) => {
+export const readyEvent = async (msg: ConsumeMessage, channel: Channel) => {
   await init;
 
-  const socketId: string = data.id;
+  const socketId: string = msg.content.toString();
 
   io.in(socketId).emit("message", `readyEvent ${socketId}`);
 

@@ -1,4 +1,5 @@
 import { connect, ConsumeMessage } from "amqplib";
+import { readyEvent } from "./functions";
 
 async function worker() {
   try {
@@ -20,13 +21,15 @@ async function worker() {
           console.log("msg is null");
           return;
         }
-        const secs = msg.content.toString().split(".").length - 1;
 
-        console.log(" [x] Received %s", msg.content.toString());
-        setTimeout(() => {
-          console.log(" [x] Done");
-          channel.ack(msg);
-        }, secs * 1000);
+        readyEvent(msg, channel);
+        // const secs = msg.content.toString().split(".").length - 1;
+
+        // console.log(" [x] Received %s", msg.content.toString());
+        // setTimeout(() => {
+        //   console.log(" [x] Done");
+        //   channel.ack(msg);
+        // }, secs * 1000);
       },
       {
         noAck: false,
