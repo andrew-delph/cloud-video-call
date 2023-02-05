@@ -3,40 +3,37 @@ import { readyEvent } from "./functions";
 import * as common from "react-video-call-common";
 
 async function worker() {
-  try {
-    const connection = await connect("amqp://rabbitmq");
-    const channel = await connection.createChannel();
+  const connection = await connect("amqp://rabbitmq");
 
-    await channel.assertQueue(common.readyQueueName, {
-      durable: true,
-    });
+  const channel = await connection.createChannel();
 
-    channel.prefetch(1);
-    console.log(" [x] Awaiting RPC requests");
+  await channel.assertQueue(common.readyQueueName, {
+    durable: true,
+  });
 
-    channel.consume(
-      common.readyQueueName,
-      async (msg: ConsumeMessage | null) => {
-        if (msg == null) {
-          console.log("msg is null");
-          return;
-        }
+  channel.prefetch(1);
+  console.log(" [x] Awaiting RPC requests");
 
-        try {
-          await readyEvent(msg, channel);
-          channel.ack(msg);
-        } catch (e) {
-          console.log("readyEvent error=" + e);
-          channel.nack(msg, false, false);
-        }
-      },
-      {
-        noAck: false,
+  channel.consume(
+    common.readyQueueName,
+    async (msg: ConsumeMessage | null) => {
+      if (msg == null) {
+        console.log("msg is null");
+        return;
       }
-    );
-  } catch (error) {
-    console.error(error);
-  }
+
+      try {
+        await readyEvent(msg, channel);
+        channel.ack(msg);
+      } catch (e) {
+        console.log("readyEvent error=" + e);
+        channel.nack(msg, false, false);
+      }
+    },
+    {
+      noAck: false,
+    }
+  );
 }
 
 worker();

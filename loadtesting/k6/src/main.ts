@@ -6,8 +6,8 @@ import { SocketWrapper } from "../libs/SocketWrapper";
 
 export const options = {
   // stages: [{ duration: "10s", target: 50 }],
-  vus: 50,
-  // duration: "15s",
+  vus: 200,
+  duration: "15s",
   tags: {
     testName: "socketsio poc",
   },
@@ -105,7 +105,7 @@ export default function (): void {
 
     socket.setTimeout(function () {
       socket.close();
-    }, 1000 * 20);
+    }, 1000 * 5);
   });
 
   check(response, { "status is 101": (r) => r && r.status === 101 });
