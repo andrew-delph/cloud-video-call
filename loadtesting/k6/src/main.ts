@@ -5,15 +5,14 @@ import { Counter, Trend } from "k6/metrics";
 import { SocketWrapper } from "../libs/SocketWrapper";
 
 export const options = {
+  // stages: [{ duration: "10s", target: 50 }],
   vus: 50,
-  duration: "15s",
+  // duration: "15s",
   tags: {
     testName: "socketsio poc",
   },
 };
 
-const ready_success = new Counter("ready_success");
-const ready_failure = new Counter("ready_failure");
 const ready_waiting_time = new Trend("ready_waiting_time", true);
 
 const match_waiting_time = new Trend("match_waiting_time", true);
@@ -23,7 +22,7 @@ export default function (): void {
 
   const domain = secure
     ? `react-video-call-fjutjsrlaa-uc.a.run.app`
-    : `localhost`;
+    : `34.27.73.223`;
 
   const sid = makeConnection(domain, secure);
 
@@ -72,6 +71,7 @@ export default function (): void {
             if (isSuccess) {
               match_waiting_time.add(elapsed);
             } else {
+              // console.log("match failure:" + data);
             }
 
             check(isSuccess, { "match event": (r) => r });
@@ -88,9 +88,9 @@ export default function (): void {
             if (isSuccess) {
               ready_waiting_time.add(elapsed);
             } else {
+              // console.log("ready failure:" + data);
             }
             check(isSuccess, { "ready event": (r) => r });
-            // console.log("Ready ack data:", data);
           }
         );
       };

@@ -28,7 +28,7 @@ const queueReadyEvent = async (message: string) => {
     await rabbitChannel.assertQueue(common.readyQueueName, { durable: true });
     rabbitChannel.sendToQueue(common.readyQueueName, Buffer.from(message));
 
-    console.log(` [x] Sent message: ${message}`);
+    // console.log(` [x] Sent message: ${message}`);
   } catch (error) {
     console.error(error);
   }
@@ -66,12 +66,12 @@ app.get("*", (req, res) => {
 });
 
 io.on("connection", async (socket) => {
-  console.log("connected");
+  // console.log("connected");
 
   pubClient.sAdd(common.activeSetName, socket.id);
 
   socket.on("myping", (arg, callback) => {
-    console.log("myping", arg, callback);
+    // console.log("myping", arg, callback);
     try {
       if (callback != undefined) callback("ping ding dong");
     } catch (e) {
@@ -100,7 +100,7 @@ io.on("connection", async (socket) => {
   // }, 5000);
 
   socket.on("disconnect", async () => {
-    console.log("disconnected");
+    // console.log("disconnected");
     // clearInterval(myInterval);
     pubClient.sRem(common.activeSetName, socket.id);
     pubClient.sRem(common.readySetName, socket.id);
@@ -123,15 +123,15 @@ io.on("connection", async (socket) => {
 
   socket.emit("message", `Hey from server :) I am ${serverID}.`);
 
-  setTimeout(() => {
-    socket.timeout(1000).emit("myping", "hello", (err: any, response: any) => {
-      if (err) {
-        console.error("err", err);
-      } else {
-        console.log("response", response);
-      }
-    });
-  }, 1000);
+  // setTimeout(() => {
+  //   socket.timeout(1000).emit("myping", "hello", (err: any, response: any) => {
+  //     if (err) {
+  //       console.error("err", err);
+  //     } else {
+  //       // console.log("response", response);
+  //     }
+  //   });
+  // }, 1000);
 });
 
 Promise.all([pubClient.connect(), subClient.connect()])

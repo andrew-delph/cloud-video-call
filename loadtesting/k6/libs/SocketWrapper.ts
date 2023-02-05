@@ -146,7 +146,7 @@ export class SocketWrapper {
 
   failWaitingEvents() {
     for (const waitingEvent of Object.values(this.waitingEventMap)) {
-      waitingEvent(false, 0, {});
+      waitingEvent(false, 0, "failed wait event.");
     }
   }
 }
