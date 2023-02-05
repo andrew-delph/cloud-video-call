@@ -126,7 +126,7 @@ io.on("connection", async (socket) => {
 
   pubClient.publish(common.activeCountChannel, `change`);
 
-  socket.emit("message", `hey from server :) I am ${serverID}.`);
+  socket.emit("message", `Hey from server :) I am ${serverID}.`);
 
   setTimeout(() => {
     socket.timeout(1000).emit("myping", "hello", (err: any, response: any) => {

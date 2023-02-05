@@ -4,10 +4,10 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "tsc-watch --onSuccess \"node ./dist/server.js\" --onCompilationStarted \"echo 'watching server'\"",
+    "dev": "tsc-watch --onSuccess \"npm run docker\" --onCompilationStarted \"echo 'watching server'\"",
     "build": "tsc",
     "prod": "node ./dist/server.js",
-    "docker": "docker build -f .  -t video-call-websocket:latest ../"
+    "docker": "docker build -f .  -t andrewdelph/video-call-websocket:latest ../ && docker push andrewdelph/video-call-websocket:latest"
   },
   "author": "",
   "license": "ISC",
