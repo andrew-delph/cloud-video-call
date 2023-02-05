@@ -25,7 +25,7 @@ export default function (): void {
 
   const domain = secure
     ? `react-video-call-fjutjsrlaa-uc.a.run.app`
-    : `localhost:4000`;
+    : `localhost`;
 
   const sid = makeConnection(domain, secure);
 
