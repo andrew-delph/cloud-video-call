@@ -9,8 +9,6 @@ import { v4 as uuid } from "uuid";
 import * as common from "react-video-call-common";
 
 import { initializeApp } from "firebase-admin/app";
-// import { getFirestore } from "firebase-admin/firestore";
-import { getFunctions } from "firebase-admin/functions";
 
 import { throttle } from "lodash";
 
@@ -37,8 +35,6 @@ const queueReadyEvent = async (message: string) => {
 };
 
 dotenv.config();
-
-const LOCAL = process.env.LOCAL != undefined;
 
 initializeApp();
 
