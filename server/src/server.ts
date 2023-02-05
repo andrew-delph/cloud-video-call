@@ -16,22 +16,26 @@ import { throttle } from "lodash";
 
 import amqp from "amqplib";
 
-async function sendMessage(message: string) {
+let rabbitConnection: amqp.Connection;
+let rabbitChannel: amqp.Channel;
+
+const connectRabbit = async () => {
+  rabbitConnection = await amqp.connect("amqp://rabbitmq");
+  rabbitChannel = await rabbitConnection.createChannel();
+};
+
+const sendMessage = async (message: string) => {
   try {
-    const connection = await amqp.connect("amqp://rabbitmq");
-    const channel = await connection.createChannel();
     const queue = "task_queue";
 
-    await channel.assertQueue(queue, { durable: true });
-    channel.sendToQueue(queue, Buffer.from(message));
+    await rabbitChannel.assertQueue(queue, { durable: true });
+    rabbitChannel.sendToQueue(queue, Buffer.from(message));
 
     console.log(` [x] Sent message: ${message}`);
-    await channel.close();
-    connection.close();
   } catch (error) {
     console.error(error);
   }
-}
+};
 
 dotenv.config();
 
@@ -135,7 +139,7 @@ io.on("connection", async (socket) => {
   }, 1000);
 });
 
-Promise.all([pubClient.connect(), subClient.connect()])
+Promise.all([pubClient.connect(), subClient.connect(), connectRabbit])
   .then(() => {
     io.adapter(createAdapter(pubClient, subClient));
     httpServer.listen(4000);
