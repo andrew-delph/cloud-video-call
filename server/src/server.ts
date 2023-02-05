@@ -25,7 +25,7 @@ const connectRabbit = async () => {
   console.log("rabbit connected");
 };
 
-const sendMessage = async (message: string) => {
+const queueReadyEvent = async (message: string) => {
   try {
     await rabbitChannel.assertQueue(common.readyQueueName, { durable: true });
     rabbitChannel.sendToQueue(common.readyQueueName, Buffer.from(message));
@@ -90,7 +90,7 @@ io.on("connection", async (socket) => {
   socket.on("ready", async (data, callback) => {
     pubClient.sAdd(common.readySetName, socket.id);
 
-    sendMessage(socket.id);
+    queueReadyEvent(socket.id);
 
     if (callback != undefined) {
       callback();
