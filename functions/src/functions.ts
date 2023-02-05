@@ -131,8 +131,7 @@ export const readyEvent = async (msg: ConsumeMessage, channel: Channel) => {
 
   if (otherId == null) {
     console.error(`otherID is null`);
-    return;
-    // throw "other id is null";
+    throw "other id is null";
   }
 
   redlock.using(
@@ -165,8 +164,7 @@ export const readyEvent = async (msg: ConsumeMessage, channel: Channel) => {
       if (otherIdExists == false) {
         console.log("otherId does not exist in the set.");
         // task is not complete
-        // throw "otherId does not exist in the set.";
-        return;
+        throw "otherId does not exist in the set.";
       }
 
       io.socketsLeave(`room-${otherId}`);
@@ -239,9 +237,7 @@ export const readyEvent = async (msg: ConsumeMessage, channel: Channel) => {
         .catch((value) => {
           io.in(socketId).emit("message", `host paring: failed with ${value}`);
           io.in(otherId).emit("message", `guest paring: failed with ${value}`);
-          console.log(`match failed with ${value}`);
-          return;
-          // throw `match failed with ${value}`;
+          throw `match failed with ${value}`;
         });
     }
   );
