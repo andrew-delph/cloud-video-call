@@ -4,10 +4,11 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "tsc-watch --onSuccess \"npm run docker\" --onCompilationStarted \"echo 'watching server'\"",
+    "dev": "tsc-watch --onSuccess \"npm run k8-restart\" --onCompilationStarted \"echo 'watching server'\"",
     "build": "tsc",
     "prod": "node ./dist/server.js",
-    "docker": "docker build -f .  -t andrewdelph/video-call-websocket:latest ../ && docker push andrewdelph/video-call-websocket:latest"
+    "docker": "docker build -f .  -t andrewdelph/video-call-websocket:latest ../ && docker push andrewdelph/video-call-websocket:latest",
+    "k8-restart": "npm run docker && kubectl rollout restart deployment/websocket && kubectl rollout status deployment/websocket --watch=true --timeout=60s && kubectl logs --selector=app=websocket -f"
   },
   "author": "",
   "license": "ISC",

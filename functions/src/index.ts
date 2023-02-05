@@ -25,11 +25,11 @@ async function worker() {
         readyEvent(msg, channel);
         // const secs = msg.content.toString().split(".").length - 1;
 
-        // console.log(" [x] Received %s", msg.content.toString());
-        // setTimeout(() => {
-        //   console.log(" [x] Done");
-        //   channel.ack(msg);
-        // }, secs * 1000);
+        console.log(" [x] Received %s", msg.content.toString());
+        setTimeout(() => {
+          console.log(" [x] Done");
+          channel.ack(msg);
+        }, 5 * 1000);
       },
       {
         noAck: false,
