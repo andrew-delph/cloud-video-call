@@ -91,7 +91,7 @@ io.on("connection", async (socket) => {
   socket.on("ready", async (data, callback) => {
     pubClient.sAdd(common.readySetName, socket.id);
 
-    sendMessage("TESTISETNIESTNESITNISE");
+    sendMessage(socket.id);
 
     if (callback != undefined) {
       callback();
