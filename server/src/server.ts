@@ -22,6 +22,7 @@ let rabbitChannel: amqp.Channel;
 const connectRabbit = async () => {
   rabbitConnection = await amqp.connect("amqp://rabbitmq");
   rabbitChannel = await rabbitConnection.createChannel();
+  console.log("rabbit connected");
 };
 
 const sendMessage = async (message: string) => {
@@ -139,10 +140,14 @@ io.on("connection", async (socket) => {
   }, 1000);
 });
 
-Promise.all([pubClient.connect(), subClient.connect(), connectRabbit])
+Promise.all([pubClient.connect(), subClient.connect()])
+  .then(async () => {
+    await connectRabbit();
+  })
   .then(() => {
     io.adapter(createAdapter(pubClient, subClient));
     httpServer.listen(4000);
+    console.log("server started");
   })
   .then(() => {
     subClient.subscribe(
