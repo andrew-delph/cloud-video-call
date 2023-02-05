@@ -11,14 +11,14 @@ async function worker() {
     durable: true,
   });
 
-  channel.prefetch(1);
+  // channel.prefetch(10);
   console.log(" [x] Awaiting RPC requests");
 
   channel.consume(
     common.readyQueueName,
     async (msg: ConsumeMessage | null) => {
       if (msg == null) {
-        console.log("msg is null");
+        console.log("msg is null.");
         return;
       }
 
