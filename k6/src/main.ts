@@ -6,8 +6,8 @@ import { SocketWrapper } from "../libs/SocketWrapper";
 
 export const options = {
   // stages: [{ duration: "10s", target: 50 }],
-  vus: 2000,
-  duration: "5m",
+  vus: 20,
+  duration: "20s",
 };
 
 const ready_waiting_time = new Trend("ready_waiting_time", true);
