@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -o resources/
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: prometheus
+  name: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: prometheus
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -o resources/
+        kompose.version: 1.28.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/example-default: "true"
+        io.kompose.service: prometheus
+    spec:
+#      initContainers:
+#        - args:
+#              - /bin/chmod
+#              - -R
+#              - "777"
+#              - /prometheus/
+#          image: busybox
+#          name: prominit
+#          resources: {}
+#          volumeMounts:
+#            - mountPath: /prometheus
+#              name: prom-data
+      containers:
+        - args:
+            - --web.enable-remote-write-receiver
+            - --enable-feature=native-histograms
+            - --config.file=/etc/prometheus/prometheus.yml
+          image: prom/prometheus:v2.40.7
+          name: prometheus
+          ports:
+            - containerPort: 9090
+          resources: {}
+          securityContext:
+            privileged: true
+#          volumeMounts:
+#            - mountPath: /prometheus/data
+#              name: prom-data
+      restartPolicy: Always
+#      volumes:
+#        - name: prom-data
+#          persistentVolumeClaim:
+#            claimName: prom-data
+status: {}
