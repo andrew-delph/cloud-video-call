@@ -23,7 +23,7 @@ export default function (): void {
 
   const secure = false;
 
-  const domain = `34.27.73.223`;
+  const domain = `nginx`;
 
   const sid = makeConnection(domain, secure);
 
