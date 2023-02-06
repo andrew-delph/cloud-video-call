@@ -29,11 +29,7 @@ setup:
 	kubectl create configmap test-scripts  \
 		--from-file=./dist/main.js
 
-	kubectl create configmap  prometheus-config --from-literal="K6_PROMETHEUS_RW_SERVER_URL=https://prometheus-us-central1.grafana.net/api/prom/push"
-
-	kubectl create secret  generic prometheus-secrets \
-		--from-literal=K6_PROMETHEUS_RW_USERNAME=${K6_PROMETHEUS_RW_USERNAME} \
-		--from-literal=K6_PROMETHEUS_RW_PASSWORD=${K6_PROMETHEUS_RW_PASSWORD}
+	kubectl create configmap  prometheus-config --from-literal="K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write"
 
 
 run:
