@@ -1,7 +1,6 @@
 
 proxy:
-	echo "this is the proxy"
-
+	kubectl port-forward deployment/nginx 80:80
 
 apply:
 	kubectl apply -f .
