@@ -37,7 +37,10 @@ setup:
 
 
 run:
-	./run-kube.sh resources/k6-output-grafana-cloud.yaml
+	kubectl delete --ignore-not-found=true --wait=true -f resources/k6-output-grafana-cloud.yaml
+	kubectl apply --wait=true -f resources/k6-output-grafana-cloud.yaml
+	# ./run-kube.sh resources/k6-output-grafana-cloud.yaml
+
 
 pods:
 	kubectl get pods  --watch
