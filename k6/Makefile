@@ -22,16 +22,16 @@ init:
 setup:
 	npm run webpack
 
-	kubectl delete namespace k6-tests --ignore-not-found
+	kubectl delete configmap test-scripts --ignore-not-found
 
-	kubectl create namespace k6-tests
+	kubectl delete configmap prometheus-config --ignore-not-found
 
-	kubectl create configmap test-scripts -n k6-tests \
+	kubectl create configmap test-scripts  \
 		--from-file=./dist/main.js
 
-	kubectl create configmap -n k6-tests prometheus-config --from-literal="K6_PROMETHEUS_RW_SERVER_URL=https://prometheus-us-central1.grafana.net/api/prom/push"
+	kubectl create configmap  prometheus-config --from-literal="K6_PROMETHEUS_RW_SERVER_URL=https://prometheus-us-central1.grafana.net/api/prom/push"
 
-	kubectl create secret -n k6-tests generic prometheus-secrets \
+	kubectl create secret  generic prometheus-secrets \
 		--from-literal=K6_PROMETHEUS_RW_USERNAME=${K6_PROMETHEUS_RW_USERNAME} \
 		--from-literal=K6_PROMETHEUS_RW_PASSWORD=${K6_PROMETHEUS_RW_PASSWORD}
 
@@ -40,10 +40,10 @@ run:
 	./run-kube.sh resources/k6-output-grafana-cloud.yaml
 
 pods:
-	kubectl get pods -n k6-tests --watch
+	kubectl get pods  --watch
 
 delete:
-	kubectl delete -n k6-tests -f resources/k6-output-grafana-cloud.yaml
+	kubectl delete  -f resources/k6-output-grafana-cloud.yaml
 	cd dependencies/k6-operator && make delete
 
 
