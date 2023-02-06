@@ -6,11 +6,8 @@ import { SocketWrapper } from "../libs/SocketWrapper";
 
 export const options = {
   // stages: [{ duration: "10s", target: 50 }],
-  vus: 200,
-  duration: "15s",
-  tags: {
-    testName: "socketsio poc",
-  },
+  vus: 2000,
+  duration: "5m",
 };
 
 const ready_waiting_time = new Trend("ready_waiting_time", true);
@@ -18,11 +15,15 @@ const ready_waiting_time = new Trend("ready_waiting_time", true);
 const match_waiting_time = new Trend("match_waiting_time", true);
 
 export default function (): void {
-  const secure = __ENV.REMOTE == "true" ? true : false;
+  // const secure = __ENV.REMOTE == "true" ? true : false;
 
-  const domain = secure
-    ? `react-video-call-fjutjsrlaa-uc.a.run.app`
-    : `34.27.73.223`;
+  // const domain = secure
+  //   ? `react-video-call-fjutjsrlaa-uc.a.run.app`
+  //   : `34.27.73.223`;
+
+  const secure = false;
+
+  const domain = `34.27.73.223`;
 
   const sid = makeConnection(domain, secure);
 
@@ -105,7 +106,7 @@ export default function (): void {
 
     socket.setTimeout(function () {
       socket.close();
-    }, 1000 * 5);
+    }, 1000 * 20);
   });
 
   check(response, { "status is 101": (r) => r && r.status === 101 });

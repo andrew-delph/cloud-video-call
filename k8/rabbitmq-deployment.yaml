@@ -32,6 +32,12 @@ spec:
           ports:
             - containerPort: 5672
             - containerPort: 15672
-          resources: {}
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "100Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
       restartPolicy: Always
 status: {}
