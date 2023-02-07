@@ -25,12 +25,12 @@ spec:
         io.kompose.network/example-default: "true"
         io.kompose.service: grafana
     spec:
-      initContainers:
-        - name: init
-          image: andrewdelph/grafana_init:latest
-          volumeMounts:
-            - name: mypvc
-              mountPath: /data
+      # initContainers:
+      #   - name: init
+      #     image: andrewdelph/grafana_init:latest
+      #     volumeMounts:
+      #       - name: grafana-claim0
+      #         mountPath: /etc
       containers:
         - env:
             - name: GF_AUTH_ANONYMOUS_ENABLED
@@ -39,13 +39,17 @@ spec:
               value: Admin
             - name: GF_AUTH_BASIC_ENABLED
               value: "false"
-          image: grafana/grafana:9.3.2
+          image: andrewdelph/grafana:latest
           name: grafana
           ports:
             - containerPort: 3000
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "/script/copyfiles.sh"]
           resources: {}
           volumeMounts:
-            - mountPath: /etc/grafana/provisioning
+            - mountPath: /etc/grafana/provisioning/
               name: grafana-claim0
       restartPolicy: Always
       volumes:
