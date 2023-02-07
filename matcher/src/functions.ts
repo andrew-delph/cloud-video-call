@@ -108,9 +108,23 @@ const init = Promise.all([
 export const readyEvent = async (msg: ConsumeMessage, channel: Channel) => {
   await init;
 
-  const socketId: string = msg.content.toString();
+  const msgContent: [string, string] = JSON.parse(msg.content.toString());
 
-  io.in(socketId)
+  const socket1 = msgContent[0];
+  const socket2 = msgContent[0];
+
+  io.in(socket1)
+    .timeout(matchTimeout)
+    .emit("match", "guest", (err: any, response: any) => {
+      if (err) {
+        console.error(err);
+        // reject("host");
+      } else {
+        // resolve();
+      }
+    });
+
+  io.in(socket2)
     .timeout(matchTimeout)
     .emit("match", "host", (err: any, response: any) => {
       if (err) {
