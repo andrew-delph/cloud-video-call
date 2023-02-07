@@ -21,7 +21,7 @@ const kafka = new Kafka({
 
   await producer.connect();
 
-  for (var i = 0; i < 1; i++) {
+  for (var i = 1; i <= 22222; i++) {
     await producer.send({
       topic: "test-topic",
       messages: [{ value: "sending msg: " + i }],

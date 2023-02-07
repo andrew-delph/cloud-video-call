@@ -47,11 +47,4 @@ export const consume = async () => {
       }
     },
   });
-
-  //   await consumer.run({
-  //     eachMessage: async ({ topic, partition, message }) => {
-  //       console.log("msg recieved");
-  //       console.log(message.value?.toString());
-  //     },
-  //   });
 };
