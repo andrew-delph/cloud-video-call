@@ -17,6 +17,7 @@ const connectRabbit = async () => {
 };
 
 const queueReadyEvent = async (socket1: string, socket2: string) => {
+  // console.log("sending", socket1, socket2);
   try {
     await rabbitChannel.assertQueue(common.readyQueueName, { durable: true });
     rabbitChannel.sendToQueue(

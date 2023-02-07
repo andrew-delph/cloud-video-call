@@ -111,7 +111,9 @@ export const readyEvent = async (msg: ConsumeMessage, channel: Channel) => {
   const msgContent: [string, string] = JSON.parse(msg.content.toString());
 
   const socket1 = msgContent[0];
-  const socket2 = msgContent[0];
+  const socket2 = msgContent[1];
+
+  // console.log("recieved", socket1, socket2);
 
   io.in(socket1)
     .timeout(matchTimeout)
