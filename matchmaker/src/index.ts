@@ -1,1 +1,3 @@
-console.log("hello");
+import { consume } from "./consume";
+
+consume();
