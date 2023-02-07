@@ -31,7 +31,7 @@ let rabbitChannel: amqp.Channel;
 const connectKafkaProducer = async () => {
   const kafka = new Kafka({
     clientId: "my-app",
-    brokers: ["kafka:9092"],
+    brokers: ["kafka-service:9092"],
   });
   kafkaProducer = kafka.producer();
   await kafkaProducer.connect();
