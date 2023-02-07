@@ -25,18 +25,6 @@ spec:
         io.kompose.network/example-default: "true"
         io.kompose.service: prometheus
     spec:
-#      initContainers:
-#        - args:
-#              - /bin/chmod
-#              - -R
-#              - "777"
-#              - /prometheus/
-#          image: busybox
-#          name: prominit
-#          resources: {}
-#          volumeMounts:
-#            - mountPath: /prometheus
-#              name: prom-data
       containers:
         - args:
             - --web.enable-remote-write-receiver
@@ -48,13 +36,12 @@ spec:
             - containerPort: 9090
           resources: {}
           securityContext:
-            privileged: true
-#          volumeMounts:
-#            - mountPath: /prometheus/data
-#              name: prom-data
+          volumeMounts:
+            - mountPath: /prometheus/data
+              name: prom-data
       restartPolicy: Always
-#      volumes:
-#        - name: prom-data
-#          persistentVolumeClaim:
-#            claimName: prom-data
+      volumes:
+        - name: prom-data
+          persistentVolumeClaim:
+            claimName: prom-data
 status: {}
