@@ -39,7 +39,7 @@ spec:
               value: Admin
             - name: GF_AUTH_BASIC_ENABLED
               value: "false"
-          image: andrewdelph/k6-grafana:latest
+          image: grafana/grafana:9.3.2
           name: grafana
           ports:
             - containerPort: 3000
