@@ -1,11 +1,34 @@
 import { Kafka } from "kafkajs";
+import amqp from "amqplib";
+import * as common from "react-video-call-common";
 
 const kafka = new Kafka({
   clientId: "my-app",
-  brokers: ["localhost:9092"],
+  brokers: ["kafka:9092"],
 });
 
-export const consume = async () => {
+let rabbitConnection: amqp.Connection;
+let rabbitChannel: amqp.Channel;
+
+const connectRabbit = async () => {
+  rabbitConnection = await amqp.connect("amqp://rabbitmq");
+  rabbitChannel = await rabbitConnection.createChannel();
+  console.log("rabbit connected");
+};
+
+const queueReadyEvent = async (socket1: string, socket2: string) => {
+  try {
+    await rabbitChannel.assertQueue(common.readyQueueName, { durable: true });
+    rabbitChannel.sendToQueue(
+      common.readyQueueName,
+      Buffer.from(JSON.stringify([socket1, socket2]))
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const consumeListen = async () => {
   const consumer = kafka.consumer({
     groupId: "test-group",
     maxWaitTimeInMs: 1000 * 10,
@@ -38,13 +61,25 @@ export const consume = async () => {
         messagesList.pop();
       }
 
-      for (let message of messagesList) {
+      for (let i = 0; i < messagesList.length; i += 2) {
         if (!isRunning() || isStale()) break;
-        console.log("recvd", message.value?.toString());
-        // console.log(`Message size: ${message.value?.length} bytes`);
-        resolveOffset(message.offset);
+        const slice = messagesList.slice(i, i + 2);
+        const socket1 = slice[0];
+        const socket2 = slice[1];
+
+        // TODO dont assume value exists
+        queueReadyEvent(socket1.value!.toString(), socket2.value!.toString());
+
+        // TODO possibly only resolve on socket2 offset
+        resolveOffset(socket1.offset);
+        await heartbeat();
+        resolveOffset(socket2.offset);
         await heartbeat();
       }
     },
   });
 };
+
+export const consume = Promise.all([connectRabbit()]).then(() =>
+  consumeListen()
+);
