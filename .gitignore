@@ -34,4 +34,4 @@ ui-debug.log*
 
 .env
 
-locust/__pycache__/locustfile.cpython-310.pyc
+test
