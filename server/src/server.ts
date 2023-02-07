@@ -14,25 +14,40 @@ import { throttle } from "lodash";
 
 import amqp from "amqplib";
 
+import { Kafka, Producer } from "kafkajs";
+
+let kafka: Kafka;
+let kafkaProducer: Producer;
+
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
 
-const connectRabbit = async () => {
-  rabbitConnection = await amqp.connect("amqp://rabbitmq");
-  rabbitChannel = await rabbitConnection.createChannel();
-  console.log("rabbit connected");
+// const connectRabbit = async () => {
+//   rabbitConnection = await amqp.connect("amqp://rabbitmq");
+//   rabbitChannel = await rabbitConnection.createChannel();
+//   console.log("rabbit connected");
+// };
+
+const connectKafkaProducer = async () => {
+  const kafka = new Kafka({
+    clientId: "my-app",
+    brokers: ["kafka:9092"],
+  });
+  kafkaProducer = kafka.producer();
+  await kafkaProducer.connect();
+  console.log("kafka producer connected");
 };
 
-const queueReadyEvent = async (message: string) => {
-  try {
-    await rabbitChannel.assertQueue(common.readyQueueName, { durable: true });
-    rabbitChannel.sendToQueue(common.readyQueueName, Buffer.from(message));
+// const queueReadyEvent = async (message: string) => {
+//   try {
+//     await rabbitChannel.assertQueue(common.readyQueueName, { durable: true });
+//     rabbitChannel.sendToQueue(common.readyQueueName, Buffer.from(message));
 
-    // console.log(` [x] Sent message: ${message}`);
-  } catch (error) {
-    console.error(error);
-  }
-};
+//     // console.log(` [x] Sent message: ${message}`);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
 dotenv.config();
 
@@ -86,7 +101,10 @@ io.on("connection", async (socket) => {
   socket.on("ready", async (data, callback) => {
     pubClient.sAdd(common.readySetName, socket.id);
 
-    queueReadyEvent(socket.id);
+    await kafkaProducer.send({
+      topic: "test-topic",
+      messages: [{ value: socket.id }],
+    });
 
     if (callback != undefined) {
       callback();
@@ -136,7 +154,7 @@ io.on("connection", async (socket) => {
 
 Promise.all([pubClient.connect(), subClient.connect()])
   .then(async () => {
-    await connectRabbit();
+    await connectKafkaProducer();
   })
   .then(() => {
     io.adapter(createAdapter(pubClient, subClient));
