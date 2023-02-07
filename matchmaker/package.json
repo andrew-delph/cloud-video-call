@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "prod": "node ./dist/index.js"
+    "prod": "node ./dist/index.js",
+    "docker": "docker build -f .  -t andrewdelph/video-call-matchmaker:latest ../ && docker push andrewdelph/video-call-matchmaker:latest"
   },
   "keywords": [],
   "author": "",
