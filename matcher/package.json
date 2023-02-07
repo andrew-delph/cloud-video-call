@@ -23,10 +23,10 @@
     "redis": "^4.5.1",
     "redlock": "^5.0.0-beta.2",
     "socket.io": "^4.5.4",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "@socket.io/redis-adapter": "^8.0.1"
   },
   "devDependencies": {
-    "@socket.io/redis-adapter": "^8.0.1",
     "@types/amqplib": "^0.10.1",
     "@types/redlock": "^4.0.4",
     "tsc-watch": "^6.0.0",

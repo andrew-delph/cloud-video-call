@@ -17,12 +17,11 @@ dotenv.config();
 initializeApp();
 // const db = getFirestore();
 
-type RedisClientType = ReturnType<typeof createClient>;
+// type RedisClientType = ReturnType<typeof createClient>;
 
-function createRedisClient(): RedisClientType {
+function createRedisClient() {
   const redisClient = createClient({
     url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
-    name: "functions",
   });
   redisClient.on("error", function (error) {
     console.error(error);
@@ -30,9 +29,9 @@ function createRedisClient(): RedisClientType {
   return redisClient;
 }
 
-const mainRedisClient: RedisClientType = createRedisClient();
-const pubRedisClient: RedisClientType = createRedisClient();
-const subRedisClient: RedisClientType = createRedisClient();
+const mainRedisClient = createRedisClient();
+const pubRedisClient = createRedisClient();
+const subRedisClient = createRedisClient();
 const lockRedisClient = new Redis({
   host: `${process.env.REDIS_HOST}`,
 });
