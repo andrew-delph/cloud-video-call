@@ -2,7 +2,7 @@ import { connect, ConsumeMessage } from "amqplib";
 import { readyEvent } from "./functions";
 import * as common from "react-video-call-common";
 
-async function worker() {
+async function matcher() {
   const connection = await connect("amqp://rabbitmq");
 
   const channel = await connection.createChannel();
@@ -36,4 +36,4 @@ async function worker() {
   );
 }
 
-worker();
+matcher();
