@@ -80,6 +80,6 @@ const consumeListen = async () => {
   });
 };
 
-export const consume = Promise.all([connectRabbit()]).then(() =>
-  consumeListen()
-);
+export const consume = () => {
+  connectRabbit().then(() => consumeListen());
+};

@@ -48,6 +48,27 @@ services:
     depends_on:
       - redis
       - rabbitmq
+      - kafka
+  matchmaker:
+    networks:
+      - mynetwork
+    restart: always
+    build:
+      context: .
+      dockerfile: ./matchmaker/Dockerfile
+    # ports:
+    #   - "4000:4000"
+    environment:
+      # - REDIS_USER=redis
+      # - REDIS_PASSWORD=redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - FIREBASE_CONFIG={"projectId":"react-video-call-thing72","storageBucket":"react-video-call-thing72.appspot.com","locationId":"us-central"}
+    depends_on:
+      - redis
+      - rabbitmq
+      - kafka
+
   redis:
     networks:
       - mynetwork
