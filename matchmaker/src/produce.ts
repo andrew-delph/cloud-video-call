@@ -21,20 +21,12 @@ const kafka = new Kafka({
 
   await producer.connect();
 
-  for (var i = 0; i < 2000; i++) {
+  for (var i = 0; i < 1; i++) {
     await producer.send({
       topic: "test-topic",
-      messages: [{ value: "Hello KafkaJS user!" + new Date().toTimeString() }],
+      messages: [{ value: "sending msg: " + i }],
     });
   }
-  //   await producer.send({
-  //     topic: "test-topic",
-  //     messages: [{ value: new Date().toTimeString() }],
-  //   });
-  //   await producer.send({
-  //     topic: "test-topic",
-  //     messages: [{ value: "ANDREW DELPH" }],
-  //   });
 
   await producer.disconnect();
 })();

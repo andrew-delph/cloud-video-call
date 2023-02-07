@@ -13,10 +13,7 @@ export const consume = async () => {
   });
 
   await consumer.connect();
-  console.log("connected!");
-
   await consumer.subscribe({ topic: "test-topic", fromBeginning: true });
-  console.log("subscribe!");
 
   await consumer.run({
     eachBatchAutoResolve: false,
@@ -34,10 +31,16 @@ export const consume = async () => {
         batch.messages.length,
         new Date().toTimeString()
       );
-      for (let message of batch.messages) {
+
+      const messagesList = batch.messages;
+
+      if (messagesList.length % 2 !== 0) {
+        messagesList.pop();
+      }
+
+      for (let message of messagesList) {
         if (!isRunning() || isStale()) break;
-        // console.log("sent", message.value?.toString());
-        // console.log("recv", new Date().toTimeString());
+        console.log("recvd", message.value?.toString());
         // console.log(`Message size: ${message.value?.length} bytes`);
         resolveOffset(message.offset);
         await heartbeat();
