@@ -41,7 +41,7 @@ pods:
 
 delete:
 	kubectl delete  -f resources/k6-output-grafana-cloud.yaml
-	cd dependencies/k6-operator && make delete
+	# cd dependencies/k6-operator && make delete
 
 
 local:

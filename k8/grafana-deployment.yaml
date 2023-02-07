@@ -25,6 +25,12 @@ spec:
         io.kompose.network/example-default: "true"
         io.kompose.service: grafana
     spec:
+      initContainers:
+        - name: init
+          image: andrewdelph/grafana_init:latest
+          volumeMounts:
+            - name: mypvc
+              mountPath: /data
       containers:
         - env:
             - name: GF_AUTH_ANONYMOUS_ENABLED
@@ -38,12 +44,12 @@ spec:
           ports:
             - containerPort: 3000
           resources: {}
-          # volumeMounts:
-          #   - mountPath: /etc/grafana/provisioning
-          #     name: grafana-claim0
+          volumeMounts:
+            - mountPath: /etc/grafana/provisioning
+              name: grafana-claim0
       restartPolicy: Always
-      # volumes:
-      #   - name: grafana-claim0
-      #     persistentVolumeClaim:
-      #       claimName: grafana-claim0
+      volumes:
+        - name: grafana-claim0
+          persistentVolumeClaim:
+            claimName: grafana-claim0
 status: {}
