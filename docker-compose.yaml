@@ -1,17 +1,26 @@
 version: "3"
+networks:
+  mynetwork:
 services:
   nginx:
+    networks:
+      - mynetwork
     build:
       context: ./nginx/
       dockerfile: ./Dockerfile
     ports:
       - "80:80"
+    depends_on:
+      - websocket
   websocket:
+    networks:
+      - mynetwork
+    restart: always
     build:
       context: .
       dockerfile: ./server/Dockerfile
-    ports:
-      - "4000:4000"
+    # ports:
+    #   - "4000:4000"
     environment:
       # - REDIS_USER=redis
       # - REDIS_PASSWORD=redis
@@ -20,9 +29,40 @@ services:
       - FIREBASE_CONFIG={"projectId":"react-video-call-thing72","storageBucket":"react-video-call-thing72.appspot.com","locationId":"us-central"}
     depends_on:
       - redis
+      - rabbitmq
+  matcher:
+    networks:
+      - mynetwork
+    restart: always
+    build:
+      context: .
+      dockerfile: ./matcher/Dockerfile
+    # ports:
+    #   - "4000:4000"
+    environment:
+      # - REDIS_USER=redis
+      # - REDIS_PASSWORD=redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - FIREBASE_CONFIG={"projectId":"react-video-call-thing72","storageBucket":"react-video-call-thing72.appspot.com","locationId":"us-central"}
+    depends_on:
+      - redis
+      - rabbitmq
   redis:
+    networks:
+      - mynetwork
     image: redis:latest
     # environment:
     # - REDIS_PASSWORD=redis
     ports:
       - "6379:6379"
+
+  rabbitmq:
+    networks:
+      - mynetwork
+    image: rabbitmq:3-management
+    command: rabbitmq-server
+    # environment:
+    # - REDIS_PASSWORD=redis
+    # ports:
+    #   - "6379:6379"
