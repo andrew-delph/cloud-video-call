@@ -113,28 +113,54 @@ export const readyEvent = async (msg: ConsumeMessage, channel: Channel) => {
   const socket1 = msgContent[0];
   const socket2 = msgContent[1];
 
-  // console.log("recieved", socket1, socket2);
+  io.socketsLeave(`room-${socket1}`);
+  io.socketsLeave(`room-${socket2}`);
 
-  io.in(socket1)
-    .timeout(matchTimeout)
-    .emit("match", "guest", (err: any, response: any) => {
-      if (err) {
-        console.error(err);
-        // reject("host");
-      } else {
-        // resolve();
-      }
-    });
+  io.in(socket1).socketsJoin(`room-${socket2}`);
+  io.in(socket2).socketsJoin(`room-${socket1}`);
 
-  io.in(socket2)
-    .timeout(matchTimeout)
-    .emit("match", "host", (err: any, response: any) => {
-      if (err) {
-        console.error(err);
-        // reject("host");
-      } else {
-        // resolve();
-      }
+  io.in(socket1).emit("message", `pairing with ${socket2}`);
+  io.in(socket2).emit("message", `pairing with ${socket1}`);
+
+  const hostCallback = (resolve: any, reject: any) => {
+    io.in(socket1)
+      .timeout(matchTimeout)
+      .emit("match", "host", (err: any, response: any) => {
+        if (err) {
+          console.error(err);
+          reject("host");
+        } else {
+          resolve();
+        }
+      });
+  };
+
+  const guestCallback = (resolve: any, reject: any) => {
+    io.in(socket2)
+      .timeout(matchTimeout)
+      .emit("match", "guest", (err: any, response: any) => {
+        if (err) {
+          console.error(err);
+          reject("guest");
+        } else {
+          resolve();
+        }
+      });
+  };
+
+  await new Promise(guestCallback)
+    .then(() => {
+      return new Promise(hostCallback);
+    })
+    .then(async () => {
+      // if both acks are acked. we can remove them from the ready set.
+      await mainRedisClient.sRem(common.readySetName, socket1);
+      await mainRedisClient.sRem(common.readySetName, socket2);
+    })
+    .catch((value) => {
+      io.in(socket1).emit("message", `host paring: failed with ${value}`);
+      io.in(socket2).emit("message", `guest paring: failed with ${value}`);
+      throw `match failed with ${value}`;
     });
 
   return;
