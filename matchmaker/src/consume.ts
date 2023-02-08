@@ -4,7 +4,7 @@ import * as common from "react-video-call-common";
 
 const kafka = new Kafka({
   clientId: "my-app",
-  brokers: ["kafka-service:9092"],
+  brokers: ["my-cluster-kafka-bootstrap:9092"],
 });
 
 let rabbitConnection: amqp.Connection;
