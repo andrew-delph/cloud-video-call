@@ -1,3 +1,4 @@
+#!/bin/bash
 
 # Build
 docker build -t andrewdelph/video-call-nginx:latest ./nginx
