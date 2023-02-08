@@ -27,5 +27,3 @@ spec:
     envFrom:
       - configMapRef:
           name: prometheus-config
-      - secretRef:
-          name: prometheus-secrets
