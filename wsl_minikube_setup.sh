@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Specify the container name or ID
-container_name="your_container_name_or_id"
+container_name="minikube"
 
 # Specify the container port you want to retrieve the host port for
 container_port=8443
@@ -12,5 +12,8 @@ network_info=$(docker inspect --format='{{json .NetworkSettings.Ports}}' $contai
 # Extract the host port for the specified container port
 host_port=$(echo $network_info | jq -r --arg container_port "$container_port/tcp" '.[$container_port][0].HostPort')
 
-# Print the host port
-echo "The host port for container port $container_port is: $host_port"
+# Set the file path
+file_path="$HOME/.kube/config"
+
+# Use sed to replace the value of 25191 with the host port
+sed -i "s/https:\/\/127.0.0.1:[0-9]\+/https:\/\/127.0.0.1:$host_port/g" $file_path
