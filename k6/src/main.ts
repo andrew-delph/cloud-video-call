@@ -23,7 +23,7 @@ export default function (): void {
 
   const secure = false;
 
-  const domain = `nginx`;
+  const domain = __ENV.LOCAL == "true" ? `localhost` : "nginx";
 
   const sid = makeConnection(domain, secure);
 
