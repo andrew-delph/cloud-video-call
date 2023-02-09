@@ -2,7 +2,7 @@
 
 # Build
 docker build -t andrewdelph/video-call-nginx:latest ./nginx
-docker build -t andrewdelph/video-call-websocket:latest -f ./server/. .
+docker build -t andrewdelph/video-call-websocket:latest -f ./websocket/. .
 docker build -t andrewdelph/video-call-matcher:latest -f ./matcher/. .
 docker build -t andrewdelph/video-call-matchmaker:latest -f ./matchmaker/. .
 
