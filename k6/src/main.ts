@@ -6,8 +6,8 @@ import { SocketWrapper } from "../libs/SocketWrapper";
 
 export const options = {
   // stages: [{ duration: "10s", target: 50 }],
-  vus: 20,
-  duration: "1h",
+  vus: 100,
+  duration: "1m",
 };
 
 const ready_waiting_time = new Trend("ready_waiting_time", true);
@@ -23,14 +23,14 @@ export default function (): void {
 
   const secure = false;
 
-  const domain = __ENV.LOCAL == "true" ? `localhost` : "nginx";
+  const domain = __ENV.LOCAL == "true" ? `localhost:8080` : "nginx";
 
-  const sid = makeConnection(domain, secure);
+  // const sid = makeConnection(domain, secure);
 
   // Let's do some websockets
   const url = `${
     secure ? "wss" : "ws"
-  }://${domain}/socket.io/?EIO=4&transport=websocket&sid=${sid}`;
+  }://${domain}/socket.io/?EIO=4&transport=websocket`;
 
   let response = ws.connect(url, {}, function (socket) {
     const socketWrapper = new SocketWrapper(socket);
@@ -55,9 +55,11 @@ export default function (): void {
     });
 
     socket.on("open", () => {
-      socket.send("2probe");
-      socket.send("5");
-      socket.send("3");
+      socket.send("40");
+
+      // socket.send("2probe");
+      // socket.send("5");
+      // socket.send("3");
 
       const readyEvent = () => {
         socketWrapper.listen(
@@ -96,7 +98,9 @@ export default function (): void {
         );
       };
 
-      readyEvent();
+      socket.setTimeout(() => {
+        readyEvent();
+      }, 1000);
 
       // socket.setInterval(function timeout() {
       //   socket.ping();
@@ -106,7 +110,7 @@ export default function (): void {
 
     socket.setTimeout(function () {
       socket.close();
-    }, 1000 * 20);
+    }, 1000 * 30);
   });
 
   check(response, { "status is 101": (r) => r && r.status === 101 });

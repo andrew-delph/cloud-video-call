@@ -80,17 +80,16 @@ app.get("*", (req, res) => {
   res.send("This is the API server :)");
 });
 
-io.on("error", (err)=>{
-  console.log("io err", err)
-})
+io.on("error", (err) => {
+  console.log("io err", err);
+});
 
 io.on("connection", async (socket) => {
-
   socket.on("error", (err) => {
-    console.log("socket err", err)
+    console.log("socket err", err);
   });
 
-  console.log(`connection on ${serverID}`)
+  console.log(`connection on ${serverID} ${socket.id}`);
   // console.log("connected");
 
   pubClient.sAdd(common.activeSetName, socket.id);
