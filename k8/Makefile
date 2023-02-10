@@ -5,6 +5,9 @@ pnginx:
 pgrafana:
 	kubectl port-forward deployment/grafana 8081:3000
 
+pprometheus:
+	kubectl port-forward deployment/prometheus 8082:9090
+
 apply:
 	kubectl apply -f .
 
