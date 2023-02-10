@@ -1,9 +1,9 @@
 
 pnginx:
-	kubectl port-forward deployment/nginx 80:80
+	kubectl port-forward deployment/nginx 8080:80
 
 pgrafana:
-	kubectl port-forward deployment/grafana 81:3000
+	kubectl port-forward deployment/grafana 8081:3000
 
 apply:
 	kubectl apply -f .
