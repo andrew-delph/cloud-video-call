@@ -2,9 +2,9 @@ import * as neo4j from "neo4j-driver";
 
 import { v4 as uuid } from "uuid";
 
-const nodesNum = 1000;
+const nodesNum = 100;
 
-const edgesNum = nodesNum * 20;
+const edgesNum = nodesNum * 5;
 
 let result;
 
@@ -25,7 +25,7 @@ function printResults(result: any) {
 (async () => {
   const driver = neo4j.driver(
     "neo4j://localhost:7687",
-    neo4j.auth.basic("neo4j", "admin")
+    neo4j.auth.basic("neo4j", "password")
   );
   const session = driver.session();
 
