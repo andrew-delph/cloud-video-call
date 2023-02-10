@@ -7,7 +7,7 @@ import { SocketWrapper } from "../libs/SocketWrapper";
 export const options = {
   // stages: [{ duration: "10s", target: 50 }],
   vus: 100,
-  duration: "1m",
+  duration: "20s",
 };
 
 const ready_waiting_time = new Trend("ready_waiting_time", true);
@@ -35,6 +35,47 @@ export default function (): void {
   let response = ws.connect(url, {}, function (socket) {
     const socketWrapper = new SocketWrapper(socket);
 
+    const readyEvent = () => {
+      socketWrapper.listen(
+        "match",
+        15000,
+        (
+          isSuccess: boolean,
+          elapsed: number,
+          data: any,
+          callback?: (data: any) => void
+        ) => {
+          if (isSuccess) {
+            match_waiting_time.add(elapsed);
+          } else {
+            // console.log("match failure:" + data);
+          }
+
+          check(isSuccess, { "match event": (r) => r });
+
+          if (callback) callback({});
+        }
+      );
+
+      socketWrapper.sendWithAck(
+        "ready",
+        { test: "looking for ack" },
+        5000,
+        (isSuccess: boolean, elapsed: number, data: any) => {
+          if (isSuccess) {
+            ready_waiting_time.add(elapsed);
+          } else {
+            // console.log("ready failure:" + data);
+          }
+          check(isSuccess, { "ready event": (r) => r });
+        }
+      );
+    };
+
+    socketWrapper.setOnConnect(() => {
+      readyEvent();
+    });
+
     socketWrapper.setEventMessageHandle("message", (msg: any) => {
       // console.log("message:", msg);
     });
@@ -56,56 +97,6 @@ export default function (): void {
 
     socket.on("open", () => {
       socket.send("40");
-
-      // socket.send("2probe");
-      // socket.send("5");
-      // socket.send("3");
-
-      const readyEvent = () => {
-        socketWrapper.listen(
-          "match",
-          15000,
-          (
-            isSuccess: boolean,
-            elapsed: number,
-            data: any,
-            callback?: (data: any) => void
-          ) => {
-            if (isSuccess) {
-              match_waiting_time.add(elapsed);
-            } else {
-              // console.log("match failure:" + data);
-            }
-
-            check(isSuccess, { "match event": (r) => r });
-
-            if (callback) callback({});
-          }
-        );
-
-        socketWrapper.sendWithAck(
-          "ready",
-          { test: "looking for ack" },
-          5000,
-          (isSuccess: boolean, elapsed: number, data: any) => {
-            if (isSuccess) {
-              ready_waiting_time.add(elapsed);
-            } else {
-              // console.log("ready failure:" + data);
-            }
-            check(isSuccess, { "ready event": (r) => r });
-          }
-        );
-      };
-
-      socket.setTimeout(() => {
-        readyEvent();
-      }, 1000);
-
-      // socket.setInterval(function timeout() {
-      //   socket.ping();
-      //   console.log('Pinging every 1sec (setInterval test)');
-      // }, 1000 * 5);
     });
 
     socket.setTimeout(function () {

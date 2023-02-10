@@ -7,6 +7,7 @@ export class SocketWrapper {
   socket: Socket;
   callbackCount: number = 0;
   ackCallbackMap: Record<string, (data: any) => void> = {};
+  onConnect: (() => void) | undefined;
   eventMessageHandleMap: Record<
     string,
     (data: any, callback?: (data: any) => void) => void
@@ -25,6 +26,10 @@ export class SocketWrapper {
     });
   }
 
+  setOnConnect(callback: () => void) {
+    this.onConnect = callback;
+  }
+
   handleMessage(msg: string) {
     const response = checkResponse(msg);
     const type = response.type;
@@ -33,6 +38,10 @@ export class SocketWrapper {
     if (type !== socketResponseType.message) return;
 
     switch (code) {
+      case socketResponseCode.connect: {
+        if (this.onConnect != null) this.onConnect();
+        break;
+      }
       case socketResponseCode.ack: {
         const msgObject = getArrayFromRequest(msg);
         const callbackId = getCallbackId(msg);
