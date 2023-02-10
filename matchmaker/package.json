@@ -9,7 +9,7 @@
     "build:watch": "tsc --watch",
     "prod": "node ./dist/index.js",
     "dev": "tsc-watch --onSuccess \"npm run k8-restart\" --onCompilationStarted \"echo 'watching matchmaker'\"",
-    "docker": "docker build -f .  -t andrewdelph/video-call-matchmaker:latest ../ && docker push andrewdelph/video-call-matchmaker:latest",
+    "docker": "docker build -f Dockerfile -t andrewdelph/video-call-matchmaker:latest ../ && docker push andrewdelph/video-call-matchmaker:latest",
     "k8-restart": "npm run docker && kubectl rollout restart deployment/matchmaker && kubectl rollout status deployment/matchmaker --watch=true --timeout=60s && kubectl logs --selector=app=matchmaker -f"
   },
   "keywords": [],
@@ -24,6 +24,6 @@
   "dependencies": {
     "amqplib": "^0.10.3",
     "kafkajs": "^2.2.3",
-    "react-video-call-common": "file:../common"
+    "react-video-call-common": "^1.0.0"
   }
 }
