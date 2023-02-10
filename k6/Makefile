@@ -46,5 +46,5 @@ delete:
 
 
 local:
-	./run-local.sh dist/main.js
+	k6 run dist/main.js -e LOCAL=true
 
