@@ -101,7 +101,7 @@ export default function (): void {
 
     socket.setTimeout(function () {
       socket.close();
-    }, 1000 * 30);
+    }, 1000 * 20);
   });
 
   check(response, { "status is 101": (r) => r && r.status === 101 });
