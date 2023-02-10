@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsc-watch --onCompilationStarted \"echo 'watching neo4j'\"",
-    "build": "tsc"
+    "build": "tsc",
+    "run": "node dist/index.js"
   },
   "author": "",
   "license": "ISC",
