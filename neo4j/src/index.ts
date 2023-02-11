@@ -1,10 +1,11 @@
 import * as neo4j from "neo4j-driver";
 
 import { v4 as uuid } from "uuid";
+import * as asynclibe from "async";
 
-const nodesNum = 100;
+const nodesNum = 100000;
 
-const edgesNum = nodesNum * 5;
+const edgesNum = nodesNum * 15;
 
 let result;
 
@@ -62,48 +63,55 @@ function printResults(result: any) {
   //   edges.push({ a: "andrew2", b: "andrew3" });
 
   try {
+    let start_time = performance.now();
     await session.run("MATCH (n) DETACH DELETE n");
 
-    for (var i = 0; i < nodes.length; i++) {
-      const id = nodes[i];
-      await session.run("CREATE (a:Person {name: $name}) RETURN a", {
+    console.log("delete nodes", performance.now() - start_time);
+
+    start_time = performance.now();
+
+    console.log("node.length", nodes.length);
+    console.log("edges.length", edges.length);
+
+    await asynclibe.mapLimit(nodes, 10, async (node: any, callback) => {
+      const s = driver.session();
+      const id = node;
+      await s.run("CREATE (a:Person {name: $name}) RETURN a", {
         name: id,
       });
-    }
+      s.close();
+      callback();
+    });
 
-    for (var i = 0; i < edges.length; i++) {
-      const edge = edges[i];
-      // console.log(edge);
-      await session.run(
+    await asynclibe.mapLimit(edges, 30, async (edge: any, callback) => {
+      const s = driver.session();
+      await s.run(
         "MATCH (a:Person), (b:Person) WHERE a.name = $a AND b.name = $b CREATE (a)-[:KNOWS]->(b), (b)-[:KNOWS]->(a)",
         edge
       );
-    }
+      s.close();
+      callback();
+    });
 
-    // await session.run(
-    //   "MATCH (n:Person) WITH n, rand() as random WHERE random < 0.5 SET n.ready = true"
-    // );
-
-    // const result = await session.run(
-    //   "MATCH (n:Person) WHERE n.ready = true RETURN n"
-    // );
+    console.log("add data", performance.now() - start_time);
 
     // delete myGraph if it exists
     try {
       result = await session.run("CALL gds.graph.drop('myGraph');");
-      console.log("graph delete successfully");
+      // console.log("graph delete successfully");
     } catch (e) {
-      console.log("graph doesn't exist");
+      // console.log("graph doesn't exist");
     }
 
-    const start_time = performance.now();
+    start_time = performance.now();
     // create myGraph
-    console.log("creating graph");
+    // console.log("creating graph");
     result = await session.run(
       "CALL gds.graph.project( 'myGraph', '*', '*' );"
     );
     console.log("created graph", performance.now() - start_time);
 
+    start_time = performance.now();
     // run simularity
 
     const query1 = `
@@ -151,5 +159,6 @@ function printResults(result: any) {
   }
 
   // on application exit:
+  console.log("end");
   await driver.close();
 })();
