@@ -1,6 +1,6 @@
 import * as neo4j from "neo4j-driver";
 
-const nodesNum = 10000;
+const nodesNum = 1000;
 
 const edgesNum = nodesNum * 4;
 
@@ -65,14 +65,14 @@ function printResults(result: any) {
     console.log("create nodes");
 
     await session.run(
-      "UNWIND range(0, 99) as idx CREATE (:Person {name: toString(idx)})"
+      `UNWIND range(0, ${nodesNum}) as idx CREATE (:Person {name: toString(idx)})`
     );
 
     console.log("create edges");
 
     await session.run(
-      `UNWIND range(0, 99) as aname
-      UNWIND range(0, 99) as bname
+      `UNWIND range(0, ${nodesNum}) as aname
+      UNWIND range(0, ${nodesNum}) as bname
       WITH aname, bname, rand() as random
       WHERE random <= 0.01
       MATCH (a:Person { name: toString(aname) }), (b:Person { name: toString(bname) })
