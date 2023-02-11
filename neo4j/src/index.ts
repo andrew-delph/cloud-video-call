@@ -23,7 +23,7 @@ function printResults(result: any) {
 (async () => {
   const driver = neo4j.driver(
     "neo4j://localhost:7687",
-    neo4j.auth.basic("neo4j", "admin")
+    neo4j.auth.basic("neo4j", "password")
   );
   const session = driver.session();
 
