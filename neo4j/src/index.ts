@@ -2,7 +2,7 @@ import * as neo4j from "neo4j-driver";
 
 const nodesNum = 10000;
 
-const edgesNum = nodesNum * 20;
+const edgesNum = nodesNum * 4;
 
 let result;
 
@@ -60,31 +60,28 @@ function printResults(result: any) {
   //   edges.push({ a: "andrew2", b: "andrew3" });
 
   try {
-    // await session.run("MATCH (n) DETACH DELETE n");
+    await session.run("MATCH (n) DETACH DELETE n");
 
-    // for (var i = 0; i < nodes.length; i++) {
-    //   const id = nodes[i];
-    //   await session.run("CREATE (a:Person {name: $name}) RETURN a", {
-    //     name: id,
-    //   });
-    // }
+    console.log("create nodes");
 
-    // for (var i = 0; i < edges.length; i++) {
-    //   const edge = edges[i];
-    //   // console.log(edge);
-    //   await session.run(
-    //     "MATCH (a:Person), (b:Person) WHERE a.name = $a AND b.name = $b CREATE (a)-[:KNOWS]->(b), (b)-[:KNOWS]->(a)",
-    //     edge
-    //   );
-    // }
+    await session.run(
+      "UNWIND range(0, 99) as idx CREATE (:Person {name: toString(idx)})"
+    );
 
-    // await session.run(
-    //   "MATCH (n:Person) WITH n, rand() as random WHERE random < 0.5 SET n.ready = true"
-    // );
+    console.log("create edges");
 
-    // const result = await session.run(
-    //   "MATCH (n:Person) WHERE n.ready = true RETURN n"
-    // );
+    await session.run(
+      `UNWIND range(0, 99) as aname
+      UNWIND range(0, 99) as bname
+      WITH aname, bname, rand() as random
+      WHERE random <= 0.01
+      MATCH (a:Person { name: toString(aname) }), (b:Person { name: toString(bname) })
+      WHERE a <> b
+      CREATE (a)-[:KNOWS]->(b), (b)-[:KNOWS]->(a)
+      `
+    );
+
+    console.log("done");
 
     // delete myGraph if it exists
     try {
@@ -146,8 +143,8 @@ function printResults(result: any) {
     // printResults(result);
   } finally {
     await session.close();
+    await driver.close();
   }
 
   // on application exit:
-  await driver.close();
 })();
