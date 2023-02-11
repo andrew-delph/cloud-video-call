@@ -64,21 +64,36 @@ function printResults(result: any) {
   try {
     await session.run("MATCH (n) DETACH DELETE n");
 
+    const nodePromises = [];
+
     for (var i = 0; i < nodes.length; i++) {
       const id = nodes[i];
-      await session.run("CREATE (a:Person {name: $name}) RETURN a", {
-        name: id,
+      nodePromises.push(() => {
+        const s = driver.session();
+        s.run("CREATE (a:Person {name: $name}) RETURN a", {
+          name: id,
+        });
+        s.close();
       });
     }
 
+    await Promise.all(nodePromises);
+
+    const edgePromises = [];
+
     for (var i = 0; i < edges.length; i++) {
       const edge = edges[i];
-      // console.log(edge);
-      await session.run(
-        "MATCH (a:Person), (b:Person) WHERE a.name = $a AND b.name = $b CREATE (a)-[:KNOWS]->(b), (b)-[:KNOWS]->(a)",
-        edge
-      );
+      edgePromises.push(() => {
+        const s = driver.session();
+        session.run(
+          "MATCH (a:Person), (b:Person) WHERE a.name = $a AND b.name = $b CREATE (a)-[:KNOWS]->(b), (b)-[:KNOWS]->(a)",
+          edge
+        );
+        s.close();
+      });
     }
+
+    await Promise.all(edgePromises);
 
     // await session.run(
     //   "MATCH (n:Person) WITH n, rand() as random WHERE random < 0.5 SET n.ready = true"
