@@ -1,8 +1,8 @@
 import * as neo4j from "neo4j-driver";
 
-const nodesNum = 100000;
+const nodesNum = 10000;
 
-const edgesNum = nodesNum * 15;
+const edgesNum = nodesNum * 20;
 
 let result;
 
@@ -23,7 +23,7 @@ function printResults(result: any) {
 (async () => {
   const driver = neo4j.driver(
     "neo4j://localhost:7687",
-    neo4j.auth.basic("neo4j", "password")
+    neo4j.auth.basic("neo4j", "admin")
   );
   const session = driver.session();
 
@@ -60,70 +60,48 @@ function printResults(result: any) {
   //   edges.push({ a: "andrew2", b: "andrew3" });
 
   try {
-    let start_time = performance.now();
     await session.run("MATCH (n) DETACH DELETE n");
-    console.log("delete nodes", performance.now() - start_time);
-
-    start_time = performance.now();
-    const nodePromises = [];
 
     for (var i = 0; i < nodes.length; i++) {
       const id = nodes[i];
-      nodePromises.push(
-        (async () => {
-          const s = driver.session();
-          await s.run("CREATE (a:Person {name: $name}) RETURN a", {
-            name: id,
-          });
-          s.close();
-          return;
-        })()
-      );
+      await session.run("CREATE (a:Person {name: $name}) RETURN a", {
+        name: id,
+      });
     }
-
-    await Promise.all(nodePromises);
-
-    const edgePromises = [];
 
     for (var i = 0; i < edges.length; i++) {
       const edge = edges[i];
-      edgePromises.push(
-        (async () => {
-          const s = driver.session();
-          await session.run(
-            "MATCH (a:Person), (b:Person) WHERE a.name = $a AND b.name = $b CREATE (a)-[:KNOWS]->(b), (b)-[:KNOWS]->(a)",
-            edge
-          );
-          s.close();
-        })()
+      // console.log(edge);
+      await session.run(
+        "MATCH (a:Person), (b:Person) WHERE a.name = $a AND b.name = $b CREATE (a)-[:KNOWS]->(b), (b)-[:KNOWS]->(a)",
+        edge
       );
     }
 
-    await Promise.all(edgePromises);
+    // await session.run(
+    //   "MATCH (n:Person) WITH n, rand() as random WHERE random < 0.5 SET n.ready = true"
+    // );
 
-    console.log("add data", performance.now() - start_time);
-
-    start_time = performance.now();
+    // const result = await session.run(
+    //   "MATCH (n:Person) WHERE n.ready = true RETURN n"
+    // );
 
     // delete myGraph if it exists
     try {
       result = await session.run("CALL gds.graph.drop('myGraph');");
-      // console.log("graph delete successfully");
+      console.log("graph delete successfully");
     } catch (e) {
-      // console.log("graph doesn't exist");
+      console.log("graph doesn't exist");
     }
 
-    console.log("delete graph", performance.now() - start_time);
-
-    start_time = performance.now();
+    const start_time = performance.now();
     // create myGraph
-    // console.log("creating graph");
+    console.log("creating graph");
     result = await session.run(
       "CALL gds.graph.project( 'myGraph', '*', '*' );"
     );
     console.log("created graph", performance.now() - start_time);
 
-    start_time = performance.now();
     // run simularity
 
     const query1 = `
@@ -171,6 +149,5 @@ function printResults(result: any) {
   }
 
   // on application exit:
-  console.log("end");
   await driver.close();
 })();
