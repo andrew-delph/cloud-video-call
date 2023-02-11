@@ -1,6 +1,6 @@
 import * as neo4j from "neo4j-driver";
 
-const nodesNum = 10000;
+const nodesNum = 3000;
 
 const edgesNum = nodesNum * 4;
 
