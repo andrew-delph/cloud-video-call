@@ -1,8 +1,5 @@
 import * as neo4j from "neo4j-driver";
 
-import { v4 as uuid } from "uuid";
-import * as asynclibe from "async";
-
 const nodesNum = 100000;
 
 const edgesNum = nodesNum * 15;
@@ -65,35 +62,48 @@ function printResults(result: any) {
   try {
     let start_time = performance.now();
     await session.run("MATCH (n) DETACH DELETE n");
-
     console.log("delete nodes", performance.now() - start_time);
 
     start_time = performance.now();
+    const nodePromises = [];
 
-    console.log("node.length", nodes.length);
-    console.log("edges.length", edges.length);
-
-    await asynclibe.mapLimit(nodes, 10, async (node: any, callback) => {
-      const s = driver.session();
-      const id = node;
-      await s.run("CREATE (a:Person {name: $name}) RETURN a", {
-        name: id,
-      });
-      s.close();
-      callback();
-    });
-
-    await asynclibe.mapLimit(edges, 30, async (edge: any, callback) => {
-      const s = driver.session();
-      await s.run(
-        "MATCH (a:Person), (b:Person) WHERE a.name = $a AND b.name = $b CREATE (a)-[:KNOWS]->(b), (b)-[:KNOWS]->(a)",
-        edge
+    for (var i = 0; i < nodes.length; i++) {
+      const id = nodes[i];
+      nodePromises.push(
+        (async () => {
+          const s = driver.session();
+          await s.run("CREATE (a:Person {name: $name}) RETURN a", {
+            name: id,
+          });
+          s.close();
+          return;
+        })()
       );
-      s.close();
-      callback();
-    });
+    }
+
+    await Promise.all(nodePromises);
+
+    const edgePromises = [];
+
+    for (var i = 0; i < edges.length; i++) {
+      const edge = edges[i];
+      edgePromises.push(
+        (async () => {
+          const s = driver.session();
+          await session.run(
+            "MATCH (a:Person), (b:Person) WHERE a.name = $a AND b.name = $b CREATE (a)-[:KNOWS]->(b), (b)-[:KNOWS]->(a)",
+            edge
+          );
+          s.close();
+        })()
+      );
+    }
+
+    await Promise.all(edgePromises);
 
     console.log("add data", performance.now() - start_time);
+
+    start_time = performance.now();
 
     // delete myGraph if it exists
     try {
@@ -102,6 +112,8 @@ function printResults(result: any) {
     } catch (e) {
       // console.log("graph doesn't exist");
     }
+
+    console.log("delete graph", performance.now() - start_time);
 
     start_time = performance.now();
     // create myGraph
