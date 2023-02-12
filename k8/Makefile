@@ -9,13 +9,13 @@ pprometheus:
 	kubectl port-forward deployment/prometheus 8082:9090
 
 apply:
-	kubectl apply -f .
+	kubectl apply -f ./resources/.
 
 delete:
-	kubectl delete -f .
+	kubectl delete -f ./resources/.
 
 restart:
-	kubectl rollout restart -f .
+	kubectl rollout restart -f ./resources/.
 
 pods:
 	kubectl get pods

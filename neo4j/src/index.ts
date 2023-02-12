@@ -20,12 +20,12 @@ function printResults(result: any) {
 
 ;(async () => {
   try {
-    // for (var i = 0; i < 1000; i++) {
-    //   result = await funcs.changeRandomReady();
+    // for (var i = 0; i < 3; i++) {
+    //   result = await funcs.changeRandomReady()
     // }
     result = await funcs.getAllReady()
     // await funcs.testGraph();
-    // printResults(result);
+    printResults(result)
   } finally {
     console.log(`closing`)
     await funcs.session.close()
