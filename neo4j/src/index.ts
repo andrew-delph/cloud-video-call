@@ -30,15 +30,15 @@ function printResults(
     // for (var i = 0; i < 3; i++) {
     //   result = await funcs.changeRandomReady()
     // }
-    await funcs.createData(50, 4, true);
-
-    // result = await funcs.getFirstN();
-    // printResults(result);
+    await funcs.createData(4, 10, true);
 
     await funcs.createGraph();
 
     result = await funcs.callAlgo();
-    printResults(result, 0);
+
+    result = await funcs.getSimilar([`node1`, `node3`]);
+
+    printResults(result, 2);
   } finally {
     console.log(`closing`);
     await funcs.session.close();

@@ -223,3 +223,39 @@ export async function getFirstN() {
 
   return result;
 }
+
+export async function getSimilar(names: Array<string>) {
+  console.log();
+  console.log(`running getSimilar`);
+
+  const start_time = performance.now();
+  // create myGraph
+
+  let result;
+
+  result = await session.run(
+    `
+  MATCH (a)-[rel:SIMILAR]->(b) 
+  WHERE a.name < b.name 
+  AND a.name IN $names
+  AND b.name IN $names
+  RETURN a.name, b.name, rel.score
+  ORDER BY rel.score DESCENDING
+    `,
+    { names },
+  );
+
+  // result = await session.run(`
+  // MATCH (n:Person)-[r:SIMILAR]->(m:Person)
+  // WHERE n.name IN ["node1", "node2", "node3"]
+  // AND m.name IN ["node1", "node2", "node3"]
+  // RETURN n.name AS node1, m.name AS node2, r.score AS similarity
+  // ORDER BY r.score DESCENDING, node1, node2
+  //     `);
+
+  const end_time = performance.now();
+
+  console.log(`it took: `, end_time - start_time);
+
+  return result;
+}
