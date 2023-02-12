@@ -6,7 +6,7 @@ export const driver = neo4j.driver(
 );
 export const session = driver.session();
 
-const nodesNum = 20000;
+const nodesNum = 10;
 
 const edgesNum = nodesNum * 4;
 
@@ -22,12 +22,12 @@ export async function createData() {
     nodes.push(`node${i}`);
   }
 
-  //   nodes.push(`andrew1`);
-  //   nodes.push(`andrew2`);
-  //   nodes.push(`andrew3`);
-  //   nodes.push(`andrew4`);
-  //   nodes.push(`andrew5`);
-  //   nodes.push(`andrew6`);
+  nodes.push(`andrew1`);
+  nodes.push(`andrew2`);
+  nodes.push(`andrew3`);
+  nodes.push(`andrew4`);
+  nodes.push(`andrew5`);
+  nodes.push(`andrew6`);
 
   for (var i = 0; i < edgesNum; i++) {
     const a = nodes[Math.floor(Math.random() * nodesNum)];
@@ -38,25 +38,25 @@ export async function createData() {
     edges.push({ a, b });
   }
 
-  //   edges.push({ a: `andrew1`, b: `andrew2` });
-  //   edges.push({ a: `andrew2`, b: `andrew3` });
-  //   edges.push({ a: `andrew3`, b: `andrew4` });
-  //   edges.push({ a: `andrew4`, b: `andrew5` });
-  //   edges.push({ a: `andrew3`, b: `andrew6` });
+  edges.push({ a: `andrew1`, b: `andrew2` });
+  edges.push({ a: `andrew2`, b: `andrew3` });
+  edges.push({ a: `andrew3`, b: `andrew4` });
+  edges.push({ a: `andrew4`, b: `andrew5` });
+  edges.push({ a: `andrew3`, b: `andrew6` });
 
-  //   edges.push({ a: `node1`, b: `node2` });
-  //   edges.push({ a: `andrew2`, b: `andrew3` });
+  edges.push({ a: `node1`, b: `node2` });
+  edges.push({ a: `andrew2`, b: `andrew3` });
 
-  await session.run(`MATCH (n) DETACH DELETE n`);
+  //   await session.run(`MATCH (n) DETACH DELETE n`);
 
-  console.log(`create nodes`);
+  console.log(`create nodes ${nodesNum}`);
 
   await session.run(
     `UNWIND $nodes as node CREATE (:Person {name: toString(node)})`,
     { nodes: nodes },
   );
 
-  console.log(`create edges`);
+  console.log(`create edges ${edgesNum}`);
 
   await session.run(
     `UNWIND $edges as edge MATCH (a:Person), (b:Person) WHERE a.name = toString(edge.a) AND b.name = toString(edge.b) CREATE (a)-[:KNOWS]->(b), (b)-[:KNOWS]->(a)`,
@@ -90,7 +90,8 @@ export async function testGraph() {
           RETURN gds.util.asNode(node1).name
           AS Person1, gds.util.asNode(node2).name
           AS Person2, similarity 
-          ORDER BY similarity DESCENDING, Person1, Person2`;
+          ORDER BY similarity DESCENDING, Person1, Person2
+          `;
 
   const query2 = `
       CALL gds.knn.stream('myGraph', {
@@ -116,9 +117,20 @@ export async function testGraph() {
             RETURN gds.util.asNode(nodeId).name AS name, score
             ORDER BY score ASC`;
 
+  const query5 = `WITH ['node1', 'node2', 'node3', 'node4'] AS names
+          CALL gds.nodeSimilarity.stream('myGraph', {})
+            YIELD node1, node2, similarity
+            WHERE gds.util.asNode(node1).name IN names
+            AND gds.util.asNode(node2).name IN names
+            RETURN gds.util.asNode(node1).name AS Person1,
+              gds.util.asNode(node2).name AS Person2,
+              similarity
+            ORDER BY similarity DESCENDING, Person1, Person2
+          `;
+
   start_time = performance.now();
 
-  result = await session.run(query1);
+  result = await session.run(query5);
 
   const end_time = performance.now();
 
