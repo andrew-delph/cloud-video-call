@@ -30,14 +30,15 @@ function printResults(
     // for (var i = 0; i < 3; i++) {
     //   result = await funcs.changeRandomReady()
     // }
-
-    await funcs.createData();
+    await funcs.createData(50, 4, true);
 
     // result = await funcs.getFirstN();
     // printResults(result);
 
-    // result = await funcs.testGraph();
-    // printResults(result, 0);
+    await funcs.createGraph();
+
+    result = await funcs.callAlgo();
+    printResults(result, 0);
   } finally {
     console.log(`closing`);
     await funcs.session.close();

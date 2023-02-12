@@ -6,15 +6,17 @@ export const driver = neo4j.driver(
 );
 export const session = driver.session();
 
-const nodesNum = 1000;
-
-const edgesNum = nodesNum * 4;
-
 function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
 
-export async function createData() {
+export async function createData(
+  nodesNum: number = 1000,
+  edgesNum: number = 4,
+  deleteData: Boolean = false,
+) {
+  edgesNum = nodesNum * edgesNum;
+
   const nodes = [];
   const edges = [];
 
@@ -22,12 +24,12 @@ export async function createData() {
     nodes.push(`node${i}`);
   }
 
-  nodes.push(`andrew1`);
-  nodes.push(`andrew2`);
-  nodes.push(`andrew3`);
-  nodes.push(`andrew4`);
-  nodes.push(`andrew5`);
-  nodes.push(`andrew6`);
+  //   nodes.push(`andrew1`);
+  //   nodes.push(`andrew2`);
+  //   nodes.push(`andrew3`);
+  //   nodes.push(`andrew4`);
+  //   nodes.push(`andrew5`);
+  //   nodes.push(`andrew6`);
 
   for (var i = 0; i < edgesNum; i++) {
     const a = nodes[Math.floor(Math.random() * nodesNum)];
@@ -38,17 +40,19 @@ export async function createData() {
     edges.push({ a, b });
   }
 
-  edges.push({ a: `andrew1`, b: `andrew2` });
-  edges.push({ a: `andrew2`, b: `andrew3` });
-  edges.push({ a: `andrew3`, b: `andrew4` });
-  edges.push({ a: `andrew4`, b: `andrew5` });
-  edges.push({ a: `andrew3`, b: `andrew6` });
+  //   edges.push({ a: `andrew1`, b: `andrew2` });
+  //   edges.push({ a: `andrew2`, b: `andrew3` });
+  //   edges.push({ a: `andrew3`, b: `andrew4` });
+  //   edges.push({ a: `andrew4`, b: `andrew5` });
+  //   edges.push({ a: `andrew3`, b: `andrew6` });
 
-  edges.push({ a: `node1`, b: `node2` });
-  edges.push({ a: `andrew2`, b: `andrew3` });
+  //   edges.push({ a: `node1`, b: `node2` });
+  //   edges.push({ a: `andrew2`, b: `andrew3` });
 
-  console.log(`Deleting`);
-  await session.run(`MATCH (n) DETACH DELETE n`);
+  if (deleteData) {
+    console.log(`Deleting`);
+    await session.run(`MATCH (n) DETACH DELETE n`);
+  }
 
   console.log(`create nodes ${nodesNum}`);
 
@@ -67,7 +71,7 @@ export async function createData() {
   console.log(`done`);
 }
 
-export async function testGraph() {
+export async function createGraph() {
   let result;
   // delete myGraph if it exists
   try {
@@ -83,7 +87,13 @@ export async function testGraph() {
   result = await session.run(`CALL gds.graph.project( 'myGraph', '*', '*' );`);
   console.log(`created graph`, performance.now() - start_time);
 
+  return result;
+}
+
+export async function callAlgo() {
   // run simularity
+  console.log(``);
+  console.log(`--- callAlgo`);
 
   const query1 = `
       CALL gds.nodeSimilarity.stream('myGraph' , {})
@@ -149,9 +159,14 @@ export async function testGraph() {
         })
         YIELD nodesCompared, relationshipsWritten`;
 
-  start_time = performance.now();
+  //         MATCH (a:Person), (b:Person) WHERE a.name IN ['node1', 'node2', 'node3'] AND b.name IN ['node1', 'node2', 'node3'] AND a <> b
+  // MATCH (a)-[r:SIMILAR]-(b)
+  // RETURN a.name AS node1, b.name AS node2, r.value AS similarity
+  // ORDER BY similarity DESCENDING;
 
-  result = await session.run(query7);
+  let start_time = performance.now();
+
+  let result = await session.run(query7);
 
   const end_time = performance.now();
 
@@ -161,41 +176,31 @@ export async function testGraph() {
 }
 
 export async function changeRandomReady() {
-  const start_time = performance.now();
-  // create myGraph
-
-  let result;
-  console.log(`running changeRandomReady`);
-
-  result = await session.run(`
-    MATCH (n) WHERE n.name = "node${getRandomInt(nodesNum)}"
-      SET n.ready = true
-  `);
-
-  const end_time = performance.now();
-
-  console.log(`it took: `, end_time - start_time);
-
-  return result;
+  //   const start_time = performance.now();
+  //   // create myGraph
+  //   let result;
+  //   console.log(`running changeRandomReady`);
+  //   result = await session.run(`
+  //     MATCH (n) WHERE n.name = "node${getRandomInt(nodesNum)}"
+  //       SET n.ready = true
+  //   `);
+  //   const end_time = performance.now();
+  //   console.log(`it took: `, end_time - start_time);
+  //   return result;
 }
 
 export async function getAllReady() {
-  const start_time = performance.now();
-  // create myGraph
-
-  let result;
-  console.log(`running getAllReady`);
-
-  result = await session.run(`
-      MATCH (n) 
-        RETURN n
-    `);
-
-  const end_time = performance.now();
-
-  console.log(`it took: `, end_time - start_time);
-
-  return result;
+  //   const start_time = performance.now();
+  //   // create myGraph
+  //   let result;
+  //   console.log(`running getAllReady`);
+  //   result = await session.run(`
+  //       MATCH (n)
+  //         RETURN n
+  //     `);
+  //   const end_time = performance.now();
+  //   console.log(`it took: `, end_time - start_time);
+  //   return result;
 }
 
 export async function getFirstN() {
