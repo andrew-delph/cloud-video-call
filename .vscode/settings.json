@@ -2,5 +2,7 @@
   "cSpell.words": ["predeploy", "pubspec"],
   "search.useIgnoreFiles": false,
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "prettier.singleQuote": true,
+  "prettier.jsxSingleQuote": true
 }

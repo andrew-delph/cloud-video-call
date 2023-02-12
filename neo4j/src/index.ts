@@ -1,34 +1,34 @@
-import * as neo4j from "neo4j-driver";
+import * as neo4j from 'neo4j-driver';
+import * as funcs from './functions';
 
 let result;
 
 function printResults(result: any) {
   //   console.log("Results:");
   //   console.log(result.records);
-  console.log();
-  //   console.log("Summary:");
-  //   console.log(result.summary);
+  console.log('Summary:');
+  console.log(result.summary);
   const records = result.records;
-  console.log("print each record");
-  records.forEach((record: any) => {
-    console.log(record);
+  const limit = 10;
+  console.log(`print records. limit is ${limit}`);
+  records.slice(0, 10).forEach((record: any) => {
+    console.log(record.get('n'));
   });
-  console.log("records.length:", records.length);
+  console.log('records.length:', records.length);
 }
 
 (async () => {
-  const driver = neo4j.driver(
-    "neo4j://localhost:7687",
-    neo4j.auth.basic("neo4j", "password")
-  );
-  const session = driver.session();
-
   try {
-    // console.log(result);
+    // for (var i = 0; i < 1000; i++) {
+    //   result = await funcs.changeRandomReady();
+    // }
+    result = await funcs.getAllReady();
+    // await funcs.testGraph();
     // printResults(result);
   } finally {
-    await session.close();
-    await driver.close();
+    console.log('closing');
+    await funcs.session.close();
+    await funcs.driver.close();
   }
 
   // on application exit:

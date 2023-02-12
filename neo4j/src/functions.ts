@@ -1,16 +1,20 @@
 import * as neo4j from "neo4j-driver";
 
-const driver = neo4j.driver(
+export const driver = neo4j.driver(
   "neo4j://localhost:7687",
   neo4j.auth.basic("neo4j", "password")
 );
-const session = driver.session();
+export const session = driver.session();
 
 const nodesNum = 20000;
 
 const edgesNum = nodesNum * 4;
 
-async function createData() {
+function getRandomInt(max: number) {
+  return Math.floor(Math.random() * max);
+}
+
+export async function createData() {
   const nodes = [];
   const edges = [];
 
@@ -62,7 +66,7 @@ async function createData() {
   console.log("done");
 }
 
-async function testGraph() {
+export async function testGraph() {
   let result;
   // delete myGraph if it exists
   try {
@@ -113,6 +117,44 @@ async function testGraph() {
             ORDER BY score ASC`;
 
   result = await session.run(query1);
+
+  const end_time = performance.now();
+
+  console.log("it took: ", end_time - start_time);
+
+  return result;
+}
+
+export async function changeRandomReady() {
+  const start_time = performance.now();
+  // create myGraph
+
+  let result;
+  console.log("running changeRandomReady");
+
+  result = await session.run(`
+    MATCH (n) WHERE n.name = "node${getRandomInt(nodesNum)}"
+      SET n.ready = true
+  `);
+
+  const end_time = performance.now();
+
+  console.log("it took: ", end_time - start_time);
+
+  return result;
+}
+
+export async function getAllReady() {
+  const start_time = performance.now();
+  // create myGraph
+
+  let result;
+  console.log("running getAllReady");
+
+  result = await session.run(`
+    MATCH (n) WHERE n.ready = true
+      RETURN n
+  `);
 
   const end_time = performance.now();
 
