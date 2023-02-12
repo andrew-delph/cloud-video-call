@@ -14,3 +14,5 @@ volumes:
         storage: 2Gi
 env:
   NEO4J_PLUGINS: '["graph-data-science"]'
+config:
+  dbms.security.procedures.unrestricted: 'gds.*'
