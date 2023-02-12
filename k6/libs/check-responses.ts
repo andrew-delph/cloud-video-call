@@ -1,12 +1,12 @@
-import { check } from "k6";
-import { RefinedResponse } from "k6/http";
+import { check } from 'k6';
+import { RefinedResponse } from 'k6/http';
 
 /**
  * Checks that the response of a request is ok
  * @param res k6 HTTP response object
  */
-export function checkResponseOk(res: RefinedResponse<"text">): boolean {
-  return check(res, { "Status is 200 OK": () => res.status === 200 });
+export function checkResponseOk(res: RefinedResponse<`text`>): boolean {
+    return check(res, { 'Status is 200 OK': () => res.status === 200 });
 }
 
 /**
@@ -14,9 +14,9 @@ export function checkResponseOk(res: RefinedResponse<"text">): boolean {
  * @param res k6 HTTP response object
  */
 export function checkResponseBodyIsString(
-  res: RefinedResponse<"text">
+    res: RefinedResponse<`text`>
 ): boolean {
-  return check(res, {
-    "Response Body is String": () => typeof res.body === "string",
-  });
+    return check(res, {
+        'Response Body is String': () => typeof res.body === `string`,
+    });
 }

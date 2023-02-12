@@ -1,6 +1,6 @@
-export const activeSetName = "activeSet";
-export const activeCountChannel = "activeCount";
+export const activeSetName = `activeSet`;
+export const activeCountChannel = `activeCount`;
 
-export const readySetName = "readySet";
+export const readySetName = `readySet`;
 
-export const readyQueueName = "readyQueue";
+export const readyQueueName = `readyQueue`;

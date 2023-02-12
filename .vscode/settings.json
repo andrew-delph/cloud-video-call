@@ -3,6 +3,7 @@
   "search.useIgnoreFiles": false,
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "prettier.singleQuote": true,
-  "prettier.jsxSingleQuote": true
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
 }

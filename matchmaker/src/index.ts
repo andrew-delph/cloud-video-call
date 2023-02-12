@@ -1,3 +1,3 @@
-import { consume } from "./consume";
+import { consume } from './consume';
 
 consume();
