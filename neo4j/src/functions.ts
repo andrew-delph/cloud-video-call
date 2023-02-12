@@ -22,12 +22,12 @@ export async function createData() {
     nodes.push(`node${i}`);
   }
 
-  nodes.push(`andrew1`);
-  nodes.push(`andrew2`);
-  nodes.push(`andrew3`);
-  nodes.push(`andrew4`);
-  nodes.push(`andrew5`);
-  nodes.push(`andrew6`);
+  //   nodes.push(`andrew1`);
+  //   nodes.push(`andrew2`);
+  //   nodes.push(`andrew3`);
+  //   nodes.push(`andrew4`);
+  //   nodes.push(`andrew5`);
+  //   nodes.push(`andrew6`);
 
   for (var i = 0; i < edgesNum; i++) {
     const a = nodes[Math.floor(Math.random() * nodesNum)];
@@ -38,14 +38,14 @@ export async function createData() {
     edges.push({ a, b });
   }
 
-  edges.push({ a: `andrew1`, b: `andrew2` });
-  edges.push({ a: `andrew2`, b: `andrew3` });
-  edges.push({ a: `andrew3`, b: `andrew4` });
-  edges.push({ a: `andrew4`, b: `andrew5` });
-  edges.push({ a: `andrew3`, b: `andrew6` });
+  //   edges.push({ a: `andrew1`, b: `andrew2` });
+  //   edges.push({ a: `andrew2`, b: `andrew3` });
+  //   edges.push({ a: `andrew3`, b: `andrew4` });
+  //   edges.push({ a: `andrew4`, b: `andrew5` });
+  //   edges.push({ a: `andrew3`, b: `andrew6` });
 
-  edges.push({ a: `node1`, b: `node2` });
-  edges.push({ a: `andrew2`, b: `andrew3` });
+  //   edges.push({ a: `node1`, b: `node2` });
+  //   edges.push({ a: `andrew2`, b: `andrew3` });
 
   await session.run(`MATCH (n) DETACH DELETE n`);
 

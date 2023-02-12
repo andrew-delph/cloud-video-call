@@ -23,7 +23,7 @@ function printResults(result: any) {
     // for (var i = 0; i < 3; i++) {
     //   result = await funcs.changeRandomReady()
     // }
-    result = await funcs.testGraph();
+    result = await funcs.createData();
     // await funcs.testGraph();
     printResults(result);
   } finally {
