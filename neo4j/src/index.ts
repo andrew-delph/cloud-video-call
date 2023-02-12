@@ -1,19 +1,26 @@
 import * as neo4j from 'neo4j-driver';
+import { Dict } from 'neo4j-driver-core/types/record';
 import * as funcs from './functions';
 
-let result;
+let result: neo4j.QueryResult<Dict<PropertyKey, any>>;
 
-function printResults(result: any) {
+function printResults(
+  result: neo4j.QueryResult<Dict<PropertyKey, any>>,
+  limit: number = 10,
+) {
+  console.log(``);
   //   console.log("Results:");
   //   console.log(result.records);
-  console.log(`Summary:`);
-  console.log(``);
-  console.log(result.summary);
+  // console.log(`Summary:`);
+  // console.log(result.summary);
   const records = result.records;
-  const limit = 10;
   console.log(`print records. limit is ${limit}`);
-  records.slice(0, 10).forEach((record: any) => {
-    console.log(record.get(`n`));
+  records.slice(0, limit).forEach((record) => {
+    try {
+      console.log(record.get(`n`));
+    } catch (e) {
+      console.log(record);
+    }
   });
   console.log(`records.length:`, records.length);
 }
@@ -23,10 +30,14 @@ function printResults(result: any) {
     // for (var i = 0; i < 3; i++) {
     //   result = await funcs.changeRandomReady()
     // }
+
+    await funcs.createData();
+
     // result = await funcs.getFirstN();
     // printResults(result);
 
-    await funcs.testGraph();
+    // result = await funcs.testGraph();
+    // printResults(result, 0);
   } finally {
     console.log(`closing`);
     await funcs.session.close();

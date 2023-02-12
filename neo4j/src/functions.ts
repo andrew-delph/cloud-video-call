@@ -6,7 +6,7 @@ export const driver = neo4j.driver(
 );
 export const session = driver.session();
 
-const nodesNum = 10;
+const nodesNum = 1000;
 
 const edgesNum = nodesNum * 4;
 
@@ -47,19 +47,20 @@ export async function createData() {
   edges.push({ a: `node1`, b: `node2` });
   edges.push({ a: `andrew2`, b: `andrew3` });
 
-  //   await session.run(`MATCH (n) DETACH DELETE n`);
+  console.log(`Deleting`);
+  await session.run(`MATCH (n) DETACH DELETE n`);
 
   console.log(`create nodes ${nodesNum}`);
 
   await session.run(
-    `UNWIND $nodes as node CREATE (:Person {name: toString(node)})`,
+    `UNWIND $nodes as node MERGE (:Person {name: toString(node)})`,
     { nodes: nodes },
   );
 
   console.log(`create edges ${edgesNum}`);
 
   await session.run(
-    `UNWIND $edges as edge MATCH (a:Person), (b:Person) WHERE a.name = toString(edge.a) AND b.name = toString(edge.b) CREATE (a)-[:KNOWS]->(b), (b)-[:KNOWS]->(a)`,
+    `UNWIND $edges as edge MATCH (a:Person), (b:Person) WHERE a.name = toString(edge.a) AND b.name = toString(edge.b) MERGE (a)-[:KNOWS]->(b)`,
     { edges: edges },
   );
 
@@ -122,15 +123,35 @@ export async function testGraph() {
             YIELD node1, node2, similarity
             WHERE gds.util.asNode(node1).name IN names
             AND gds.util.asNode(node2).name IN names
+            AND gds.util.asNode(node1).name <> gds.util.asNode(node2).name
             RETURN gds.util.asNode(node1).name AS Person1,
               gds.util.asNode(node2).name AS Person2,
               similarity
             ORDER BY similarity DESCENDING, Person1, Person2
           `;
 
+  const query6 = `WITH ['node1', 'node2', 'node3', 'node4'] AS nodeNames
+          MATCH (n)
+          WHERE n.name IN nodeNames
+          CALL gds.nodeSimilarity.stream('myGraph', {
+            nodeProjection: 'n'
+          })
+          YIELD node1, node2, similarity
+          RETURN gds.util.asNode(node1).name AS Person1,
+                 gds.util.asNode(node2).name AS Person2,
+                 similarity
+          ORDER BY similarity DESCENDING, Person1, Person2
+          `;
+
+  const query7 = `CALL gds.nodeSimilarity.write('myGraph', {
+            writeRelationshipType: 'SIMILAR',
+            writeProperty: 'score'
+        })
+        YIELD nodesCompared, relationshipsWritten`;
+
   start_time = performance.now();
 
-  result = await session.run(query5);
+  result = await session.run(query7);
 
   const end_time = performance.now();
 
