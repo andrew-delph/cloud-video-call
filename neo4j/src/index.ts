@@ -23,9 +23,10 @@ function printResults(result: any) {
     // for (var i = 0; i < 3; i++) {
     //   result = await funcs.changeRandomReady()
     // }
-    result = await funcs.createData();
-    // await funcs.testGraph();
-    printResults(result);
+    // result = await funcs.getFirstN();
+    // printResults(result);
+
+    await funcs.testGraph();
   } finally {
     console.log(`closing`);
     await funcs.session.close();

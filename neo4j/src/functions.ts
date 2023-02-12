@@ -76,7 +76,7 @@ export async function testGraph() {
     console.log(`graph doesn't exist`);
   }
 
-  const start_time = performance.now();
+  let start_time = performance.now();
   // create myGraph
   console.log(`creating graph`);
   result = await session.run(`CALL gds.graph.project( 'myGraph', '*', '*' );`);
@@ -116,11 +116,13 @@ export async function testGraph() {
             RETURN gds.util.asNode(nodeId).name AS name, score
             ORDER BY score ASC`;
 
+  start_time = performance.now();
+
   result = await session.run(query1);
 
   const end_time = performance.now();
 
-  console.log(`it took: `, end_time - start_time);
+  console.log(`query`, end_time - start_time);
 
   return result;
 }
