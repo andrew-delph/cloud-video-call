@@ -8,6 +8,9 @@ pgrafana:
 pprometheus:
 	kubectl port-forward deployment/prometheus 8082:9090
 
+pneo4j:
+	kubectl port-forward svc/neo4j tcp-bolt tcp-http tcp-https
+
 apply:
 	kubectl apply -f ./resources/.
 
