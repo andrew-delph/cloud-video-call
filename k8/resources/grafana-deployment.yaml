@@ -43,10 +43,10 @@ spec:
           name: grafana
           ports:
             - containerPort: 3000
-          lifecycle:
-            postStart:
-              exec:
-                command: ['/bin/sh', '/script/copyfiles.sh']
+          # lifecycle:
+          #   postStart:
+          #     exec:
+          #       command: ['/bin/sh', '/script/copyfiles.sh']
           resources: {}
           # volumeMounts:
           #   - mountPath: /etc/grafana/provisioning/

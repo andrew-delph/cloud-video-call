@@ -20,53 +20,53 @@ initializeApp();
 // type RedisClientType = ReturnType<typeof createClient>;
 
 function createRedisClient() {
-    const redisClient = createClient({
-        url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
-    });
-    redisClient.on(`error`, function (error) {
-        console.error(error);
-    });
-    return redisClient;
+  const redisClient = createClient({
+    url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+  });
+  redisClient.on(`error`, function (error) {
+    console.error(error);
+  });
+  return redisClient;
 }
 
 const mainRedisClient = createRedisClient();
 const pubRedisClient = createRedisClient();
 const subRedisClient = createRedisClient();
 const lockRedisClient = new Redis({
-    host: `${process.env.REDIS_HOST}`,
+  host: `${process.env.REDIS_HOST}`,
 });
 
 const redlock = new Redlock([lockRedisClient]);
 
 redlock.on(`error`, (error) => {
-    // Ignore cases where a resource is explicitly marked as locked on a client.
-    if (error instanceof ResourceLockedError) {
-        return;
-    }
+  // Ignore cases where a resource is explicitly marked as locked on a client.
+  if (error instanceof ResourceLockedError) {
+    return;
+  }
 
-    // Log all other errors.
-    console.log(`redlock error`);
+  // Log all other errors.
+  console.log(`redlock error`);
 });
 
 const httpServer = createServer();
 const io = new Server(httpServer, {});
 
 const init = Promise.all([
-    mainRedisClient.connect(),
-    pubRedisClient.connect(),
-    subRedisClient.connect(),
+  mainRedisClient.connect(),
+  pubRedisClient.connect(),
+  subRedisClient.connect(),
 ])
-    .then(async () => {
-        io.adapter(
-            createAdapter(pubRedisClient, subRedisClient, {
-                requestsTimeout: 20000,
-            })
-        );
-        return;
-    })
-    .then(() => {
-        console.log(`loaded init`);
-    });
+  .then(async () => {
+    io.adapter(
+      createAdapter(pubRedisClient, subRedisClient, {
+        requestsTimeout: 20000,
+      }),
+    );
+    return;
+  })
+  .then(() => {
+    console.log(`loaded init`);
+  });
 
 // export const periodicMaintenanceTask = functions.pubsub
 //   .schedule("every minute")
@@ -106,195 +106,197 @@ const init = Promise.all([
 //   });
 
 export const readyEvent = async (msg: ConsumeMessage, channel: Channel) => {
-    await init;
+  await init;
 
-    const msgContent: [string, string] = JSON.parse(msg.content.toString());
+  const msgContent: [string, string] = JSON.parse(msg.content.toString());
 
-    const socket1 = msgContent[0];
-    const socket2 = msgContent[1];
+  const socket1 = msgContent[0];
+  const socket2 = msgContent[1];
 
-    io.socketsLeave(`room-${socket1}`);
-    io.socketsLeave(`room-${socket2}`);
+  console.log(`matching`, socket1, socket2);
 
-    io.in(socket1).socketsJoin(`room-${socket2}`);
-    io.in(socket2).socketsJoin(`room-${socket1}`);
+  io.socketsLeave(`room-${socket1}`);
+  io.socketsLeave(`room-${socket2}`);
 
-    io.in(socket1).emit(`message`, `pairing with ${socket2}`);
-    io.in(socket2).emit(`message`, `pairing with ${socket1}`);
+  io.in(socket1).socketsJoin(`room-${socket2}`);
+  io.in(socket2).socketsJoin(`room-${socket1}`);
 
-    const hostCallback = (resolve: any, reject: any) => {
-        io.in(socket1)
-            .timeout(matchTimeout)
-            .emit(`match`, `host`, (err: any, response: any) => {
-                if (err) {
-                    console.error(err);
-                    reject(`host`);
-                } else {
-                    resolve();
-                }
-            });
-    };
+  io.in(socket1).emit(`message`, `pairing with ${socket2}`);
+  io.in(socket2).emit(`message`, `pairing with ${socket1}`);
 
-    const guestCallback = (resolve: any, reject: any) => {
-        io.in(socket2)
-            .timeout(matchTimeout)
-            .emit(`match`, `guest`, (err: any, response: any) => {
-                if (err) {
-                    console.error(err);
-                    reject(`guest`);
-                } else {
-                    resolve();
-                }
-            });
-    };
+  const hostCallback = (resolve: any, reject: any) => {
+    io.in(socket1)
+      .timeout(matchTimeout)
+      .emit(`match`, `host`, (err: any, response: any) => {
+        if (err) {
+          console.error(err);
+          reject(`host`);
+        } else {
+          resolve();
+        }
+      });
+  };
 
-    await new Promise(guestCallback)
-        .then(() => {
-            return new Promise(hostCallback);
-        })
-        .then(async () => {
-            // if both acks are acked. we can remove them from the ready set.
-            await mainRedisClient.sRem(common.readySetName, socket1);
-            await mainRedisClient.sRem(common.readySetName, socket2);
-        })
-        .catch((value) => {
-            io.in(socket1).emit(`message`, `host paring: failed with ${value}`);
-            io.in(socket2).emit(`message`, `guest paring: failed with ${value}`);
-            throw `match failed with ${value}`;
-        });
+  const guestCallback = (resolve: any, reject: any) => {
+    io.in(socket2)
+      .timeout(matchTimeout)
+      .emit(`match`, `guest`, (err: any, response: any) => {
+        if (err) {
+          console.error(err);
+          reject(`guest`);
+        } else {
+          resolve();
+        }
+      });
+  };
 
-    return;
+  await new Promise(guestCallback)
+    .then(() => {
+      return new Promise(hostCallback);
+    })
+    .then(async () => {
+      // if both acks are acked. we can remove them from the ready set.
+      await mainRedisClient.sRem(common.readySetName, socket1);
+      await mainRedisClient.sRem(common.readySetName, socket2);
+    })
+    .catch((value) => {
+      io.in(socket1).emit(`message`, `host paring: failed with ${value}`);
+      io.in(socket2).emit(`message`, `guest paring: failed with ${value}`);
+      throw `match failed with ${value}`;
+    });
 
-    // console.log("ready event for " + socketId);
+  return;
 
-    // io.in(socketId).emit("message", `readyEvent ${socketId}`);
+  // console.log("ready event for " + socketId);
 
-    // const isReady = await mainRedisClient.sIsMember(
-    //   common.readySetName,
-    //   socketId
-    // );
+  // io.in(socketId).emit("message", `readyEvent ${socketId}`);
 
-    // if (!isReady) {
-    //   console.log("socketId does not exist in the set.");
-    //   return;
-    // }
+  // const isReady = await mainRedisClient.sIsMember(
+  //   common.readySetName,
+  //   socketId
+  // );
 
-    // const randomMembers = (
-    //   await mainRedisClient.sRandMemberCount(common.readySetName, 2)
-    // ).filter((val) => val != socketId);
+  // if (!isReady) {
+  //   console.log("socketId does not exist in the set.");
+  //   return;
+  // }
 
-    // const otherId = randomMembers.pop();
+  // const randomMembers = (
+  //   await mainRedisClient.sRandMemberCount(common.readySetName, 2)
+  // ).filter((val) => val != socketId);
 
-    // if (otherId == null) {
-    //   console.error(`otherID is null`);
-    //   throw "other id is null";
-    // }
+  // const otherId = randomMembers.pop();
 
-    // redlock.using(
-    //   [socketId, otherId],
-    //   5000,
-    //   { retryCount: 0 },
-    //   async (signal) => {
-    //     const roomMsg = `locked ${socketId} and ${otherId}.`;
+  // if (otherId == null) {
+  //   console.error(`otherID is null`);
+  //   throw "other id is null";
+  // }
 
-    //     console.log(roomMsg);
+  // redlock.using(
+  //   [socketId, otherId],
+  //   5000,
+  //   { retryCount: 0 },
+  //   async (signal) => {
+  //     const roomMsg = `locked ${socketId} and ${otherId}.`;
 
-    //     const socketIdExists = await mainRedisClient.sIsMember(
-    //       common.readySetName,
-    //       socketId
-    //     );
+  //     console.log(roomMsg);
 
-    //     if (socketIdExists == false) {
-    //       console.log(
-    //         "socketId does not exist in the set. socketIdExists=" + socketIdExists
-    //       );
-    //       // task is complete
-    //       return;
-    //     }
+  //     const socketIdExists = await mainRedisClient.sIsMember(
+  //       common.readySetName,
+  //       socketId
+  //     );
 
-    //     const otherIdExists = await mainRedisClient.sIsMember(
-    //       common.readySetName,
-    //       otherId
-    //     );
+  //     if (socketIdExists == false) {
+  //       console.log(
+  //         "socketId does not exist in the set. socketIdExists=" + socketIdExists
+  //       );
+  //       // task is complete
+  //       return;
+  //     }
 
-    //     if (otherIdExists == false) {
-    //       console.log("otherId does not exist in the set.");
-    //       // task is not complete
-    //       throw "otherId does not exist in the set.";
-    //     }
+  //     const otherIdExists = await mainRedisClient.sIsMember(
+  //       common.readySetName,
+  //       otherId
+  //     );
 
-    //     io.socketsLeave(`room-${otherId}`);
-    //     io.socketsLeave(`room-${socketId}`);
+  //     if (otherIdExists == false) {
+  //       console.log("otherId does not exist in the set.");
+  //       // task is not complete
+  //       throw "otherId does not exist in the set.";
+  //     }
 
-    //     io.in(socketId).socketsJoin(`room-${otherId}`);
-    //     io.in(otherId).socketsJoin(`room-${socketId}`);
+  //     io.socketsLeave(`room-${otherId}`);
+  //     io.socketsLeave(`room-${socketId}`);
 
-    //     io.in(socketId).emit("message", `pairing with ${otherId}`);
-    //     io.in(otherId).emit("message", `pairing with ${socketId}`);
+  //     io.in(socketId).socketsJoin(`room-${otherId}`);
+  //     io.in(otherId).socketsJoin(`room-${socketId}`);
 
-    //     // start try without ack
+  //     io.in(socketId).emit("message", `pairing with ${otherId}`);
+  //     io.in(otherId).emit("message", `pairing with ${socketId}`);
 
-    //     // io.in(otherId).emit("match", "guest", (err: any, response: any) => {
-    //     //   if (err) {
-    //     //     console.error(err);
-    //     //   } else {
-    //     //   }
-    //     // });
+  //     // start try without ack
 
-    //     // io.in(socketId).emit("match", "host", (err: any, response: any) => {
-    //     //   if (err) {
-    //     //     console.error(err);
-    //     //   } else {
-    //     //   }
-    //     // });
+  //     // io.in(otherId).emit("match", "guest", (err: any, response: any) => {
+  //     //   if (err) {
+  //     //     console.error(err);
+  //     //   } else {
+  //     //   }
+  //     // });
 
-    //     // await mainRedisClient.sRem(common.readySetName, socketId);
-    //     // await mainRedisClient.sRem(common.readySetName, otherId);
+  //     // io.in(socketId).emit("match", "host", (err: any, response: any) => {
+  //     //   if (err) {
+  //     //     console.error(err);
+  //     //   } else {
+  //     //   }
+  //     // });
 
-    //     // end try without ack
+  //     // await mainRedisClient.sRem(common.readySetName, socketId);
+  //     // await mainRedisClient.sRem(common.readySetName, otherId);
 
-    //     const guestCallback = (resolve: any, reject: any) => {
-    //       io.in(otherId)
-    //         .timeout(matchTimeout)
-    //         .emit("match", "guest", (err: any, response: any) => {
-    //           if (err) {
-    //             console.error(err);
-    //             reject("guest");
-    //           } else {
-    //             resolve();
-    //           }
-    //         });
-    //     };
+  //     // end try without ack
 
-    //     const hostCallback = (resolve: any, reject: any) => {
-    //       io.in(socketId)
-    //         .timeout(matchTimeout)
-    //         .emit("match", "host", (err: any, response: any) => {
-    //           if (err) {
-    //             console.error(err);
-    //             reject("host");
-    //           } else {
-    //             resolve();
-    //           }
-    //         });
-    //     };
+  //     const guestCallback = (resolve: any, reject: any) => {
+  //       io.in(otherId)
+  //         .timeout(matchTimeout)
+  //         .emit("match", "guest", (err: any, response: any) => {
+  //           if (err) {
+  //             console.error(err);
+  //             reject("guest");
+  //           } else {
+  //             resolve();
+  //           }
+  //         });
+  //     };
 
-    //     await new Promise(guestCallback)
-    //       .then(() => {
-    //         return new Promise(hostCallback);
-    //       })
-    //       .then(async () => {
-    //         // if both acks are acked. we can remove them from the ready set.
-    //         await mainRedisClient.sRem(common.readySetName, socketId);
-    //         await mainRedisClient.sRem(common.readySetName, otherId);
-    //       })
-    //       .catch((value) => {
-    //         io.in(socketId).emit("message", `host paring: failed with ${value}`);
-    //         io.in(otherId).emit("message", `guest paring: failed with ${value}`);
-    //         throw `match failed with ${value}`;
-    //       });
-    //   }
-    // );
+  //     const hostCallback = (resolve: any, reject: any) => {
+  //       io.in(socketId)
+  //         .timeout(matchTimeout)
+  //         .emit("match", "host", (err: any, response: any) => {
+  //           if (err) {
+  //             console.error(err);
+  //             reject("host");
+  //           } else {
+  //             resolve();
+  //           }
+  //         });
+  //     };
+
+  //     await new Promise(guestCallback)
+  //       .then(() => {
+  //         return new Promise(hostCallback);
+  //       })
+  //       .then(async () => {
+  //         // if both acks are acked. we can remove them from the ready set.
+  //         await mainRedisClient.sRem(common.readySetName, socketId);
+  //         await mainRedisClient.sRem(common.readySetName, otherId);
+  //       })
+  //       .catch((value) => {
+  //         io.in(socketId).emit("message", `host paring: failed with ${value}`);
+  //         io.in(otherId).emit("message", `guest paring: failed with ${value}`);
+  //         throw `match failed with ${value}`;
+  //       });
+  //   }
+  // );
 };
 
 // exports.readyEvent = functions
