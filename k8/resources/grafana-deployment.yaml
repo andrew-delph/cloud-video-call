@@ -22,7 +22,7 @@ spec:
         kompose.version: 1.28.0 (HEAD)
       creationTimestamp: null
       labels:
-        io.kompose.network/example-default: "true"
+        io.kompose.network/example-default: 'true'
         io.kompose.service: grafana
     spec:
       # initContainers:
@@ -34,11 +34,11 @@ spec:
       containers:
         - env:
             - name: GF_AUTH_ANONYMOUS_ENABLED
-              value: "true"
+              value: 'true'
             - name: GF_AUTH_ANONYMOUS_ORG_ROLE
               value: Admin
             - name: GF_AUTH_BASIC_ENABLED
-              value: "false"
+              value: 'false'
           image: andrewdelph/grafana_video_call:latest
           name: grafana
           ports:
@@ -46,14 +46,14 @@ spec:
           lifecycle:
             postStart:
               exec:
-                command: ["/bin/sh", "/script/copyfiles.sh"]
+                command: ['/bin/sh', '/script/copyfiles.sh']
           resources: {}
-          volumeMounts:
-            - mountPath: /etc/grafana/provisioning/
-              name: grafana-claim0
+          # volumeMounts:
+          #   - mountPath: /etc/grafana/provisioning/
+          #     name: grafana-claim0
       restartPolicy: Always
-      volumes:
-        - name: grafana-claim0
-          persistentVolumeClaim:
-            claimName: grafana-claim0
+      # volumes:
+      #   - name: grafana-claim0
+      #     persistentVolumeClaim:
+      #       claimName: grafana-claim0
 status: {}

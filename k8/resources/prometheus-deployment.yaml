@@ -22,7 +22,7 @@ spec:
         kompose.version: 1.28.0 (HEAD)
       creationTimestamp: null
       labels:
-        io.kompose.network/example-default: "true"
+        io.kompose.network/example-default: 'true'
         io.kompose.service: prometheus
     spec:
       containers:
@@ -36,12 +36,12 @@ spec:
             - containerPort: 9090
           resources: {}
           securityContext:
-          volumeMounts:
-            - mountPath: /prometheus/data
-              name: prom-data
+          # volumeMounts:
+          #   - mountPath: /prometheus/data
+          #     name: prom-data
       restartPolicy: Always
-      volumes:
-        - name: prom-data
-          persistentVolumeClaim:
-            claimName: prom-data
+      # volumes:
+      #   - name: prom-data
+      #     persistentVolumeClaim:
+      #       claimName: prom-data
 status: {}
