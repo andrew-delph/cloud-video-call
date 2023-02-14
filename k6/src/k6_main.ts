@@ -1,6 +1,5 @@
 import ws, { Socket } from 'k6/ws';
 import { check, sleep } from 'k6';
-import { makeConnection } from '../libs/socket.io';
 import { Counter, Trend } from 'k6/metrics';
 import { SocketWrapper } from '../libs/SocketWrapper';
 
