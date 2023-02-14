@@ -2,9 +2,10 @@ import { Kafka, logLevel } from 'kafkajs';
 import amqp from 'amqplib';
 import * as common from 'react-video-call-common';
 import * as neo4j from 'neo4j-driver';
+import { throttle } from 'lodash';
 
 const kafka = new Kafka({
-  logLevel: logLevel.DEBUG,
+  logLevel: logLevel.WARN,
   clientId: `my-app`,
   brokers: [`my-cluster-kafka-bootstrap:9092`],
 });
