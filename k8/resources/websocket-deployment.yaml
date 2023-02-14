@@ -9,7 +9,7 @@ metadata:
     app: websocket
   name: websocket
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: websocket
@@ -21,7 +21,7 @@ spec:
         kompose.version: 1.28.0 (c4137012e)
       creationTimestamp: null
       labels:
-        io.kompose.network/react-video-call-default: "true"
+        io.kompose.network/react-video-call-default: 'true'
         app: websocket
     spec:
       containers:
@@ -31,17 +31,17 @@ spec:
             - name: REDIS_HOST
               value: redis
             - name: REDIS_PORT
-              value: "6379"
+              value: '6379'
           image: andrewdelph/video-call-websocket:latest
           name: websocket
           ports:
             - containerPort: 4000
           resources:
             requests:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: '100m'
+              memory: '100Mi'
             limits:
-              cpu: "500m"
-              memory: "512Mi"
+              cpu: '500m'
+              memory: '512Mi'
       restartPolicy: Always
 status: {}
