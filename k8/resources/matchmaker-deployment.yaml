@@ -9,7 +9,7 @@ metadata:
     app: matchmaker
   name: matchmaker
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: matchmaker
@@ -21,7 +21,7 @@ spec:
         kompose.version: 1.28.0 (c4137012e)
       creationTimestamp: null
       labels:
-        io.kompose.network/react-video-call-default: "true"
+        io.kompose.network/react-video-call-default: 'true'
         app: matchmaker
     spec:
       containers:
@@ -31,17 +31,17 @@ spec:
             - name: REDIS_HOST
               value: redis
             - name: REDIS_PORT
-              value: "6379"
+              value: '6379'
           image: andrewdelph/video-call-matchmaker:latest
           name: matchmaker
           ports:
             - containerPort: 4000
           resources:
             requests:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: '100m'
+              memory: '100Mi'
             limits:
-              cpu: "500m"
-              memory: "200Mi"
+              cpu: '500m'
+              memory: '200Mi'
       restartPolicy: Always
 status: {}

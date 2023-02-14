@@ -1,6 +1,9 @@
 import { connect, ConsumeMessage } from 'amqplib';
 import { readyEvent } from './functions';
 import * as common from 'react-video-call-common';
+import { v4 as uuid } from 'uuid';
+
+const serverID = uuid();
 
 async function matcher() {
   const connection = await connect(`amqp://rabbitmq`);
@@ -23,9 +26,10 @@ async function matcher() {
       }
 
       try {
+        console.log(`worker ${serverID}`);
         await readyEvent(msg, channel);
       } catch (e) {
-        console.log(`readyEvent error=` + e);
+        console.log(`readyEvent severid= ${serverID} error=` + e);
       } finally {
         channel.ack(msg);
       }
