@@ -1,6 +1,6 @@
 import * as neo4j from 'neo4j-driver';
 import { Dict } from 'neo4j-driver-core/types/record';
-import * as funcs from './functions';
+import * as funcs from './neo4j_functions';
 
 let result: neo4j.QueryResult<Dict<PropertyKey, any>>;
 
@@ -30,20 +30,19 @@ function printResults(
     // for (var i = 0; i < 3; i++) {
     //   result = await funcs.changeRandomReady()
     // }
-    await funcs.createData(4, 10, true);
 
-    await funcs.createGraph();
+    let result;
 
-    result = await funcs.callAlgo();
+    for (var i = 0; i < 100; i++) {
+      result = funcs.mergePerson();
+    }
 
-    result = await funcs.getSimilar([`node1`, `node3`]);
-
-    printResults(result, 2);
+    // printResults(result, 2);
   } finally {
     console.log(`closing`);
-    await funcs.session.close();
-    await funcs.driver.close();
+    // await funcs.session.close();
+    // await funcs.driver.close();
   }
 
   // on application exit:
-})();
+})().then(() => {});

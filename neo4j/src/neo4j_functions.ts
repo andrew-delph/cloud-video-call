@@ -1,4 +1,5 @@
 import * as neo4j from 'neo4j-driver';
+import { v4 as uuid } from 'uuid';
 
 export const driver = neo4j.driver(
   `neo4j://localhost:7687`,
@@ -254,6 +255,40 @@ export async function getSimilar(names: Array<string>) {
   //     `);
 
   const end_time = performance.now();
+
+  console.log(`it took: `, end_time - start_time);
+
+  return result;
+}
+
+export async function mergePerson() {
+  let result;
+
+  // result = await session.run(`
+  // MERGE (:Person {socketid: 'andrew1'})
+  //   `);
+
+  const toAdd: any[] = [];
+
+  for (let i = 0; i < 200; i++) {
+    toAdd.push({ socketid: uuid() });
+  }
+
+  const start_time = performance.now();
+
+  // const session = driver.session();
+
+  result = await session.run(
+    `UNWIND $nodes as node
+      MERGE (:Person {socketid: node.socketid});
+      `,
+    {
+      nodes: toAdd,
+    },
+  );
+
+  const end_time = performance.now();
+  // await session.close();
 
   console.log(`it took: `, end_time - start_time);
 
