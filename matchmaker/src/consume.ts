@@ -1,11 +1,23 @@
-import { Kafka } from 'kafkajs';
+import { Kafka, logLevel } from 'kafkajs';
 import amqp from 'amqplib';
 import * as common from 'react-video-call-common';
 import * as neo4j from 'neo4j-driver';
 
 const kafka = new Kafka({
+  logLevel: logLevel.DEBUG,
   clientId: `my-app`,
   brokers: [`my-cluster-kafka-bootstrap:9092`],
+});
+
+const readyConsumer = kafka.consumer({
+  groupId: `ready-group`,
+  maxWaitTimeInMs: 1000 * 10,
+  minBytes: 10000,
+});
+
+const neo4jConsumer = kafka.consumer({
+  groupId: `neo4j-group`,
+  maxWaitTimeInMs: 1000 * 1,
 });
 
 const driver = neo4j.driver(
@@ -57,12 +69,6 @@ const queueReadyEvent = async (socket1: string, socket2: string) => {
 };
 
 const readyListen = async () => {
-  const readyConsumer = kafka.consumer({
-    groupId: `ready-group`,
-    maxWaitTimeInMs: 1000 * 10,
-    minBytes: 10000,
-  });
-
   await readyConsumer.connect();
   await readyConsumer.subscribe({
     topic: common.readyTopicName,
@@ -81,9 +87,9 @@ const readyListen = async () => {
       //   console.log("here", batch);
       console.log(``);
       console.log(
-        `new batch`,
-        batch.messages.length,
-        new Date().toTimeString(),
+        `new batch size: ${
+          batch.messages.length
+        } date: ${new Date().toTimeString()} partition: ${batch.partition}`,
       );
 
       const messagesList = batch.messages;
@@ -121,11 +127,6 @@ const readyListen = async () => {
 };
 
 const createUserListen = async () => {
-  const neo4jConsumer = kafka.consumer({
-    groupId: `neo4j-group`,
-    maxWaitTimeInMs: 1000 * 1,
-  });
-
   await neo4jConsumer.connect();
   await neo4jConsumer.subscribe({
     topic: common.neo4jCreateUserTopicName,
@@ -154,6 +155,7 @@ const createUserListen = async () => {
       if (duration > 1) {
         console.warn(`created Node took: ${duration}s`);
       }
+      console.log(`create name duration: ${duration} partition: ${partition}`);
 
       await session.close();
     },
@@ -169,3 +171,35 @@ const consumeListen = async () => {
 export const consume = () => {
   connectRabbit().then(() => consumeListen());
 };
+
+const errorTypes = [`unhandledRejection`, `uncaughtException`];
+const signalTraps = [`SIGTERM`, `SIGINT`, `SIGUSR2`];
+
+errorTypes.forEach((type) => {
+  process.on(type, async (e) => {
+    try {
+      console.log(`process.on ${type}`);
+      console.error(e);
+
+      await readyConsumer.disconnect();
+
+      await neo4jConsumer.disconnect();
+
+      process.exit(0);
+    } catch (_) {
+      process.exit(1);
+    }
+  });
+});
+
+signalTraps.forEach((type) => {
+  process.once(type, async () => {
+    try {
+      await readyConsumer.disconnect();
+
+      await neo4jConsumer.disconnect();
+    } finally {
+      process.kill(process.pid, type);
+    }
+  });
+});
