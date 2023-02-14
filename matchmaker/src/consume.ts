@@ -42,7 +42,7 @@ const queueReadyEvent = async (socket1: string, socket2: string) => {
         console.log(
           `create relationship took:${Math.round(
             performance.now() - start_time,
-          )}ms  for: ${socket1} ${socket2}`,
+          )}s  for: ${socket1} ${socket2}`,
         );
       }
     })();
