@@ -27,7 +27,7 @@ setup:
 	kubectl delete configmap prometheus-config --ignore-not-found
 
 	kubectl create configmap test-scripts  \
-		--from-file=./dist/main.js
+		--from-file=./dist/k6_main.js
 
 	kubectl create configmap  prometheus-config --from-literal="K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write"
 

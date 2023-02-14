@@ -16,7 +16,7 @@ spec:
       # Recreate the ConfigMag if you modify scripts or want additional scripts.
       name: test-scripts
       # TODO - Want a different test script? Change it here.
-      file: main.js
+      file: k6_main.js
   arguments: --tag testid=k6-output-grafana-cloud
   runner:
     # TODO Change the image to your published image!
@@ -26,6 +26,8 @@ spec:
         value: xk6-prometheus-rw
       - name: K6_PROMETHEUS_RW_TREND_STATS
         value: 'avg,p(90),p(99),min,max'
+      - name: HOST
+        value: 'nginx'
     envFrom:
       - configMapRef:
           name: prometheus-config
