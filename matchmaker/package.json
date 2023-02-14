@@ -10,7 +10,7 @@
     "prod": "node ./dist/index.js",
     "dev": "tsc-watch --onSuccess \"npm run k8-restart\" --onCompilationStarted \"echo 'watching matchmaker'\"",
     "docker": "docker build -f Dockerfile -t andrewdelph/video-call-matchmaker:latest ../ && docker push andrewdelph/video-call-matchmaker:latest",
-    "k8-restart": "npm run docker && kubectl rollout restart deployment/matchmaker && kubectl rollout status deployment/matchmaker --watch=true --timeout=60s && kubectl logs --selector=app=matchmaker -f"
+    "k8-restart": "npm run docker && kubectl rollout restart deployment/matchmaker && kubectl rollout status deployment/matchmaker --watch=true --timeout=60s && kubetail matchmaker"
   },
   "keywords": [],
   "author": "",
