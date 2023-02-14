@@ -6,8 +6,8 @@ import { SocketWrapper } from '../libs/SocketWrapper';
 
 export const options = {
   // stages: [{ duration: "10s", target: 50 }],
-  vus: 20,
-  duration: `5m`,
+  vus: 200,
+  duration: `1h`,
 };
 
 // export const options = {
