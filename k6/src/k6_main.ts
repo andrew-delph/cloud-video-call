@@ -6,8 +6,8 @@ import { SocketWrapper } from '../libs/SocketWrapper';
 
 export const options = {
   // stages: [{ duration: "10s", target: 50 }],
-  vus: 200,
-  duration: `30s`,
+  vus: 20,
+  duration: `2m`,
 };
 
 // export const options = {
@@ -121,7 +121,7 @@ export default function (): void {
 
     socket.setTimeout(function () {
       socket.close();
-    }, 1000 * 4);
+    }, 1000 * 40);
   });
 
   check(response, { 'status is 101': (r) => r && r.status === 101 });

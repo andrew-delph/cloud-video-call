@@ -113,7 +113,7 @@ export const readyEvent = async (msg: ConsumeMessage, channel: Channel) => {
   const socket1 = msgContent[0];
   const socket2 = msgContent[1];
 
-  console.log(`matching`, socket1, socket2);
+  // console.log(`matching`, socket1, socket2);
 
   io.socketsLeave(`room-${socket1}`);
   io.socketsLeave(`room-${socket2}`);

@@ -7,35 +7,18 @@ import { Server } from 'socket.io';
 import { v4 as uuid } from 'uuid';
 // import { RedisAdapter } from "@socket.io/redis-adapter";
 import * as common from 'react-video-call-common';
-import * as neo4j from 'neo4j-driver';
 
 import { initializeApp } from 'firebase-admin/app';
 
 import { throttle } from 'lodash';
-
-import amqp from 'amqplib';
 
 import { Kafka, Producer } from 'kafkajs';
 
 let kafka: Kafka;
 let kafkaProducer: Producer;
 
-let rabbitConnection: amqp.Connection;
-let rabbitChannel: amqp.Channel;
-
-// const connectRabbit = async () => {
-//   rabbitConnection = await amqp.connect("amqp://rabbitmq");
-//   rabbitChannel = await rabbitConnection.createChannel();
-//   console.log("rabbit connected");
-// };
-
-export const driver = neo4j.driver(
-  `neo4j://neo4j:7687`,
-  neo4j.auth.basic(`neo4j`, `password`),
-);
-
 const connectKafkaProducer = async () => {
-  const kafka = new Kafka({
+  kafka = new Kafka({
     clientId: `my-app`,
     brokers: [`my-cluster-kafka-bootstrap:9092`],
   });
@@ -43,17 +26,6 @@ const connectKafkaProducer = async () => {
   await kafkaProducer.connect();
   console.log(`kafka producer connected`);
 };
-
-// const queueReadyEvent = async (message: string) => {
-//   try {
-//     await rabbitChannel.assertQueue(common.readyQueueName, { durable: true });
-//     rabbitChannel.sendToQueue(common.readyQueueName, Buffer.from(message));
-
-//     // console.log(` [x] Sent message: ${message}`);
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
 
 dotenv.config();
 
@@ -90,22 +62,16 @@ io.on(`error`, (err) => {
   console.log(`io err`, err);
 });
 
+const throttlePrintConnectedNum = throttle(async () => {
+  console.log(`### connected sockets: ${io.sockets.sockets.size}`);
+}, 5000);
+
 io.on(`connection`, async (socket) => {
+  throttlePrintConnectedNum();
+
   socket.on(`error`, (err) => {
     console.log(`socket err`, err);
   });
-
-  console.log(`connection on ${serverID} ${socket.id}`);
-
-  await (async () => {
-    const session = driver.session();
-    await session.run(`MERGE (:Person {socketid: $id})`, {
-      id: socket.id,
-    });
-  })();
-  // console.log("connected");
-
-  pubClient.sAdd(common.activeSetName, socket.id);
 
   socket.on(`myping`, (arg, callback) => {
     // console.log("myping", arg, callback);
@@ -121,10 +87,10 @@ io.on(`connection`, async (socket) => {
   });
 
   socket.on(`ready`, async (data, callback) => {
-    pubClient.sAdd(common.readySetName, socket.id);
+    await pubClient.sAdd(common.readySetName, socket.id);
 
     await kafkaProducer.send({
-      topic: `test-topic`,
+      topic: common.readyTopicName,
       messages: [{ value: socket.id }],
     });
 
@@ -172,6 +138,13 @@ io.on(`connection`, async (socket) => {
   //     }
   //   });
   // }, 1000);
+
+  pubClient.sAdd(common.activeSetName, socket.id);
+
+  await kafkaProducer.send({
+    topic: common.neo4jCreateUserTopicName,
+    messages: [{ value: socket.id }],
+  });
 });
 
 Promise.all([pubClient.connect(), subClient.connect()])

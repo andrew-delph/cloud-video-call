@@ -1,32 +1,22 @@
 import { Kafka } from 'kafkajs';
+import * as common from 'react-video-call-common';
 
 const kafka = new Kafka({
-    clientId: `my-app`,
-    brokers: [`localhost:9092`],
+  clientId: `my-app`,
+  brokers: [`localhost:9092`],
 });
 
 (async () => {
-    const producer = kafka.producer();
-    const admin = kafka.admin();
+  const producer = kafka.producer();
 
-    //   await admin.connect();
+  await producer.connect();
 
-    //   await admin.createTopics({
-    //     waitForLeaders: true,
-    //     timeout: 1000,
-    //     topics: [{ topic: "test-topic" }],
-    //   });
+  for (let i = 1; i <= 22222; i++) {
+    await producer.send({
+      topic: common.readyTopicName,
+      messages: [{ value: `sending msg: ` + i }],
+    });
+  }
 
-    //   await admin.disconnect();
-
-    await producer.connect();
-
-    for (let i = 1; i <= 22222; i++) {
-        await producer.send({
-            topic: `test-topic`,
-            messages: [{ value: `sending msg: ` + i }],
-        });
-    }
-
-    await producer.disconnect();
+  await producer.disconnect();
 })();
