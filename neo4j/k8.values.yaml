@@ -16,3 +16,4 @@ env:
   NEO4J_PLUGINS: '["graph-data-science"]'
 config:
   dbms.security.procedures.unrestricted: 'gds.*'
+  dbms.memory.transaction.total.max: '1GB'
