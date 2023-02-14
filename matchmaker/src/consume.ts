@@ -152,9 +152,8 @@ const createUserListen = async () => {
       );
       const duration = Math.round(performance.now() - start_time) / 1000;
       if (duration > 1) {
-        console.warn(`created Node took: ${duration}s`);
+        console.warn(`created Node took: ${duration}s partition: ${partition}`);
       }
-      console.log(`create name duration: ${duration} partition: ${partition}`);
 
       await session.close();
     },

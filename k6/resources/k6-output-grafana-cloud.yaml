@@ -9,7 +9,7 @@ kind: K6
 metadata:
   name: k6-output-grafana-cloud
 spec:
-  parallelism: 2
+  parallelism: 5
   script:
     configMap:
       # Remember...we created the 'test-scripts' ConfigMap with the available scripts inside.
