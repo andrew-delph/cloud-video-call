@@ -132,6 +132,10 @@ const createUserListen = async () => {
     fromBeginning: true,
   });
 
+  const printMessage = throttle(() => {
+    console.log(`created node`);
+  }, 5000);
+
   await neo4jConsumer.run({
     eachMessage: async ({ topic, partition, message, heartbeat, pause }) => {
       const socketid = message.value?.toString();
@@ -154,6 +158,7 @@ const createUserListen = async () => {
       if (duration > 1) {
         console.warn(`created Node took: ${duration}s partition: ${partition}`);
       }
+      printMessage();
 
       await session.close();
     },
