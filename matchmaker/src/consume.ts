@@ -84,8 +84,6 @@ const readyListen = async () => {
       isRunning,
       isStale,
     }) => {
-      //   console.log("here", batch);
-      console.log(``);
       console.log(
         `new batch size: ${
           batch.messages.length
