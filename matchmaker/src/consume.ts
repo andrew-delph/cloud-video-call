@@ -120,6 +120,7 @@ const readyListen = async () => {
         resolveOffset(socket2.offset);
         await heartbeat();
       }
+      console.log(`finished ready batch`);
     },
   });
   console.log(`LISTENING ON READY`);
