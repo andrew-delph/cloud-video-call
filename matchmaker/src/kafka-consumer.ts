@@ -33,6 +33,7 @@ let rabbitChannel: amqp.Channel;
 const connectRabbit = async () => {
   rabbitConnection = await amqp.connect(`amqp://rabbitmq`);
   rabbitChannel = await rabbitConnection.createChannel();
+  await rabbitChannel.assertQueue(common.matchQueueName, { durable: true });
   console.log(`rabbit connected`);
 };
 
@@ -60,7 +61,6 @@ const queueReadyEvent = async (socket1: string, socket2: string) => {
         );
       }
     })();
-    await rabbitChannel.assertQueue(common.matchQueueName, { durable: true });
     rabbitChannel.sendToQueue(
       common.matchQueueName,
       Buffer.from(JSON.stringify([socket1, socket2])),

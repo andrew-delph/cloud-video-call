@@ -14,6 +14,8 @@ import { throttle } from 'lodash';
 
 import { Kafka, Producer } from 'kafkajs';
 
+import amqp from 'amqplib';
+
 let kafka: Kafka;
 let kafkaProducer: Producer;
 
@@ -25,6 +27,16 @@ const connectKafkaProducer = async () => {
   kafkaProducer = kafka.producer();
   await kafkaProducer.connect();
   console.log(`kafka producer connected`);
+};
+
+let rabbitConnection: amqp.Connection;
+let rabbitChannel: amqp.Channel;
+
+const connectRabbit = async () => {
+  rabbitConnection = await amqp.connect(`amqp://rabbitmq`);
+  rabbitChannel = await rabbitConnection.createChannel();
+  await rabbitChannel.assertQueue(common.readyQueueName, { durable: true });
+  console.log(`rabbit connected`);
 };
 
 dotenv.config();
@@ -87,12 +99,17 @@ io.on(`connection`, async (socket) => {
   });
 
   socket.on(`ready`, async (data, callback) => {
+    // await kafkaProducer.send({
+    //   topic: common.readyTopicName,
+    //   messages: [{ value: socket.id }],
+    // });
+
     await pubClient.sAdd(common.readySetName, socket.id);
 
-    await kafkaProducer.send({
-      topic: common.readyTopicName,
-      messages: [{ value: socket.id }],
-    });
+    rabbitChannel.sendToQueue(
+      common.readyQueueName,
+      Buffer.from(JSON.stringify([{ value: socket.id }])),
+    );
 
     if (callback != undefined) {
       callback();
@@ -175,6 +192,7 @@ signalTraps.forEach((type) => {
 export const getServer = async () => {
   return await Promise.all([pubClient.connect(), subClient.connect()])
     .then(async () => {
+      await connectRabbit();
       await connectKafkaProducer();
     })
     .then(() => {
