@@ -17,4 +17,4 @@ env:
 config:
   dbms.security.procedures.unrestricted: 'gds.*'
   dbms.memory.transaction.total.max: '1GB'
-  server.bolt.thread_pool_max_size: 1000
+  server.bolt.thread_pool_max_size: '1000'
