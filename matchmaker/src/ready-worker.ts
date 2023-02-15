@@ -24,8 +24,12 @@ export const startReadyConsumer = async () => {
         return;
       }
 
+      const msgContent: [string] = JSON.parse(msg.content.toString());
+
+      const socketId = msgContent[0];
+
       try {
-        console.log(`worker ${serverID}`);
+        console.log(`socketId ${socketId}`);
       } catch (e) {
         console.log(`readyEvent severid= ${serverID} error=` + e);
       } finally {
