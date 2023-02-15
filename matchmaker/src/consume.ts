@@ -60,9 +60,9 @@ const queueReadyEvent = async (socket1: string, socket2: string) => {
         );
       }
     })();
-    await rabbitChannel.assertQueue(common.readyQueueName, { durable: true });
+    await rabbitChannel.assertQueue(common.matchQueueName, { durable: true });
     rabbitChannel.sendToQueue(
-      common.readyQueueName,
+      common.matchQueueName,
       Buffer.from(JSON.stringify([socket1, socket2])),
     );
   } catch (error) {

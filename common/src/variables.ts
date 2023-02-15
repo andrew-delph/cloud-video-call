@@ -5,6 +5,8 @@ export const readySetName = `readySet`;
 
 export const readyQueueName = `readyQueue`;
 
+export const matchQueueName = `matchQueue`;
+
 export const readyTopicName = `readyTopicName`;
 
 export const neo4jCreateUserTopicName = `createUserTopicName`;

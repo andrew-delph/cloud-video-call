@@ -10,7 +10,7 @@ async function matcher() {
 
   const channel = await connection.createChannel();
 
-  await channel.assertQueue(common.readyQueueName, {
+  await channel.assertQueue(common.matchQueueName, {
     durable: true,
   });
 
@@ -18,7 +18,7 @@ async function matcher() {
   console.log(` [x] Awaiting RPC requests`);
 
   channel.consume(
-    common.readyQueueName,
+    common.matchQueueName,
     async (msg: ConsumeMessage | null) => {
       if (msg == null) {
         console.log(`msg is null.`);
