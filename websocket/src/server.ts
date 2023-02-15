@@ -147,24 +147,6 @@ io.on(`connection`, async (socket) => {
   });
 });
 
-Promise.all([pubClient.connect(), subClient.connect()])
-  .then(async () => {
-    await connectKafkaProducer();
-  })
-  .then(() => {
-    io.adapter(createAdapter(pubClient, subClient));
-    httpServer.listen(4000);
-    console.log(`server started`);
-  })
-  .then(() => {
-    subClient.subscribe(
-      common.activeCountChannel,
-      throttle(async (msg) => {
-        io.emit(`activeCount`, await pubClient.sCard(common.activeSetName));
-      }, 1000),
-    );
-  });
-
 const errorTypes = [`unhandledRejection`, `uncaughtException`];
 const signalTraps = [`SIGTERM`, `SIGINT`, `SIGUSR2`];
 
@@ -189,3 +171,28 @@ signalTraps.forEach((type) => {
     }
   });
 });
+
+export const getServer = async () => {
+  return await Promise.all([pubClient.connect(), subClient.connect()])
+    .then(async () => {
+      await connectKafkaProducer();
+    })
+    .then(() => {
+      io.adapter(createAdapter(pubClient, subClient));
+      httpServer.listen(4000);
+      console.log(`server started`);
+    })
+    .then(async () => {
+      await subClient.subscribe(
+        common.activeCountChannel,
+        throttle(async (msg) => {
+          io.emit(`activeCount`, await pubClient.sCard(common.activeSetName));
+        }, 1000),
+      );
+      return io;
+    });
+};
+
+if (require.main === module) {
+  getServer();
+}

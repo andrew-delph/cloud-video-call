@@ -9,23 +9,23 @@ import { SocketWrapper } from '../libs/SocketWrapper';
 //   duration: `1h`,
 // };
 export const options = {
-  // vus: 2000,
-  // duration: `1h`,
+  // vus: 20,
+  // duration: `20s`,
   scenarios: {
-    // contacts: {
-    //   executor: `ramping-arrival-rate`,
-    //   startRate: 60 * 2,
-    //   timeUnit: `1m`,
-    //   preAllocatedVUs: 2,
-    //   maxVUs: 2000,
-    //   stages: [{ target: 300, duration: `1h` }],
-    // },
+    //   // contacts: {
+    //   //   executor: `ramping-arrival-rate`,
+    //   //   startRate: 60 * 2,
+    //   //   timeUnit: `1m`,
+    //   //   preAllocatedVUs: 2,
+    //   //   maxVUs: 2000,
+    //   //   stages: [{ target: 300, duration: `1h` }],
+    //   // },
     contacts: {
       executor: `ramping-vus`,
       startVUs: 0,
       stages: [
-        { duration: `2m`, target: 2000 },
-        { duration: `2h`, target: 2000 },
+        { duration: `2m`, target: 1000 },
+        { duration: `2m`, target: 1000 },
       ],
     },
   },
@@ -44,7 +44,7 @@ export default function (): void {
 
   const secure = false;
 
-  const domain = __ENV.HOST || `localhost:8080`;
+  const domain = __ENV.HOST || `34.69.116.114:80`; // `localhost:8080`
 
   // const sid = makeConnection(domain, secure);
 
@@ -59,7 +59,7 @@ export default function (): void {
     const readyEvent = () => {
       socketWrapper!.listen(
         `match`,
-        25000,
+        90000,
         (
           isSuccess: boolean,
           elapsed: number,
@@ -74,14 +74,14 @@ export default function (): void {
 
           check(isSuccess, { 'match event': (r) => r });
 
-          if (callback) callback({});
+          if (callback) callback(`from k6 test...`);
         },
       );
 
       socketWrapper!.sendWithAck(
         `ready`,
         { test: `looking for ack` },
-        5000,
+        90000,
         (isSuccess: boolean, elapsed: number, data: any) => {
           if (isSuccess) {
             ready_waiting_time.add(elapsed);

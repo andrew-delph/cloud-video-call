@@ -150,7 +150,7 @@ export const readyEvent = async (msg: ConsumeMessage, channel: Channel) => {
       });
   };
 
-  await new Promise(guestCallback)
+  return await new Promise(guestCallback)
     .then(() => {
       return new Promise(hostCallback);
     })
@@ -164,8 +164,6 @@ export const readyEvent = async (msg: ConsumeMessage, channel: Channel) => {
       io.in(socket2).emit(`message`, `guest paring: failed with ${value}`);
       throw `match failed with ${value}`;
     });
-
-  return;
 
   // console.log("ready event for " + socketId);
 
