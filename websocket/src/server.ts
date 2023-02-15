@@ -108,7 +108,7 @@ io.on(`connection`, async (socket) => {
 
     rabbitChannel.sendToQueue(
       common.readyQueueName,
-      Buffer.from(JSON.stringify([{ value: socket.id }])),
+      Buffer.from(JSON.stringify([socket.id])),
     );
 
     if (callback != undefined) {

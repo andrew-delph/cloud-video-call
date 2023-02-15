@@ -65,7 +65,7 @@ export async function createData(
   console.log(`create edges ${edgesNum}`);
 
   await session.run(
-    `UNWIND $edges as edge MATCH (a:Person), (b:Person) WHERE a.name = toString(edge.a) AND b.name = toString(edge.b) MERGE (a)-[:KNOWS]->(b)`,
+    `UNWIND $edges as edge MATCH (a:Person), (b:Person) WHERE a.name = toString(edge.a) AND b.name = toString(edge.b) MERGE (a)-[:KNOWS {value: 'test'}]->(b)`,
     { edges: edges },
   );
 

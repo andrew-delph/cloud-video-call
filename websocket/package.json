@@ -8,7 +8,7 @@
     "build": "tsc",
     "prod": "node ./dist/index.js",
     "docker": "docker build -f Dockerfile  -t andrewdelph/video-call-websocket:latest ../ && docker push andrewdelph/video-call-websocket:latest",
-    "k8-restart": "npm run docker && kubectl rollout restart deployment/websocket && kubectl rollout status deployment/websocket --watch=true --timeout=60s && kubetail websocket"
+    "k8-restart": "npm run docker && kubectl rollout restart deployment/websocket && kubectl rollout status deployment/websocket --watch=true --timeout=60s && kubetail websocket || true"
   },
   "author": "",
   "license": "ISC",
