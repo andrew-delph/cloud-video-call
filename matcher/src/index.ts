@@ -1,5 +1,5 @@
 import { connect, ConsumeMessage } from 'amqplib';
-import { readyEvent } from './functions';
+import { readyEvent } from './mathc-worker';
 import * as common from 'react-video-call-common';
 import { v4 as uuid } from 'uuid';
 
