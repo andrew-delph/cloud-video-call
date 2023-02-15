@@ -14,6 +14,7 @@ const readyConsumer = kafka.consumer({
   groupId: `ready-group`,
   maxWaitTimeInMs: 1000 * 10,
   minBytes: 10000,
+  maxBytes: 20000,
 });
 
 const neo4jConsumer = kafka.consumer({
@@ -86,10 +87,12 @@ const readyListen = async () => {
       isStale,
     }) => {
       console.log(
-        `new batch size: ${
-          batch.messages.length
-        } date: ${new Date().toTimeString()} partition: ${batch.partition}`,
+        `new batch size: ${batch.messages.length} partition: ${
+          batch.partition
+        } time: ${new Date().toLocaleTimeString()}`,
       );
+
+      const start_time = performance.now();
 
       const messagesList = batch.messages;
 
@@ -120,7 +123,11 @@ const readyListen = async () => {
         resolveOffset(socket2.offset);
         await heartbeat();
       }
-      console.log(`finished ready batch`);
+      console.log(
+        `finished ready batch took: ${Math.round(
+          (performance.now() - start_time) / 1000,
+        )}s`,
+      );
     },
   });
   console.log(`LISTENING ON READY`);

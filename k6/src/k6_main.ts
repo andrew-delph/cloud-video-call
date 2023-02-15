@@ -3,27 +3,33 @@ import { check, sleep } from 'k6';
 import { Counter, Trend } from 'k6/metrics';
 import { SocketWrapper } from '../libs/SocketWrapper';
 
-export const options = {
-  // stages: [{ duration: "10s", target: 50 }],
-  vus: 2000,
-  duration: `1h`,
-};
-
 // export const options = {
-//   scenarios: {
-//     default: {
-//       executor: `ramping-vus`,
-//       startVUs: 0,
-//       stages: [
-//         { duration: `5s`, target: 100 },
-//         { duration: `30s`, target: 1000 },
-//         { duration: `20m`, target: 1000 },
-//         { duration: `2m`, target: 0 },
-//       ],
-//       // gracefulRampDown: `0s`,
-//     },
-//   },
+//   // stages: [{ duration: "10s", target: 50 }],
+//   vus: 2000,
+//   duration: `1h`,
 // };
+export const options = {
+  // vus: 2000,
+  // duration: `1h`,
+  scenarios: {
+    // contacts: {
+    //   executor: `ramping-arrival-rate`,
+    //   startRate: 60 * 2,
+    //   timeUnit: `1m`,
+    //   preAllocatedVUs: 2,
+    //   maxVUs: 2000,
+    //   stages: [{ target: 300, duration: `1h` }],
+    // },
+    contacts: {
+      executor: `ramping-vus`,
+      startVUs: 0,
+      stages: [
+        { duration: `2m`, target: 2000 },
+        { duration: `2h`, target: 2000 },
+      ],
+    },
+  },
+};
 
 const ready_waiting_time = new Trend(`ready_waiting_time`, true);
 
