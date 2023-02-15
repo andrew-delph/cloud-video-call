@@ -176,7 +176,7 @@ const createUserListen = async () => {
 
 const consumeListen = async () => {
   await readyListen();
-  await createUserListen();
+  // await createUserListen();
 };
 
 export const consume = () => {
