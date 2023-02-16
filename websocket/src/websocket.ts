@@ -130,7 +130,7 @@ io.on(`connection`, async (socket) => {
     // console.log("disconnected");
     // clearInterval(myInterval);
     pubClient.sRem(common.activeSetName, socket.id);
-    // pubClient.sRem(common.readySetName, socket.id);
+    pubClient.sRem(common.readySetName, socket.id);
     pubClient.publish(common.activeCountChannel, `change`);
   });
 
@@ -160,7 +160,7 @@ io.on(`connection`, async (socket) => {
   //   });
   // }, 1000);
 
-  pubClient.sAdd(common.activeSetName, socket.id);
+  await pubClient.sAdd(common.activeSetName, socket.id);
 
   await kafkaProducer.send({
     topic: common.neo4jCreateUserTopicName,
