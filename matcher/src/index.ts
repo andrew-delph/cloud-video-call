@@ -1,5 +1,5 @@
 import { connect, ConsumeMessage } from 'amqplib';
-import { readyEvent } from './match-worker';
+import { match } from './match-worker';
 import * as common from 'react-video-call-common';
 import { v4 as uuid } from 'uuid';
 
@@ -31,7 +31,7 @@ async function matcher() {
             hour12: false,
           })}`,
         );
-        await readyEvent(msg, channel);
+        await match(msg, channel);
       } catch (e) {
         console.log(`readyEvent severid= ${serverID} error=` + e);
       } finally {
