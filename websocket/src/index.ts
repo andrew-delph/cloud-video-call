@@ -12,7 +12,7 @@ import { getServer } from './server';
 const numCPUs = cpus().length;
 
 if (cluster.isPrimary) {
-  console.log(`Master ${process.pid} is running`);
+  console.log(`Master ${process.pid} is running with #${numCPUs} cpus.`);
 
   const httpServer = http.createServer();
 
