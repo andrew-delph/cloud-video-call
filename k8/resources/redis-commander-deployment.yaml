@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: C:\ProgramData\chocolatey\lib\kubernetes-kompose\tools\kompose.exe convert -o ./k8/
+    kompose.version: 1.28.0 (c4137012e)
+  creationTimestamp: null
+  labels:
+    app: redis-commander
+  name: redis-commander
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-commander
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: C:\ProgramData\chocolatey\lib\kubernetes-kompose\tools\kompose.exe convert -o ./k8/
+        kompose.version: 1.28.0 (c4137012e)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/react-video-call-default: 'true'
+        app: redis-commander
+    spec:
+      containers:
+        - image: rediscommander/redis-commander:latest
+          name: redis-commander
+          ports:
+            - containerPort: 8081
+          env:
+            - name: REDIS_HOSTS
+              value: redis
+          resources:
+            requests:
+              cpu: '100m'
+              memory: '100Mi'
+            limits:
+              cpu: '500m'
+              memory: '512Mi'
+      restartPolicy: Always
+status: {}
