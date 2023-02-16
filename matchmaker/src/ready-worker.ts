@@ -3,7 +3,7 @@ import * as common from 'react-video-call-common';
 import { v4 as uuid } from 'uuid';
 import * as neo4j from 'neo4j-driver';
 import Client from 'ioredis';
-import Redlock, { ResourceLockedError } from 'redlock';
+import Redlock, { ResourceLockedError, ExecutionError } from 'redlock';
 import amqp from 'amqplib';
 
 const serverID = uuid();
@@ -42,7 +42,7 @@ export const startReadyConsumer = async () => {
     host: `${process.env.REDIS_HOST}`,
   });
 
-  // rabbitChannel.prefetch(5);
+  // rabbitChannel.prefetch(2);
   console.log(` [x] Awaiting RPC requests`);
 
   rabbitChannel.consume(
@@ -70,6 +70,7 @@ export const startReadyConsumer = async () => {
         } else if (e instanceof NackError) {
           rabbitChannel.ack(msg);
         } else {
+          console.log(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`);
           console.error(`Unknown error: ${e}`);
           console.error(e.stack);
           process.exit(1);
@@ -145,29 +146,41 @@ const matchmakerFlow = async (socketId: string) => {
   // TODO push otherId event
 
   const redlock = new Redlock([lockRedisClient]);
-  // console.log(`before lock`, socketId, otherId);
-
-  await redlock.using([socketId, otherId, `test`], 5000, async (signal) => {
-    // make sure both are in the set
-    if (!(await mainRedisClient.smismember(common.readySetName, socketId))[0]) {
-      throw new AckError(`socketId is no longer ready`);
+  const onError = (e: any) => {
+    if (e instanceof ResourceLockedError) {
+      throw new NackError(e.message);
+    } else if (e instanceof ExecutionError) {
+      throw new NackError(e.message);
     }
-    if (!(await mainRedisClient.smismember(common.readySetName, otherId))[0]) {
-      throw new NackError(`otherId is no longer ready`);
-    }
+    throw e;
+  };
 
-    // remove both from ready set
-    await mainRedisClient.srem(common.readySetName, socketId);
-    await mainRedisClient.srem(common.readySetName, otherId);
+  await redlock
+    .using([socketId, otherId], 5000, async (signal) => {
+      // make sure both are in the set
+      if (
+        !(await mainRedisClient.smismember(common.readySetName, socketId))[0]
+      ) {
+        throw new AckError(`socketId is no longer ready`);
+      }
+      if (
+        !(await mainRedisClient.smismember(common.readySetName, otherId))[0]
+      ) {
+        throw new NackError(`otherId is no longer ready`);
+      }
 
-    // send to matcher
+      // remove both from ready set
+      await mainRedisClient.srem(common.readySetName, socketId);
+      await mainRedisClient.srem(common.readySetName, otherId);
 
-    await rabbitChannel.sendToQueue(
-      common.matchQueueName,
-      Buffer.from(JSON.stringify([socketId, otherId])),
-    );
-    await common.delay(10000);
-  });
+      // send to matcher
+
+      await rabbitChannel.sendToQueue(
+        common.matchQueueName,
+        Buffer.from(JSON.stringify([socketId, otherId])),
+      );
+    })
+    .catch(onError);
 };
 
 const getRealtionshipScoreCacheKey = (socketId: string, otherId: string) => {
