@@ -2,9 +2,9 @@
   "name": "react-video-call-websocket",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/server.js",
+  "main": "dist/index.js",
   "scripts": {
-    "dev": "tsc-watch --onSuccess \"npm run k8-restart\" --onCompilationStarted \"echo 'watching websocket'\"",
+    "dev": "nodemon --watch src -e ts --exec \"sh -c 'npm run build && npm run k8-restart'\"",
     "build": "tsc",
     "prod": "node ./dist/index.js",
     "docker": "docker build -f Dockerfile  -t andrewdelph/video-call-websocket:latest ../ && docker push andrewdelph/video-call-websocket:latest",

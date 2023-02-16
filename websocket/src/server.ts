@@ -99,7 +99,7 @@ io.on(`connection`, async (socket) => {
   });
 
   socket.on(`ready`, async (data, callback) => {
-    // await kafkaProducer.send({
+    //  await kafkaProducer.send({
     //   topic: common.readyTopicName,
     //   messages: [{ value: socket.id }],
     // });

@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 import * as neo4j from 'neo4j-driver';
 import { Redis } from 'ioredis';
 import Redlock, { ResourceLockedError } from 'redlock';
+import amqp from 'amqplib';
 
 const serverID = uuid();
 
@@ -15,6 +16,16 @@ const driver = neo4j.driver(
   `neo4j://neo4j:7687`,
   neo4j.auth.basic(`neo4j`, `password`),
 );
+
+let rabbitConnection: amqp.Connection;
+let rabbitChannel: amqp.Channel;
+
+const connectRabbit = async () => {
+  rabbitConnection = await amqp.connect(`amqp://rabbitmq`);
+  rabbitChannel = await rabbitConnection.createChannel();
+  await rabbitChannel.assertQueue(common.matchQueueName, { durable: true });
+  console.log(`rabbit connected`);
+};
 
 export const startReadyConsumer = async () => {
   const connection = await connect(`amqp://rabbitmq`);
@@ -144,6 +155,11 @@ const matchmakerFlow = async (socketId: string) => {
     await mainRedisClient.srem(common.readySetName, otherId);
 
     // send to matcher
+
+    await rabbitChannel.sendToQueue(
+      common.matchQueueName,
+      Buffer.from(JSON.stringify([socketId, otherId])),
+    );
   });
 };
 
