@@ -42,7 +42,7 @@ export const startReadyConsumer = async () => {
     host: `${process.env.REDIS_HOST}`,
   });
 
-  rabbitChannel.prefetch(5);
+  // rabbitChannel.prefetch(5);
   console.log(` [x] Awaiting RPC requests`);
 
   rabbitChannel.consume(
@@ -63,17 +63,19 @@ export const startReadyConsumer = async () => {
 
       try {
         await matchmakerFlow(socketId);
+        rabbitChannel.ack(msg);
       } catch (e: any) {
         if (e instanceof AckError) {
           rabbitChannel.ack(msg);
         } else if (e instanceof NackError) {
-          rabbitChannel.nack(msg);
+          rabbitChannel.ack(msg);
         } else {
           console.error(`Unknown error: ${e}`);
           console.error(e.stack);
-          process.exit();
+          process.exit(1);
         }
       } finally {
+        // rabbitChannel.ack(msg);
       }
     },
     {
@@ -130,7 +132,7 @@ const matchmakerFlow = async (socketId: string) => {
   } else {
     otherId = relationShipScores.reduce((a, b) => (b[1] > a[1] ? b : a))[0];
   }
-  console.log(`otherId`, otherId);
+  // console.log(`otherId`, otherId);
 
   await subRedisClient.subscribe(getSocketChannel(otherId));
 
@@ -143,9 +145,9 @@ const matchmakerFlow = async (socketId: string) => {
   // TODO push otherId event
 
   const redlock = new Redlock([lockRedisClient]);
-  console.log(`before lock`, socketId, otherId);
+  // console.log(`before lock`, socketId, otherId);
 
-  await redlock.using([socketId, otherId], 5000, async (signal) => {
+  await redlock.using([socketId, otherId, `test`], 5000, async (signal) => {
     // make sure both are in the set
     if (!(await mainRedisClient.smismember(common.readySetName, socketId))[0]) {
       throw new AckError(`socketId is no longer ready`);
@@ -164,6 +166,7 @@ const matchmakerFlow = async (socketId: string) => {
       common.matchQueueName,
       Buffer.from(JSON.stringify([socketId, otherId])),
     );
+    await common.delay(10000);
   });
 };
 
