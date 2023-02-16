@@ -10,6 +10,7 @@ const serverID = uuid();
 
 let mainRedisClient: Client;
 let subRedisClient: Client;
+let pubRedisClient: Client;
 let lockRedisClient: Client;
 
 const driver = neo4j.driver(
@@ -27,6 +28,8 @@ const connectRabbit = async () => {
   console.log(`rabbit connected`);
 };
 
+const matchmakerChannelPrefix = `matchmaker`;
+
 export const startReadyConsumer = async () => {
   await connectRabbit();
 
@@ -38,9 +41,15 @@ export const startReadyConsumer = async () => {
     host: `${process.env.REDIS_HOST || `redis`}`,
   });
 
+  pubRedisClient = new Client({
+    host: `${process.env.REDIS_HOST || `redis`}`,
+  });
+
   lockRedisClient = new Client({
     host: `${process.env.REDIS_HOST}`,
   });
+
+  await subRedisClient.psubscribe(`${matchmakerChannelPrefix}*`);
 
   // rabbitChannel.prefetch(2);
   console.log(` [x] Awaiting RPC requests`);
@@ -61,10 +70,12 @@ export const startReadyConsumer = async () => {
         rabbitChannel.ack(msg);
       }
 
+      const cleanup: (() => void)[] = [];
       try {
-        await matchmakerFlow(socketId);
+        await matchmakerFlow(socketId, 1, cleanup);
         rabbitChannel.ack(msg);
       } catch (e: any) {
+        console.log(e.message);
         if (e instanceof AckError) {
           rabbitChannel.ack(msg);
         } else if (e instanceof NackError) {
@@ -76,7 +87,9 @@ export const startReadyConsumer = async () => {
           process.exit(1);
         }
       } finally {
-        // rabbitChannel.ack(msg);
+        cleanup.forEach((cleanupFunc) => {
+          cleanupFunc();
+        });
       }
     },
     {
@@ -97,27 +110,82 @@ class NackError extends Error {
   }
 }
 
+class AckSignal {
+  signal = ``;
+  setSignal(msg: string) {
+    this.signal = msg;
+  }
+  checkSignal() {
+    if (this.signal) throw new AckError(this.signal);
+  }
+}
+
 const getSocketChannel = (socketId: string) => {
-  return `matchmacker${socketId}`;
+  return `${matchmakerChannelPrefix}${socketId}`;
 };
 
-const matchmakerFlow = async (socketId: string) => {
+const matchmakerFlow = async (
+  socketId: string,
+  priority: number,
+  cleanup: (() => void)[],
+) => {
   // TODO publish messages
-  // TODO add clean up functions as argument for try/finally
+
+  const ackSignal = new AckSignal();
 
   if (!(await mainRedisClient.smismember(common.readySetName, socketId))[0]) {
     throw new AckError(`socketId is no longer ready`);
   }
 
-  await subRedisClient.subscribe(getSocketChannel(socketId));
+  const notifyListeners = async (targetId: string) => {
+    const msg = { priority, owner: socketId };
+    await pubRedisClient.publish(
+      getSocketChannel(targetId),
+      JSON.stringify(msg),
+    );
+  };
 
-  subRedisClient.on(`message`, (channel, message) => {
-    if (channel == getSocketChannel(socketId)) {
-      console.log(`socketId=${socketId} got a message=${message}`);
-    }
-  });
+  const registerSubscriptionListener = (targetId: string) => {
+    const listener = async (
+      pattern: string,
+      channel: string,
+      message: string,
+    ) => {
+      if (channel == getSocketChannel(targetId)) {
+        let msg;
+        try {
+          msg = JSON.parse(message);
+        } catch (e) {
+          console.error(e);
+          return;
+        }
+        if (!msg.priority || !msg.owner) {
+          console.error(`!msg.priority || !msg.owner`);
+          return;
+        }
 
-  // TODO push socketID event
+        if (msg.owner == socketId) {
+          // ignore messages from outself
+          return;
+        } else if (msg.priority > priority) {
+          ackSignal.setSignal(`higher priority for ${targetId}`);
+        } else if (msg.priority == priority && msg.owner > socketId) {
+          ackSignal.setSignal(`higher priority for ${targetId}`);
+        } else {
+          await notifyListeners(targetId);
+        }
+      }
+    };
+
+    cleanup.push(() => {
+      subRedisClient.off(`pmessage`, listener);
+    });
+    subRedisClient.on(`pmessage`, listener);
+  };
+
+  // listen and publish on socketID
+  registerSubscriptionListener(socketId);
+  await notifyListeners(socketId);
 
   const readySet = new Set(await mainRedisClient.smembers(common.readySetName));
   readySet.delete(socketId);
@@ -133,17 +201,11 @@ const matchmakerFlow = async (socketId: string) => {
   } else {
     otherId = relationShipScores.reduce((a, b) => (b[1] > a[1] ? b : a))[0];
   }
-  // console.log(`otherId`, otherId);
+  // listen and publish on otherId
+  registerSubscriptionListener(otherId);
+  await notifyListeners(otherId);
 
-  await subRedisClient.subscribe(getSocketChannel(otherId));
-
-  subRedisClient.on(`message`, (channel, message) => {
-    if (channel == getSocketChannel(otherId)) {
-      console.log(`socketId=${socketId} got a message=${message}`);
-    }
-  });
-
-  // TODO push otherId event
+  await common.delay(1000); // Give tasks events 1 second
 
   const redlock = new Redlock([lockRedisClient]);
   const onError = (e: any) => {
@@ -154,6 +216,8 @@ const matchmakerFlow = async (socketId: string) => {
     }
     throw e;
   };
+
+  ackSignal.checkSignal();
 
   await redlock
     .using([socketId, otherId], 5000, async (signal) => {
