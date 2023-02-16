@@ -63,10 +63,17 @@ export const startReadyConsumer = async () => {
 
       try {
         await matchmakerFlow(socketId);
-      } catch (e) {
-        console.log(`readyEvent severid= ${serverID} error=` + e);
+      } catch (e: any) {
+        if (e instanceof AckError) {
+          rabbitChannel.ack(msg);
+        } else if (e instanceof NackError) {
+          rabbitChannel.nack(msg);
+        } else {
+          console.error(`Unknown error: ${e}`);
+          console.error(e.stack);
+          process.exit();
+        }
       } finally {
-        rabbitChannel.ack(msg);
       }
     },
     {
