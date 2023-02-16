@@ -75,7 +75,11 @@ io.on(`error`, (err) => {
 });
 
 const throttlePrintConnectedNum = throttle(async () => {
-  console.log(`### connected sockets: ${io.sockets.sockets.size}`);
+  console.log(
+    `### connected sockets: ${
+      io.sockets.sockets.size
+    } - ${new Date().toLocaleTimeString(`en-US`, { hour12: false })}`,
+  );
 }, 5000);
 
 io.on(`connection`, async (socket) => {
@@ -99,7 +103,7 @@ io.on(`connection`, async (socket) => {
   });
 
   socket.on(`ready`, async (data, callback) => {
-    //  await kafkaProducer.send({
+    //   await kafkaProducer.send({
     //   topic: common.readyTopicName,
     //   messages: [{ value: socket.id }],
     // });
@@ -126,7 +130,7 @@ io.on(`connection`, async (socket) => {
     // console.log("disconnected");
     // clearInterval(myInterval);
     pubClient.sRem(common.activeSetName, socket.id);
-    pubClient.sRem(common.readySetName, socket.id);
+    // pubClient.sRem(common.readySetName, socket.id);
     pubClient.publish(common.activeCountChannel, `change`);
   });
 
@@ -189,7 +193,7 @@ signalTraps.forEach((type) => {
   });
 });
 
-export const getServer = async () => {
+export const getServer = async (listen: boolean) => {
   return await Promise.all([pubClient.connect(), subClient.connect()])
     .then(async () => {
       await connectRabbit();
@@ -197,7 +201,7 @@ export const getServer = async () => {
     })
     .then(() => {
       io.adapter(createAdapter(pubClient, subClient));
-      httpServer.listen(4000);
+      if (listen) httpServer.listen(4000);
       console.log(`server started`);
     })
     .then(async () => {
@@ -212,5 +216,5 @@ export const getServer = async () => {
 };
 
 if (require.main === module) {
-  getServer();
+  getServer(true);
 }
