@@ -28,12 +28,7 @@ const connectRabbit = async () => {
 };
 
 export const startReadyConsumer = async () => {
-  const connection = await connect(`amqp://rabbitmq`);
-  const channel = await connection.createChannel();
-  await channel.assertQueue(common.readyQueueName, {
-    durable: true,
-  });
-  console.log(`rabbit connected`);
+  await connectRabbit();
 
   mainRedisClient = new Redis({
     host: `${process.env.REDIS_HOST || `redis`}`,
@@ -47,10 +42,10 @@ export const startReadyConsumer = async () => {
     host: `${process.env.REDIS_HOST}`,
   });
 
-  // channel.prefetch(10);
+  rabbitChannel.prefetch(1);
   console.log(` [x] Awaiting RPC requests`);
 
-  channel.consume(
+  rabbitChannel.consume(
     common.readyQueueName,
     async (msg: ConsumeMessage | null) => {
       if (msg == null) {
@@ -63,15 +58,16 @@ export const startReadyConsumer = async () => {
       const socketId = msgContent[0];
       if (!socketId) {
         console.error(`socketId is null`);
-        channel.ack(msg);
+        rabbitChannel.ack(msg);
       }
 
       try {
         console.log(`socketId ${socketId}`);
+        await matchmakerFlow(socketId);
       } catch (e) {
         console.log(`readyEvent severid= ${serverID} error=` + e);
       } finally {
-        channel.ack(msg);
+        rabbitChannel.ack(msg);
       }
     },
     {
@@ -114,12 +110,18 @@ const matchmakerFlow = async (socketId: string) => {
 
   // TODO push socketID event
 
+  const members = await mainRedisClient.smembers(common.readySetName);
+
   const readySet = new Set(await mainRedisClient.smembers(common.readySetName));
+  console.log(`readySet1`, readySet.size);
   readySet.delete(socketId);
+  console.log(`readySet2`, readySet.size);
 
   if (readySet.size == 0) throw new AckError(`ready set is 0`);
 
   const relationShipScores = await getRelationshipScores(socketId, readySet);
+
+  console.log(`relationShipScores.length`, relationShipScores.length);
 
   // select the otherId
   let otherId: string;
@@ -141,6 +143,7 @@ const matchmakerFlow = async (socketId: string) => {
   // TODO push otherId event
 
   const redlock = new Redlock([lockRedisClient]);
+  console.log(`before lock`, socketId, otherId);
 
   await redlock.using([socketId, otherId], 5000, async (signal) => {
     // make sure both are in the set

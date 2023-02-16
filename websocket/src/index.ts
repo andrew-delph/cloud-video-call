@@ -7,7 +7,7 @@ import { Server } from 'socket.io';
 import { setupMaster, setupWorker } from '@socket.io/sticky';
 
 import { createAdapter, setupPrimary } from '@socket.io/cluster-adapter';
-import { getServer } from './server';
+import { getServer } from './websocket';
 
 const numCPUs = cpus().length;
 
@@ -32,7 +32,7 @@ if (cluster.isPrimary) {
   // Node.js > 16.0.0
   cluster.setupPrimary({});
 
-  httpServer.listen(3000);
+  httpServer.listen(4000);
 
   for (let i = 0; i < numCPUs; i++) {
     cluster.fork();
@@ -47,7 +47,7 @@ if (cluster.isPrimary) {
 } else {
   console.log(`Worker ${process.pid} started`);
 
-  getServer().then((io) => {
+  getServer(false).then((io) => {
     setupWorker(io);
   });
 }

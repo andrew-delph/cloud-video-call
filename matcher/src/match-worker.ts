@@ -119,8 +119,8 @@ export const readyEvent = async (msg: ConsumeMessage, channel: Channel) => {
     })
     .then(async () => {
       // if both acks are acked. we can remove them from the ready set.
-      await mainRedisClient.sRem(common.readySetName, socket1);
-      await mainRedisClient.sRem(common.readySetName, socket2);
+      // await mainRedisClient.sRem(common.readySetName, socket1);
+      // await mainRedisClient.sRem(common.readySetName, socket2);
     })
     .catch((value) => {
       io.in(socket1).emit(`message`, `host paring: failed with ${value}`);

@@ -26,7 +26,11 @@ async function matcher() {
       }
 
       try {
-        console.log(`worker ${serverID}`);
+        console.log(
+          `worker ${serverID} - ${new Date().toLocaleTimeString(`en-US`, {
+            hour12: false,
+          })}`,
+        );
         await readyEvent(msg, channel);
       } catch (e) {
         console.log(`readyEvent severid= ${serverID} error=` + e);
