@@ -3,11 +3,13 @@ import * as common from 'react-video-call-common';
 import { v4 as uuid } from 'uuid';
 import * as neo4j from 'neo4j-driver';
 import { Redis } from 'ioredis';
+import Redlock, { ResourceLockedError } from 'redlock';
 
 const serverID = uuid();
 
 let mainRedisClient: Redis;
 let subRedisClient: Redis;
+let lockRedisClient: Redis;
 
 const driver = neo4j.driver(
   `neo4j://neo4j:7687`,
@@ -28,6 +30,10 @@ export const startReadyConsumer = async () => {
 
   subRedisClient = new Redis({
     host: `${process.env.REDIS_HOST || `redis`}`,
+  });
+
+  lockRedisClient = new Redis({
+    host: `${process.env.REDIS_HOST}`,
   });
 
   // channel.prefetch(10);
@@ -69,30 +75,33 @@ class AckError extends Error {
   }
 }
 
+class NackError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}
+
 const getSocketChannel = (socketId: string) => {
   return `matchmacker${socketId}`;
 };
 
 const matchmakerFlow = async (socketId: string) => {
-  if (!subRedisClient.smismember(common.readySetName, socketId)) {
-    throw new AckError(`socketId is not longer ready`);
+  // TODO publish messages
+  // TODO add clean up functions as argument for try/finally
+
+  if (!(await mainRedisClient.smismember(common.readySetName, socketId))) {
+    throw new NackError(`socketId is no longer ready`);
   }
 
-  subRedisClient.subscribe(getSocketChannel(socketId), (err, count) => {
-    if (err) {
-      console.error(`Failed to subscribe: %s`, err.message);
-    } else {
-      console.log(
-        `Subscribed successfully! This client is currently subscribed to ${count} channels.`,
-      );
-    }
-  });
+  await subRedisClient.subscribe(getSocketChannel(socketId));
 
   subRedisClient.on(`message`, (channel, message) => {
     if (channel == getSocketChannel(socketId)) {
       console.log(`socketId=${socketId} got a message=${message}`);
     }
   });
+
+  // TODO push socketID event
 
   const readySet = new Set(await mainRedisClient.smembers(common.readySetName));
   readySet.delete(socketId);
@@ -109,6 +118,33 @@ const matchmakerFlow = async (socketId: string) => {
     otherId = relationShipScores.reduce((a, b) => (b[1] > a[1] ? b : a))[0];
   }
   console.log(`otherId`, otherId);
+
+  await subRedisClient.subscribe(getSocketChannel(otherId));
+
+  subRedisClient.on(`message`, (channel, message) => {
+    if (channel == getSocketChannel(otherId)) {
+      console.log(`socketId=${socketId} got a message=${message}`);
+    }
+  });
+
+  // TODO push otherId event
+
+  const redlock = new Redlock([lockRedisClient]);
+
+  await redlock.using([socketId, otherId], 5000, async (signal) => {
+    // make sure both are in the set
+    if (!(await mainRedisClient.smismember(common.readySetName, socketId))) {
+      throw new AckError(`socketId is no longer ready`);
+    }
+    if (!(await mainRedisClient.smismember(common.readySetName, otherId))) {
+      throw new NackError(`otherId is no longer ready`);
+    }
+    // remove both from ready set
+    await mainRedisClient.srem(common.readySetName, socketId);
+    await mainRedisClient.srem(common.readySetName, otherId);
+
+    // send to matcher
+  });
 };
 
 const getRealtionshipScoreCacheKey = (socketId: string, otherId: string) => {
