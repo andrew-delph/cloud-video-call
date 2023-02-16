@@ -66,6 +66,8 @@ pubClient.on(`error`, function (error) {
 
 const subClient = pubClient.duplicate();
 
+const mainClient = pubClient.duplicate();
+
 app.get(`*`, (req, res) => {
   res.send(`This is the API server :)`);
 });
@@ -108,7 +110,7 @@ io.on(`connection`, async (socket) => {
     //   messages: [{ value: socket.id }],
     // });
 
-    await pubClient.sAdd(common.readySetName, socket.id);
+    await mainClient.sAdd(common.readySetName, socket.id);
 
     rabbitChannel.sendToQueue(
       common.readyQueueName,
@@ -129,8 +131,8 @@ io.on(`connection`, async (socket) => {
   socket.on(`disconnect`, async () => {
     // console.log("disconnected");
     // clearInterval(myInterval);
-    pubClient.sRem(common.activeSetName, socket.id);
-    pubClient.sRem(common.readySetName, socket.id);
+    mainClient.sRem(common.activeSetName, socket.id);
+    mainClient.sRem(common.readySetName, socket.id);
     pubClient.publish(common.activeCountChannel, `change`);
   });
 
@@ -160,7 +162,7 @@ io.on(`connection`, async (socket) => {
   //   });
   // }, 1000);
 
-  await pubClient.sAdd(common.activeSetName, socket.id);
+  await mainClient.sAdd(common.activeSetName, socket.id);
 
   await kafkaProducer.send({
     topic: common.neo4jCreateUserTopicName,
@@ -194,7 +196,11 @@ signalTraps.forEach((type) => {
 });
 
 export const getServer = async (listen: boolean) => {
-  return await Promise.all([pubClient.connect(), subClient.connect()])
+  return await Promise.all([
+    pubClient.connect(),
+    subClient.connect(),
+    mainClient.connect(),
+  ])
     .then(async () => {
       await connectRabbit();
       await connectKafkaProducer();
@@ -208,7 +214,9 @@ export const getServer = async (listen: boolean) => {
       await subClient.subscribe(
         common.activeCountChannel,
         throttle(async (msg) => {
-          io.emit(`activeCount`, await pubClient.sCard(common.activeSetName));
+          const activeCount = await mainClient.sCard(common.activeSetName);
+          console.log(`activeCount`, activeCount);
+          io.emit(`activeCount`, activeCount);
         }, 1000),
       );
       return io;

@@ -2,15 +2,15 @@ import { connect, ConsumeMessage } from 'amqplib';
 import * as common from 'react-video-call-common';
 import { v4 as uuid } from 'uuid';
 import * as neo4j from 'neo4j-driver';
-import { Redis } from 'ioredis';
+import Client from 'ioredis';
 import Redlock, { ResourceLockedError } from 'redlock';
 import amqp from 'amqplib';
 
 const serverID = uuid();
 
-let mainRedisClient: Redis;
-let subRedisClient: Redis;
-let lockRedisClient: Redis;
+let mainRedisClient: Client;
+let subRedisClient: Client;
+let lockRedisClient: Client;
 
 const driver = neo4j.driver(
   `neo4j://neo4j:7687`,
@@ -30,19 +30,19 @@ const connectRabbit = async () => {
 export const startReadyConsumer = async () => {
   await connectRabbit();
 
-  mainRedisClient = new Redis({
+  mainRedisClient = new Client({
     host: `${process.env.REDIS_HOST || `redis`}`,
   });
 
-  subRedisClient = new Redis({
+  subRedisClient = new Client({
     host: `${process.env.REDIS_HOST || `redis`}`,
   });
 
-  lockRedisClient = new Redis({
+  lockRedisClient = new Client({
     host: `${process.env.REDIS_HOST}`,
   });
 
-  rabbitChannel.prefetch(1);
+  rabbitChannel.prefetch(5);
   console.log(` [x] Awaiting RPC requests`);
 
   rabbitChannel.consume(
@@ -62,7 +62,6 @@ export const startReadyConsumer = async () => {
       }
 
       try {
-        console.log(`socketId ${socketId}`);
         await matchmakerFlow(socketId);
       } catch (e) {
         console.log(`readyEvent severid= ${serverID} error=` + e);
@@ -96,8 +95,8 @@ const matchmakerFlow = async (socketId: string) => {
   // TODO publish messages
   // TODO add clean up functions as argument for try/finally
 
-  if (!(await mainRedisClient.smismember(common.readySetName, socketId))) {
-    throw new NackError(`socketId is no longer ready`);
+  if (!(await mainRedisClient.smismember(common.readySetName, socketId))[0]) {
+    throw new AckError(`socketId is no longer ready`);
   }
 
   await subRedisClient.subscribe(getSocketChannel(socketId));
@@ -110,18 +109,12 @@ const matchmakerFlow = async (socketId: string) => {
 
   // TODO push socketID event
 
-  const members = await mainRedisClient.smembers(common.readySetName);
-
   const readySet = new Set(await mainRedisClient.smembers(common.readySetName));
-  console.log(`readySet1`, readySet.size);
   readySet.delete(socketId);
-  console.log(`readySet2`, readySet.size);
 
   if (readySet.size == 0) throw new AckError(`ready set is 0`);
 
   const relationShipScores = await getRelationshipScores(socketId, readySet);
-
-  console.log(`relationShipScores.length`, relationShipScores.length);
 
   // select the otherId
   let otherId: string;
@@ -147,12 +140,13 @@ const matchmakerFlow = async (socketId: string) => {
 
   await redlock.using([socketId, otherId], 5000, async (signal) => {
     // make sure both are in the set
-    if (!(await mainRedisClient.smismember(common.readySetName, socketId))) {
+    if (!(await mainRedisClient.smismember(common.readySetName, socketId))[0]) {
       throw new AckError(`socketId is no longer ready`);
     }
-    if (!(await mainRedisClient.smismember(common.readySetName, otherId))) {
+    if (!(await mainRedisClient.smismember(common.readySetName, otherId))[0]) {
       throw new NackError(`otherId is no longer ready`);
     }
+
     // remove both from ready set
     await mainRedisClient.srem(common.readySetName, socketId);
     await mainRedisClient.srem(common.readySetName, otherId);
