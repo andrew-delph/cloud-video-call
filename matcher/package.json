@@ -14,7 +14,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "react-video-call-common": "file:../common",
+    "react-video-call-common": "^1.0.0",
     "neo4j-grpc-common": "file:../neo4j/neo4j-grpc-common",
     "@socket.io/redis-adapter": "8.0.0",
     "socket.io": "4.5.4",
@@ -41,5 +41,10 @@
     "tsc-watch": "^6.0.0",
     "typescript": "^4.5.4"
   },
-  "private": true
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "../common"
+    ]
+  }
 }
