@@ -5,10 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsc-watch --onSuccess \"npm run k8-restart\" --onCompilationStarted \"echo 'watching neo4j-grpc-server'\"",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "prod": "node ./dist/index.js",
-    "docker": "docker build -f Dockerfile  -t andrewdelph/video-call-neo4j-grpc-server:latest ../ && docker push andrewdelph/video-call-neo4j-grpc-server:latest"
+    "docker": "docker build -f Dockerfile  -t andrewdelph/video-call-neo4j-grpc-server:latest ../ && docker push andrewdelph/video-call-neo4j-grpc-server:latest",
+    "k8-restart": "npm run docker && kubectl rollout restart deployment/neo4j-grpc-server && kubectl rollout status deployment/neo4j-grpc-server --watch=true --timeout=60s && kubectl logs --selector=app=neo4j-grpc-server -f"
   },
   "dependencies": {
     "neo4j-driver": "^5.5.0",
