@@ -37,11 +37,8 @@ export async function matchConsumer() {
   });
   console.log(`redis connected.`);
 
-  io.adapter(
-    createAdapter(pubRedisClient, subRedisClient, {
-      requestsTimeout: 20000,
-    }),
-  );
+  io.adapter(createAdapter(pubRedisClient, subRedisClient));
+
   console.log(`socket io connected`);
 
   // channel.prefetch(10);
