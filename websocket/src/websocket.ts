@@ -16,7 +16,6 @@ import {
   CreateUserRequest,
   CreateMatchRequest,
   UpdateMatchRequest,
-  requestPromise,
   CreateMatchResponse,
   CreateUserResponse,
 } from 'neo4j-grpc-common';
