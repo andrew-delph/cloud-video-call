@@ -30,11 +30,6 @@ let subRedisClient: Client;
 let pubRedisClient: Client;
 let lockRedisClient: Client;
 
-const driver = neo4j.driver(
-  `neo4j://neo4j:7687`,
-  neo4j.auth.basic(`neo4j`, `password`),
-);
-
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
 
