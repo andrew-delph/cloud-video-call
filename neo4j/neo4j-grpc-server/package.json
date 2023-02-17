@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "prod": "node ./dist/index.js"
+    "prod": "node ./dist/index.js",
+    "docker": "docker build -f Dockerfile  -t andrewdelph/video-call-neo4j-grpc-server:latest ../ && docker push andrewdelph/video-call-neo4j-grpc-server:latest"
   },
   "dependencies": {
     "neo4j-grpc-common": "file:../neo4j-grpc-common"
