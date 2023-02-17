@@ -72,7 +72,7 @@ export default function (): void {
 
           if (isSuccess) {
             match_waiting_time.add(elapsed);
-            // socket.close();
+            socket.close();
           } else {
             // console.log("match failure:" + data);
           }
