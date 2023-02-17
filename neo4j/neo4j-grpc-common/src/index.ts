@@ -1,18 +1,15 @@
-export const hi = `hi1`;
-
+import * as grpcLocal from '@grpc/grpc-js';
+import { Neo4jClient as LocalNeo4jClient } from '../proto_gen/neo4j_grpc_pb';
 export * from '../proto_gen/neo4j_grpc_pb';
 export * from '../proto_gen/neo4j_pb';
 
 export * as grpc from '@grpc/grpc-js';
 
-// export function requestPromise<T>(clientCall, request): Promise<T> {
-//   return new Promise((resolve, reject) => {
-//     clientCall(request, (error, response) => {
-//       if (error) {
-//         reject(error);
-//       } else {
-//         resolve(response as T); // Cast the response to type T1
-//       }
-//     });
-//   });
-// }
+export const createNeo4jClient = (
+  address: string,
+  credentials: grpcLocal.ChannelCredentials = grpcLocal.credentials.createInsecure(),
+  options?: Partial<grpcLocal.ClientOptions> | undefined,
+) => {
+  const client = new LocalNeo4jClient(address, credentials, options);
+  return client;
+};

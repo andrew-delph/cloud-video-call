@@ -18,15 +18,13 @@ import {
   UpdateMatchRequest,
   CreateMatchResponse,
   CreateUserResponse,
+  createNeo4jClient,
 } from 'neo4j-grpc-common';
 
 const neo4jRpcClientHost =
   process.env.NEO4J_GRPC_SERVER_HOST || `neo4j-grpc-server:8080`;
 
-const neo4jRpcClient = new Neo4jClient(
-  neo4jRpcClientHost,
-  grpc.credentials.createInsecure(),
-);
+const neo4jRpcClient = createNeo4jClient(neo4jRpcClientHost);
 
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;

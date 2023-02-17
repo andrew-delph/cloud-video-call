@@ -15,12 +15,13 @@ import {
   UpdateMatchRequest,
   CreateMatchResponse,
   CreateUserResponse,
+  createNeo4jClient,
 } from 'neo4j-grpc-common';
 
 const neo4jRpcClientHost =
   process.env.NEO4J_GRPC_SERVER_HOST || `neo4j-grpc-server:8080`;
 
-const neo4jRpcClient = new Neo4jClient(
+const neo4jRpcClient = createNeo4jClient(
   neo4jRpcClientHost,
   grpc.credentials.createInsecure(),
 );
@@ -112,6 +113,7 @@ export const match = async (msg: ConsumeMessage, channel: Channel) => {
     }
     console.log(`create match repsonse: ${response.getMessage()}`);
   });
+
   console.log(`after neo4j create rpc ${socket1}`);
 
   io.socketsLeave(`room-${socket1}`);
