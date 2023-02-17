@@ -1,6 +1,6 @@
 import { createAdapter } from '@socket.io/redis-adapter';
 import * as dotenv from 'dotenv';
-import express, { response } from 'express';
+import express from 'express';
 import { createServer } from 'http';
 import Client from 'ioredis';
 import { Server } from 'socket.io';
