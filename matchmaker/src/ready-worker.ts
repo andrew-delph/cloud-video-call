@@ -91,7 +91,7 @@ export const startReadyConsumer = async () => {
           console.log(`CompleteError:\t ${e.message}`);
           rabbitChannel.ack(msg);
         } else if (e instanceof RetryError) {
-          console.log(`RetryError:\t ${e.message}`);
+          console.log(`RetryError: \t ${socketId} \t ${e.message}`);
           rabbitChannel.nack(msg);
         } else {
           console.log(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!`);
