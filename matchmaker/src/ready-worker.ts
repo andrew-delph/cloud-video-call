@@ -87,11 +87,12 @@ export const startReadyConsumer = async () => {
         await matchmakerFlow(socketId, 1, cleanup);
         rabbitChannel.ack(msg);
       } catch (e: any) {
-        console.log(e.message);
-        if (e instanceof AckError) {
+        if (e instanceof CompleteError) {
+          console.log(`CompleteError: ${e.message}`);
           rabbitChannel.ack(msg);
-        } else if (e instanceof NackError) {
-          rabbitChannel.ack(msg);
+        } else if (e instanceof RetryError) {
+          console.log(`RetryError: ${e.message}`);
+          rabbitChannel.nack(msg);
         } else {
           console.log(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`);
           console.error(`Unknown error: ${e}`);
@@ -110,13 +111,13 @@ export const startReadyConsumer = async () => {
   );
 };
 
-class AckError extends Error {
+class CompleteError extends Error {
   constructor(message: string) {
     super(message);
   }
 }
 
-class NackError extends Error {
+class RetryError extends Error {
   constructor(message: string) {
     super(message);
   }
@@ -128,7 +129,7 @@ class AckSignal {
     this.signal = msg;
   }
   checkSignal() {
-    if (this.signal) throw new AckError(this.signal);
+    if (this.signal) throw new CompleteError(this.signal);
   }
 }
 
@@ -146,7 +147,7 @@ const matchmakerFlow = async (
   const ackSignal = new AckSignal();
 
   if (!(await mainRedisClient.smismember(common.readySetName, socketId))[0]) {
-    throw new AckError(`socketId is no longer ready`);
+    throw new CompleteError(`socketId is no longer ready`);
   }
 
   const notifyListeners = async (targetId: string) => {
@@ -202,7 +203,7 @@ const matchmakerFlow = async (
   const readySet = new Set(await mainRedisClient.smembers(common.readySetName));
   readySet.delete(socketId);
 
-  if (readySet.size == 0) throw new AckError(`ready set is 0`);
+  if (readySet.size == 0) throw new CompleteError(`ready set is 0`);
 
   const relationShipScores = await getRelationshipScores(socketId, readySet);
 
@@ -223,9 +224,9 @@ const matchmakerFlow = async (
   const redlock = new Redlock([lockRedisClient]);
   const onError = (e: any) => {
     if (e instanceof ResourceLockedError) {
-      throw new NackError(e.message);
+      throw new RetryError(e.message);
     } else if (e instanceof ExecutionError) {
-      throw new NackError(e.message);
+      throw new RetryError(e.message);
     }
     throw e;
   };
@@ -238,12 +239,12 @@ const matchmakerFlow = async (
       if (
         !(await mainRedisClient.smismember(common.readySetName, socketId))[0]
       ) {
-        throw new AckError(`socketId is no longer ready`);
+        throw new CompleteError(`socketId is no longer ready`);
       }
       if (
         !(await mainRedisClient.smismember(common.readySetName, otherId))[0]
       ) {
-        throw new NackError(`otherId is no longer ready`);
+        throw new RetryError(`otherId is no longer ready`);
       }
 
       // remove both from ready set

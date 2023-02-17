@@ -7,6 +7,24 @@ import Client from 'ioredis';
 
 import { v4 as uuid } from 'uuid';
 
+import {
+  Neo4jClient,
+  grpc,
+  CreateUserRequest,
+  CreateMatchRequest,
+  UpdateMatchRequest,
+  CreateMatchResponse,
+  CreateUserResponse,
+} from 'neo4j-grpc-common';
+
+const neo4jRpcClientHost =
+  process.env.NEO4J_GRPC_SERVER_HOST || `neo4j-grpc-server:8080`;
+
+const neo4jRpcClient = new Neo4jClient(
+  neo4jRpcClientHost,
+  grpc.credentials.createInsecure(),
+);
+
 const serverID = uuid();
 
 import { connect, Channel, ConsumeMessage } from 'amqplib';
@@ -77,6 +95,24 @@ export const match = async (msg: ConsumeMessage, channel: Channel) => {
 
   const socket1 = msgContent[0];
   const socket2 = msgContent[1];
+
+  if (!socket1 || !socket2) {
+    throw Error(`(!socket1 || !socket2) ${socket1} ${socket2}`);
+  }
+
+  const request = new CreateMatchRequest();
+
+  request.setUserId1(socket1);
+  request.setUserId2(socket2);
+
+  await neo4jRpcClient.createMatch(request, (error, response) => {
+    if (error) {
+      console.error(`neo4j create match error: ${error}`);
+      throw error;
+    }
+    console.log(`create match repsonse: ${response.getMessage()}`);
+  });
+  console.log(`after neo4j create rpc ${socket1}`);
 
   io.socketsLeave(`room-${socket1}`);
   io.socketsLeave(`room-${socket2}`);

@@ -44,7 +44,7 @@ const createMatch = async (
   const socket1 = call.request.getUserId1();
   const socket2 = call.request.getUserId2();
   const reply = new CreateMatchResponse();
-  reply.setMessage(`Created match succesfully`);
+  reply.setMessage(`Created match succesfully for: ${socket1} ${socket2}`);
 
   const session = driver.session();
   await session.run(
