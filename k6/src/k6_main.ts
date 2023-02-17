@@ -95,7 +95,7 @@ export default function (): void {
     };
 
     socketWrapper.setOnConnect(() => {
-      sleep(2);
+      sleep(2); // TODO test without this
       readyEvent();
     });
 
