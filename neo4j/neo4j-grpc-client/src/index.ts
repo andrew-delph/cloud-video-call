@@ -6,10 +6,9 @@ import {
   UpdateMatchRequest,
 } from 'neo4j-grpc-common';
 
-const client = new Neo4jClient(
-  `localhost:8080`,
-  grpc.credentials.createInsecure(),
-);
+const addr = process.env.NEO4J_GRPC_SERVER_HOST || `neo4j-grpc-server:8080`;
+
+const client = new Neo4jClient(addr, grpc.credentials.createInsecure());
 
 const createUserRequest = new CreateUserRequest();
 createUserRequest.setUserId(`world`);
