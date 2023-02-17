@@ -1,23 +1,24 @@
-import * as grpc from 'grpc';
-import {
-  Greeter,
-  HelloRequest,
-  HelloResponse,
-} from '../proto-gen/proto/greeter';
+console.log(`hi`)
 
-function sayHello(
-  call: grpc.ServerUnaryCall<HelloRequest>,
-  callback: grpc.sendUnaryData<HelloResponse>,
-) {
-  const name = call.;
-  const message = `Hello, ${name}!`;
-  const response = new HelloResponse.();
-  response.setMessage(message);
-  callback(null, response);
+import * as grpc from "@grpc/grpc-js";
+
+import { HelloRequest, HelloReply } from "../my_generated_code/helloworld_pb";
+import { GreeterService } from "../my_generated_code/helloworld_grpc_pb";
+
+
+const sayHello = (
+  call: grpc.ServerUnaryCall<HelloRequest, HelloReply>,
+  callback: grpc.sendUnaryData<HelloReply>
+): void => {
+  const reply = new HelloReply();
+  reply.setMessage(`Hello ${call.request.getName()}`);
+  callback(null, reply);
 }
 
-const server = new grpc.Server();
-server.addService(Greeter, { sayHello });
-server.bind(`0.0.0.0:50051`, grpc.ServerCredentials.createInsecure());
-console.log(`Server running at http://0.0.0.0:50051`);
-server.start();
+var server = new grpc.Server();
+server.addService(GreeterService, { sayHello });
+
+server.bindAsync(`0.0.0.0:50051`, grpc.ServerCredentials.createInsecure(), () => {
+  console.log(`starting...`)
+  server.start();
+});
