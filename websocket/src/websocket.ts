@@ -1,18 +1,33 @@
 import { createAdapter } from '@socket.io/redis-adapter';
 import * as dotenv from 'dotenv';
-import express from 'express';
+import express, { response } from 'express';
 import { createServer } from 'http';
 import Client from 'ioredis';
 import { Server } from 'socket.io';
 import { v4 as uuid } from 'uuid';
-// import { RedisAdapter } from "@socket.io/redis-adapter";
 import * as common from 'react-video-call-common';
-
 import { initializeApp } from 'firebase-admin/app';
-
 import { throttle } from 'lodash';
-
 import amqp from 'amqplib';
+
+import {
+  Neo4jClient,
+  grpc,
+  CreateUserRequest,
+  CreateMatchRequest,
+  UpdateMatchRequest,
+  requestPromise,
+  CreateMatchResponse,
+  CreateUserResponse,
+} from 'neo4j-grpc-common';
+
+const neo4jRpcClientHost =
+  process.env.NEO4J_GRPC_SERVER_HOST || `neo4j-grpc-server:8080`;
+
+const neo4jRpcClient = new Neo4jClient(
+  neo4jRpcClientHost,
+  grpc.credentials.createInsecure(),
+);
 
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
@@ -21,7 +36,7 @@ const connectRabbit = async () => {
   rabbitConnection = await amqp.connect(`amqp://rabbitmq`);
   rabbitChannel = await rabbitConnection.createChannel();
   await rabbitChannel.assertQueue(common.readyQueueName, { durable: true });
-  console.log(`rabbit connected`);
+  console.log(`rabbitmq connected`);
 };
 
 dotenv.config();
@@ -139,6 +154,20 @@ io.on(`connection`, async (socket) => {
   // }, 1000);
 
   await mainClient.sadd(common.activeSetName, socket.id);
+
+  const createUserRequest = new CreateUserRequest();
+  createUserRequest.setUserId(socket.id);
+
+  await neo4jRpcClient.createUser(
+    createUserRequest,
+    (error: any, response: any) => {
+      if (!error) {
+      } else {
+        console.error(`Error:`, error.message);
+        socket.disconnect();
+      }
+    },
+  );
 });
 
 const errorTypes = [`unhandledRejection`, `uncaughtException`];

@@ -22,7 +22,6 @@ const createUser = async (
 ): Promise<void> => {
   const socketId = call.request.getUserId();
   const reply = new CreateUserResponse();
-  reply.setMessage(`Created user succesfully`);
 
   const session = driver.session();
   await session.run(
