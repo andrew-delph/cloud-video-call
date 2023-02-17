@@ -4,7 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "prod": "node ./dist/index.js"
+  },
+  "dependencies": {
+    "neo4j-common": "file:../neo4j-common"
+  },
+  "devDependencies": {
+    "typescript": "^4.4.4"
   },
   "author": "",
   "license": "ISC"
