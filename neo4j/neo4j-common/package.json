@@ -2,10 +2,11 @@
   "name": "neo4j-common",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "npm run build:proto",
-    "build:watch": "nodemon --watch . -e ts,proto --exec 'npm run build'",
+    "build": "npm run build:proto && tsc",
+    "build:watch": "nodemon --watch ./protos --watch ./src -e ts,proto --exec 'npm run build'",
     "build:proto": "bash gen_proto.sh"
   },
   "dependencies": {
