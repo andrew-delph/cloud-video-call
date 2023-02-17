@@ -6,7 +6,8 @@ export * from '../proto_gen/neo4j_pb';
 export * as grpc from '@grpc/grpc-js';
 
 export const createNeo4jClient = (
-  address: string,
+  address: string = process.env.NEO4J_GRPC_SERVER_HOST ||
+    `neo4j-grpc-server:8080`,
   credentials: grpcLocal.ChannelCredentials = grpcLocal.credentials.createInsecure(),
   options?: Partial<grpcLocal.ClientOptions> | undefined,
 ) => {
