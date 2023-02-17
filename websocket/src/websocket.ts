@@ -2,7 +2,7 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import * as dotenv from 'dotenv';
 import express from 'express';
 import { createServer } from 'http';
-import { createClient } from 'redis';
+import Client from 'ioredis';
 import { Server } from 'socket.io';
 import { v4 as uuid } from 'uuid';
 // import { RedisAdapter } from "@socket.io/redis-adapter";
@@ -12,22 +12,7 @@ import { initializeApp } from 'firebase-admin/app';
 
 import { throttle } from 'lodash';
 
-import { Kafka, Producer } from 'kafkajs';
-
 import amqp from 'amqplib';
-
-let kafka: Kafka;
-let kafkaProducer: Producer;
-
-const connectKafkaProducer = async () => {
-  kafka = new Kafka({
-    clientId: `my-app`,
-    brokers: [`my-cluster-kafka-bootstrap:9092`],
-  });
-  kafkaProducer = kafka.producer();
-  await kafkaProducer.connect();
-  console.log(`kafka producer connected`);
-};
 
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
@@ -55,18 +40,9 @@ const io = new Server(httpServer, {
   },
 });
 
-const pubClient = createClient({
-  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
-  name: `websocket`,
-});
-
-pubClient.on(`error`, function (error) {
-  console.error(error);
-});
-
-const subClient = pubClient.duplicate();
-
-const mainClient = pubClient.duplicate();
+let pubClient: Client;
+let subClient: Client;
+let mainClient: Client;
 
 app.get(`*`, (req, res) => {
   res.send(`This is the API server :)`);
@@ -110,7 +86,7 @@ io.on(`connection`, async (socket) => {
     //   messages: [{ value: socket.id }],
     // });
 
-    await mainClient.sAdd(common.readySetName, socket.id);
+    await mainClient.sadd(common.readySetName, socket.id);
 
     rabbitChannel.sendToQueue(
       common.readyQueueName,
@@ -131,8 +107,8 @@ io.on(`connection`, async (socket) => {
   socket.on(`disconnect`, async () => {
     // console.log("disconnected");
     // clearInterval(myInterval);
-    mainClient.sRem(common.activeSetName, socket.id);
-    mainClient.sRem(common.readySetName, socket.id);
+    mainClient.srem(common.activeSetName, socket.id);
+    mainClient.srem(common.readySetName, socket.id);
     pubClient.publish(common.activeCountChannel, `change`);
   });
 
@@ -162,12 +138,7 @@ io.on(`connection`, async (socket) => {
   //   });
   // }, 1000);
 
-  await mainClient.sAdd(common.activeSetName, socket.id);
-
-  await kafkaProducer.send({
-    topic: common.neo4jCreateUserTopicName,
-    messages: [{ value: socket.id }],
-  });
+  await mainClient.sadd(common.activeSetName, socket.id);
 });
 
 const errorTypes = [`unhandledRejection`, `uncaughtException`];
@@ -177,7 +148,6 @@ errorTypes.forEach((type) => {
   process.on(type, async () => {
     try {
       console.log(`process.on ${type}`);
-      await kafkaProducer.disconnect();
       process.exit(0);
     } catch (_) {
       process.exit(1);
@@ -188,7 +158,6 @@ errorTypes.forEach((type) => {
 signalTraps.forEach((type) => {
   process.once(type, async () => {
     try {
-      await kafkaProducer.disconnect();
     } finally {
       process.kill(process.pid, type);
     }
@@ -197,13 +166,23 @@ signalTraps.forEach((type) => {
 
 export const getServer = async (listen: boolean) => {
   return await Promise.all([
-    pubClient.connect(),
-    subClient.connect(),
-    mainClient.connect(),
+    // pubClient.connect(),
+    // subClient.connect(),
+    // mainClient.connect(),
   ])
+    .then(() => {
+      mainClient = new Client({
+        host: `${process.env.REDIS_HOST || `redis`}`,
+      });
+      subClient = new Client({
+        host: `${process.env.REDIS_HOST || `redis`}`,
+      });
+      pubClient = new Client({
+        host: `${process.env.REDIS_HOST || `redis`}`,
+      });
+    })
     .then(async () => {
       await connectRabbit();
-      await connectKafkaProducer();
     })
     .then(() => {
       io.adapter(createAdapter(pubClient, subClient));
@@ -214,7 +193,7 @@ export const getServer = async (listen: boolean) => {
       await subClient.subscribe(
         common.activeCountChannel,
         throttle(async (msg) => {
-          const activeCount = await mainClient.sCard(common.activeSetName);
+          const activeCount = await mainClient.scard(common.activeSetName);
           console.log(`activeCount`, activeCount);
           io.emit(`activeCount`, activeCount);
         }, 1000),
