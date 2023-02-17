@@ -197,7 +197,8 @@ const matchmakerFlow = async (
   // select the otherId
   let otherId: string;
   if (relationShipScores.length == 0) {
-    otherId = readySet.entries().next().value[0];
+    const randomIndex = Math.floor(Math.random() * readySet.size);
+    otherId = Array.from(readySet)[randomIndex];
   } else {
     otherId = relationShipScores.reduce((a, b) => (b[1] > a[1] ? b : a))[0];
   }
