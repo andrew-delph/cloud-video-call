@@ -13,7 +13,7 @@ var server = new grpc.Server();
 server.addService(GreeterService, { sayHello });
 
 server.bindAsync(
-  `0.0.0.0:50051`,
+  `0.0.0.0:8080`,
   grpc.ServerCredentials.createInsecure(),
   () => {
     console.log(`starting...`);

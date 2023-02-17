@@ -1,7 +1,7 @@
 import { HelloRequest, GreeterClient, grpc } from 'neo4j-common';
 
 const client = new GreeterClient(
-  `localhost:50051`,
+  `localhost:8080`,
   grpc.credentials.createInsecure(),
 );
 
