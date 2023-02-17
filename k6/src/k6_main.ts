@@ -66,15 +66,16 @@ export default function (): void {
           data: any,
           callback?: (data: any) => void,
         ) => {
-          if (isSuccess) {
-            match_waiting_time.add(elapsed);
-          } else {
-            // console.log("match failure:" + data);
-          }
-
           check(isSuccess, { 'match event': (r) => r });
 
           if (callback) callback(`from k6 test...`);
+
+          if (isSuccess) {
+            match_waiting_time.add(elapsed);
+            // socket.close();
+          } else {
+            // console.log("match failure:" + data);
+          }
         },
       );
 
@@ -83,12 +84,12 @@ export default function (): void {
         { test: `looking for ack` },
         90000,
         (isSuccess: boolean, elapsed: number, data: any) => {
+          check(isSuccess, { 'ready event': (r) => r });
           if (isSuccess) {
             ready_waiting_time.add(elapsed);
           } else {
             // console.log("ready failure:" + data);
           }
-          check(isSuccess, { 'ready event': (r) => r });
         },
       );
     };

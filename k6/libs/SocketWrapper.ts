@@ -100,8 +100,8 @@ export class SocketWrapper {
     const eventMessageHandle = (data: any, callback?: (data: any) => void) => {
       const elapsed = Date.now() - startTime;
       const isSuccess = elapsed < timeout;
-      handler(isSuccess, elapsed, data, callback);
       delete this.waitingEventMap[waitingEventId];
+      handler(isSuccess, elapsed, data, callback);
     };
 
     this.waitingEventMap[waitingEventId] = handler;
@@ -140,8 +140,8 @@ export class SocketWrapper {
     this.send(event, data, (callbackData) => {
       const elapsed = Date.now() - startTime;
       const isSuccess = elapsed < timeout;
-      callback(isSuccess, elapsed, callbackData);
       delete this.waitingEventMap[waitingEventId];
+      callback(isSuccess, elapsed, callbackData);
     });
 
     this.waitingEventMap[waitingEventId] = callback;

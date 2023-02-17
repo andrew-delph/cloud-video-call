@@ -1,4 +1,3 @@
-// import * as functions from "firebase-functions";
 import { createAdapter } from '@socket.io/redis-adapter';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -6,40 +5,77 @@ import * as dotenv from 'dotenv';
 import * as common from 'react-video-call-common';
 import Client from 'ioredis';
 
-import { Channel, ConsumeMessage } from 'amqplib';
+import { v4 as uuid } from 'uuid';
 
-const matchTimeout = 50000;
+const serverID = uuid();
+
+import { connect, Channel, ConsumeMessage } from 'amqplib';
 
 dotenv.config();
 
-function createRedisClient() {
-  const redisClient = new Client({
-    host: `${process.env.REDIS_HOST || `redis`}`,
-  });
-  return redisClient;
-}
+const matchTimeout = 50000;
 
-const pubRedisClient = createRedisClient();
-const subRedisClient = createRedisClient();
+let pubRedisClient: Client;
+let subRedisClient: Client;
 
 const httpServer = createServer();
 const io = new Server(httpServer, {});
 
-const init = Promise.all([pubRedisClient.connect(), subRedisClient.connect()])
-  .then(async () => {
-    io.adapter(
-      createAdapter(pubRedisClient, subRedisClient, {
-        requestsTimeout: 20000,
-      }),
-    );
-    return;
-  })
-  .then(() => {
-    console.log(`loaded init`);
+export async function matchConsumer() {
+  const connection = await connect(`amqp://rabbitmq`);
+  const channel = await connection.createChannel();
+  await channel.assertQueue(common.matchQueueName, {
+    durable: true,
   });
+  console.log(`rabbitmq connected`);
+
+  pubRedisClient = new Client({
+    host: `${process.env.REDIS_HOST || `redis`}`,
+  });
+  subRedisClient = new Client({
+    host: `${process.env.REDIS_HOST || `redis`}`,
+  });
+  console.log(`redis connected.`);
+
+  io.adapter(
+    createAdapter(pubRedisClient, subRedisClient, {
+      requestsTimeout: 20000,
+    }),
+  );
+  console.log(`socket io connected`);
+
+  // channel.prefetch(10);
+  console.log(` [x] Awaiting RPC requests`);
+
+  channel.consume(
+    common.matchQueueName,
+    async (msg: ConsumeMessage | null) => {
+      if (msg == null) {
+        console.log(`msg is null.`);
+        return;
+      }
+
+      // console.log(
+      //   `match event - ${new Date().toLocaleTimeString(`en-US`, {
+      //     hour12: false,
+      //   })}`,
+      // );
+
+      try {
+        await match(msg, channel);
+      } catch (e) {
+        console.log(`matchEvent error=` + e);
+      } finally {
+        channel.ack(msg);
+      }
+    },
+    {
+      noAck: false,
+    },
+  );
+}
 
 export const match = async (msg: ConsumeMessage, channel: Channel) => {
-  await init;
   const msgContent: [string, string] = JSON.parse(msg.content.toString());
 
   const socket1 = msgContent[0];
