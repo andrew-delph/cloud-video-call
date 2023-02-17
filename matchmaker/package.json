@@ -30,7 +30,7 @@
     "amqplib": "^0.10.3",
     "lodash": "^4.17.21",
     "lodash.throttle": "^4.1.1",
-    "react-video-call-common": "^1.0.0",
+    "react-video-call-common": "file:../common",
     "neo4j-grpc-common": "file:../neo4j/neo4j-grpc-common"
   }
 }

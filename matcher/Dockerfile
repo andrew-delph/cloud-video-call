@@ -20,7 +20,6 @@ RUN cd common && npm run build
 COPY neo4j/neo4j-grpc-common neo4j/neo4j-grpc-common
 RUN cd neo4j/neo4j-grpc-common && npm run build
 
-
 COPY matcher matcher
 RUN cd matcher && npm run build
 
