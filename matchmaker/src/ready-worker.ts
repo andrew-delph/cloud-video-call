@@ -88,13 +88,13 @@ export const startReadyConsumer = async () => {
         rabbitChannel.ack(msg);
       } catch (e: any) {
         if (e instanceof CompleteError) {
-          console.log(`CompleteError: ${e.message}`);
+          console.log(`CompleteError:\t ${e.message}`);
           rabbitChannel.ack(msg);
         } else if (e instanceof RetryError) {
-          console.log(`RetryError: ${e.message}`);
+          console.log(`RetryError:\t ${e.message}`);
           rabbitChannel.nack(msg);
         } else {
-          console.log(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`);
+          console.log(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!`);
           console.error(`Unknown error: ${e}`);
           console.error(e.stack);
           process.exit(1);
@@ -123,13 +123,13 @@ class RetryError extends Error {
   }
 }
 
-class AckSignal {
+class RetrySignal {
   signal = ``;
   setSignal(msg: string) {
     this.signal = msg;
   }
   checkSignal() {
-    if (this.signal) throw new CompleteError(this.signal);
+    if (this.signal) throw new RetryError(this.signal);
   }
 }
 
@@ -144,7 +144,7 @@ const matchmakerFlow = async (
 ) => {
   // TODO publish messages
 
-  const ackSignal = new AckSignal();
+  const retrySignal = new RetrySignal();
 
   if (!(await mainRedisClient.smismember(common.readySetName, socketId))[0]) {
     throw new CompleteError(`socketId is no longer ready`);
@@ -181,9 +181,9 @@ const matchmakerFlow = async (
           // ignore messages from outself
           return;
         } else if (msg.priority > priority) {
-          ackSignal.setSignal(`higher priority for ${targetId}`);
+          retrySignal.setSignal(`higher priority for ${targetId}`);
         } else if (msg.priority == priority && msg.owner > socketId) {
-          ackSignal.setSignal(`higher priority for ${targetId}`);
+          retrySignal.setSignal(`higher priority for ${targetId}`);
         } else {
           await notifyListeners(targetId);
         }
@@ -203,7 +203,7 @@ const matchmakerFlow = async (
   const readySet = new Set(await mainRedisClient.smembers(common.readySetName));
   readySet.delete(socketId);
 
-  if (readySet.size == 0) throw new CompleteError(`ready set is 0`);
+  if (readySet.size == 0) throw new RetryError(`ready set is 0`);
 
   const relationShipScores = await getRelationshipScores(socketId, readySet);
 
@@ -231,7 +231,7 @@ const matchmakerFlow = async (
     throw e;
   };
 
-  ackSignal.checkSignal();
+  retrySignal.checkSignal();
 
   await redlock
     .using([socketId, otherId], 5000, async (signal) => {
