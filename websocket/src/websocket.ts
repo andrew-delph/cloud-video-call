@@ -165,11 +165,7 @@ signalTraps.forEach((type) => {
 });
 
 export const getServer = async (listen: boolean) => {
-  return await Promise.all([
-    // pubClient.connect(),
-    // subClient.connect(),
-    // mainClient.connect(),
-  ])
+  return await Promise.all([])
     .then(() => {
       mainClient = new Client({
         host: `${process.env.REDIS_HOST || `redis`}`,
