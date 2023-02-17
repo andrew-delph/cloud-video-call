@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package other;
+package neo4j;
 
 // The greeting service definition.
 service Neo4j {
@@ -18,7 +18,7 @@ message CreateUserRequest {
 
 message CreateUserResponse {
   bool error = 1;
-  bool message = 2;
+  string message = 2;
 }
 
 
@@ -29,7 +29,7 @@ message CreateMatchRequest {
 
 message CreateMatchResponse {
   bool error = 1;
-  bool message = 2;
+  string message = 2;
   string user_id1 = 3;
   string user_id2 = 4;
   string relationship_id1 = 5;
@@ -45,5 +45,5 @@ message UpdateMatchRequest {
 
 message UpdateMatchResponse {
   bool error = 1;
-  bool message = 2;
+  string message = 2;
 }
