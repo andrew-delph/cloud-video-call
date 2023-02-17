@@ -15,7 +15,7 @@ const createUser = (
 ): void => {
   call.request.getUserId();
   const reply = new CreateUserResponse();
-  reply.setMessage(`created user succesfully`);
+  reply.setMessage(`Created user succesfully`);
   callback(null, reply);
 };
 
@@ -25,7 +25,7 @@ const createMatch = (
 ): void => {
   // call.request.getUserId();
   const reply = new CreateMatchResponse();
-  reply.setMessage(`created match succesfully`);
+  reply.setMessage(`Created match succesfully`);
   callback(null, reply);
 };
 
@@ -35,7 +35,7 @@ const updateMatch = (
 ): void => {
   // call.request.getUserId();
   const reply = new UpdateMatchResponse();
-  reply.setMessage(`updated match succesfully`);
+  reply.setMessage(`Updated match succesfully`);
   callback(null, reply);
 };
 
