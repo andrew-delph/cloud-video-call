@@ -3,6 +3,8 @@ FROM node:16-slim
 # Create and change to the app directory.
 WORKDIR /usr/src/app
 
+RUN npm i -g grpc-tools
+
 COPY common/package*.json ./common/
 COPY neo4j/neo4j-grpc-common/package*.json ./neo4j/neo4j-grpc-common/
 
