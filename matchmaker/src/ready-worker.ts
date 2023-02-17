@@ -1,10 +1,27 @@
 import { connect, ConsumeMessage } from 'amqplib';
 import * as common from 'react-video-call-common';
 import { v4 as uuid } from 'uuid';
-import * as neo4j from 'neo4j-driver';
 import Client from 'ioredis';
 import Redlock, { ResourceLockedError, ExecutionError } from 'redlock';
 import amqp from 'amqplib';
+
+import {
+  Neo4jClient,
+  grpc,
+  CreateUserRequest,
+  CreateMatchRequest,
+  UpdateMatchRequest,
+  CreateMatchResponse,
+  CreateUserResponse,
+} from 'neo4j-grpc-common';
+
+const neo4jRpcClientHost =
+  process.env.NEO4J_GRPC_SERVER_HOST || `neo4j-grpc-server:8080`;
+
+const neo4jRpcClient = new Neo4jClient(
+  neo4jRpcClientHost,
+  grpc.credentials.createInsecure(),
+);
 
 const serverID = uuid();
 

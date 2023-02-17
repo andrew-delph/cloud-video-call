@@ -4,7 +4,10 @@ FROM node:16-slim
 WORKDIR /usr/src/app
 
 COPY common/package*.json ./common/
+COPY neo4j/neo4j-grpc-common/package*.json ./neo4j/neo4j-grpc-common/
+
 RUN cd common && npm install
+RUN cd neo4j/neo4j-grpc-common && npm install
 
 
 COPY matchmaker/package*.json ./matchmaker/
@@ -13,6 +16,9 @@ RUN cd matchmaker && npm install
 
 COPY common common
 RUN cd common && npm run build
+
+COPY neo4j/neo4j-grpc-common neo4j/neo4j-grpc-common
+RUN cd neo4j/neo4j-grpc-common && npm run build
 
 
 COPY matchmaker matchmaker
