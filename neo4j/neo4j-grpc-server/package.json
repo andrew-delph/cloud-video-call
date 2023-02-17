@@ -1,5 +1,5 @@
 {
-  "name": "neo4j-server",
+  "name": "neo4j-grpc-server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,7 +10,7 @@
     "prod": "node ./dist/index.js"
   },
   "dependencies": {
-    "neo4j-common": "file:../neo4j-common"
+    "neo4j-grpc-common": "file:../neo4j-grpc-common"
   },
   "devDependencies": {
     "typescript": "^4.4.4"

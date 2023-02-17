@@ -4,7 +4,7 @@ import {
   CreateUserRequest,
   CreateMatchRequest,
   UpdateMatchRequest,
-} from 'neo4j-common';
+} from 'neo4j-grpc-common';
 
 const client = new Neo4jClient(
   `localhost:8080`,

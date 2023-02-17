@@ -7,7 +7,7 @@ import {
   Neo4jService,
   UpdateMatchRequest,
   UpdateMatchResponse,
-} from 'neo4j-common';
+} from 'neo4j-grpc-common';
 
 const createUser = (
   call: grpc.ServerUnaryCall<CreateUserRequest, CreateUserResponse>,
