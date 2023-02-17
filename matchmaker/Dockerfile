@@ -6,9 +6,10 @@ WORKDIR /usr/src/app
 RUN npm i -g grpc-tools
 
 COPY common/package*.json ./common/
-COPY neo4j/neo4j-grpc-common/package*.json ./neo4j/neo4j-grpc-common/
-
 RUN cd common && npm install
+
+
+COPY neo4j/neo4j-grpc-common/package*.json ./neo4j/neo4j-grpc-common/
 RUN cd neo4j/neo4j-grpc-common && npm install
 
 
