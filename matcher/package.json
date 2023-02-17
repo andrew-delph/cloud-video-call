@@ -16,8 +16,8 @@
   "dependencies": {
     "react-video-call-common": "^1.0.0",
     "neo4j-grpc-common": "file:../neo4j/neo4j-grpc-common",
-    "@socket.io/redis-adapter": "8.0.0",
-    "socket.io": "4.5.4",
+    "@socket.io/redis-adapter": "^8.0.0",
+    "socket.io": "^4.5.4",
     "ioredis": "5.2.5",
     "amqplib": "^0.10.3",
     "redlock": "^5.0.0-beta.2",
@@ -29,7 +29,6 @@
   "devDependencies": {
     "@types/amqplib": "^0.10.1",
     "@types/node": "^18.11.18",
-    "@types/redlock": "^4.0.4",
     "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^5.12.0",
     "@typescript-eslint/parser": "^5.12.0",
