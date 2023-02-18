@@ -23,5 +23,8 @@ restart:
 pods:
 	kubectl get pods
 
+watch:
+	watch 'kubectl get pods && echo "other command"'
+
 services:
 	kubectl get services
