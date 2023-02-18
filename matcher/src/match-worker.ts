@@ -147,7 +147,7 @@ export const match = async (msg: ConsumeMessage, channel: Channel) => {
       return new Promise(hostCallback);
     })
     .then(() => {
-      console.log(`match success: ${socket1} ${socket2}`);
+      // console.log(`match success: ${socket1} ${socket2}`);
     })
     .catch((value) => {
       io.in(socket1).emit(`message`, `host paring: failed with ${value}`);
@@ -158,3 +158,30 @@ export const match = async (msg: ConsumeMessage, channel: Channel) => {
   //   console.log(`finally :)`);
   // });
 };
+
+const errorTypes = [`unhandledRejection`, `uncaughtException`];
+const signalTraps = [`SIGTERM`, `SIGINT`, `SIGUSR2`];
+
+errorTypes.forEach((type) => {
+  process.on(type, async () => {
+    try {
+      console.log(`process.on ${type}`);
+      process.exit(0);
+    } catch (_) {
+      process.exit(1);
+    }
+  });
+});
+
+signalTraps.forEach((type) => {
+  process.once(type, async () => {
+    try {
+    } finally {
+      process.kill(process.pid, type);
+    }
+  });
+});
+
+if (require.main === module) {
+  matchConsumer();
+}

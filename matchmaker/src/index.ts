@@ -2,7 +2,7 @@ import { startReadyConsumer } from './ready-worker';
 import cluster from 'cluster';
 import { cpus } from 'os';
 
-const numCPUs = 3; //cpus().length;
+const numCPUs = cpus().length > 3 ? 3 : cpus().length;
 
 if (cluster.isPrimary) {
   console.log(`Master ${process.pid} is running with #${numCPUs} cpus.`);

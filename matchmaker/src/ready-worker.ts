@@ -316,10 +316,6 @@ const getRelationshipScores = async (
   return Array.from(relationshipScoresMap.entries());
 };
 
-if (require.main === module) {
-  startReadyConsumer();
-}
-
 const errorTypes = [`unhandledRejection`, `uncaughtException`];
 const signalTraps = [`SIGTERM`, `SIGINT`, `SIGUSR2`];
 
@@ -342,3 +338,7 @@ signalTraps.forEach((type) => {
     }
   });
 });
+
+if (require.main === module) {
+  startReadyConsumer();
+}
