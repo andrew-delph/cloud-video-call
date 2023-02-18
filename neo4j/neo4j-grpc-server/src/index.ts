@@ -18,9 +18,15 @@ const driver = neo4j.driver(
   neo4j.auth.basic(`neo4j`, `password`),
 );
 
-const verifyIndexes = () => {
+const verifyIndexes = async () => {
   const start_time = performance.now();
 
+  const session = driver.session();
+  await session.run(
+    `CREATE INDEX  Person_socketid IF NOT EXISTS  FOR (n:Person) ON (n.socketid);`,
+  );
+
+  await session.close();
   console.log(
     `verifyIndexes duration: \t ${(performance.now() - start_time) / 1000}s`,
   );
@@ -94,7 +100,8 @@ const updateMatch = (
 var server = new grpc.Server();
 server.addService(Neo4jService, { createUser, createMatch, updateMatch });
 const addr = `0.0.0.0:${process.env.PORT || 8080}`;
-server.bindAsync(addr, grpc.ServerCredentials.createInsecure(), () => {
+server.bindAsync(addr, grpc.ServerCredentials.createInsecure(), async () => {
+  await verifyIndexes();
   console.log(`starting on: ${addr}`);
   server.start();
 });
@@ -103,9 +110,10 @@ const errorTypes = [`unhandledRejection`, `uncaughtException`];
 const signalTraps = [`SIGTERM`, `SIGINT`, `SIGUSR2`];
 
 errorTypes.forEach((type) => {
-  process.on(type, async () => {
+  process.on(type, async (err) => {
     try {
       console.log(`errorTypes: ${type}`);
+      console.error(`errorTypes: ${err}`);
       process.exit(0);
     } catch (_) {
       process.exit(1);

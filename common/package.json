@@ -5,12 +5,13 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "tsc-watch --onCompilationStarted \"echo 'watching common'\"",
-    "build": "tsc"
+    "build": "tsc",
+    "build:watch": "tsc-watch --onCompilationStarted \"echo 'watching common'\""
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^18.14.0",
     "tsc-watch": "^6.0.0",
     "typescript": "^4.9.4"
   }
