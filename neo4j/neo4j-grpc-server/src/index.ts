@@ -9,9 +9,10 @@ import {
   UpdateMatchResponse,
 } from 'neo4j-grpc-common';
 
-import { v4 as uuid } from 'uuid';
-
 import * as neo4j from 'neo4j-driver';
+import { listenGlobalExceptions } from 'react-video-call-common';
+
+listenGlobalExceptions();
 
 const driver = neo4j.driver(
   `neo4j://neo4j:7687`,
@@ -104,29 +105,4 @@ server.bindAsync(addr, grpc.ServerCredentials.createInsecure(), async () => {
   await verifyIndexes();
   console.log(`starting on: ${addr}`);
   server.start();
-});
-
-const errorTypes = [`unhandledRejection`, `uncaughtException`];
-const signalTraps = [`SIGTERM`, `SIGINT`, `SIGUSR2`];
-
-errorTypes.forEach((type) => {
-  process.on(type, async (err) => {
-    try {
-      console.log(`errorTypes: ${type}`);
-      console.error(`errorTypes: ${err}`);
-      process.exit(0);
-    } catch (_) {
-      process.exit(1);
-    }
-  });
-});
-
-signalTraps.forEach((type) => {
-  process.once(type, async () => {
-    try {
-      console.log(`signalTraps ${type}`);
-    } finally {
-      process.kill(process.pid, type);
-    }
-  });
 });
