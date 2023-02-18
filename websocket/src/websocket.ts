@@ -204,7 +204,7 @@ export const getServer = async (listen: boolean) => {
         const activeCount = await mainClient.scard(common.activeSetName);
         console.log(`activeCount #${activeCount}`);
         io.emit(`activeCount`, activeCount);
-      }, 10000);
+      }, 30000);
 
       await subClient.subscribe(common.activeCountChannel);
 
