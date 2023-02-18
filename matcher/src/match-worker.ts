@@ -150,7 +150,7 @@ export const match = async (msg: ConsumeMessage, channel: Channel) => {
     .catch((value) => {
       io.in(socket1).emit(`message`, `host paring: failed with ${value}`);
       io.in(socket2).emit(`message`, `guest paring: failed with ${value}`);
-      throw `match failed with ${value}`;
+      throw `match failed with \t ${value}`;
     });
   // .finally(() => {
   //   console.log(`finally :)`);
