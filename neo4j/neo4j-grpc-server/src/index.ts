@@ -41,7 +41,7 @@ const createUser = async (
   await session.close();
 
   console.log(
-    `createUser duration: ${(performance.now() - start_time) / 1000}s`,
+    `createUser duration: \t ${(performance.now() - start_time) / 1000}s`,
   );
 
   callback(null, reply);
@@ -69,7 +69,7 @@ const createMatch = async (
   await session.close();
 
   console.log(
-    `createMatch duration: ${(performance.now() - start_time) / 1000}s`,
+    `createMatch duration: \t ${(performance.now() - start_time) / 1000}s`,
   );
 
   callback(null, reply);
