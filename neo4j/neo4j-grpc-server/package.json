@@ -13,10 +13,12 @@
     "k8-restart": "npm run docker && kubectl rollout restart deployment/neo4j-grpc-server && kubectl rollout status deployment/neo4j-grpc-server --watch=true --timeout=60s && kubectl logs --selector=app=neo4j-grpc-server -f"
   },
   "dependencies": {
+    "uuid": "^9.0.0",
     "neo4j-driver": "^5.5.0",
     "neo4j-grpc-common": "file:../neo4j-grpc-common"
   },
   "devDependencies": {
+    "@types/uuid": "^9.0.0",
     "typescript": "^4.4.4"
   },
   "author": "",

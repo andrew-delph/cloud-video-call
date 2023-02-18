@@ -9,6 +9,8 @@ import {
   UpdateMatchResponse,
 } from 'neo4j-grpc-common';
 
+import { v4 as uuid } from 'uuid';
+
 import * as neo4j from 'neo4j-driver';
 
 const driver = neo4j.driver(
@@ -23,6 +25,10 @@ const createUser = async (
   const socketId = call.request.getUserId();
   const reply = new CreateUserResponse();
 
+  const sessionUUID = uuid();
+
+  const start_time = performance.now();
+
   const session = driver.session();
   await session.run(
     `
@@ -33,6 +39,8 @@ const createUser = async (
     },
   );
   await session.close();
+
+  console.log(`duration: ${(performance.now() - start_time) / 1000}s`);
 
   callback(null, reply);
 };

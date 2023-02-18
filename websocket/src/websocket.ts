@@ -147,7 +147,7 @@ io.on(`connection`, async (socket) => {
     (error: any, response: any) => {
       if (!error) {
       } else {
-        console.error(`Error:`, error.message);
+        console.error(`createUser error:`, error.message);
         socket.disconnect();
       }
     },
