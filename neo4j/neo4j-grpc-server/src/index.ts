@@ -18,14 +18,20 @@ const driver = neo4j.driver(
   neo4j.auth.basic(`neo4j`, `password`),
 );
 
+const verifyIndexes = () => {
+  const start_time = performance.now();
+
+  console.log(
+    `verifyIndexes duration: \t ${(performance.now() - start_time) / 1000}s`,
+  );
+};
+
 const createUser = async (
   call: grpc.ServerUnaryCall<CreateUserRequest, CreateUserResponse>,
   callback: grpc.sendUnaryData<CreateUserResponse>,
 ): Promise<void> => {
   const socketId = call.request.getUserId();
   const reply = new CreateUserResponse();
-
-  const sessionUUID = uuid();
 
   const start_time = performance.now();
 
