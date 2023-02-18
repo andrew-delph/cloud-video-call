@@ -41,8 +41,8 @@ spec:
             #   cpu: '512m'
             #   memory: '250Mi'
             limits:
-              cpu: '512m'
-              memory: '250Mi'
+              cpu: '1000m'
+              memory: '500Mi'
       restartPolicy: Always
 status: {}
 ---
@@ -52,7 +52,7 @@ metadata:
   name: hpa-matchmaker
 spec:
   minReplicas: 1
-  maxReplicas: 5
+  maxReplicas: 10
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment

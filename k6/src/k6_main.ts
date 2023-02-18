@@ -11,26 +11,28 @@ import { SocketWrapper } from '../libs/SocketWrapper';
 
 const vus = 1000;
 export const options = {
-  vus: vus,
-  duration: `2h`,
+  // vus: vus,
+  // duration: `2h`,
   // scenarios: {
-  //   //   // contacts: {
-  //   //   //   executor: `ramping-arrival-rate`,
-  //   //   //   startRate: 60 * 2,
-  //   //   //   timeUnit: `1m`,
-  //   //   //   preAllocatedVUs: 2,
-  //   //   //   maxVUs: 2000,
-  //   //   //   stages: [{ target: 300, duration: `1h` }],
-  //   //   // },
   //   contacts: {
-  //     executor: `ramping-vus`,
-  //     startVUs: 0,
-  //     stages: [
-  //       { duration: `10s`, target: vus },
-  //       { duration: `2h`, target: vus },
-  //     ],
+  //     executor: `ramping-arrival-rate`,
+  //     startRate: 60 * 2,
+  //     timeUnit: `1m`,
+  //     preAllocatedVUs: 2,
+  //     maxVUs: 2000,
+  //     stages: [{ target: 300, duration: `1h` }],
   //   },
   // },
+  scenarios: {
+    contacts: {
+      executor: `ramping-vus`,
+      startVUs: 0,
+      stages: [
+        { duration: `3m`, target: vus },
+        { duration: `2m`, target: vus },
+      ],
+    },
+  },
 };
 
 const ready_waiting_time = new Trend(`ready_waiting_time`, true);

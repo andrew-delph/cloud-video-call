@@ -20,6 +20,7 @@ import {
   CreateUserResponse,
   createNeo4jClient,
 } from 'neo4j-grpc-common';
+import { listenGlobalExceptions } from 'react-video-call-common';
 
 const neo4jRpcClient = createNeo4jClient();
 
@@ -63,7 +64,7 @@ io.on(`error`, (err) => {
 
 io.on(`connection`, async (socket) => {
   socket.on(`error`, (err) => {
-    console.log(`socket err`, err);
+    console.error(`socket err`, err);
   });
 
   socket.on(`myping`, (arg, callback) => {
@@ -87,7 +88,7 @@ io.on(`connection`, async (socket) => {
 
     await mainClient.sadd(common.readySetName, socket.id);
 
-    rabbitChannel.sendToQueue(
+    await rabbitChannel.sendToQueue(
       common.readyQueueName,
       Buffer.from(JSON.stringify([socket.id])),
     );
@@ -193,5 +194,6 @@ export const getServer = async (listen: boolean) => {
 };
 
 if (require.main === module) {
+  listenGlobalExceptions();
   getServer(true);
 }
