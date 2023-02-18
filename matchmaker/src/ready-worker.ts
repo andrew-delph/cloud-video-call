@@ -92,6 +92,9 @@ export const startReadyConsumer = async () => {
           rabbitChannel.ack(msg);
         } else if (e instanceof RetryError) {
           console.log(`RetryError: \t ${socketId} \t ${e.message}`);
+
+          // TODO change to delay with rabbitmq
+          await common.delay(5000); // hold 5 seconds before retry
           rabbitChannel.nack(msg);
         } else {
           console.log(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!`);
@@ -147,7 +150,7 @@ const matchmakerFlow = async (
   const retrySignal = new RetrySignal();
 
   if (!(await mainRedisClient.smismember(common.readySetName, socketId))[0]) {
-    throw new CompleteError(`socketId is no longer ready`);
+    throw new CompleteError(`no longer ready: ${socketId}`);
   }
 
   const notifyListeners = async (targetId: string) => {
