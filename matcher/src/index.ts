@@ -2,7 +2,9 @@ import { matchConsumer } from './match-worker';
 
 import cluster from 'cluster';
 import { cpus } from 'os';
+import { listenGlobalExceptions } from 'react-video-call-common';
 
+listenGlobalExceptions();
 const numCPUs = cpus().length > 3 ? 3 : cpus().length;
 
 if (cluster.isPrimary) {
