@@ -5,7 +5,7 @@
 #   name: kafkausers.kafka.strimzi.io
 #   labels:
 #     app: strimzi
-#     strimzi.io/crd-install: "true"
+#     strimzi.io/crd-install: 'true'
 # spec:
 #   group: kafka.strimzi.io
 #   names:
@@ -992,7 +992,7 @@
 #   name: kafkas.kafka.strimzi.io
 #   labels:
 #     app: strimzi
-#     strimzi.io/crd-install: "true"
+#     strimzi.io/crd-install: 'true'
 # spec:
 #   group: kafka.strimzi.io
 #   names:
@@ -1064,7 +1064,7 @@
 #                         properties:
 #                           name:
 #                             type: string
-#                             pattern: "^[a-z0-9]{1,11}$"
+#                             pattern: '^[a-z0-9]{1,11}$'
 #                             description: >-
 #                               Name of the listener. The name will be used to
 #                               identify the listener and the related Kubernetes
@@ -1925,7 +1925,7 @@
 #                             type=persistent-claim.
 #                         sizeLimit:
 #                           type: string
-#                           pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+#                           pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
 #                           description: >-
 #                             When type=ephemeral, defines the total amount of
 #                             local storage required for this EmptyDir volume (for
@@ -1995,7 +1995,7 @@
 #                                   Mandatory when type=persistent-claim.
 #                               sizeLimit:
 #                                 type: string
-#                                 pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+#                                 pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
 #                                 description: >-
 #                                   When type=ephemeral, defines the total amount
 #                                   of local storage required for this EmptyDir
@@ -2161,7 +2161,7 @@
 #                             user-provided implementation for authorization.
 #                         url:
 #                           type: string
-#                           example: "http://opa:8181/v1/data/kafka/authz/allow"
+#                           example: 'http://opa:8181/v1/data/kafka/authz/allow'
 #                           description: >-
 #                             The URL used to connect to the Open Policy Agent
 #                             server. The URL has to include the policy which will
@@ -2265,18 +2265,18 @@
 #                     jvmOptions:
 #                       type: object
 #                       properties:
-#                         "-XX":
+#                         '-XX':
 #                           x-kubernetes-preserve-unknown-fields: true
 #                           type: object
 #                           description: A map of -XX options to the JVM.
-#                         "-Xms":
+#                         '-Xms':
 #                           type: string
-#                           pattern: "^[0-9]+[mMgG]?$"
-#                           description: "-Xms option to to the JVM."
-#                         "-Xmx":
+#                           pattern: '^[0-9]+[mMgG]?$'
+#                           description: '-Xms option to to the JVM.'
+#                         '-Xmx':
 #                           type: string
-#                           pattern: "^[0-9]+[mMgG]?$"
-#                           description: "-Xmx option to to the JVM."
+#                           pattern: '^[0-9]+[mMgG]?$'
+#                           description: '-Xmx option to to the JVM.'
 #                         gcLoggingEnabled:
 #                           type: boolean
 #                           description: >-
@@ -2881,7 +2881,7 @@
 #                                 injected into the Pod's hosts file if specified.
 #                             tmpDirSizeLimit:
 #                               type: string
-#                               pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+#                               pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
 #                               description: >-
 #                                 Defines the total amount (for example `1Gi`) of
 #                                 local storage required for temporary EmptyDir
@@ -3604,7 +3604,7 @@
 #                             type=persistent-claim.
 #                         sizeLimit:
 #                           type: string
-#                           pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+#                           pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
 #                           description: >-
 #                             When type=ephemeral, defines the total amount of
 #                             local storage required for this EmptyDir volume (for
@@ -3710,18 +3710,18 @@
 #                     jvmOptions:
 #                       type: object
 #                       properties:
-#                         "-XX":
+#                         '-XX':
 #                           x-kubernetes-preserve-unknown-fields: true
 #                           type: object
 #                           description: A map of -XX options to the JVM.
-#                         "-Xms":
+#                         '-Xms':
 #                           type: string
-#                           pattern: "^[0-9]+[mMgG]?$"
-#                           description: "-Xms option to to the JVM."
-#                         "-Xmx":
+#                           pattern: '^[0-9]+[mMgG]?$'
+#                           description: '-Xms option to to the JVM.'
+#                         '-Xmx':
 #                           type: string
-#                           pattern: "^[0-9]+[mMgG]?$"
-#                           description: "-Xmx option to to the JVM."
+#                           pattern: '^[0-9]+[mMgG]?$'
+#                           description: '-Xmx option to to the JVM.'
 #                         gcLoggingEnabled:
 #                           type: boolean
 #                           description: >-
@@ -4326,7 +4326,7 @@
 #                                 injected into the Pod's hosts file if specified.
 #                             tmpDirSizeLimit:
 #                               type: string
-#                               pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+#                               pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
 #                               description: >-
 #                                 Defines the total amount (for example `1Gi`) of
 #                                 local storage required for temporary EmptyDir
@@ -4897,18 +4897,18 @@
 #                         jvmOptions:
 #                           type: object
 #                           properties:
-#                             "-XX":
+#                             '-XX':
 #                               x-kubernetes-preserve-unknown-fields: true
 #                               type: object
 #                               description: A map of -XX options to the JVM.
-#                             "-Xms":
+#                             '-Xms':
 #                               type: string
-#                               pattern: "^[0-9]+[mMgG]?$"
-#                               description: "-Xms option to to the JVM."
-#                             "-Xmx":
+#                               pattern: '^[0-9]+[mMgG]?$'
+#                               description: '-Xms option to to the JVM.'
+#                             '-Xmx':
 #                               type: string
-#                               pattern: "^[0-9]+[mMgG]?$"
-#                               description: "-Xmx option to to the JVM."
+#                               pattern: '^[0-9]+[mMgG]?$'
+#                               description: '-Xmx option to to the JVM.'
 #                             gcLoggingEnabled:
 #                               type: boolean
 #                               description: >-
@@ -5077,18 +5077,18 @@
 #                         jvmOptions:
 #                           type: object
 #                           properties:
-#                             "-XX":
+#                             '-XX':
 #                               x-kubernetes-preserve-unknown-fields: true
 #                               type: object
 #                               description: A map of -XX options to the JVM.
-#                             "-Xms":
+#                             '-Xms':
 #                               type: string
-#                               pattern: "^[0-9]+[mMgG]?$"
-#                               description: "-Xms option to to the JVM."
-#                             "-Xmx":
+#                               pattern: '^[0-9]+[mMgG]?$'
+#                               description: '-Xms option to to the JVM.'
+#                             '-Xmx':
 #                               type: string
-#                               pattern: "^[0-9]+[mMgG]?$"
-#                               description: "-Xmx option to to the JVM."
+#                               pattern: '^[0-9]+[mMgG]?$'
+#                               description: '-Xmx option to to the JVM.'
 #                             gcLoggingEnabled:
 #                               type: boolean
 #                               description: >-
@@ -5693,7 +5693,7 @@
 #                                 injected into the Pod's hosts file if specified.
 #                             tmpDirSizeLimit:
 #                               type: string
-#                               pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+#                               pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
 #                               description: >-
 #                                 Defines the total amount (for example `1Gi`) of
 #                                 local storage required for temporary EmptyDir
@@ -6375,18 +6375,18 @@
 #                     jvmOptions:
 #                       type: object
 #                       properties:
-#                         "-XX":
+#                         '-XX':
 #                           x-kubernetes-preserve-unknown-fields: true
 #                           type: object
 #                           description: A map of -XX options to the JVM.
-#                         "-Xms":
+#                         '-Xms':
 #                           type: string
-#                           pattern: "^[0-9]+[mMgG]?$"
-#                           description: "-Xms option to to the JVM."
-#                         "-Xmx":
+#                           pattern: '^[0-9]+[mMgG]?$'
+#                           description: '-Xms option to to the JVM.'
+#                         '-Xmx':
 #                           type: string
-#                           pattern: "^[0-9]+[mMgG]?$"
-#                           description: "-Xmx option to to the JVM."
+#                           pattern: '^[0-9]+[mMgG]?$'
+#                           description: '-Xmx option to to the JVM.'
 #                         gcLoggingEnabled:
 #                           type: boolean
 #                           description: >-
@@ -6917,7 +6917,7 @@
 #                                 injected into the Pod's hosts file if specified.
 #                             tmpDirSizeLimit:
 #                               type: string
-#                               pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+#                               pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
 #                               description: >-
 #                                 Defines the total amount (for example `1Gi`) of
 #                                 local storage required for temporary EmptyDir
@@ -7249,7 +7249,7 @@
 #                       properties:
 #                         disk:
 #                           type: string
-#                           pattern: "^[0-9]+([.][0-9]*)?([KMGTPE]i?|e[0-9]+)?$"
+#                           pattern: '^[0-9]+([.][0-9]*)?([KMGTPE]i?|e[0-9]+)?$'
 #                           description: >-
 #                             Broker capacity for disk in bytes. Use a number
 #                             value with either standard Kubernetes byte units (K,
@@ -7266,7 +7266,7 @@
 #                             percentage (0 - 100).
 #                         cpu:
 #                           type: string
-#                           pattern: "^[0-9]+([.][0-9]{0,3}|[m]?)$"
+#                           pattern: '^[0-9]+([.][0-9]{0,3}|[m]?)$'
 #                           description: >-
 #                             Broker capacity for CPU resource in cores or
 #                             millicores. For example, 1, 1.500, 1500m. For more
@@ -7274,7 +7274,7 @@
 #                             https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu.
 #                         inboundNetwork:
 #                           type: string
-#                           pattern: "^[0-9]+([KMG]i?)?B/s$"
+#                           pattern: '^[0-9]+([KMG]i?)?B/s$'
 #                           description: >-
 #                             Broker capacity for inbound network throughput in
 #                             bytes per second. Use an integer value with standard
@@ -7283,7 +7283,7 @@
 #                             For example, 10000KiB/s.
 #                         outboundNetwork:
 #                           type: string
-#                           pattern: "^[0-9]+([KMG]i?)?B/s$"
+#                           pattern: '^[0-9]+([KMG]i?)?B/s$'
 #                           description: >-
 #                             Broker capacity for outbound network throughput in
 #                             bytes per second. Use an integer value with standard
@@ -7302,7 +7302,7 @@
 #                                 description: List of Kafka brokers (broker identifiers).
 #                               cpu:
 #                                 type: string
-#                                 pattern: "^[0-9]+([.][0-9]{0,3}|[m]?)$"
+#                                 pattern: '^[0-9]+([.][0-9]{0,3}|[m]?)$'
 #                                 description: >-
 #                                   Broker capacity for CPU resource in cores or
 #                                   millicores. For example, 1, 1.500, 1500m. For
@@ -7311,7 +7311,7 @@
 #                                   https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu.
 #                               inboundNetwork:
 #                                 type: string
-#                                 pattern: "^[0-9]+([KMG]i?)?B/s$"
+#                                 pattern: '^[0-9]+([KMG]i?)?B/s$'
 #                                 description: >-
 #                                   Broker capacity for inbound network throughput
 #                                   in bytes per second. Use an integer value with
@@ -7320,7 +7320,7 @@
 #                                   Mi, Gi) per second. For example, 10000KiB/s.
 #                               outboundNetwork:
 #                                 type: string
-#                                 pattern: "^[0-9]+([KMG]i?)?B/s$"
+#                                 pattern: '^[0-9]+([KMG]i?)?B/s$'
 #                                 description: >-
 #                                   Broker capacity for outbound network
 #                                   throughput in bytes per second. Use an integer
@@ -7981,7 +7981,7 @@
 #                                 injected into the Pod's hosts file if specified.
 #                             tmpDirSizeLimit:
 #                               type: string
-#                               pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+#                               pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
 #                               description: >-
 #                                 Defines the total amount (for example `1Gi`) of
 #                                 local storage required for temporary EmptyDir
@@ -8666,7 +8666,7 @@
 #                                 injected into the Pod's hosts file if specified.
 #                             tmpDirSizeLimit:
 #                               type: string
-#                               pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+#                               pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
 #                               description: >-
 #                                 Defines the total amount (for example `1Gi`) of
 #                                 local storage required for temporary EmptyDir
@@ -9051,7 +9051,7 @@
 #     verbs:
 #       - get
 #   - apiGroups:
-#       - ""
+#       - ''
 #     resources:
 #       - nodes
 #     verbs:
@@ -9066,7 +9066,7 @@
 #     app: strimzi
 # rules:
 #   - apiGroups:
-#       - ""
+#       - ''
 #     resources:
 #       - nodes
 #     verbs:
@@ -9096,7 +9096,7 @@
 #   name: kafkatopics.kafka.strimzi.io
 #   labels:
 #     app: strimzi
-#     strimzi.io/crd-install: "true"
+#     strimzi.io/crd-install: 'true'
 # spec:
 #   group: kafka.strimzi.io
 #   names:
@@ -9455,7 +9455,7 @@
 #       - patch
 #       - update
 #   - apiGroups:
-#       - ""
+#       - ''
 #     resources:
 #       - pods
 #       - serviceaccounts
@@ -9489,7 +9489,7 @@
 #       - patch
 #       - update
 #   - apiGroups:
-#       - ""
+#       - ''
 #       - events.k8s.io
 #     resources:
 #       - events
@@ -9586,7 +9586,7 @@
 #   name: kafkaconnects.kafka.strimzi.io
 #   labels:
 #     app: strimzi
-#     strimzi.io/crd-install: "true"
+#     strimzi.io/crd-install: 'true'
 # spec:
 #   group: kafka.strimzi.io
 #   names:
@@ -9959,18 +9959,18 @@
 #                 jvmOptions:
 #                   type: object
 #                   properties:
-#                     "-XX":
+#                     '-XX':
 #                       x-kubernetes-preserve-unknown-fields: true
 #                       type: object
 #                       description: A map of -XX options to the JVM.
-#                     "-Xms":
+#                     '-Xms':
 #                       type: string
-#                       pattern: "^[0-9]+[mMgG]?$"
-#                       description: "-Xms option to to the JVM."
-#                     "-Xmx":
+#                       pattern: '^[0-9]+[mMgG]?$'
+#                       description: '-Xms option to to the JVM.'
+#                     '-Xmx':
 #                       type: string
-#                       pattern: "^[0-9]+[mMgG]?$"
-#                       description: "-Xmx option to to the JVM."
+#                       pattern: '^[0-9]+[mMgG]?$'
+#                       description: '-Xmx option to to the JVM.'
 #                     gcLoggingEnabled:
 #                       type: boolean
 #                       description: >-
@@ -10564,7 +10564,7 @@
 #                             Pod's hosts file if specified.
 #                         tmpDirSizeLimit:
 #                           type: string
-#                           pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+#                           pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
 #                           description: >-
 #                             Defines the total amount (for example `1Gi`) of
 #                             local storage required for temporary EmptyDir volume
@@ -11352,7 +11352,7 @@
 #                             Pod's hosts file if specified.
 #                         tmpDirSizeLimit:
 #                           type: string
-#                           pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+#                           pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
 #                           description: >-
 #                             Defines the total amount (for example `1Gi`) of
 #                             local storage required for temporary EmptyDir volume
@@ -11753,7 +11753,7 @@
 #                         properties:
 #                           name:
 #                             type: string
-#                             pattern: "^[a-z0-9][-_a-z0-9]*[a-z0-9]$"
+#                             pattern: '^[a-z0-9][-_a-z0-9]*[a-z0-9]$'
 #                             description: >-
 #                               The unique name of the connector plugin. Will be
 #                               used to generate the path where the connector
@@ -11973,7 +11973,7 @@
 #   name: kafkaconnectors.kafka.strimzi.io
 #   labels:
 #     app: strimzi
-#     strimzi.io/crd-install: "true"
+#     strimzi.io/crd-install: 'true'
 # spec:
 #   group: kafka.strimzi.io
 #   names:
@@ -12166,7 +12166,7 @@
 #             name: strimzi-cluster-operator
 #       containers:
 #         - name: strimzi-cluster-operator
-#           image: "quay.io/strimzi/operator:0.33.1"
+#           image: 'quay.io/strimzi/operator:0.33.1'
 #           ports:
 #             - containerPort: 8080
 #               name: http
@@ -12183,15 +12183,15 @@
 #                 fieldRef:
 #                   fieldPath: metadata.namespace
 #             - name: STRIMZI_FULL_RECONCILIATION_INTERVAL_MS
-#               value: "120000"
+#               value: '120000'
 #             - name: STRIMZI_OPERATION_TIMEOUT_MS
-#               value: "300000"
+#               value: '300000'
 #             - name: STRIMZI_DEFAULT_TLS_SIDECAR_ENTITY_OPERATOR_IMAGE
-#               value: "quay.io/strimzi/kafka:0.33.1-kafka-3.3.2"
+#               value: 'quay.io/strimzi/kafka:0.33.1-kafka-3.3.2'
 #             - name: STRIMZI_DEFAULT_KAFKA_EXPORTER_IMAGE
-#               value: "quay.io/strimzi/kafka:0.33.1-kafka-3.3.2"
+#               value: 'quay.io/strimzi/kafka:0.33.1-kafka-3.3.2'
 #             - name: STRIMZI_DEFAULT_CRUISE_CONTROL_IMAGE
-#               value: "quay.io/strimzi/kafka:0.33.1-kafka-3.3.2"
+#               value: 'quay.io/strimzi/kafka:0.33.1-kafka-3.3.2'
 #             - name: STRIMZI_KAFKA_IMAGES
 #               value: |
 #                 3.2.0=quay.io/strimzi/kafka:0.33.1-kafka-3.2.0
@@ -12221,27 +12221,27 @@
 #                 3.3.1=quay.io/strimzi/kafka:0.33.1-kafka-3.3.1
 #                 3.3.2=quay.io/strimzi/kafka:0.33.1-kafka-3.3.2
 #             - name: STRIMZI_DEFAULT_TOPIC_OPERATOR_IMAGE
-#               value: "quay.io/strimzi/operator:0.33.1"
+#               value: 'quay.io/strimzi/operator:0.33.1'
 #             - name: STRIMZI_DEFAULT_USER_OPERATOR_IMAGE
-#               value: "quay.io/strimzi/operator:0.33.1"
+#               value: 'quay.io/strimzi/operator:0.33.1'
 #             - name: STRIMZI_DEFAULT_KAFKA_INIT_IMAGE
-#               value: "quay.io/strimzi/operator:0.33.1"
+#               value: 'quay.io/strimzi/operator:0.33.1'
 #             - name: STRIMZI_DEFAULT_KAFKA_BRIDGE_IMAGE
-#               value: "quay.io/strimzi/kafka-bridge:0.24.0"
+#               value: 'quay.io/strimzi/kafka-bridge:0.24.0'
 #             - name: STRIMZI_DEFAULT_JMXTRANS_IMAGE
-#               value: "quay.io/strimzi/jmxtrans:0.33.1"
+#               value: 'quay.io/strimzi/jmxtrans:0.33.1'
 #             - name: STRIMZI_DEFAULT_KANIKO_EXECUTOR_IMAGE
-#               value: "quay.io/strimzi/kaniko-executor:0.33.1"
+#               value: 'quay.io/strimzi/kaniko-executor:0.33.1'
 #             - name: STRIMZI_DEFAULT_MAVEN_BUILDER
-#               value: "quay.io/strimzi/maven-builder:0.33.1"
+#               value: 'quay.io/strimzi/maven-builder:0.33.1'
 #             - name: STRIMZI_OPERATOR_NAMESPACE
 #               valueFrom:
 #                 fieldRef:
 #                   fieldPath: metadata.namespace
 #             - name: STRIMZI_FEATURE_GATES
-#               value: ""
+#               value: ''
 #             - name: STRIMZI_LEADER_ELECTION_ENABLED
-#               value: "true"
+#               value: 'true'
 #             - name: STRIMZI_LEADER_ELECTION_LEASE_NAME
 #               value: strimzi-cluster-operator
 #             - name: STRIMZI_LEADER_ELECTION_LEASE_NAMESPACE
@@ -12279,7 +12279,7 @@
 #   name: strimzipodsets.core.strimzi.io
 #   labels:
 #     app: strimzi
-#     strimzi.io/crd-install: "true"
+#     strimzi.io/crd-install: 'true'
 # spec:
 #   group: core.strimzi.io
 #   names:
@@ -12436,13 +12436,13 @@
 #       - update
 #       - delete
 #   - apiGroups:
-#       - ""
+#       - ''
 #     resources:
 #       - events
 #     verbs:
 #       - create
 #   - apiGroups:
-#       - ""
+#       - ''
 #     resources:
 #       - secrets
 #     verbs:
@@ -12461,7 +12461,7 @@
 #   name: kafkamirrormakers.kafka.strimzi.io
 #   labels:
 #     app: strimzi
-#     strimzi.io/crd-install: "true"
+#     strimzi.io/crd-install: 'true'
 # spec:
 #   group: kafka.strimzi.io
 #   names:
@@ -13093,18 +13093,18 @@
 #                 jvmOptions:
 #                   type: object
 #                   properties:
-#                     "-XX":
+#                     '-XX':
 #                       x-kubernetes-preserve-unknown-fields: true
 #                       type: object
 #                       description: A map of -XX options to the JVM.
-#                     "-Xms":
+#                     '-Xms':
 #                       type: string
-#                       pattern: "^[0-9]+[mMgG]?$"
-#                       description: "-Xms option to to the JVM."
-#                     "-Xmx":
+#                       pattern: '^[0-9]+[mMgG]?$'
+#                       description: '-Xms option to to the JVM.'
+#                     '-Xmx':
 #                       type: string
-#                       pattern: "^[0-9]+[mMgG]?$"
-#                       description: "-Xmx option to to the JVM."
+#                       pattern: '^[0-9]+[mMgG]?$'
+#                       description: '-Xmx option to to the JVM.'
 #                     gcLoggingEnabled:
 #                       type: boolean
 #                       description: >-
@@ -13690,7 +13690,7 @@
 #                             Pod's hosts file if specified.
 #                         tmpDirSizeLimit:
 #                           type: string
-#                           pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+#                           pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
 #                           description: >-
 #                             Defines the total amount (for example `1Gi`) of
 #                             local storage required for temporary EmptyDir volume
@@ -14057,7 +14057,7 @@
 #   name: kafkabridges.kafka.strimzi.io
 #   labels:
 #     app: strimzi
-#     strimzi.io/crd-install: "true"
+#     strimzi.io/crd-install: 'true'
 # spec:
 #   group: kafka.strimzi.io
 #   names:
@@ -14411,18 +14411,18 @@
 #                 jvmOptions:
 #                   type: object
 #                   properties:
-#                     "-XX":
+#                     '-XX':
 #                       x-kubernetes-preserve-unknown-fields: true
 #                       type: object
 #                       description: A map of -XX options to the JVM.
-#                     "-Xms":
+#                     '-Xms':
 #                       type: string
-#                       pattern: "^[0-9]+[mMgG]?$"
-#                       description: "-Xms option to to the JVM."
-#                     "-Xmx":
+#                       pattern: '^[0-9]+[mMgG]?$'
+#                       description: '-Xms option to to the JVM.'
+#                     '-Xmx':
 #                       type: string
-#                       pattern: "^[0-9]+[mMgG]?$"
-#                       description: "-Xmx option to to the JVM."
+#                       pattern: '^[0-9]+[mMgG]?$'
+#                       description: '-Xmx option to to the JVM.'
 #                     gcLoggingEnabled:
 #                       type: boolean
 #                       description: >-
@@ -14442,7 +14442,7 @@
 #                       description: >-
 #                         A map of additional system properties which will be
 #                         passed using the `-D` option to the JVM.
-#                   description: "**Currently not supported** JVM Options for pods."
+#                   description: '**Currently not supported** JVM Options for pods.'
 #                 logging:
 #                   type: object
 #                   properties:
@@ -15055,7 +15055,7 @@
 #                             Pod's hosts file if specified.
 #                         tmpDirSizeLimit:
 #                           type: string
-#                           pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+#                           pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
 #                           description: >-
 #                             Defines the total amount (for example `1Gi`) of
 #                             local storage required for temporary EmptyDir volume
@@ -15484,7 +15484,7 @@
 #     app: strimzi
 # rules:
 #   - apiGroups:
-#       - ""
+#       - ''
 #     resources:
 #       - pods
 #     verbs:
@@ -15536,7 +15536,7 @@
 #   name: kafkamirrormaker2s.kafka.strimzi.io
 #   labels:
 #     app: strimzi
-#     strimzi.io/crd-install: "true"
+#     strimzi.io/crd-install: 'true'
 # spec:
 #   group: kafka.strimzi.io
 #   names:
@@ -16118,18 +16118,18 @@
 #                 jvmOptions:
 #                   type: object
 #                   properties:
-#                     "-XX":
+#                     '-XX':
 #                       x-kubernetes-preserve-unknown-fields: true
 #                       type: object
 #                       description: A map of -XX options to the JVM.
-#                     "-Xms":
+#                     '-Xms':
 #                       type: string
-#                       pattern: "^[0-9]+[mMgG]?$"
-#                       description: "-Xms option to to the JVM."
-#                     "-Xmx":
+#                       pattern: '^[0-9]+[mMgG]?$'
+#                       description: '-Xms option to to the JVM.'
+#                     '-Xmx':
 #                       type: string
-#                       pattern: "^[0-9]+[mMgG]?$"
-#                       description: "-Xmx option to to the JVM."
+#                       pattern: '^[0-9]+[mMgG]?$'
+#                       description: '-Xmx option to to the JVM.'
 #                     gcLoggingEnabled:
 #                       type: boolean
 #                       description: >-
@@ -16723,7 +16723,7 @@
 #                             Pod's hosts file if specified.
 #                         tmpDirSizeLimit:
 #                           type: string
-#                           pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+#                           pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
 #                           description: >-
 #                             Defines the total amount (for example `1Gi`) of
 #                             local storage required for temporary EmptyDir volume
@@ -17511,7 +17511,7 @@
 #                             Pod's hosts file if specified.
 #                         tmpDirSizeLimit:
 #                           type: string
-#                           pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+#                           pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
 #                           description: >-
 #                             Defines the total amount (for example `1Gi`) of
 #                             local storage required for temporary EmptyDir volume
@@ -18054,7 +18054,7 @@
 #     app: strimzi
 # rules:
 #   - apiGroups:
-#       - ""
+#       - ''
 #     resources:
 #       - nodes
 #     verbs:
@@ -18128,7 +18128,7 @@
 #   name: kafkarebalances.kafka.strimzi.io
 #   labels:
 #     app: strimzi
-#     strimzi.io/crd-install: "true"
+#     strimzi.io/crd-install: 'true'
 # spec:
 #   group: kafka.strimzi.io
 #   names:
