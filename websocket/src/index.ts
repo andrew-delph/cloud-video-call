@@ -5,6 +5,9 @@ import * as http from 'http';
 import { setupMaster, setupWorker } from '@socket.io/sticky';
 
 import { getServer } from './websocket';
+import { listenGlobalExceptions } from 'react-video-call-common';
+
+listenGlobalExceptions();
 
 const numCPUs = cpus().length > 3 ? 3 : cpus().length;
 
