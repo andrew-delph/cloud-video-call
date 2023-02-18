@@ -208,8 +208,8 @@ export const getServer = async (listen: boolean) => {
 
       await subClient.subscribe(common.activeCountChannel);
 
-      subClient.on(`message`, (channel) => {
-        if (channel == common.activeCountChannel) activeCountThrottle();
+      subClient.on(`message`, async (channel) => {
+        if (channel == common.activeCountChannel) await activeCountThrottle();
       });
 
       return io;
