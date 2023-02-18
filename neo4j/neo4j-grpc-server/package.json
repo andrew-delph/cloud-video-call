@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsc-watch --onSuccess \"npm run k8-restart\" --onCompilationStarted \"echo 'watching neo4j-grpc-server'\"",
+    "dev": "nodemon --delay 1000ms --ignore dist --ext ts --exec 'npm run k8-restart'",
+    "dev2": "tsc-watch --onSuccess \"npm run k8-restart\" --onCompilationStarted \"echo 'watching neo4j-grpc-server'\"",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "prod": "node ./dist/index.js",
