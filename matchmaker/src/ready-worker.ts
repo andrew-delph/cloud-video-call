@@ -63,7 +63,7 @@ export const startReadyConsumer = async () => {
 
   await subRedisClient.psubscribe(`${matchmakerChannelPrefix}*`);
 
-  rabbitChannel.prefetch(10);
+  rabbitChannel.prefetch(1);
   console.log(` [x] Awaiting RPC requests`);
 
   rabbitChannel.consume(
@@ -312,3 +312,30 @@ const getRelationshipScores = async (
 
   return Array.from(relationshipScoresMap.entries());
 };
+
+if (require.main === module) {
+  startReadyConsumer();
+}
+
+const errorTypes = [`unhandledRejection`, `uncaughtException`];
+const signalTraps = [`SIGTERM`, `SIGINT`, `SIGUSR2`];
+
+errorTypes.forEach((type) => {
+  process.on(type, async () => {
+    try {
+      console.log(`process.on ${type}`);
+      process.exit(0);
+    } catch (_) {
+      process.exit(1);
+    }
+  });
+});
+
+signalTraps.forEach((type) => {
+  process.once(type, async () => {
+    try {
+    } finally {
+      process.kill(process.pid, type);
+    }
+  });
+});
