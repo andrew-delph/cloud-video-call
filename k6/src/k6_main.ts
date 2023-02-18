@@ -9,7 +9,7 @@ import { SocketWrapper } from '../libs/SocketWrapper';
 //   duration: `1h`,
 // };
 
-const vus = 200;
+const vus = 400;
 export const options = {
   vus: vus,
   duration: `2h`,

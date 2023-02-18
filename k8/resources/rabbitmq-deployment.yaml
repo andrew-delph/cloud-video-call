@@ -21,7 +21,7 @@ spec:
         kompose.version: 1.28.0 (HEAD)
       creationTimestamp: null
       labels:
-        io.kompose.network/backend-demo-default: "true"
+        io.kompose.network/backend-demo-default: 'true'
         app: rabbitmq
     spec:
       containers:
@@ -34,10 +34,10 @@ spec:
             - containerPort: 15672
           resources:
             requests:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: '100m'
+              memory: '100Mi'
             limits:
-              cpu: "500m"
-              memory: "512Mi"
+              cpu: '512m'
+              memory: '250Mi'
       restartPolicy: Always
 status: {}

@@ -14,6 +14,7 @@ import {
   CreateUserResponse,
   createNeo4jClient,
 } from 'neo4j-grpc-common';
+import { listenGlobalExceptions } from 'react-video-call-common';
 
 const neo4jRpcClient = createNeo4jClient();
 
@@ -73,6 +74,7 @@ export const startReadyConsumer = async () => {
         console.error(`socketId is null`);
         rabbitChannel.ack(msg);
       }
+      // console.log(`socketid ${socketId}`);
 
       const cleanup: (() => void)[] = [];
       try {
@@ -83,7 +85,7 @@ export const startReadyConsumer = async () => {
           // console.log(`CompleteError:\t ${e.message}`);
           rabbitChannel.ack(msg);
         } else if (e instanceof RetryError) {
-          console.log(`RetryError: \t ${socketId} \t ${e.message}`);
+          // console.log(`RetryError: \t ${socketId} \t ${e.message}`);
 
           // TODO change to delay with rabbitmq
           await common.delay(5000); // hold 5 seconds before retry
@@ -309,5 +311,6 @@ const getRelationshipScores = async (
 };
 
 if (require.main === module) {
+  listenGlobalExceptions();
   startReadyConsumer();
 }
