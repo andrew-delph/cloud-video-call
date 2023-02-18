@@ -200,14 +200,18 @@ export const getServer = async (listen: boolean) => {
       console.log(`server started`);
     })
     .then(async () => {
-      await subClient.subscribe(
-        common.activeCountChannel,
-        throttle(async (msg) => {
-          const activeCount = await mainClient.scard(common.activeSetName);
-          console.log(`activeCount #${activeCount}`);
-          io.emit(`activeCount`, activeCount);
-        }, 10000),
-      );
+      const activeCountThrottle = throttle(async () => {
+        const activeCount = await mainClient.scard(common.activeSetName);
+        console.log(`activeCount #${activeCount}`);
+        io.emit(`activeCount`, activeCount);
+      }, 10000);
+
+      await subClient.subscribe(common.activeCountChannel);
+
+      subClient.on(`message`, (channel) => {
+        if (channel == common.activeCountChannel) activeCountThrottle();
+      });
+
       return io;
     });
 };
