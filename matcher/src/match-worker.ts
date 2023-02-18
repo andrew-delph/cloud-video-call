@@ -105,10 +105,7 @@ export const match = async (msg: ConsumeMessage, channel: Channel) => {
       console.error(`neo4j create match error: ${error}`);
       throw error;
     }
-    console.log(`create match repsonse: ${response.getMessage()}`);
   });
-
-  console.log(`after neo4j create rpc ${socket1}`);
 
   io.socketsLeave(`room-${socket1}`);
   io.socketsLeave(`room-${socket2}`);
@@ -149,9 +146,15 @@ export const match = async (msg: ConsumeMessage, channel: Channel) => {
     .then(() => {
       return new Promise(hostCallback);
     })
+    .then(() => {
+      console.log(`match success: ${socket1} ${socket2}`);
+    })
     .catch((value) => {
       io.in(socket1).emit(`message`, `host paring: failed with ${value}`);
       io.in(socket2).emit(`message`, `guest paring: failed with ${value}`);
       throw `match failed with ${value}`;
     });
+  // .finally(() => {
+  //   console.log(`finally :)`);
+  // });
 };

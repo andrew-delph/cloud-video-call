@@ -61,17 +61,7 @@ io.on(`error`, (err) => {
   console.log(`io err`, err);
 });
 
-const throttlePrintConnectedNum = throttle(async () => {
-  console.log(
-    `### connected sockets: ${
-      io.sockets.sockets.size
-    } - ${new Date().toLocaleTimeString(`en-US`, { hour12: false })}`,
-  );
-}, 5000);
-
 io.on(`connection`, async (socket) => {
-  throttlePrintConnectedNum();
-
   socket.on(`error`, (err) => {
     console.log(`socket err`, err);
   });
@@ -133,7 +123,7 @@ io.on(`connection`, async (socket) => {
     socket.to(`room-${socket.id}`).emit(`icecandidate`, value);
   });
 
-  pubClient.publish(common.activeCountChannel, `change`);
+  await pubClient.publish(common.activeCountChannel, `change`);
 
   socket.emit(`message`, `Hey from server :) I am ${serverID}.`);
 
@@ -213,9 +203,9 @@ export const getServer = async (listen: boolean) => {
         common.activeCountChannel,
         throttle(async (msg) => {
           const activeCount = await mainClient.scard(common.activeSetName);
-          console.log(`activeCount`, activeCount);
+          console.log(`activeCount #${activeCount}`);
           io.emit(`activeCount`, activeCount);
-        }, 1000),
+        }, 10000),
       );
       return io;
     });

@@ -2,11 +2,8 @@ import cluster from 'cluster';
 import { cpus } from 'os';
 import * as http from 'http';
 
-import { Server } from 'socket.io';
-
 import { setupMaster, setupWorker } from '@socket.io/sticky';
 
-import { createAdapter, setupPrimary } from '@socket.io/cluster-adapter';
 import { getServer } from './websocket';
 
 const numCPUs = cpus().length;
@@ -20,9 +17,6 @@ if (cluster.isPrimary) {
   setupMaster(httpServer, {
     loadBalancingMethod: `least-connection`,
   });
-
-  // setup connections between the workers
-  setupPrimary();
 
   // needed for packets containing buffers (you can ignore it if you only send plaintext objects)
   // Node.js < 16.0.0
