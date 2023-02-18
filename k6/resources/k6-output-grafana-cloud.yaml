@@ -28,6 +28,8 @@ spec:
         value: 'avg,p(90),p(99),min,max'
       - name: HOST
         value: 'nginx.default.svc.cluster.local'
-    envFrom:
-      - configMapRef:
-          name: prometheus-config
+      - name: K6_PROMETHEUS_RW_SERVER_URL
+        value: 'http://prometheus.default.svc.cluster.local:9090/api/v1/write'
+    # envFrom:
+    #   - configMapRef:
+    #       name: prometheus-config
