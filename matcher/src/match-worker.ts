@@ -121,8 +121,7 @@ export const match = async (msg: ConsumeMessage, channel: Channel) => {
       .timeout(matchTimeout)
       .emit(`match`, `host`, (err: any, response: any) => {
         if (err) {
-          console.error(err);
-          reject(`host`);
+          reject(`host: ${err.message}`);
         } else {
           resolve();
         }
@@ -134,8 +133,7 @@ export const match = async (msg: ConsumeMessage, channel: Channel) => {
       .timeout(matchTimeout)
       .emit(`match`, `guest`, (err: any, response: any) => {
         if (err) {
-          console.error(err);
-          reject(`guest`);
+          reject(`guest: ${err.message}`);
         } else {
           resolve();
         }
