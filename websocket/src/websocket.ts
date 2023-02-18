@@ -160,7 +160,7 @@ const signalTraps = [`SIGTERM`, `SIGINT`, `SIGUSR2`];
 errorTypes.forEach((type) => {
   process.on(type, async () => {
     try {
-      console.log(`process.on ${type}`);
+      console.log(`errorTypes: ${type}`);
       process.exit(0);
     } catch (_) {
       process.exit(1);
@@ -171,6 +171,7 @@ errorTypes.forEach((type) => {
 signalTraps.forEach((type) => {
   process.once(type, async () => {
     try {
+      console.log(`signalTraps ${type}`);
     } finally {
       process.kill(process.pid, type);
     }

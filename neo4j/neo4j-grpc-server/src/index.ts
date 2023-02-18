@@ -84,3 +84,27 @@ server.bindAsync(addr, grpc.ServerCredentials.createInsecure(), () => {
   console.log(`starting on: ${addr}`);
   server.start();
 });
+
+const errorTypes = [`unhandledRejection`, `uncaughtException`];
+const signalTraps = [`SIGTERM`, `SIGINT`, `SIGUSR2`];
+
+errorTypes.forEach((type) => {
+  process.on(type, async () => {
+    try {
+      console.log(`errorTypes: ${type}`);
+      process.exit(0);
+    } catch (_) {
+      process.exit(1);
+    }
+  });
+});
+
+signalTraps.forEach((type) => {
+  process.once(type, async () => {
+    try {
+      console.log(`signalTraps ${type}`);
+    } finally {
+      process.kill(process.pid, type);
+    }
+  });
+});
