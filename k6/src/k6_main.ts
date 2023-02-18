@@ -8,8 +8,10 @@ import { SocketWrapper } from '../libs/SocketWrapper';
 //   vus: 2000,
 //   duration: `1h`,
 // };
+
+const vus = 100;
 export const options = {
-  // vus: 20,
+  // vus: vus,
   // duration: `20s`,
   scenarios: {
     //   // contacts: {
@@ -24,8 +26,8 @@ export const options = {
       executor: `ramping-vus`,
       startVUs: 0,
       stages: [
-        { duration: `10m`, target: 2000 },
-        { duration: `2h`, target: 2000 },
+        { duration: `10m`, target: vus },
+        { duration: `2h`, target: vus },
       ],
     },
   },
