@@ -20,7 +20,7 @@ TAG_NAME="$TAG_PREFIX-$(date +%H-%M-%S)"
 echo "test id:" $TAG_NAME
 
 # Replacement doesn't seem to trigger, so we need to delete any previous execution
-kubectl delete --ignore-not-found=true --wait=true -f $RESOURCE_FILENAME
+kubectl delete --ignore-not-found=true --wait=true -f $RESOURCE_FILENAME -n k6
 
 # Update '--tag testid=...' to include the test-script name and timestamp for uniqueness, then apply
-sed "s/testid\=${RESOURCE_NAME}/testid\=${TAG_NAME}/g" $RESOURCE_FILENAME | kubectl apply  -f -
+sed "s/testid\=${RESOURCE_NAME}/testid\=${TAG_NAME}/g" $RESOURCE_FILENAME | kubectl apply  -f - -n k6

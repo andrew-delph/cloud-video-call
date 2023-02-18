@@ -40,7 +40,9 @@ const createUser = async (
   );
   await session.close();
 
-  console.log(`duration: ${(performance.now() - start_time) / 1000}s`);
+  console.log(
+    `createUser duration: ${(performance.now() - start_time) / 1000}s`,
+  );
 
   callback(null, reply);
 };
@@ -54,6 +56,8 @@ const createMatch = async (
   const reply = new CreateMatchResponse();
   reply.setMessage(`Created match succesfully for: ${socket1} ${socket2}`);
 
+  const start_time = performance.now();
+
   const session = driver.session();
   await session.run(
     `MATCH (a:Person), (b:Person) WHERE a.socketid = $socket1 AND b.socketid = $socket2 MERGE (a)-[:MATCHED]->(b) MERGE (b)-[:MATCHED]->(a)`,
@@ -63,6 +67,10 @@ const createMatch = async (
     },
   );
   await session.close();
+
+  console.log(
+    `createMatch duration: ${(performance.now() - start_time) / 1000}s`,
+  );
 
   callback(null, reply);
 };

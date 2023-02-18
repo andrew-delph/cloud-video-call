@@ -22,14 +22,16 @@ init:
 setup:
 	npm run webpack
 
-	kubectl delete configmap test-scripts --ignore-not-found
+	kubectl create namespace k6 || echo "namespace already exists"
 
-	kubectl delete configmap prometheus-config --ignore-not-found
+	kubectl delete configmap test-scripts --ignore-not-found -n k6
+
+	kubectl delete configmap prometheus-config --ignore-not-found -n k6
 
 	kubectl create configmap test-scripts  \
-		--from-file=./dist/k6_main.js
+		--from-file=./dist/k6_main.js -n k6
 
-	kubectl create configmap  prometheus-config --from-literal="K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write"
+	kubectl create configmap  prometheus-config --from-literal="K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write" -n k6
 
 
 run:
@@ -38,10 +40,10 @@ run:
 
 
 pods:
-	kubectl get pods  --watch
+	kubectl get pods  --watch -n k6
 
 delete:
-	kubectl delete  -f resources/k6-output-grafana-cloud.yaml
+	kubectl delete  -f resources/k6-output-grafana-cloud.yaml -n k6
 	# cd dependencies/k6-operator && make delete
 
 

@@ -27,7 +27,7 @@ spec:
       - name: K6_PROMETHEUS_RW_TREND_STATS
         value: 'avg,p(90),p(99),min,max'
       - name: HOST
-        value: 'nginx'
+        value: 'nginx.default.svc.cluster.local'
     envFrom:
       - configMapRef:
           name: prometheus-config
