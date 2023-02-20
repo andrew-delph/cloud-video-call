@@ -1,9 +1,9 @@
 
 pgrafana:
-	kubectl port-forward deployment/grafana 8081:3000
+	kubectl port-forward deployment/grafana 8081:3000 -n monitoring
 
 pprometheus:
-	kubectl port-forward deployment/prometheus 8082:9090
+	kubectl port-forward deployment/prometheus 8082:9090 -n monitoring
 
 apply:
 	kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
