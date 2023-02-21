@@ -21,6 +21,8 @@ const driver = neo4j.driver(
   neo4j.auth.basic(`neo4j`, `password`),
 );
 
+const durationError = 2;
+
 const verifyIndexes = async () => {
   const start_time = performance.now();
 
@@ -31,7 +33,7 @@ const verifyIndexes = async () => {
 
   await session.close();
   const duration = (performance.now() - start_time) / 1000;
-  if (duration > 1) {
+  if (duration > durationError) {
     logger.error(`verifyIndexes duration: \t ${duration}s`);
   } else {
     logger.debug(`verifyIndexes duration: \t ${duration}s`);
@@ -60,7 +62,7 @@ const createUser = async (
 
   const duration = (performance.now() - start_time) / 1000;
 
-  if (duration > 1) {
+  if (duration > durationError) {
     logger.error(`createUser duration: \t ${duration}s`);
   } else {
     logger.debug(`createUser duration: \t ${duration}s`);
@@ -92,7 +94,7 @@ const createMatch = async (
 
   const duration = (performance.now() - start_time) / 1000;
 
-  if (duration > 1) {
+  if (duration > durationError) {
     logger.error(`createMatch duration: \t ${duration}s`);
   } else {
     logger.debug(`createMatch duration: \t ${duration}s`);
