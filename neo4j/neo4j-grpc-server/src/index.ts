@@ -10,9 +10,11 @@ import {
 } from 'neo4j-grpc-common';
 
 import * as neo4j from 'neo4j-driver';
-import { listenGlobalExceptions } from 'react-video-call-common';
+import * as common from 'react-video-call-common';
 
-listenGlobalExceptions();
+const logger = common.getLogger();
+
+common.listenGlobalExceptions();
 
 const driver = neo4j.driver(
   `neo4j://neo4j:7687`,
@@ -28,7 +30,7 @@ const verifyIndexes = async () => {
   );
 
   await session.close();
-  console.log(
+  logger.debug(
     `verifyIndexes duration: \t ${(performance.now() - start_time) / 1000}s`,
   );
 };
@@ -53,7 +55,7 @@ const createUser = async (
   );
   await session.close();
 
-  console.log(
+  logger.debug(
     `createUser duration: \t ${(performance.now() - start_time) / 1000}s`,
   );
 
@@ -81,7 +83,7 @@ const createMatch = async (
   );
   await session.close();
 
-  console.log(
+  logger.debug(
     `createMatch duration: \t ${(performance.now() - start_time) / 1000}s`,
   );
 
@@ -103,6 +105,6 @@ server.addService(Neo4jService, { createUser, createMatch, updateMatch });
 const addr = `0.0.0.0:${process.env.PORT || 8080}`;
 server.bindAsync(addr, grpc.ServerCredentials.createInsecure(), async () => {
   await verifyIndexes();
-  console.log(`starting on: ${addr}`);
+  logger.info(`starting on: ${addr}`);
   server.start();
 });
