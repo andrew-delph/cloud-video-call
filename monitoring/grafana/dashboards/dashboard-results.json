@@ -685,7 +685,7 @@
             "properties": [
               {
                 "id": "custom.axisPlacement",
-                "value": "left"
+                "value": "right"
               },
               {
                 "id": "color",
@@ -777,21 +777,6 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "builder",
-          "exemplar": false,
-          "expr": "k6_vus{testid=~\"$testid\"}",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "legendFormat": "Active VUs   - {{testid}}",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
           "editorMode": "code",
           "exemplar": true,
           "expr": "sum by(testid) (k6_vus{testid=~\"$testid\"})",
@@ -802,6 +787,21 @@
           "legendFormat": "Total vus  - {{testid}}",
           "range": true,
           "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "builder",
+          "exemplar": false,
+          "expr": "k6_vus{testid=~\"$testid\"}",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "Active VUs   - {{testid}}",
+          "range": true,
+          "refId": "A"
         }
       ],
       "title": "VUS",
