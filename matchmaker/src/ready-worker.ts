@@ -16,6 +16,8 @@ import {
 } from 'neo4j-grpc-common';
 import { listenGlobalExceptions } from 'react-video-call-common';
 
+const logger = common.getLogger();
+
 const neo4jRpcClient = createNeo4jClient();
 
 let mainRedisClient: Client;
@@ -30,7 +32,7 @@ const connectRabbit = async () => {
   rabbitConnection = await amqp.connect(`amqp://rabbitmq`);
   rabbitChannel = await rabbitConnection.createChannel();
   await rabbitChannel.assertQueue(common.matchQueueName, { durable: true });
-  console.log(`rabbit connected`);
+  logger.info(`rabbit connected`);
 };
 
 const matchmakerChannelPrefix = `matchmaker`;
@@ -57,13 +59,13 @@ export const startReadyConsumer = async () => {
   await subRedisClient.psubscribe(`${matchmakerChannelPrefix}*`);
 
   // rabbitChannel.prefetch(1);
-  console.log(` [x] Awaiting RPC requests`);
+  logger.info(` [x] Awaiting RPC requests`);
 
   rabbitChannel.consume(
     common.readyQueueName,
     async (msg: ConsumeMessage | null) => {
       if (msg == null) {
-        console.log(`msg is null.`);
+        logger.error(`msg is null.`);
         return;
       }
 
@@ -71,7 +73,7 @@ export const startReadyConsumer = async () => {
 
       const socketId = msgContent[0];
       if (!socketId) {
-        console.error(`socketId is null`);
+        logger.error(`socketId is null`);
         rabbitChannel.ack(msg);
       }
       // console.log(`socketid ${socketId}`);
@@ -91,9 +93,8 @@ export const startReadyConsumer = async () => {
           await common.delay(5000); // hold 5 seconds before retry
           rabbitChannel.nack(msg);
         } else {
-          console.log(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!`);
-          console.error(`Unknown error: ${e}`);
-          console.error(e.stack);
+          logger.error(`Unknown error: ${e}`);
+          logger.error(e.stack);
           process.exit(1);
         }
       } finally {
@@ -166,11 +167,11 @@ const matchmakerFlow = async (
         try {
           msg = JSON.parse(message);
         } catch (e) {
-          console.error(e);
+          logger.error(e);
           return;
         }
         if (!msg.priority || !msg.owner) {
-          console.error(`!msg.priority || !msg.owner`);
+          logger.error(`!msg.priority || !msg.owner`);
           return;
         }
 
