@@ -99,7 +99,7 @@
       "interval": "10s",
       "options": {
         "legend": {
-          "calcs": ["sum"],
+          "calcs": ["count"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
