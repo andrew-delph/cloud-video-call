@@ -2,3 +2,4 @@
 export * from './variables';
 export * from './functions';
 export * from './exceptions';
+export * from './logger';
