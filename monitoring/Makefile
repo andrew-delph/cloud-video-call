@@ -11,10 +11,7 @@ apply:
 	kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
 	helm upgrade --install kube-stack --namespace=monitoring prometheus-community/kube-prometheus-stack -f kube-stack.values.yaml
 	helm upgrade --install prometheus-rabbitmq-exporter --namespace=monitoring prometheus-community/prometheus-rabbitmq-exporter -f prometheus-rabbitmq-exporter.values.yaml
-	helm upgrade --install loki --namespace=monitoring grafana/loki-stack -f loki-stack-values.yaml
-
-	# helm install kube-prom prometheus-community/kube-prometheus-stack -n monitoring
-	# kubectl apply -f ./resources/. -n monitoring
+	helm upgrade --install loki --namespace=monitoring grafana/loki-stack -f loki-stack.values.yaml
 	
 
 delete:
