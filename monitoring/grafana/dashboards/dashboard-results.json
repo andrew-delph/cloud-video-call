@@ -103,13 +103,12 @@
               },
               {
                 "id": "custom.axisLabel",
-                "value": "VUs"
+                "value": "VU per instance"
               },
               {
                 "id": "custom.scaleDistribution",
                 "value": {
-                  "log": 10,
-                  "type": "log"
+                  "type": "linear"
                 }
               },
               {
@@ -1454,7 +1453,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-blue"
+                "color": "dark-blue",
+                "value": null
               }
             ]
           },
@@ -1522,7 +1522,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1723,7 +1724,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "blue"
+                "color": "blue",
+                "value": null
               }
             ]
           },
@@ -3558,8 +3560,8 @@
         "allValue": ".*",
         "current": {
           "selected": true,
-          "text": ["k6_main-11-08-13"],
-          "value": ["k6_main-11-08-13"]
+          "text": ["k6_main-11-33-51"],
+          "value": ["k6_main-11-33-51"]
         },
         "datasource": {
           "type": "prometheus",
