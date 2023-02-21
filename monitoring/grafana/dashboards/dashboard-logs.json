@@ -99,8 +99,8 @@
       "interval": "10s",
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": ["sum"],
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
@@ -119,6 +119,7 @@
           "editorMode": "builder",
           "expr": "rate({job=~\"$job\", level=~\"$level\"} [$__interval])",
           "key": "Q-9d84741e-216e-44cc-a49d-281b07e3ad48-0",
+          "legendFormat": "$job",
           "queryType": "range",
           "refId": "A",
           "resolution": 1
@@ -166,6 +167,7 @@
       "type": "logs"
     }
   ],
+  "refresh": "10s",
   "schemaVersion": 37,
   "style": "dark",
   "tags": [],
