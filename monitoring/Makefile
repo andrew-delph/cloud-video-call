@@ -11,7 +11,7 @@ apply:
 	kubectl apply -f ./resources/. -n monitoring
 	
 	helm upgrade --install loki --namespace=monitoring grafana/loki-stack -f loki-values.yaml
-	helm upgrade loki --namespace=monitoring grafana/loki-stack -f loki-values.yaml --dry-run > release.yaml
+	# helm upgrade loki --namespace=monitoring grafana/loki-stack -f loki-values.yaml --dry-run > release.yaml
 
 delete:
 	kubectl delete namespace monitoring
