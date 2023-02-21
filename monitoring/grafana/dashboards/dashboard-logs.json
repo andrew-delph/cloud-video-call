@@ -34,8 +34,8 @@
         "uid": "P982945308D3682D1"
       },
       "gridPos": {
-        "h": 9,
-        "w": 13,
+        "h": 15,
+        "w": 24,
         "x": 0,
         "y": 0
       },
@@ -63,7 +63,7 @@
           "refId": "A"
         }
       ],
-      "title": "New Panel",
+      "title": "Logs",
       "type": "logs"
     }
   ],
