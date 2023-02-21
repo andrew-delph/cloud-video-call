@@ -65,6 +65,7 @@ io.on(`error`, (err) => {
 });
 
 io.on(`connection`, async (socket) => {
+  logger.info(`new connection`);
   socket.on(`error`, (err) => {
     logger.error(`socket err`, err);
   });

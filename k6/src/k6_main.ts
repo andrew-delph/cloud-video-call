@@ -11,8 +11,8 @@ import { SocketWrapper } from '../libs/SocketWrapper';
 
 const vus = 200;
 export const options = {
-  // vus: vus,
-  // duration: `2h`,
+  vus: vus,
+  duration: `2h`,
   // scenarios: {
   //   contacts: {
   //     executor: `ramping-arrival-rate`,
@@ -23,16 +23,16 @@ export const options = {
   //     stages: [{ target: 300, duration: `1h` }],
   //   },
   // },
-  scenarios: {
-    contacts: {
-      executor: `ramping-vus`,
-      startVUs: 0,
-      stages: [
-        { duration: `3m`, target: vus },
-        { duration: `2m`, target: vus },
-      ],
-    },
-  },
+  // scenarios: {
+  //   contacts: {
+  //     executor: `ramping-vus`,
+  //     startVUs: 0,
+  //     stages: [
+  //       { duration: `3m`, target: vus },
+  //       { duration: `2m`, target: vus },
+  //     ],
+  //   },
+  // },
 };
 
 const ready_waiting_time = new Trend(`ready_waiting_time`, true);

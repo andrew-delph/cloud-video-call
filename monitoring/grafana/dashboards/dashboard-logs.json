@@ -46,7 +46,7 @@
         "prettifyLogMessage": false,
         "showCommonLabels": false,
         "showLabels": false,
-        "showTime": false,
+        "showTime": true,
         "sortOrder": "Descending",
         "wrapLogMessage": false
       },
@@ -57,7 +57,7 @@
             "uid": "P982945308D3682D1"
           },
           "editorMode": "builder",
-          "expr": "{job=\"default/websocket\", level=\"info\"} |= ``",
+          "expr": "{job=~\"$job\", level=~\"$level\"}",
           "key": "Q-3e372365-9fa7-4447-8019-d543a1f51e4e-0",
           "queryType": "range",
           "refId": "A"
@@ -75,8 +75,8 @@
       {
         "current": {
           "selected": true,
-          "text": ["All"],
-          "value": ["$__all"]
+          "text": ["info"],
+          "value": ["info"]
         },
         "datasource": {
           "type": "loki",
@@ -103,20 +103,21 @@
       },
       {
         "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
+          "selected": true,
+          "text": ["All"],
+          "value": ["$__all"]
         },
         "datasource": {
           "type": "loki",
           "uid": "P982945308D3682D1"
         },
         "definition": "",
+        "description": "job",
         "hide": 0,
         "includeAll": true,
         "label": "job",
         "multi": true,
-        "name": "query0",
+        "name": "job",
         "options": [],
         "query": {
           "label": "job",
