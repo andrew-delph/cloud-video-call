@@ -1,0 +1,15 @@
+rabbitmq:
+  url: http://rabbitmq:15672
+  user: guest
+  password: guest
+  capabilities: bert,no_sort
+  include_queues: '.*'
+  include_vhost: '.*'
+  skip_queues: '^$'
+  skip_verify: 'false'
+  skip_vhost: '^$'
+  exporters: 'exchange,node,overview,queue'
+  output_format: 'TTY'
+  timeout: 30
+  max_queues: 0
+  excludeMetrics: ''
