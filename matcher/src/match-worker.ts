@@ -70,6 +70,7 @@ export async function matchConsumer() {
 
         const socket1 = msgContent[0];
         const socket2 = msgContent[1];
+
         await match(socket1, socket2);
       } catch (e) {
         logger.debug(`matchEvent error=` + e);
