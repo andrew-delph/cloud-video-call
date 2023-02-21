@@ -5,14 +5,17 @@ import * as http from 'http';
 import { setupMaster, setupWorker } from '@socket.io/sticky';
 
 import { getServer } from './websocket';
-import { listenGlobalExceptions } from 'react-video-call-common';
 
-listenGlobalExceptions();
+import * as common from 'react-video-call-common';
+
+const logger = common.getLogger();
+
+common.listenGlobalExceptions();
 
 const numCPUs = cpus().length > 3 ? 3 : cpus().length;
 
 if (cluster.isPrimary) {
-  console.log(`Master ${process.pid} is running with #${numCPUs} cpus.`);
+  logger.info(`Master ${process.pid} is running with #${numCPUs} cpus.`);
 
   const httpServer = http.createServer();
 
@@ -36,13 +39,13 @@ if (cluster.isPrimary) {
   }
 
   cluster.on(`exit`, (worker) => {
-    console.warn(
+    logger.warn(
       `Worker ${worker.process.pid} died with code ${worker.process.exitCode}`,
     );
     cluster.fork();
   });
 } else {
-  console.log(`Worker ${process.pid} started`);
+  logger.info(`Worker ${process.pid} started`);
 
   getServer(false).then((io) => {
     setupWorker(io);

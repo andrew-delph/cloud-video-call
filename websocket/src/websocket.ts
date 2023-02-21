@@ -22,6 +22,8 @@ import {
 } from 'neo4j-grpc-common';
 import { listenGlobalExceptions } from 'react-video-call-common';
 
+const logger = common.getLogger();
+
 const neo4jRpcClient = createNeo4jClient();
 
 let rabbitConnection: amqp.Connection;
@@ -31,7 +33,7 @@ const connectRabbit = async () => {
   rabbitConnection = await amqp.connect(`amqp://rabbitmq`);
   rabbitChannel = await rabbitConnection.createChannel();
   await rabbitChannel.assertQueue(common.readyQueueName, { durable: true });
-  console.log(`rabbitmq connected`);
+  logger.info(`rabbitmq connected`);
 };
 
 dotenv.config();
@@ -59,12 +61,12 @@ app.get(`*`, (req, res) => {
 });
 
 io.on(`error`, (err) => {
-  console.log(`io err`, err);
+  logger.error(`io err`, err);
 });
 
 io.on(`connection`, async (socket) => {
   socket.on(`error`, (err) => {
-    console.error(`socket err`, err);
+    logger.error(`socket err`, err);
   });
 
   socket.on(`myping`, (arg, callback) => {
@@ -72,7 +74,7 @@ io.on(`connection`, async (socket) => {
     try {
       if (callback != undefined) callback(`ping ding dong`);
     } catch (e) {
-      console.error(e);
+      logger.error(e);
     }
   });
 
@@ -148,7 +150,7 @@ io.on(`connection`, async (socket) => {
     (error: any, response: any) => {
       if (!error) {
       } else {
-        console.error(`createUser error:`, error.message);
+        logger.error(`createUser error:`, error.message);
         socket.disconnect();
       }
     },
@@ -174,12 +176,12 @@ export const getServer = async (listen: boolean) => {
     .then(() => {
       io.adapter(createAdapter(pubClient, subClient));
       if (listen) httpServer.listen(4000);
-      console.log(`server started`);
+      logger.info(`server started`);
     })
     .then(async () => {
       const activeCountThrottle = throttle(async () => {
         const activeCount = await mainClient.scard(common.activeSetName);
-        console.log(`activeCount #${activeCount}`);
+        logger.info(`activeCount #${activeCount}`);
         io.emit(`activeCount`, activeCount);
       }, 30000);
 
