@@ -9,7 +9,7 @@ kind: K6
 metadata:
   name: k6-output-grafana-cloud
 spec:
-  parallelism: 10
+  parallelism: 3
   script:
     configMap:
       # Remember...we created the 'test-scripts' ConfigMap with the available scripts inside.
@@ -29,7 +29,7 @@ spec:
       - name: HOST
         value: 'nginx.default.svc.cluster.local'
       - name: K6_PROMETHEUS_RW_SERVER_URL
-        value: 'http://prometheus.default.svc.cluster.local:9090/api/v1/write'
+        value: 'http://prometheus.monitoring.svc.cluster.local:9090/api/v1/write'
     # envFrom:
     #   - configMapRef:
     #       name: prometheus-config
