@@ -116,10 +116,10 @@
             "type": "loki",
             "uid": "P982945308D3682D1"
           },
-          "editorMode": "builder",
-          "expr": "rate({job=~\"$job\", level=~\"$level\"} [$__interval])",
+          "editorMode": "code",
+          "expr": "sum(rate({job=~\"$job\", level=~\"$level\"} [$__interval])) by (job, level)",
           "key": "Q-9d84741e-216e-44cc-a49d-281b07e3ad48-0",
-          "legendFormat": "$job",
+          "legendFormat": "{{job}} : {{level}}",
           "queryType": "range",
           "refId": "A",
           "resolution": 1
@@ -176,8 +176,8 @@
       {
         "current": {
           "selected": true,
-          "text": ["default/websocket"],
-          "value": ["default/websocket"]
+          "text": ["default/matcher"],
+          "value": ["default/matcher"]
         },
         "datasource": {
           "type": "loki",
