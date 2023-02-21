@@ -1,7 +1,7 @@
 import { createLogger, transports, format, config } from 'winston';
 export const getLogger = () => {
   return createLogger({
-    levels: config.syslog.levels,
+    // levels: config.syslog.levels,
     format: format.combine(
       //   format.label({ label: `right meow!` }),
       format.json(),

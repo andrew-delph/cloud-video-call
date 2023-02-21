@@ -18,6 +18,8 @@ import {
   createNeo4jClient,
 } from 'neo4j-grpc-common';
 
+const logger = common.getLogger();
+
 const neo4jRpcClient = createNeo4jClient();
 
 const serverID = uuid();
@@ -40,7 +42,7 @@ export async function matchConsumer() {
   await channel.assertQueue(common.matchQueueName, {
     durable: true,
   });
-  console.log(`rabbitmq connected`);
+  logger.info(`rabbitmq connected`);
 
   pubRedisClient = new Client({
     host: `${process.env.REDIS_HOST || `redis`}`,
@@ -48,33 +50,26 @@ export async function matchConsumer() {
   subRedisClient = new Client({
     host: `${process.env.REDIS_HOST || `redis`}`,
   });
-  console.log(`redis connected.`);
+  logger.info(`redis connected.`);
 
   io.adapter(createAdapter(pubRedisClient, subRedisClient));
 
-  console.log(`socket io connected`);
+  logger.info(`socket io connected`);
 
   // channel.prefetch(10);
-  console.log(` [x] Awaiting RPC requests`);
 
   channel.consume(
     common.matchQueueName,
     async (msg: ConsumeMessage | null) => {
       if (msg == null) {
-        console.log(`msg is null.`);
+        logger.error(`msg is null.`);
         return;
       }
-
-      // console.log(
-      //   `match event - ${new Date().toLocaleTimeString(`en-US`, {
-      //     hour12: false,
-      //   })}`,
-      // );
 
       try {
         await match(msg, channel);
       } catch (e) {
-        console.log(`matchEvent error=` + e);
+        logger.debug(`matchEvent error=` + e);
       } finally {
         channel.ack(msg);
       }
@@ -102,7 +97,7 @@ export const match = async (msg: ConsumeMessage, channel: Channel) => {
 
   await neo4jRpcClient.createMatch(request, (error, response) => {
     if (error) {
-      console.error(`neo4j create match error: ${error}`);
+      logger.error(`neo4j create match error: ${error}`);
       throw error;
     }
   });
@@ -147,10 +142,11 @@ export const match = async (msg: ConsumeMessage, channel: Channel) => {
     .then(() => {
       // console.log(`match success: ${socket1} ${socket2}`);
     })
-    .catch((value) => {
-      io.in(socket1).emit(`message`, `host paring: failed with ${value}`);
-      io.in(socket2).emit(`message`, `guest paring: failed with ${value}`);
-      throw `match failed with \t ${value}`;
+    .catch((error) => {
+      logger.debug(`host paring failed: ${error}`);
+      io.in(socket1).emit(`message`, `host paring: failed with ${error}`);
+      io.in(socket2).emit(`message`, `guest paring: failed with ${error}`);
+      throw `match failed with \t ${error}`;
     });
   // .finally(() => {
   //   console.log(`finally :)`);
