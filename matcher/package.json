@@ -7,7 +7,7 @@
     "dev": "nodemon --delay 1000ms --ignore dist --ext ts --exec 'npm run k8-restart'",
     "dev2": "tsc-watch --onSuccess \"npm run k8-restart\" --onCompilationStarted \"echo 'watching matcher'\"",
     "docker": "docker build -f Dockerfile -t andrewdelph/video-call-matcher:latest ../ && docker push andrewdelph/video-call-matcher:latest",
-    "k8-restart": "npm run docker && kubectl rollout restart deployment/matcher && kubectl rollout status deployment/matcher --watch=true --timeout=60s && kubectl logs --selector=app=matcher -f",
+    "k8-restart": "npm run docker && kubectl rollout restart deployment/matcher && kubectl rollout status deployment/matcher --watch=true --timeout=60s  && date",
     "prod": "node ./dist/index.js"
   },
   "engines": {
