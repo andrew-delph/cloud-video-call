@@ -56,8 +56,7 @@ export async function matchConsumer() {
 
   logger.info(`socket io connected`);
 
-  // channel.prefetch(10);
-
+  channel.prefetch(10);
   channel.consume(
     common.matchQueueName,
     async (msg: ConsumeMessage | null) => {
@@ -67,7 +66,11 @@ export async function matchConsumer() {
       }
 
       try {
-        await match(msg, channel);
+        const msgContent: [string, string] = JSON.parse(msg.content.toString());
+
+        const socket1 = msgContent[0];
+        const socket2 = msgContent[1];
+        await match(socket1, socket2);
       } catch (e) {
         logger.debug(`matchEvent error=` + e);
       } finally {
@@ -80,15 +83,12 @@ export async function matchConsumer() {
   );
 }
 
-export const match = async (msg: ConsumeMessage, channel: Channel) => {
-  const msgContent: [string, string] = JSON.parse(msg.content.toString());
-
-  const socket1 = msgContent[0];
-  const socket2 = msgContent[1];
-
+export const match = async (socket1: string, socket2: string) => {
   if (!socket1 || !socket2) {
+    logger.error(`(!socket1 || !socket2) ${socket1} ${socket2}`);
     throw Error(`(!socket1 || !socket2) ${socket1} ${socket2}`);
   }
+  logger.debug(`matching: ${socket1} ${socket2}`);
 
   const request = new CreateMatchRequest();
 
