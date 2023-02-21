@@ -99,7 +99,7 @@
       "interval": "10s",
       "options": {
         "legend": {
-          "calcs": ["count"],
+          "calcs": ["count", "sum"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -175,7 +175,7 @@
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "default",
           "value": "default"
         },
@@ -236,8 +236,8 @@
       {
         "current": {
           "selected": true,
-          "text": ["All"],
-          "value": ["$__all"]
+          "text": ["debug", "error"],
+          "value": ["debug", "error"]
         },
         "datasource": {
           "type": "loki",
