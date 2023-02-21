@@ -117,9 +117,9 @@
             "uid": "P982945308D3682D1"
           },
           "editorMode": "builder",
-          "expr": "sum by(job, level) (rate({job=~\"$job\", level=~\"$level\", namespace=~\"$namespace\"} [$__interval]))",
+          "expr": "sum by(app, level) (rate({app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"} [$__interval]))",
           "key": "Q-9d84741e-216e-44cc-a49d-281b07e3ad48-0",
-          "legendFormat": "{{job}} : {{level}}",
+          "legendFormat": "{{app}} : {{level}}",
           "queryType": "range",
           "refId": "A",
           "resolution": 1
@@ -157,7 +157,7 @@
             "uid": "P982945308D3682D1"
           },
           "editorMode": "builder",
-          "expr": "{job=~\"$job\", level=~\"$level\", namespace=~\"$namespace\"}",
+          "expr": "{app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"}",
           "key": "Q-3e372365-9fa7-4447-8019-d543a1f51e4e-0",
           "queryType": "range",
           "refId": "A"
@@ -175,7 +175,7 @@
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "default",
           "value": "default"
         },
@@ -206,23 +206,23 @@
       {
         "current": {
           "selected": true,
-          "text": ["default/matcher", "default/websocket"],
-          "value": ["default/matcher", "default/websocket"]
+          "text": ["All"],
+          "value": ["$__all"]
         },
         "datasource": {
           "type": "loki",
           "uid": "P982945308D3682D1"
         },
         "definition": "",
-        "description": "job",
+        "description": "app",
         "hide": 0,
         "includeAll": true,
-        "label": "job",
+        "label": "app",
         "multi": true,
-        "name": "job",
+        "name": "app",
         "options": [],
         "query": {
-          "label": "job",
+          "label": "app",
           "refId": "LokiVariableQueryEditor-VariableQuery",
           "stream": "",
           "type": 1
@@ -235,7 +235,7 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": ["All"],
           "value": ["$__all"]
         },
