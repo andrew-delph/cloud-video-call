@@ -893,7 +893,7 @@
           "expr": "sum by(testid) (k6_iterations_total{testid=~\"$testid\"})",
           "format": "time_series",
           "hide": false,
-          "instant": true,
+          "instant": false,
           "interval": "",
           "legendFormat": "{{testid}} -",
           "range": true,
@@ -3562,8 +3562,8 @@
         "allValue": ".*",
         "current": {
           "selected": true,
-          "text": ["k6_main-10-42-22"],
-          "value": ["k6_main-10-42-22"]
+          "text": ["k6_main-11-08-13"],
+          "value": ["k6_main-11-08-13"]
         },
         "datasource": {
           "type": "prometheus",
@@ -3679,7 +3679,7 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
