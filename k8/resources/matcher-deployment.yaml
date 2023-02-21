@@ -42,7 +42,7 @@ spec:
             #   memory: '250Mi'
             limits:
               cpu: '512m'
-              memory: '250Mi'
+              memory: '1000Mi'
       restartPolicy: Always
 status: {}
 ---
