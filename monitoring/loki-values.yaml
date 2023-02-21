@@ -36,9 +36,11 @@ promtail:
       #     regex: __meta_kubernetes_pod_label_(.+)
       pipelineStages:
         - docker:
-        # - json:
-        #     expressions:
-        #       level: level
+        - json:
+            expressions:
+              level: level
+        - labels:
+            level:
 
 fluent-bit:
   enabled: false
