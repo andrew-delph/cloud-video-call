@@ -56,6 +56,18 @@ let pubClient: Client;
 let subClient: Client;
 let mainClient: Client;
 
+setInterval(async () => {
+  logger.error(`test test`);
+}, 5000);
+
+setInterval(async () => {
+  logger.info(`test test`);
+}, 2000);
+
+setInterval(async () => {
+  logger.warn(`test test`);
+}, 1000);
+
 app.get(`*`, (req, res) => {
   res.send(`This is the API server :)`);
 });
@@ -65,7 +77,6 @@ io.on(`error`, (err) => {
 });
 
 io.on(`connection`, async (socket) => {
-  logger.info(`new connection`);
   socket.on(`error`, (err) => {
     logger.error(`socket err`, err);
   });
