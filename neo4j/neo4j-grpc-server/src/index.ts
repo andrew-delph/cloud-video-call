@@ -30,9 +30,12 @@ const verifyIndexes = async () => {
   );
 
   await session.close();
-  logger.debug(
-    `verifyIndexes duration: \t ${(performance.now() - start_time) / 1000}s`,
-  );
+  const duration = (performance.now() - start_time) / 1000;
+  if (duration > 1) {
+    logger.error(`verifyIndexes duration: \t ${duration}s`);
+  } else {
+    logger.debug(`verifyIndexes duration: \t ${duration}s`);
+  }
 };
 
 const createUser = async (
@@ -55,9 +58,13 @@ const createUser = async (
   );
   await session.close();
 
-  logger.debug(
-    `createUser duration: \t ${(performance.now() - start_time) / 1000}s`,
-  );
+  const duration = (performance.now() - start_time) / 1000;
+
+  if (duration > 1) {
+    logger.error(`createUser duration: \t ${duration}s`);
+  } else {
+    logger.debug(`createUser duration: \t ${duration}s`);
+  }
 
   callback(null, reply);
 };
@@ -83,9 +90,13 @@ const createMatch = async (
   );
   await session.close();
 
-  logger.debug(
-    `createMatch duration: \t ${(performance.now() - start_time) / 1000}s`,
-  );
+  const duration = (performance.now() - start_time) / 1000;
+
+  if (duration > 1) {
+    logger.error(`createMatch duration: \t ${duration}s`);
+  } else {
+    logger.debug(`createMatch duration: \t ${duration}s`);
+  }
 
   callback(null, reply);
 };
