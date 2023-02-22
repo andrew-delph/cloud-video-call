@@ -1,5 +1,5 @@
 rabbitmq:
-  url: http://rabbitmq:15672
+  url: http://rabbitmq.default.svc.cluster.local:15672
   user: guest
   password: guest
   capabilities: bert,no_sort
