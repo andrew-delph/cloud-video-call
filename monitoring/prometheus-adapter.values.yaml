@@ -2,14 +2,14 @@ prometheus:
   url: http://prometheus-operated.monitoring.svc
   port: 9090
 rules:
+  default: false
   custom:
     - seriesQuery: 'rabbitmq_queue_messages'
       name:
         matches: ''
         as: 'readyQueue'
-      resources:
         template: <<.Resource>>
-      metricsQuery: avg_over_time( sum(<<.Series>>{<<.LabelMatchers>>, queue="readyQueue"}) by (<<.GroupBy>>) [1m:])
+      metricsQuery: avg_over_time( sum(<<.Series>>{queue="readyQueue"}) by (<<.GroupBy>>) [1m:])
 
     - seriesQuery: 'rabbitmq_queue_messages'
       name:
@@ -17,4 +17,4 @@ rules:
         as: 'matchQueue'
       resources:
         template: <<.Resource>>
-      metricsQuery: avg_over_time( sum(<<.Series>>{<<.LabelMatchers>>, queue="matchQueue"}) by (<<.GroupBy>>) [1m:])
+      metricsQuery: avg_over_time( sum(<<.Series>>{queue="matchQueue"}) by (<<.GroupBy>>) [1m:])
