@@ -17,4 +17,4 @@ prometheus:
   monitor:
     enabled: true
     additionalLabels:
-      release: kube-stack
+      release: kube-stack # this has to be the same name as the kube-prometheus-stack name
