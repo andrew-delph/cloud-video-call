@@ -13,3 +13,8 @@ rabbitmq:
   timeout: 30
   max_queues: 0
   excludeMetrics: ''
+prometheus:
+  monitor:
+    enabled: true
+    additionalLabels:
+      release: kube-stack

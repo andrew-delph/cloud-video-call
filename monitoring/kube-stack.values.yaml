@@ -1,7 +1,6 @@
 grafana:
   adminUser: admin
   adminPassword: password
-
 prometheus:
   prometheusSpec:
     enableRemoteWriteReceiver: true
