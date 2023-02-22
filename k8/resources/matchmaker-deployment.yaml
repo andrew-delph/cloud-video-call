@@ -58,6 +58,17 @@ spec:
     kind: Deployment
     name: matchmaker
   metrics:
+    - type: Object
+      object:
+        metric:
+          name: readyQueue
+        target:
+          type: Value
+          value: 100
+        describedObject:
+          apiVersion: '/v1'
+          kind: 'Service'
+          name: prometheus-rabbitmq-exporter
     - type: Resource
       resource:
         name: cpu
