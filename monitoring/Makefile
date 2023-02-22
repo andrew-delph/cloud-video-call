@@ -12,7 +12,7 @@ apply:
 	helm upgrade --install kube-stack --namespace=monitoring prometheus-community/kube-prometheus-stack -f kube-stack.values.yaml
 	helm upgrade --install loki --namespace=monitoring grafana/loki-stack -f loki-stack.values.yaml
 	helm upgrade --install prometheus-rabbitmq-exporter --namespace=monitoring prometheus-community/prometheus-rabbitmq-exporter -f prometheus-rabbitmq-exporter.values.yaml
-	
+	bash ./create_dashboards.sh
 
 delete:
 	kubectl delete namespace monitoring
