@@ -8,7 +8,7 @@ listenGlobalExceptions();
 
 const logger = common.getLogger();
 
-const numCPUs = cpus().length > 3 ? 3 : cpus().length;
+const numCPUs = cpus().length; // > 3 ? 3 : cpus().length;
 
 if (cluster.isPrimary) {
   logger.info(`Master ${process.pid} is running with #${numCPUs} cpus.`);

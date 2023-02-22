@@ -5,7 +5,7 @@ import { cpus } from 'os';
 import { listenGlobalExceptions } from 'react-video-call-common';
 
 listenGlobalExceptions();
-const numCPUs = cpus().length > 3 ? 3 : cpus().length;
+const numCPUs = cpus().length; // > 3 ? 3 : cpus().length;
 
 if (cluster.isPrimary) {
   console.log(`Master ${process.pid} is running with #${numCPUs} cpus.`);

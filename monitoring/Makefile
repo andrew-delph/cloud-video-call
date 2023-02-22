@@ -5,7 +5,7 @@ pgrafana:
 
 pprometheus:
 	# kubectl port-forward deployment/prometheus 8082:9090 -n monitoring
-	kubectl --namespace monitoring port-forward svc/prometheus-operated 3001:9090
+	kubectl --namespace monitoring port-forward svc/kube-stack-kube-prometheus-prometheus 3001:9090
 
 apply:
 	kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
