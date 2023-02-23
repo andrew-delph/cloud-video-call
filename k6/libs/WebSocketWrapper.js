@@ -128,13 +128,22 @@ export class WebSocketWrapper {
   sendWithAck(event, data, timeout, callback) {
     const startTime = Date.now();
     const waitingEventId = uuid();
-    this.send(event, data, (callbackData) => {
-      const elapsed = Date.now() - startTime;
-      const isSuccess = elapsed < timeout;
-      delete this.waitingEventMap[waitingEventId];
-      callback(isSuccess, elapsed, callbackData);
+
+    const wrapper = this;
+
+    return new Promise(function (myResolve, myReject) {
+      wrapper.send(event, data, (callbackData) => {
+        const elapsed = Date.now() - startTime;
+        const isSuccess = elapsed < timeout;
+        delete wrapper.waitingEventMap[waitingEventId];
+
+        if (isSuccess) {
+          myResolve(callbackData);
+        } else {
+          myReject(callbackData);
+        }
+      });
     });
-    this.waitingEventMap[waitingEventId] = callback;
   }
 
   sendAck(callbackId, data) {

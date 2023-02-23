@@ -24,15 +24,17 @@ export default function () {
 
   const socket = new WebSocketWrapper(url);
 
-  socket.setEventMessageHandle(`message`, (msg) => {
-    console.log(`message`, msg);
-  });
-
   socket.setOnConnect(() => {
     console.log(`connected`);
-    socket.sendWithAck(`myping`, {}, 1000, (...args) => {
-      console.log(`got the ping`, args);
-    });
+    socket
+      .sendWithAck(`myping`, {}, 1000)
+      .then((data) => {
+        console.log(`got ack1:`, data);
+        return socket.sendWithAck(`myping`, {}, 1000);
+      })
+      .then((data) => {
+        console.log(`got ack2:`, data);
+      });
   });
 
   socket.listen();
