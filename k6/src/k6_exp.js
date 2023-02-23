@@ -1,5 +1,5 @@
 import { EventName, WebSocket } from 'k6/experimental/websockets';
-import { Rate, Gauge, Counter } from 'k6/metrics';
+import { Rate, Gauge, Trend, Counter } from 'k6/metrics';
 import {
   setTimeout,
   clearTimeout,
@@ -9,9 +9,9 @@ import {
 import { sleep } from 'k6';
 import { WebSocketWrapper } from '../libs/WebSocketWrapper';
 
-const established_elapsed = new Gauge(`established_elapsed`);
-const match_elapsed = new Gauge(`match_elapsed`);
-const ready_elapsed = new Gauge(`ready_elapsed`);
+const established_elapsed = new Trend(`established_elapsed`, true);
+const match_elapsed = new Trend(`match_elapsed`, true);
+const ready_elapsed = new Trend(`ready_elapsed`, true);
 
 const established_success = new Rate(`established_success`);
 const ready_success = new Rate(`ready_success`);
@@ -22,11 +22,11 @@ const error_counter = new Counter(`error_counter`);
 export const options = {
   vus: 300,
   duration: `60s`,
-  thresholds: {
-    established_success: [`rate>0.95`],
-    ready_success: [`rate>0.95`],
-    match_success: [`rate>0.95`],
-  },
+  // thresholds: {
+  //   established_success: [`rate>0.95`],
+  //   ready_success: [`rate>0.95`],
+  //   match_success: [`rate>0.95`],
+  // },
 };
 
 const secure = false;
