@@ -32,6 +32,9 @@ export class WebSocketWrapper {
         this.close();
       }, max_time);
     }
+    this.socket.addEventListener(`error`, () => {
+      this.socket.close();
+    });
     this.socket.addEventListener(`close`, () => {
       clearInterval(max_time_timeout);
       this.failWaitingEvents();
@@ -106,7 +109,7 @@ export class WebSocketWrapper {
     this.eventMessageHandleMap[event] = handler;
   }
 
-  expectMessage(event, timeout) {
+  expectMessage(event, timeout = 0) {
     const startTime = Date.now();
     const waitingEventId = uuid();
     const wrapper = this;
@@ -119,7 +122,7 @@ export class WebSocketWrapper {
         const isSuccess = elapsed < timeout;
         delete wrapper.waitingEventMap[waitingEventId];
 
-        if (isSuccess) {
+        if (isSuccess || timeout == 0) {
           resolve({ data, callback, elapsed });
         } else {
           reject(`timeout reached`);
@@ -147,7 +150,7 @@ export class WebSocketWrapper {
     }
   }
 
-  sendWithAck(event, data, timeout, callback) {
+  sendWithAck(event, data, timeout = 0) {
     const startTime = Date.now();
     const waitingEventId = uuid();
 
@@ -160,7 +163,7 @@ export class WebSocketWrapper {
         const isSuccess = elapsed < timeout;
         delete wrapper.waitingEventMap[waitingEventId];
 
-        if (isSuccess) {
+        if (isSuccess || timeout == 0) {
           resolve({ data: callbackData, elapsed });
         } else {
           reject(`timeout reached`);
