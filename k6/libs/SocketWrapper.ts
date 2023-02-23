@@ -1,5 +1,5 @@
 import { Socket } from 'k6/ws';
-import { socketResponseCode, socketResponseType } from './constants';
+import { responseCode, responseType } from './constants';
 import { checkResponse, getArrayFromRequest, getCallbackId } from './socket.io';
 import { uuidv4 as uuid } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 
@@ -36,15 +36,15 @@ export class SocketWrapper {
     const type = response.type;
     const code = response.code;
 
-    if (type !== socketResponseType.message) return;
+    if (type !== responseType.message) return;
 
     switch (code) {
-      case socketResponseCode.connect: {
+      case responseCode.connect: {
         if (this.onConnect != null) this.onConnect();
         this.connected = true;
         break;
       }
-      case socketResponseCode.ack: {
+      case responseCode.ack: {
         const msgObject = getArrayFromRequest(msg);
         const callbackId = getCallbackId(msg);
         const callback = this.ackCallbackMap[callbackId];
@@ -54,7 +54,7 @@ export class SocketWrapper {
         }
         break;
       }
-      case socketResponseCode.event: {
+      case responseCode.event: {
         const msgObject = getArrayFromRequest(msg);
         const event = msgObject[0];
         const message = msgObject[1];
@@ -112,15 +112,15 @@ export class SocketWrapper {
   send(event: string, data: any, callback?: (data: any) => void) {
     if (callback == null) {
       this.socket.send(
-        `${socketResponseType.message}${
-          socketResponseCode.event
+        `${responseType.message}${
+          responseCode.event
         }["${event}",${JSON.stringify(data)}]`,
       );
     } else {
       this.callbackCount++;
       this.ackCallbackMap[this.callbackCount] = callback;
       this.socket.send(
-        `${socketResponseType.message}${socketResponseCode.event}${
+        `${responseType.message}${responseCode.event}${
           this.callbackCount
         }["${event}",${JSON.stringify(data)}]`,
       );
@@ -149,9 +149,9 @@ export class SocketWrapper {
 
   sendAck(callbackId: number, data: any) {
     this.socket.send(
-      `${socketResponseType.message}${
-        socketResponseCode.ack
-      }${callbackId}[${JSON.stringify(data)}]`,
+      `${responseType.message}${responseCode.ack}${callbackId}[${JSON.stringify(
+        data,
+      )}]`,
     );
   }
 

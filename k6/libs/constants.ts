@@ -1,4 +1,4 @@
-export enum socketResponseType {
+export enum responseType {
   open,
   close,
   ping,
@@ -8,7 +8,7 @@ export enum socketResponseType {
   noop,
 }
 
-export enum socketResponseCode {
+export enum responseCode {
   connect,
   disconnect,
   event,
