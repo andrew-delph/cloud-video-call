@@ -45,6 +45,4 @@ delete:
 	# cd dependencies/k6-operator && make delete
 
 
-local:
-	k6 run dist/main.js -e LOCAL=true
 

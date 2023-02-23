@@ -1,3 +1,5 @@
+import { EventName, WebSocket } from 'k6/experimental/websockets';
+
 import ws, { Socket } from 'k6/ws';
 import { check, sleep } from 'k6';
 import { Counter, Trend } from 'k6/metrics';
@@ -51,7 +53,7 @@ export default function (): void {
   //   : `34.27.73.223`;
 
   const secure = false;
-  const domain = __ENV.HOST || `34.69.116.114:80`; // `localhost:8080`
+  const domain = __ENV.HOST || `localhost:8080`;
 
   // Let's do some websockets
   const url = `${

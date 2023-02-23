@@ -7,6 +7,8 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
-IMAGE_NAME=${IMAGE_NAME:="andrewdelph/k6_tests:latest"}
+IMAGE_NAME=${IMAGE_NAME:="andrewdelph/k6-tests:latest"}
 
-docker run --env REMOTE=true -v $PWD:/scripts -it --rm $IMAGE_NAME run /scripts/$1
+echo $PWD
+
+docker run -v $PWD:/scripts -it --rm $IMAGE_NAME run /scripts/$1
