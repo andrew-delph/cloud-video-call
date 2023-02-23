@@ -1,9 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert -o ./k8/
-    kompose.version: 1.28.0 (HEAD)
   creationTimestamp: null
   labels:
     app: rabbitmq
@@ -16,12 +13,8 @@ spec:
   strategy: {}
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose convert -o ./k8/
-        kompose.version: 1.28.0 (HEAD)
       creationTimestamp: null
       labels:
-        io.kompose.network/backend-demo-default: 'true'
         app: rabbitmq
     spec:
       containers:
