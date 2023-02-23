@@ -11,29 +11,32 @@ import { SocketWrapper } from '../libs/SocketWrapper';
 
 const vus = 300;
 export const options = {
-  vus: vus * 3,
-  duration: `2h`,
-  // scenarios: {
-  //   contacts: {
-  //     executor: `ramping-arrival-rate`,
-  //     startRate: 60 * 2,
-  //     timeUnit: `1m`,
-  //     preAllocatedVUs: 2,
-  //     maxVUs: 2000,
-  //     stages: [{ target: 300, duration: `1h` }],
-  //   },
-  // },
-  // scenarios: {
-  //   contacts: {
-  //     executor: `ramping-vus`,
-  //     startVUs: 0,
-  //     stages: [
-  //       { duration: `5m`, target: vus * 2 },
-  //       { duration: `2h`, target: vus * 3 },
-  //       { duration: `10m`, target: vus },
-  //     ],
-  //   },
-  // },
+  // vus: vus * 3,
+  // duration: `2h`,
+  scenarios: {
+    matchTest: {
+      executor: `ramping-vus`,
+      startVUs: 0,
+      stages: [
+        // { duration: `5m`, target: vus * 2 },
+        // { duration: `2h`, target: vus * 3 },
+        // { duration: `10m`, target: vus },
+        { duration: `5m`, target: 20 },
+        { duration: `2h`, target: 20 },
+        { duration: `10m`, target: 20 },
+      ],
+    },
+    longConnection: {
+      executor: `ramping-vus`,
+      startVUs: 0,
+      stages: [
+        { duration: `2m`, target: vus * 3 },
+        { duration: `2h`, target: vus * 4 },
+        { duration: `10m`, target: vus },
+      ],
+      exec: `longConnection`,
+    },
+  },
 };
 
 const ready_waiting_time = new Trend(`ready_waiting_time`, true);
@@ -48,10 +51,7 @@ export default function (): void {
   //   : `34.27.73.223`;
 
   const secure = false;
-
   const domain = __ENV.HOST || `34.69.116.114:80`; // `localhost:8080`
-
-  // const sid = makeConnection(domain, secure);
 
   // Let's do some websockets
   const url = `${
@@ -120,6 +120,7 @@ export default function (): void {
     });
 
     socket.on(`error`, function (e) {
+      // check(false, { 'there was an error': (r) => r });
       console.log(`error`, JSON.stringify(e));
       if (e.error() != `websocket: close sent`) {
         console.log(`An unexpected error occured: `, e.error());
@@ -132,8 +133,57 @@ export default function (): void {
 
     socket.setTimeout(function () {
       socket.close();
-    }, 1000 * 40);
+    }, 1000 * 60 * 2);
   });
 
   check(response, { 'status is 101': (r) => r && r.status === 101 });
+}
+
+export function longConnection(): void {
+  /*
+  connect for a long time and send pings.3
+  */
+  const secure = false;
+  const domain = __ENV.HOST || `34.69.116.114:80`; // `localhost:8080`
+
+  // Let's do some websockets
+  const url = `${
+    secure ? `wss` : `ws`
+  }://${domain}/socket.io/?EIO=4&transport=websocket`;
+
+  const response = ws.connect(url, {}, function (socket) {
+    const socketWrapper = new SocketWrapper(socket);
+
+    socketWrapper.setEventMessageHandle(`myping`, (msg: any, callback) => {
+      if (callback) callback(`k6 myping ack`);
+    });
+
+    socketWrapper.setOnConnect(() => {
+      sleep(2);
+
+      socket.setInterval(() => {
+        console.log(`hi`);
+        socketWrapper!.sendWithAck(
+          `myping`,
+          { test: `looking for ack` },
+          90000,
+          (isSuccess: boolean, elapsed: number, data: any) => {
+            check(isSuccess, { 'longConnection ping': (r) => r });
+          },
+        );
+      }, 10000);
+    });
+
+    socket.on(`open`, () => {
+      socket.send(`40`);
+    });
+
+    socket.setTimeout(function () {
+      socket.close();
+    }, 1000 * 40);
+  });
+
+  check(response, {
+    'longConnection status is 101': (r) => r && r.status === 101,
+  });
 }
