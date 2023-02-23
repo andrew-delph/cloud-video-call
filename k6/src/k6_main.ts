@@ -12,7 +12,7 @@ import { SocketWrapper } from '../libs/SocketWrapper';
 const vus = 300;
 export const options = {
   vus: vus * 3,
-  duration: `10m`,
+  duration: `2h`,
   // scenarios: {
   //   contacts: {
   //     executor: `ramping-arrival-rate`,
