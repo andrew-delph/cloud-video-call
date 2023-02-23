@@ -13,13 +13,13 @@ export const options = {
   // duration: `10s`,
 };
 
-export default function () {
-  const secure = false;
-  const domain = __ENV.HOST || `localhost:8888`;
-  const url = `${
-    secure ? `wss` : `ws`
-  }://${domain}/socket.io/?EIO=4&transport=websocket`;
+const secure = false;
+const domain = __ENV.HOST || `localhost:8888`;
+const url = `${
+  secure ? `wss` : `ws`
+}://${domain}/socket.io/?EIO=4&transport=websocket`;
 
+export default function () {
   console.log(`url ${url}`);
 
   const socket = new WebSocketWrapper(url);
@@ -27,21 +27,21 @@ export default function () {
   socket.setOnConnect(() => {
     console.log(`connected`);
     socket
-      .sendWithAck(`myping`, {}, 1000)
+      .expectMessage(`established`, 5000)
+      .then(() => {
+        return socket.sendWithAck(`myping`, {}, 1000);
+      })
       .then((data) => {
         console.log(`got ack1:`, data);
         return socket.sendWithAck(`myping`, {}, 1000);
       })
       .then((data) => {
         console.log(`got ack2:`, data);
+        socket.close();
       });
   });
 
   socket.listen();
-
-  setTimeout(() => {
-    socket.close();
-  }, 5000);
 
   // console.log(`ws: ${Object.keys(socket)}`);
   // console.log(`readyState: ${socket.readyState}`);

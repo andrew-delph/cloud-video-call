@@ -91,20 +91,27 @@ export class WebSocketWrapper {
     this.eventMessageHandleMap[event] = handler;
   }
 
-  listen(event, timeout, handler) {
+  expectMessage(event, timeout) {
     const startTime = Date.now();
-
     const waitingEventId = uuid();
+    const wrapper = this;
 
-    const eventMessageHandle = (data, callback) => {
-      const elapsed = Date.now() - startTime;
-      const isSuccess = elapsed < timeout;
-      delete this.waitingEventMap[waitingEventId];
-      handler(isSuccess, elapsed, data, callback);
-    };
+    return new Promise(function (resolve, reject) {
+      wrapper.waitingEventMap[waitingEventId] = reject;
 
-    this.waitingEventMap[waitingEventId] = handler;
-    this.eventMessageHandleMap[event] = eventMessageHandle;
+      const eventMessageHandle = (data, callback) => {
+        const elapsed = Date.now() - startTime;
+        const isSuccess = elapsed < timeout;
+        delete wrapper.waitingEventMap[waitingEventId];
+
+        if (isSuccess) {
+          resolve({ data, callback });
+        } else {
+          reject(`timeout reached`);
+        }
+      };
+      wrapper.eventMessageHandleMap[event] = eventMessageHandle;
+    });
   }
 
   send(event, data, callback) {
@@ -131,16 +138,17 @@ export class WebSocketWrapper {
 
     const wrapper = this;
 
-    return new Promise(function (myResolve, myReject) {
+    return new Promise(function (resolve, reject) {
+      wrapper.waitingEventMap[waitingEventId] = reject;
       wrapper.send(event, data, (callbackData) => {
         const elapsed = Date.now() - startTime;
         const isSuccess = elapsed < timeout;
         delete wrapper.waitingEventMap[waitingEventId];
 
         if (isSuccess) {
-          myResolve(callbackData);
+          resolve({ data: callbackData });
         } else {
-          myReject(callbackData);
+          reject(`timeout reached`);
         }
       });
     });
@@ -156,7 +164,7 @@ export class WebSocketWrapper {
 
   failWaitingEvents() {
     for (const waitingEvent of Object.values(this.waitingEventMap)) {
-      waitingEvent(false, 0, `failed wait event.`);
+      waitingEvent(`failed wait event.`);
     }
   }
 }
