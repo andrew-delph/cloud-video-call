@@ -100,7 +100,7 @@ io.on(`connection`, async (socket) => {
     );
 
     if (callback != undefined) {
-      callback();
+      callback(`ready ack`);
     }
   });
 
@@ -157,6 +157,8 @@ io.on(`connection`, async (socket) => {
       }
     },
   );
+
+  socket.emit(`established`, `established ack`);
 });
 
 export const getServer = async (listen: boolean) => {
