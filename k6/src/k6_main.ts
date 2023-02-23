@@ -60,7 +60,7 @@ export default function (): void {
     secure ? `wss` : `ws`
   }://${domain}/socket.io/?EIO=4&transport=websocket`;
 
-  const response = ws.connect(url, {}, function (socket) {
+  const response = ws.connect(url, {}, function (socket: Socket) {
     const socketWrapper = new SocketWrapper(socket);
 
     const readyEvent = () => {

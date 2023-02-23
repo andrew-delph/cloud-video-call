@@ -35,10 +35,6 @@ export default function () {
     console.log(`msg`, e.data);
   });
 
-  socket.on(`open`, () => {
-    console.log(`the open...`);
-  });
-
   socket.addEventListener(`open`, () => {
     socket.send(`40`);
     sleep(2);
