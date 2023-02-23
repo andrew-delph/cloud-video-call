@@ -51,7 +51,7 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: hpa-neo4j-grpc-server
 spec:
-  minReplicas: 3
+  minReplicas: 2
   maxReplicas: 5
   scaleTargetRef:
     apiVersion: apps/v1
