@@ -9,7 +9,7 @@ import { SocketWrapper } from '../libs/SocketWrapper';
 //   duration: `1h`,
 // };
 
-const vus = 300;
+const vus = 500;
 export const options = {
   // vus: vus * 3,
   // duration: `2h`,
@@ -21,7 +21,7 @@ export const options = {
         // { duration: `5m`, target: vus * 2 },
         // { duration: `2h`, target: vus * 3 },
         // { duration: `10m`, target: vus },
-        { duration: `5m`, target: vus },
+        { duration: `5m`, target: vus * 2 },
         { duration: `2h`, target: vus * 2 },
         { duration: `10m`, target: 20 },
       ],
