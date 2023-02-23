@@ -56,7 +56,7 @@ export async function matchConsumer() {
 
   logger.info(`socket io connected`);
 
-  channel.prefetch(1);
+  channel.prefetch(20);
   channel.consume(
     common.matchQueueName,
     async (msg: ConsumeMessage | null) => {

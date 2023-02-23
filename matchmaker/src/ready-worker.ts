@@ -58,7 +58,7 @@ export const startReadyConsumer = async () => {
 
   await subRedisClient.psubscribe(`${matchmakerChannelPrefix}*`);
 
-  rabbitChannel.prefetch(1);
+  rabbitChannel.prefetch(20);
   logger.info(` [x] Awaiting RPC requests`);
 
   rabbitChannel.consume(
