@@ -28,7 +28,7 @@ import { connect, Channel, ConsumeMessage } from 'amqplib';
 
 dotenv.config();
 
-const matchTimeout = 50000;
+const matchTimeout = 5000;
 
 let pubRedisClient: Client;
 let subRedisClient: Client;

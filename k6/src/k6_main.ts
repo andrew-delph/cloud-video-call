@@ -9,7 +9,7 @@ import { SocketWrapper } from '../libs/SocketWrapper';
 //   duration: `1h`,
 // };
 
-const vus = 200;
+const vus = 500;
 export const options = {
   // vus: vus,
   // duration: `2h`,
@@ -28,9 +28,9 @@ export const options = {
       executor: `ramping-vus`,
       startVUs: 0,
       stages: [
-        { duration: `10m`, target: vus },
-        { duration: `20m`, target: vus * 2 },
+        { duration: `3m`, target: vus * 2 },
         { duration: `20m`, target: vus * 3 },
+        { duration: `10m`, target: vus },
       ],
     },
   },
