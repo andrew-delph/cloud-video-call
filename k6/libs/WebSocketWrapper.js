@@ -105,7 +105,7 @@ export class WebSocketWrapper {
         delete wrapper.waitingEventMap[waitingEventId];
 
         if (isSuccess) {
-          resolve({ data, callback });
+          resolve({ data, callback, elapsed });
         } else {
           reject(`timeout reached`);
         }
@@ -146,7 +146,7 @@ export class WebSocketWrapper {
         delete wrapper.waitingEventMap[waitingEventId];
 
         if (isSuccess) {
-          resolve({ data: callbackData });
+          resolve({ data: callbackData, elapsed });
         } else {
           reject(`timeout reached`);
         }
