@@ -25,69 +25,42 @@ export default function () {
 
   console.log(`url ${url}`);
 
-  const ws = new WebSocket(url);
+  const socket = new WebSocket(url);
 
-  ws.addEventListener(`open`, () => {
-    console.log(`error`);
+  socket.addEventListener(`error`, (error) => {
+    console.log(`error:`, error);
   });
 
-  ws.addEventListener(`open`, () => {
-    ws.send(`40`);
+  socket.addEventListener(`message`, (e) => {
+    console.log(`msg`, e.data);
+  });
+
+  socket.on(`open`, () => {
+    console.log(`the open...`);
+  });
+
+  socket.addEventListener(`open`, () => {
+    socket.send(`40`);
     sleep(2);
 
     console.log(`connected`);
 
     // listen for messages/errors and log them into console
-    ws.addEventListener(`message`, (e) => {
-      console.log(e);
-      // const msg = JSON.parse(e.data);
-      // console.log(msg);
-      // if (msg.event === `CHAT_MSG`) {
-      //   console.log(
-      //     `VU ${__VU}:${id} received: ${msg.user} says: ${msg.message}`,
-      //   );
-      // } else if (msg.event === `ERROR`) {
-      //   console.error(`VU ${__VU}:${id} received:: ${msg.message}`);
-      // } else {
-      //   console.log(
-      //     `VU ${__VU}:${id} received unhandled message: ${msg.message}`,
-      //   );
-      // }
-    });
-
-    // send a message every 2-8 seconds
-    // const intervalId = setInterval(() => {
-    //   ws.send(
-    //     JSON.stringify({
-    //       event: `SAY`,
-    //       message: `I'm saying ${randomString(5)}`,
-    //     }),
-    //   );
-    // }, randomIntBetween(2000, 8000)); // say something every 2-8 seconds
-
-    // // after a sessionDuration stop sending messages and leave the room
-    // const timeout1id = setTimeout(function () {
-    //   clearInterval(intervalId);
-    //   console.log(
-    //     `VU ${__VU}:${id}: ${sessionDuration}ms passed, leaving the chat`,
-    //   );
-    //   ws.send(JSON.stringify({ event: `LEAVE` }));
-    // }, sessionDuration);
 
     // // after a sessionDuration + 3s close the connection
     const timeout2id = setTimeout(function () {
       console.log(`Closing the socket forcefully 3s after graceful LEAVE`);
-      ws.close();
-    }, sessionDuration + 3000);
+      socket.close();
+    }, 3000);
 
     // when connection is closing, clean up the previously created timers
-    ws.addEventListener(`close`, () => {
+    socket.addEventListener(`close`, () => {
       // clearTimeout(timeout1id);
       clearTimeout(timeout2id);
-      console.log(`VU ${__VU}:${id}: disconnected`);
+      console.log(`disconnected`, timeout2id);
     });
   });
 
-  console.log(`ws: ${Object.keys(ws)}`);
-  console.log(`readyState: ${ws.readyState}`);
+  console.log(`ws: ${Object.keys(socket)}`);
+  console.log(`readyState: ${socket.readyState}`);
 }

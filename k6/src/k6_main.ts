@@ -11,7 +11,7 @@ import { SocketWrapper } from '../libs/SocketWrapper';
 //   duration: `1h`,
 // };
 
-const vus = 200;
+const vus = 100;
 export const options = {
   // vus: vus * 3,
   // duration: `2h`,
