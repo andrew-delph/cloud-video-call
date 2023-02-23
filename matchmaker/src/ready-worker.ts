@@ -90,7 +90,7 @@ export const startReadyConsumer = async () => {
           // console.log(`RetryError: \t ${socketId} \t ${e.message}`);
 
           // TODO change to delay with rabbitmq
-          await common.delay(5000); // hold 5 seconds before retry
+          // await common.delay(5000); // hold 5 seconds before retry
           rabbitChannel.nack(msg);
         } else {
           logger.error(`Unknown error: ${e}`);
