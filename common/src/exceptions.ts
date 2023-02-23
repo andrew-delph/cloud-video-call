@@ -9,8 +9,7 @@ export const listenGlobalExceptions = () => {
   errorTypes.forEach((type) => {
     process.on(type, async (error) => {
       try {
-        logger.error(`errorTypes: ${type}`);
-        logger.error(error);
+        logger.error(`errorTypes: ${type} error: ${error}`);
         process.exit(0);
       } catch (_) {
         process.exit(1);
@@ -21,8 +20,7 @@ export const listenGlobalExceptions = () => {
   signalTraps.forEach((type) => {
     process.once(type, async (error) => {
       try {
-        logger.error(`signalTraps ${type}`);
-        logger.error(error);
+        logger.error(`signalTraps ${type}  error: ${error}`);
       } finally {
         process.kill(process.pid, type);
       }
