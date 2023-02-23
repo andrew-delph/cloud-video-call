@@ -28,13 +28,13 @@ export const options = {
     },
     longConnection: {
       executor: `ramping-vus`,
+      exec: `longConnection`,
       startVUs: 0,
       stages: [
         { duration: `2m`, target: vus * 3 },
         { duration: `2h`, target: vus * 4 },
         { duration: `10m`, target: vus },
       ],
-      exec: `longConnection`,
     },
   },
 };

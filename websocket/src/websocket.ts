@@ -105,8 +105,11 @@ io.on(`connection`, async (socket) => {
   });
 
   socket.on(`disconnect`, async () => {
+    const duration = performance.now() - start_time;
     logger.debug(
-      `disconnected ${process.env.HOSTNAME} #${io.sockets.sockets.size} duration: ${start_time}`,
+      `disconnected ${process.env.HOSTNAME} #${
+        io.sockets.sockets.size
+      } duration: ${Math.round(duration / 1000)}`,
     );
     mainClient.srem(common.activeSetName, socket.id);
     mainClient.srem(common.readySetName, socket.id);
