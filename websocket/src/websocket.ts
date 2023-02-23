@@ -56,8 +56,9 @@ let pubClient: Client;
 let subClient: Client;
 let mainClient: Client;
 
-app.get(`*`, (req, res) => {
-  res.send(`This is the API server :)`);
+app.get(`/health`, (req, res) => {
+  logger.info(`got health check`);
+  res.send(`Health is good.`);
 });
 
 io.on(`error`, (err) => {
@@ -65,9 +66,7 @@ io.on(`error`, (err) => {
 });
 
 io.on(`connection`, async (socket) => {
-  logger.debug(
-    `connected ${socket.id} ${process.env.HOSTNAME} ${io.sockets.sockets.size}`,
-  );
+  logger.debug(`connected ${process.env.HOSTNAME} ${io.sockets.sockets.size}`);
 
   socket.on(`error`, (err) => {
     logger.error(`socket err`, err);
@@ -104,15 +103,10 @@ io.on(`connection`, async (socket) => {
     }
   });
 
-  // let updateCount = 0;
-  // const myInterval = setInterval(async () => {
-  //   updateCount = updateCount + 1;
-  //   socket.emit("message", `updateCount: ${updateCount}`);
-  // }, 5000);
-
   socket.on(`disconnect`, async () => {
-    // console.log("disconnected");
-    // clearInterval(myInterval);
+    logger.debug(
+      `disconnected ${process.env.HOSTNAME} ${io.sockets.sockets.size}`,
+    );
     mainClient.srem(common.activeSetName, socket.id);
     mainClient.srem(common.readySetName, socket.id);
     pubClient.publish(common.activeCountChannel, `change`);

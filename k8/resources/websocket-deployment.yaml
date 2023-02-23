@@ -18,7 +18,8 @@ spec:
         app: websocket
     spec:
       containers:
-        - env:
+        - name: websocket
+          env:
             - name: FIREBASE_CONFIG
               value: '{"projectId":"react-video-call-thing72","storageBucket":"react-video-call-thing72.appspot.com","locationId":"us-central"}'
             - name: REDIS_HOST
@@ -26,9 +27,14 @@ spec:
             - name: REDIS_PORT
               value: '6379'
           image: andrewdelph/video-call-websocket:latest
-          name: websocket
           ports:
             - containerPort: 4000
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4000
+            initialDelaySeconds: 10
+            periodSeconds: 10
           resources:
             # requests:
             #   cpu: '512m'
