@@ -65,6 +65,10 @@ io.on(`error`, (err) => {
 });
 
 io.on(`connection`, async (socket) => {
+  logger.debug(
+    `connected ${socket.id} ${process.env.HOSTNAME} ${io.sockets.sockets.size}`,
+  );
+
   socket.on(`error`, (err) => {
     logger.error(`socket err`, err);
   });

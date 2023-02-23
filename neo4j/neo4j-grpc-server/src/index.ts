@@ -11,10 +11,13 @@ import {
 
 import * as neo4j from 'neo4j-driver';
 import * as common from 'react-video-call-common';
-
-const logger = common.getLogger();
+import { v4 } from 'uuid';
 
 common.listenGlobalExceptions();
+
+const serverID = v4();
+
+const logger = common.getLogger();
 
 const driver = neo4j.driver(
   `neo4j://neo4j:7687`,
@@ -65,7 +68,9 @@ const createUser = async (
   if (duration > durationWarn) {
     logger.warn(`createUser duration: \t ${duration}s`);
   } else {
-    logger.debug(`createUser duration: \t ${duration}s`);
+    logger.debug(
+      `createUser duration: \t ${duration}s hostname: ${process.env.HOSTNAME}`,
+    );
   }
 
   callback(null, reply);
