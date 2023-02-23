@@ -12,25 +12,36 @@ console.log(`Hi`);
 const chatRoomName = `publicRoom`; // choose any chat room name
 const sessionDuration = 60000; // user session between 5s and 1m
 
+export const options = {
+  // vus: 3,
+  // duration: `10s`,
+};
 export default function () {
   const secure = false;
-  const domain = __ENV.HOST || `localhost:8080`;
+  const domain = __ENV.HOST || `localhost:8888`;
   const url = `${
     secure ? `wss` : `ws`
   }://${domain}/socket.io/?EIO=4&transport=websocket`;
 
+  console.log(`url ${url}`);
+
   const ws = new WebSocket(url);
 
-  ws.addEventListener(EventName.Open, () => {
+  ws.addEventListener(`open`, () => {
+    console.log(`error`);
+  });
+
+  ws.addEventListener(`open`, () => {
     ws.send(`40`);
     sleep(2);
 
     console.log(`connected`);
 
     // listen for messages/errors and log them into console
-    ws.addEventListener(EventName.Message, (e: any) => {
-      const msg = JSON.parse(e.data);
-      console.log(msg);
+    ws.addEventListener(`message`, (e) => {
+      console.log(e);
+      // const msg = JSON.parse(e.data);
+      // console.log(msg);
       // if (msg.event === `CHAT_MSG`) {
       //   console.log(
       //     `VU ${__VU}:${id} received: ${msg.user} says: ${msg.message}`,
@@ -70,10 +81,13 @@ export default function () {
     }, sessionDuration + 3000);
 
     // when connection is closing, clean up the previously created timers
-    ws.addEventListener(EventName.Close, () => {
+    ws.addEventListener(`close`, () => {
       // clearTimeout(timeout1id);
       clearTimeout(timeout2id);
       console.log(`VU ${__VU}:${id}: disconnected`);
     });
   });
+
+  console.log(`ws: ${Object.keys(ws)}`);
+  console.log(`readyState: ${ws.readyState}`);
 }

@@ -1,6 +1,6 @@
 
 pnginx:
-	kubectl port-forward deployment/nginx 8080:80
+	kubectl port-forward deployment/nginx 8888:80
 
 pneo4j:
 	kubectl port-forward svc/neo4j tcp-bolt tcp-http tcp-https
