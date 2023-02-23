@@ -9,10 +9,10 @@ import { SocketWrapper } from '../libs/SocketWrapper';
 //   duration: `1h`,
 // };
 
-const vus = 300;
+const vus = 200;
 export const options = {
-  vus: vus,
-  duration: `2h`,
+  // vus: vus,
+  // duration: `2h`,
   // scenarios: {
   //   contacts: {
   //     executor: `ramping-arrival-rate`,
@@ -23,16 +23,17 @@ export const options = {
   //     stages: [{ target: 300, duration: `1h` }],
   //   },
   // },
-  // scenarios: {
-  //   contacts: {
-  //     executor: `ramping-vus`,
-  //     startVUs: 0,
-  //     stages: [
-  //       { duration: `1m`, target: vus },
-  //       { duration: `2h`, target: vus },
-  //     ],
-  //   },
-  // },
+  scenarios: {
+    contacts: {
+      executor: `ramping-vus`,
+      startVUs: 0,
+      stages: [
+        { duration: `10m`, target: vus },
+        { duration: `20m`, target: vus * 2 },
+        { duration: `20m`, target: vus * 3 },
+      ],
+    },
+  },
 };
 
 const ready_waiting_time = new Trend(`ready_waiting_time`, true);

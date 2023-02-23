@@ -3,14 +3,14 @@ prometheus:
   port: 9090
 rules:
   custom:
-    - seriesQuery: 'rabbitmq_queue_messages'
+    - seriesQuery: 'rabbitmq_queue_messages_ready'
       name:
         matches: ''
         as: 'readyQueue'
       resources:
         template: <<.Resource>>
       metricsQuery: avg_over_time( sum(<<.Series>>{queue="readyQueue"}) by (<<.GroupBy>>) [1m:])
-    - seriesQuery: 'rabbitmq_queue_messages'
+    - seriesQuery: 'rabbitmq_queue_messages_ready'
       name:
         matches: ''
         as: 'matchQueue'
