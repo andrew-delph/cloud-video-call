@@ -6,12 +6,12 @@ import { sleep } from 'k6';
 
 export class WebSocketWrapper {
   socket;
+
   callbackCount = 0;
   ackCallbackMap = {};
   connected = false;
-  onConnect;
+  onConnect = false;
   eventMessageHandleMap = {};
-
   waitingEventMap = {};
 
   constructor(url) {

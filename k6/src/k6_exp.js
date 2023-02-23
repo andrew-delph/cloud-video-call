@@ -23,26 +23,29 @@ export default function () {
   console.log(`url ${url}`);
 
   const socket = new WebSocketWrapper(url);
+  let expectMatch;
 
   socket.setOnConnect(() => {
     console.log(`connected`);
     socket
       .expectMessage(`established`, 5000)
-      .then(() => {
+      .then((data) => {
+        console.log(`established data:`, data);
         return socket.sendWithAck(`myping`, {}, 1000);
       })
       .then((data) => {
-        console.log(`got ack1:`, data);
-        return socket.sendWithAck(`myping`, {}, 1000);
+        expectMatch = socket.expectMessage(`match`, 10000);
+        return socket.sendWithAck(`ready`, {}, 1000);
       })
       .then((data) => {
-        console.log(`got ack2:`, data);
+        console.log(`ready data:`, data);
+        return expectMatch;
+      })
+      .then((data) => {
+        console.log(`match data:`, data);
         socket.close();
       });
   });
 
   socket.listen();
-
-  // console.log(`ws: ${Object.keys(socket)}`);
-  // console.log(`readyState: ${socket.readyState}`);
 }
