@@ -15,7 +15,6 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.network/react-video-call-default: 'true'
         app: websocket
     spec:
       containers:
