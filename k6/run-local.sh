@@ -11,4 +11,4 @@ IMAGE_NAME=${IMAGE_NAME:="andrewdelph/k6-tests:latest"}
 
 echo $PWD
 
-docker run --network=host -v $PWD:/scripts -it --rm $IMAGE_NAME run /scripts/$1 --no-summary
+docker run --network=host -v $PWD:/scripts -it --rm $IMAGE_NAME run /scripts/$1

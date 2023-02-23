@@ -3,6 +3,12 @@ import { responseCode, responseType } from './constants';
 import { checkResponse, getArrayFromRequest, getCallbackId } from './socket.io';
 import { uuidv4 as uuid } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { sleep } from 'k6';
+import {
+  setTimeout,
+  clearTimeout,
+  setInterval,
+  clearInterval,
+} from 'k6/experimental/timers';
 
 export class WebSocketWrapper {
   socket;
@@ -14,16 +20,21 @@ export class WebSocketWrapper {
   eventMessageHandleMap = {};
   waitingEventMap = {};
 
-  constructor(url) {
+  constructor(url, max_time = null) {
     this.socket = new WebSocket(url);
     this.socket.addEventListener(`message`, (msg) => {
       this.handleMessage(msg.data);
     });
-    this.socket.addEventListener(`error`, (error) => {
-      console.error(`socket wrapper:`, error);
-    });
+    let max_time_timeout;
+
+    if (max_time != null) {
+      max_time_timeout = setTimeout(() => {
+        this.close();
+      }, max_time);
+    }
     this.socket.addEventListener(`close`, () => {
-      console.log(`socket wrapper:`, `closed`);
+      clearInterval(max_time_timeout);
+      this.failWaitingEvents();
     });
   }
 
@@ -37,6 +48,10 @@ export class WebSocketWrapper {
 
   setOnConnect(callback) {
     this.onConnect = callback;
+  }
+
+  setOnError(callback) {
+    this.socket.addEventListener(`error`, callback);
   }
 
   handleMessage(msg) {
