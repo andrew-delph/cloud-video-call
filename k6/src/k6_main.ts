@@ -21,8 +21,8 @@ export const options = {
         // { duration: `5m`, target: vus * 2 },
         // { duration: `2h`, target: vus * 3 },
         // { duration: `10m`, target: vus },
-        { duration: `5m`, target: 20 },
-        { duration: `2h`, target: 20 },
+        { duration: `5m`, target: vus },
+        { duration: `2h`, target: vus * 2 },
         { duration: `10m`, target: 20 },
       ],
     },
@@ -184,6 +184,6 @@ export function longConnection(): void {
   });
 
   check(response, {
-    'longConnection status is 101': (r) => r && r.status === 101,
+    'status is 101': (r) => r && r.status === 101,
   });
 }
