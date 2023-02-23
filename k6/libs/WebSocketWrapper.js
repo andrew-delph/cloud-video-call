@@ -2,6 +2,7 @@ import { EventName, WebSocket } from 'k6/experimental/websockets';
 import { responseCode, responseType } from './constants';
 import { checkResponse, getArrayFromRequest, getCallbackId } from './socket.io';
 import { uuidv4 as uuid } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
+import { sleep } from 'k6';
 
 export class WebSocketWrapper {
   socket;
@@ -13,12 +14,25 @@ export class WebSocketWrapper {
 
   waitingEventMap = {};
 
-  constructor(socket) {
-    this.socket = socket;
-
-    socket.addEventListener(`message`, (msg) => {
-      this.handleMessage(msg);
+  constructor(url) {
+    this.socket = new WebSocket(url);
+    this.socket.addEventListener(`message`, (msg) => {
+      this.handleMessage(msg.data);
     });
+    this.socket.addEventListener(`error`, (error) => {
+      console.error(`socket wrapper:`, error);
+    });
+    this.socket.addEventListener(`close`, () => {
+      console.log(`socket wrapper:`, `closed`);
+    });
+  }
+
+  listen() {
+    this.socket.addEventListener(`open`, () => {});
+  }
+
+  close() {
+    this.socket.close();
   }
 
   setOnConnect(callback) {
@@ -30,7 +44,10 @@ export class WebSocketWrapper {
     const type = response.type;
     const code = response.code;
 
-    if (type !== responseType.message) return;
+    if (type == responseType.open) {
+      this.socket.send(`40`);
+      return;
+    }
 
     switch (code) {
       case responseCode.connect: {
@@ -87,7 +104,6 @@ export class WebSocketWrapper {
     };
 
     this.waitingEventMap[waitingEventId] = handler;
-
     this.eventMessageHandleMap[event] = eventMessageHandle;
   }
 
@@ -111,16 +127,13 @@ export class WebSocketWrapper {
 
   sendWithAck(event, data, timeout, callback) {
     const startTime = Date.now();
-
     const waitingEventId = uuid();
-
     this.send(event, data, (callbackData) => {
       const elapsed = Date.now() - startTime;
       const isSuccess = elapsed < timeout;
       delete this.waitingEventMap[waitingEventId];
       callback(isSuccess, elapsed, callbackData);
     });
-
     this.waitingEventMap[waitingEventId] = callback;
   }
 

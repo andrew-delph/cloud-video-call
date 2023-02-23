@@ -6,16 +6,13 @@ import {
   clearInterval,
 } from 'k6/experimental/timers';
 import { sleep } from 'k6';
-
-console.log(`Hi`);
-
-const chatRoomName = `publicRoom`; // choose any chat room name
-const sessionDuration = 60000; // user session between 5s and 1m
+import { WebSocketWrapper } from '../libs/WebSocketWrapper';
 
 export const options = {
   // vus: 3,
   // duration: `10s`,
 };
+
 export default function () {
   const secure = false;
   const domain = __ENV.HOST || `localhost:8888`;
@@ -25,38 +22,25 @@ export default function () {
 
   console.log(`url ${url}`);
 
-  const socket = new WebSocket(url);
+  const socket = new WebSocketWrapper(url);
 
-  socket.addEventListener(`error`, (error) => {
-    console.log(`error:`, error);
+  socket.setEventMessageHandle(`message`, (msg) => {
+    console.log(`message`, msg);
   });
 
-  socket.addEventListener(`message`, (e) => {
-    console.log(`msg`, e.data);
-  });
-
-  socket.addEventListener(`open`, () => {
-    socket.send(`40`);
-    sleep(2);
-
+  socket.setOnConnect(() => {
     console.log(`connected`);
-
-    // listen for messages/errors and log them into console
-
-    // // after a sessionDuration + 3s close the connection
-    const timeout2id = setTimeout(function () {
-      console.log(`Closing the socket forcefully 3s after graceful LEAVE`);
-      socket.close();
-    }, 3000);
-
-    // when connection is closing, clean up the previously created timers
-    socket.addEventListener(`close`, () => {
-      // clearTimeout(timeout1id);
-      clearTimeout(timeout2id);
-      console.log(`disconnected`, timeout2id);
+    socket.sendWithAck(`myping`, {}, 1000, (...args) => {
+      console.log(`got the ping`, args);
     });
   });
 
-  console.log(`ws: ${Object.keys(socket)}`);
-  console.log(`readyState: ${socket.readyState}`);
+  socket.listen();
+
+  setTimeout(() => {
+    socket.close();
+  }, 5000);
+
+  // console.log(`ws: ${Object.keys(socket)}`);
+  // console.log(`readyState: ${socket.readyState}`);
 }
