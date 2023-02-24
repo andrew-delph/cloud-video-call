@@ -4,29 +4,29 @@ import { randomString } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
 const vus = 500;
 export const options = {
-  vus: 10,
-  duration: `20s`,
-  // scenarios: {
-  //   matchTest: {
-  //     executor: `ramping-vus`,
-  //     startVUs: 0,
-  //     stages: [
-  //       { duration: `3m`, target: vus * 2 },
-  //       { duration: `5m`, target: vus * 3 },
-  //       { duration: `10m`, target: vus * 4 },
-  //     ],
-  //   },
-  //   // longConnection: {
-  //   //   executor: `ramping-vus`,
-  //   //   exec: `longConnection`,
-  //   //   startVUs: 0,
-  //   //   stages: [
-  //   //     { duration: `2m`, target: vus * 3 },
-  //   //     { duration: `2h`, target: vus * 4 },
-  //   //     { duration: `10m`, target: vus },
-  //   //   ],
-  //   // },
-  // },
+  // vus: 10,
+  // duration: `20s`,
+  scenarios: {
+    matchTest: {
+      executor: `ramping-vus`,
+      startVUs: 0,
+      stages: [
+        { duration: `3m`, target: vus * 2 },
+        { duration: `5m`, target: vus * 3 },
+        { duration: `10m`, target: vus * 4 },
+      ],
+    },
+    // longConnection: {
+    //   executor: `ramping-vus`,
+    //   exec: `longConnection`,
+    //   startVUs: 0,
+    //   stages: [
+    //     { duration: `2m`, target: vus * 3 },
+    //     { duration: `2h`, target: vus * 4 },
+    //     { duration: `10m`, target: vus },
+    //   ],
+    // },
+  },
 };
 
 const established_elapsed = new Trend(`established_elapsed`, true);
@@ -47,7 +47,7 @@ export default function () {
     secure ? `wss` : `ws`
   }://${domain}/socket.io/?EIO=4&transport=websocket`;
 
-  const auth = randomString(5);
+  const auth = randomString(10);
   url = url + `&auth=${auth}`;
 
   const socket = new K6SocketIoExp(url);

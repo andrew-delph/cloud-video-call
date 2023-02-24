@@ -7,8 +7,9 @@ import { check } from 'k6';
 export abstract class K6SocketIoBase {
   socket: any;
 
-  callbackCount = 0;
   connected = false;
+  hasError = false;
+  callbackCount = 0;
   onConnect: (() => void) | undefined;
   ackCallbackMap: Record<string, (data: any) => void> = {};
   eventMessageHandleMap: Record<
@@ -38,6 +39,9 @@ export abstract class K6SocketIoBase {
     this.on(`message`, (msg) => {
       this.handleMessage(this.parseMessage(msg));
     });
+    this.on(`error`, (msg) => {
+      this.hasError = true;
+    });
     let max_time_timeout: number;
     if (this.max_time != 0) {
       max_time_timeout = setTimeout(() => {
@@ -48,6 +52,7 @@ export abstract class K6SocketIoBase {
       clearTimeout(max_time_timeout);
       this.failWaitingEvents();
       check(this.connected, { connected: (r) => r });
+      check(this.hasError, { hasError: (r) => !r });
     });
   }
 
