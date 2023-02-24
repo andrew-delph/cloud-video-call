@@ -27,6 +27,10 @@ export default function () {
 
   socket.setOnConnect(() => {
     let expectMatch: any;
+
+    socket.on(`error`, () => {
+      error_counter.add(1);
+    });
     socket
       .expectMessage(`established`)
       .catch((error) => {
@@ -61,9 +65,6 @@ export default function () {
         match_success.add(true);
         match_elapsed.add(data.elapsed);
         success_counter.add(1);
-      })
-      .catch(() => {
-        error_counter.add(1);
       })
       .finally(() => {
         socket.close();

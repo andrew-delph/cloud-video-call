@@ -44,11 +44,6 @@ export abstract class K6SocketIoBase {
         this.close();
       }, this.max_time);
     }
-    this.on(`error`, (error) => {
-      console.log(`error.`);
-      check(false, { error: (r) => r });
-      this.socket.close();
-    });
     this.on(`close`, () => {
       clearTimeout(max_time_timeout);
       this.failWaitingEvents();
