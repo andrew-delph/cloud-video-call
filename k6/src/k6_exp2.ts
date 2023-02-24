@@ -1,6 +1,7 @@
 import { check, sleep } from 'k6';
 import { Counter, Rate, Trend } from 'k6/metrics';
 import { K6SocketIoExp } from '../libs/K6SocketIoExp';
+import { WebSocketWrapper } from '../libs/old/WebSocketWrapper';
 
 export const options = {
   vus: 1,
@@ -25,13 +26,13 @@ export default function () {
   const url = `${
     secure ? `wss` : `ws`
   }://${domain}/socket.io/?EIO=4&transport=websocket`;
-  const socket = new K6SocketIoExp(url);
+  const socket = new WebSocketWrapper(url);
 
   console.log(`starting`);
 
   socket.setOnConnect(() => {
     console.log(`CONNECTED!!!`);
-    let expectMatch: any;
+    let expectMatch: any = false;
     socket
       .expectMessage(`established`)
       .catch((error) => {
@@ -39,9 +40,11 @@ export default function () {
         return Promise.reject(error);
       })
       .then((data: any) => {
+        console.log(`got established`);
         established_success.add(true);
         established_elapsed.add(data.elapsed);
         expectMatch = socket.expectMessage(`match`);
+        console.log(`expectMatch`, expectMatch);
         return socket.sendWithAck(`ready`, {});
       })
       .catch((error) => {
@@ -49,8 +52,10 @@ export default function () {
         return Promise.reject(error);
       })
       .then((data: any) => {
+        console.log(`got ready`);
         ready_success.add(true);
         ready_elapsed.add(data.elapsed);
+        console.log(`expectMatch`, expectMatch);
         return expectMatch;
       })
       .catch((error) => {
@@ -74,5 +79,5 @@ export default function () {
         socket.close();
       });
   });
-  socket.connect();
+  socket.listen();
 }

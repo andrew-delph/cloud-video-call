@@ -41,7 +41,7 @@ export class WebSocketWrapper {
       this.socket.close();
     });
     this.socket.addEventListener(`close`, () => {
-      clearInterval(max_time_timeout);
+      clearTimeout(max_time_timeout);
       this.failWaitingEvents();
     });
   }

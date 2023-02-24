@@ -20,8 +20,8 @@ const match_success = new Rate(`match_success`);
 const error_counter = new Counter(`error_counter`);
 
 export const options = {
-  vus: 200,
-  duration: `2m`,
+  vus: 15,
+  duration: `10s`,
   // thresholds: {
   //   established_success: [`rate>0.95`],
   //   ready_success: [`rate>0.95`],
@@ -43,7 +43,7 @@ export default function () {
 }
 
 const matchflowWorker = () => {
-  const socket = new WebSocketWrapper(url, 10000);
+  const socket = new WebSocketWrapper(url);
   let expectMatch;
 
   socket.setOnConnect(() => {
@@ -53,10 +53,10 @@ const matchflowWorker = () => {
     // }
 
     let ping: Promise<unknown>;
-
     socket
       .expectMessage(`established`)
       .then((data) => {
+        console.log(`got established`);
         // ping = socket.sendWithAck(`myping`, `ping2`);
         return socket.sendWithAck(`myping`, `ping1`);
       })
