@@ -26,7 +26,7 @@ export abstract class K6SocketIoBase {
     this.max_time = max_time;
   }
 
-  connect(callback: void): void {
+  socketSetup(callback: void): void {
     this.on(`message`, (msg) => {
       this.handleMessage(msg.data);
     });
