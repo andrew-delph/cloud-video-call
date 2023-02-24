@@ -13,13 +13,12 @@ export default function () {
     secure ? `wss` : `ws`
   }://${domain}/socket.io/?EIO=4&transport=websocket`;
   const socket = new K6SocketIoMain(url);
+
   socket.setOnConnect(() => {
-    console.log(`connected`);
     socket
       .expectMessage(`established`)
       .then((data) => {
         console.log(`established!!`);
-        // ping = socket.sendWithAck(`myping`, `ping2`);
         return socket.sendWithAck(`myping`, `ping1`);
       })
       .then((data: any) => {
@@ -38,5 +37,4 @@ export default function () {
       });
   });
   socket.connect();
-  console.log(`DONE`);
 }

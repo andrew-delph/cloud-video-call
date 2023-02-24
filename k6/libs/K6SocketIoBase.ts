@@ -44,7 +44,6 @@ export abstract class K6SocketIoBase {
       }, this.max_time);
     }
     this.on(`error`, (error) => {
-      console.log(`error:`, error);
       this.socket.close();
     });
     this.on(`close`, () => {
@@ -75,14 +74,12 @@ export abstract class K6SocketIoBase {
     const code = response.code;
 
     if (type == responseType.open) {
-      console.log(`send 40`);
       this.socket.send(`40`);
       return;
     }
 
     switch (code) {
       case responseCode.connect: {
-        console.log(`connected response`);
         if (this.onConnect != null) this.onConnect();
         this.connected = true;
         break;
@@ -101,7 +98,6 @@ export abstract class K6SocketIoBase {
         const msgObject = getArrayFromRequest(msg);
         const event = msgObject[0];
         const message = msgObject[1];
-        console.log(`got event`, event);
 
         const callbackId = getCallbackId(msg);
         const callback = !Number.isNaN(callbackId)
@@ -112,11 +108,10 @@ export abstract class K6SocketIoBase {
 
         const eventMessageHandle = this.eventMessageHandleMap[event];
         if (eventMessageHandle != undefined) {
-          console.log(`eventMessageHandle`, event);
           eventMessageHandle(message, callback);
         } else {
           if (event == `message` || event == `activeCount`) break;
-          console.log(`no eventMessageHandle:`, event);
+          console.debug(`no eventMessageHandle:`, event);
         }
         break;
       }
@@ -160,19 +155,15 @@ export abstract class K6SocketIoBase {
 
     return new Promise((resolve, reject) => {
       wrapper.waitingEventMap[waitingEventId] = reject;
-      console.log(`the resolve`, resolve);
 
       const eventMessageHandle = (data: any, callback: any) => {
-        console.log(`eventMessageHandle INSIDE`);
         const elapsed = Date.now() - startTime;
         const isSuccess = elapsed < timeout;
         delete wrapper.waitingEventMap[waitingEventId];
 
         if (isSuccess || timeout == 0) {
-          console.log(`resolve...`, resolve);
           resolve({ data, callback, elapsed });
         } else {
-          console.log(`reject`);
           reject(`timeout reached for ${event}`);
         }
       };
