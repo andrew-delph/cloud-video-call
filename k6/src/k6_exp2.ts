@@ -4,7 +4,7 @@ import { K6SocketIoExp } from '../libs/K6SocketIoExp';
 import { WebSocketWrapper } from '../libs/old/WebSocketWrapper';
 
 export const options = {
-  vus: 1,
+  vus: 200,
   duration: `10s`,
 };
 
@@ -17,7 +17,6 @@ const ready_success = new Rate(`ready_success`);
 const match_success = new Rate(`match_success`);
 
 const error_counter = new Counter(`error_counter`);
-
 const success_counter = new Counter(`success_counter`);
 
 export default function () {
@@ -29,7 +28,7 @@ export default function () {
   const socket = new K6SocketIoExp(url);
 
   socket.setOnConnect(() => {
-    let expectMatch: any = false;
+    let expectMatch: any;
     socket
       .expectMessage(`established`)
       .catch((error) => {
@@ -39,19 +38,36 @@ export default function () {
       .then((data: any) => {
         established_success.add(true);
         established_elapsed.add(data.elapsed);
-        return socket.sendWithAck(`ready`, {});
+
+        expectMatch = socket.expectMessage(`match`);
+        const readyPromise = socket.sendWithAck(`ready`, {});
+        return readyPromise;
       })
       .catch((error) => {
         ready_success.add(false);
         return Promise.reject(error);
       })
       .then((data: any) => {
-        console.log(`got ready`);
         ready_success.add(true);
         ready_elapsed.add(data.elapsed);
+        return expectMatch;
+      })
+      .catch((error) => {
+        match_success.add(false);
+        return Promise.reject(error);
+      })
+      .then((data: any) => {
+        if (typeof data.callback === `function`) {
+          data.callback(`ok`);
+        }
+        match_success.add(true);
+        match_elapsed.add(data.elapsed);
+        success_counter.add(1);
+      })
+      .catch(() => {
+        error_counter.add(1);
       })
       .finally(() => {
-        console.log(`finally`);
         socket.close();
       });
   });

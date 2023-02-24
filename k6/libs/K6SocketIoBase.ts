@@ -50,7 +50,6 @@ export abstract class K6SocketIoBase {
       this.socket.close();
     });
     this.on(`close`, () => {
-      console.log(`close...`);
       clearTimeout(max_time_timeout);
       this.failWaitingEvents();
     });
@@ -84,7 +83,6 @@ export abstract class K6SocketIoBase {
 
     switch (code) {
       case responseCode.connect: {
-        console.log(`connect...`);
         if (this.onConnect != null) this.onConnect();
         this.connected = true;
         break;
@@ -103,14 +101,13 @@ export abstract class K6SocketIoBase {
         const msgObject = getArrayFromRequest(msg);
         const event = msgObject[0];
         const message = msgObject[1];
-
         const callbackId = getCallbackId(msg);
+
         const callback = !Number.isNaN(callbackId)
           ? (data: any) => {
               this.sendAck(callbackId, data);
             }
           : undefined;
-
         const eventMessageHandle = this.eventMessageHandleMap[event];
         if (eventMessageHandle != undefined) {
           eventMessageHandle(message, callback);
