@@ -18,12 +18,15 @@ export abstract class K6SocketIoBase {
   url: string;
   max_time: number;
 
-  constructor(url: string, max_time: number = 0) {
+  params: any;
+
+  constructor(url: string, params: any = {}, max_time: number = 0) {
     this.url = url;
+    this.params = params;
     this.max_time = max_time;
   }
 
-  connect(): void {
+  connect(callback: void): void {
     this.on(`message`, (msg) => {
       this.handleMessage(msg.data);
     });
