@@ -32,7 +32,8 @@ export class WebSocketWrapper {
         this.close();
       }, max_time);
     }
-    this.socket.addEventListener(`error`, () => {
+    this.socket.addEventListener(`error`, (error) => {
+      console.log(`error:`, error);
       this.socket.close();
     });
     this.socket.addEventListener(`close`, () => {
@@ -98,7 +99,8 @@ export class WebSocketWrapper {
         if (eventMessageHandle != undefined) {
           eventMessageHandle(message, callback);
         } else {
-          console.debug(`no eventMessageHandle:`, event);
+          if (event == `message` || event == `activeCount`) break;
+          console.log(`no eventMessageHandle:`, event);
         }
         break;
       }

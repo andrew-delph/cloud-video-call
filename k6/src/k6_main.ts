@@ -13,32 +13,32 @@ import { SocketWrapper } from '../libs/SocketWrapper';
 
 const vus = 100;
 export const options = {
-  // vus: vus * 3,
-  // duration: `2h`,
-  scenarios: {
-    matchTest: {
-      executor: `ramping-vus`,
-      startVUs: 0,
-      stages: [
-        // { duration: `5m`, target: vus * 2 },
-        // { duration: `2h`, target: vus * 3 },
-        // { duration: `10m`, target: vus },
-        { duration: `5m`, target: vus * 2 },
-        { duration: `2h`, target: vus * 2 },
-        { duration: `10m`, target: 20 },
-      ],
-    },
-    longConnection: {
-      executor: `ramping-vus`,
-      exec: `longConnection`,
-      startVUs: 0,
-      stages: [
-        { duration: `2m`, target: vus * 3 },
-        { duration: `2h`, target: vus * 4 },
-        { duration: `10m`, target: vus },
-      ],
-    },
-  },
+  vus: 15,
+  duration: `60s`,
+  // scenarios: {
+  //   matchTest: {
+  //     executor: `ramping-vus`,
+  //     startVUs: 0,
+  //     stages: [
+  //       // { duration: `5m`, target: vus * 2 },
+  //       // { duration: `2h`, target: vus * 3 },
+  //       // { duration: `10m`, target: vus },
+  //       { duration: `5m`, target: vus * 2 },
+  //       { duration: `2h`, target: vus * 2 },
+  //       { duration: `10m`, target: 20 },
+  //     ],
+  //   },
+  //   longConnection: {
+  //     executor: `ramping-vus`,
+  //     exec: `longConnection`,
+  //     startVUs: 0,
+  //     stages: [
+  //       { duration: `2m`, target: vus * 3 },
+  //       { duration: `2h`, target: vus * 4 },
+  //       { duration: `10m`, target: vus },
+  //     ],
+  //   },
+  // },
 };
 
 const ready_waiting_time = new Trend(`ready_waiting_time`, true);
@@ -53,7 +53,7 @@ export default function (): void {
   //   : `34.27.73.223`;
 
   const secure = false;
-  const domain = __ENV.HOST || `localhost:8080`;
+  const domain = __ENV.HOST || `localhost:8888`;
 
   // Let's do some websockets
   const url = `${

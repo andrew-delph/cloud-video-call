@@ -20,7 +20,7 @@ const match_success = new Rate(`match_success`);
 const error_counter = new Counter(`error_counter`);
 
 export const options = {
-  vus: 1,
+  vus: 15,
   duration: `60s`,
   // thresholds: {
   //   established_success: [`rate>0.95`],
@@ -36,10 +36,10 @@ const url = `${
 }://${domain}/socket.io/?EIO=4&transport=websocket`;
 
 export default function () {
-  for (let i = 0; i < 15; i++) {
-    matchflowWorker(i);
-  }
-  // matchflowWorker();
+  // for (let i = 0; i < 15; i++) {
+  //   matchflowWorker(i);
+  // }
+  matchflowWorker();
 }
 
 const matchflowWorker = () => {
