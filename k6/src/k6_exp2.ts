@@ -1,11 +1,9 @@
-import { check, sleep } from 'k6';
 import { Counter, Rate, Trend } from 'k6/metrics';
 import { K6SocketIoExp } from '../libs/K6SocketIoExp';
-import { WebSocketWrapper } from '../libs/old/WebSocketWrapper';
 
 export const options = {
-  vus: 200,
-  duration: `10s`,
+  vus: 100,
+  duration: `1m`,
 };
 
 const established_elapsed = new Trend(`established_elapsed`, true);

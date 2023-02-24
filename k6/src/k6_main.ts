@@ -13,8 +13,8 @@ import { SocketWrapper } from '../libs/old/SocketWrapper';
 
 const vus = 100;
 export const options = {
-  vus: 15,
-  duration: `10s`,
+  vus: 100,
+  duration: `1m`,
   // scenarios: {
   //   matchTest: {
   //     executor: `ramping-vus`,
@@ -46,6 +46,7 @@ const ready_waiting_time = new Trend(`ready_waiting_time`, true);
 const match_waiting_time = new Trend(`match_waiting_time`, true);
 
 const success_counter = new Counter(`success_counter`);
+const error_counter = new Counter(`error_counter`);
 
 export default function (): void {
   const secure = false;
@@ -116,6 +117,7 @@ export default function (): void {
     });
 
     socket.on(`error`, function (e) {
+      error_counter.add(1);
       // check(false, { 'there was an error': (r) => r });
       console.log(`error`, JSON.stringify(e));
       if (e.error() != `websocket: close sent`) {
