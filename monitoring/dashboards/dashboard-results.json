@@ -478,6 +478,22 @@
                 ]
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "instance_id"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": []
+              },
+              {
+                "id": "unit",
+                "value": "none"
+              }
+            ]
           }
         ]
       },
@@ -570,6 +586,10 @@
                 "aggregations": [],
                 "operation": "groupby"
               },
+              "instance_id": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
               "scenario": {
                 "aggregations": [],
                 "operation": "groupby"
@@ -592,8 +612,9 @@
               "testid": false
             },
             "indexByName": {
-              "Value (lastNotNull)": 3,
+              "Value (lastNotNull)": 4,
               "check": 1,
+              "instance_id": 3,
               "scenario": 2,
               "testid": 0
             },
@@ -1873,8 +1894,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-blue",
-                "value": null
+                "color": "dark-blue"
               }
             ]
           },
@@ -4095,7 +4115,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
