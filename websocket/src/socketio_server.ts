@@ -66,6 +66,8 @@ io.on(`error`, (err) => {
 });
 
 io.on(`connection`, async (socket) => {
+  const auth = socket.handshake.headers[`auth`];
+
   const start_time = performance.now();
   logger.debug(`connected ${process.env.HOSTNAME} ${io.sockets.sockets.size}`);
 
