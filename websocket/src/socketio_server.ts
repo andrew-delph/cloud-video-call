@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 import express from 'express';
 import { createServer } from 'http';
 import Client from 'ioredis';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { v4 as uuid } from 'uuid';
 import * as common from 'react-video-call-common';
 import { initializeApp } from 'firebase-admin/app';
@@ -21,6 +21,7 @@ import {
   createNeo4jClient,
 } from 'neo4j-grpc-common';
 import { listenGlobalExceptions } from 'react-video-call-common';
+import { auth_middleware } from './auth_middleware';
 
 const logger = common.getLogger();
 
@@ -42,6 +43,10 @@ initializeApp();
 
 const serverID = uuid();
 
+let pubRedisClient: Client;
+let subRedisClient: Client;
+export let mainRedisClient: Client;
+
 const app = express();
 const httpServer = createServer(app);
 
@@ -52,9 +57,7 @@ const io = new Server(httpServer, {
   },
 });
 
-let pubClient: Client;
-let subClient: Client;
-let mainClient: Client;
+io.use(auth_middleware);
 
 app.get(`/health`, (req, res) => {
   logger.info(`got health check`);
@@ -66,8 +69,6 @@ io.on(`error`, (err) => {
 });
 
 io.on(`connection`, async (socket) => {
-  const auth = socket.handshake.headers[`auth`];
-
   const start_time = performance.now();
   logger.debug(`connected ${process.env.HOSTNAME} ${io.sockets.sockets.size}`);
 
@@ -93,7 +94,7 @@ io.on(`connection`, async (socket) => {
     //   messages: [{ value: socket.id }],
     // });
 
-    await mainClient.sadd(common.readySetName, socket.id);
+    await mainRedisClient.sadd(common.readySetName, socket.id);
 
     await rabbitChannel.sendToQueue(
       common.readyQueueName,
@@ -112,9 +113,9 @@ io.on(`connection`, async (socket) => {
         io.sockets.sockets.size
       } duration: ${Math.round(duration / 1000)}`,
     );
-    mainClient.srem(common.activeSetName, socket.id);
-    mainClient.srem(common.readySetName, socket.id);
-    pubClient.publish(common.activeCountChannel, `change`);
+    mainRedisClient.srem(common.activeSetName, socket.id);
+    mainRedisClient.srem(common.readySetName, socket.id);
+    pubRedisClient.publish(common.activeCountChannel, `change`);
   });
 
   socket.on(`client_host`, (value) => {
@@ -129,7 +130,7 @@ io.on(`connection`, async (socket) => {
     socket.to(`room-${socket.id}`).emit(`icecandidate`, value);
   });
 
-  await pubClient.publish(common.activeCountChannel, `change`);
+  await pubRedisClient.publish(common.activeCountChannel, `change`);
 
   socket.emit(`message`, `Hey from server :) I am ${serverID}.`);
 
@@ -143,7 +144,7 @@ io.on(`connection`, async (socket) => {
   //   });
   // }, 1000);
 
-  await mainClient.sadd(common.activeSetName, socket.id);
+  await mainRedisClient.sadd(common.activeSetName, socket.id);
 
   const createUserRequest = new CreateUserRequest();
   createUserRequest.setUserId(socket.id);
@@ -165,13 +166,13 @@ io.on(`connection`, async (socket) => {
 export const getServer = async (listen: boolean) => {
   return await Promise.all([])
     .then(() => {
-      mainClient = new Client({
+      mainRedisClient = new Client({
         host: `${process.env.REDIS_HOST || `redis`}`,
       });
-      subClient = new Client({
+      subRedisClient = new Client({
         host: `${process.env.REDIS_HOST || `redis`}`,
       });
-      pubClient = new Client({
+      pubRedisClient = new Client({
         host: `${process.env.REDIS_HOST || `redis`}`,
       });
     })
@@ -179,20 +180,20 @@ export const getServer = async (listen: boolean) => {
       await connectRabbit();
     })
     .then(() => {
-      io.adapter(createAdapter(pubClient, subClient));
+      io.adapter(createAdapter(pubRedisClient, subRedisClient));
       if (listen) httpServer.listen(4000);
       logger.info(`server started`);
     })
     .then(async () => {
       const activeCountThrottle = throttle(async () => {
-        const activeCount = await mainClient.scard(common.activeSetName);
+        const activeCount = await mainRedisClient.scard(common.activeSetName);
         logger.info(`activeCount #${activeCount}`);
         io.emit(`activeCount`, activeCount);
       }, 30000);
 
-      await subClient.subscribe(common.activeCountChannel);
+      await subRedisClient.subscribe(common.activeCountChannel);
 
-      subClient.on(`message`, async (channel) => {
+      subRedisClient.on(`message`, async (channel) => {
         if (channel == common.activeCountChannel) await activeCountThrottle();
       });
 

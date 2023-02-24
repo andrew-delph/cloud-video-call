@@ -11,8 +11,8 @@ export const options = {
       startVUs: 0,
       stages: [
         { duration: `3m`, target: vus * 2 },
-        { duration: `2h`, target: vus * 3 },
-        { duration: `10m`, target: 20 },
+        { duration: `5m`, target: vus * 3 },
+        { duration: `10m`, target: vus * 4 },
       ],
     },
     // longConnection: {
