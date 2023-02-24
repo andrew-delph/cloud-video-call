@@ -40,7 +40,10 @@ export class SocketWrapper {
     const type = response.type;
     const code = response.code;
 
-    if (type !== responseType.message) return;
+    if (type == responseType.open) {
+      this.socket.send(`40`);
+      return;
+    }
 
     switch (code) {
       case responseCode.connect: {
