@@ -47,6 +47,7 @@ export abstract class K6SocketIoBase {
     this.on(`close`, () => {
       clearTimeout(max_time_timeout);
       this.failWaitingEvents();
+      check(this.connected, { connected: (r) => r });
     });
   }
 
@@ -60,10 +61,6 @@ export abstract class K6SocketIoBase {
 
   setOnConnect(callback: () => void) {
     this.onConnect = callback;
-  }
-
-  setOnError(callback: () => void) {
-    this.on(`error`, callback);
   }
 
   handleMessage(msg: string) {
@@ -110,6 +107,11 @@ export abstract class K6SocketIoBase {
           if (event == `message` || event == `activeCount`) break;
           console.log(`no eventMessageHandle:`, event);
         }
+        break;
+      }
+      case responseCode.error: {
+        console.error(`error msg:`, msg);
+        this.close();
         break;
       }
     }
