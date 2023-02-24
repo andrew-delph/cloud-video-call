@@ -4,7 +4,7 @@ import * as http from 'http';
 
 import { setupMaster, setupWorker } from '@socket.io/sticky';
 
-import { getServer } from './websocket';
+import { getServer } from './socketio_server';
 
 import * as common from 'react-video-call-common';
 
