@@ -26,12 +26,9 @@ export default function () {
   const url = `${
     secure ? `wss` : `ws`
   }://${domain}/socket.io/?EIO=4&transport=websocket`;
-  const socket = new WebSocketWrapper(url);
-
-  console.log(`starting`);
+  const socket = new K6SocketIoExp(url);
 
   socket.setOnConnect(() => {
-    console.log(`CONNECTED!!!`);
     let expectMatch: any = false;
     socket
       .expectMessage(`established`)
@@ -40,11 +37,8 @@ export default function () {
         return Promise.reject(error);
       })
       .then((data: any) => {
-        console.log(`got established`);
         established_success.add(true);
         established_elapsed.add(data.elapsed);
-        expectMatch = socket.expectMessage(`match`);
-        console.log(`expectMatch`, expectMatch);
         return socket.sendWithAck(`ready`, {});
       })
       .catch((error) => {
@@ -55,29 +49,11 @@ export default function () {
         console.log(`got ready`);
         ready_success.add(true);
         ready_elapsed.add(data.elapsed);
-        console.log(`expectMatch`, expectMatch);
-        return expectMatch;
-      })
-      .catch((error) => {
-        match_success.add(false);
-        return Promise.reject(error);
-      })
-      .then((data) => {
-        console.log(`here`);
-        success_counter.add(1);
-        match_elapsed.add(data.elapsed);
-        match_success.add(true);
-        check(true, { match: (r) => r });
-      })
-      .catch((error) => {
-        console.log(error);
-        error_counter.add(1);
-        check(false, { match: (r) => r });
       })
       .finally(() => {
         console.log(`finally`);
         socket.close();
       });
   });
-  socket.listen();
+  socket.connect();
 }

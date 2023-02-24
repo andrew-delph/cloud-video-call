@@ -113,7 +113,6 @@ export abstract class K6SocketIoBase {
 
         const eventMessageHandle = this.eventMessageHandleMap[event];
         if (eventMessageHandle != undefined) {
-          console.log(`Event`, event);
           eventMessageHandle(message, callback);
         } else {
           if (event == `message` || event == `activeCount`) break;
@@ -163,8 +162,6 @@ export abstract class K6SocketIoBase {
       wrapper.waitingEventMap[waitingEventId] = reject;
 
       const eventMessageHandle = (data: any, callback: any) => {
-        console.log(`expected callback!!!`);
-
         const elapsed = Date.now() - startTime;
         const isSuccess = elapsed < timeout;
         delete wrapper.waitingEventMap[waitingEventId];

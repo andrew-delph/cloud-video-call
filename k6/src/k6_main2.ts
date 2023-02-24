@@ -1,13 +1,24 @@
 import { check } from 'k6';
-import { Counter } from 'k6/metrics';
+import { Counter, Rate, Trend } from 'k6/metrics';
 import { K6SocketIoMain } from '../libs/K6SocketIoMain';
 
 export const options = {
-  vus: 15,
-  duration: `10s`,
+  // vus: 15,
+  // duration: `10s`,
 };
 
-const success_counter = new Counter(`andrew`);
+const established_elapsed = new Trend(`established_elapsed`, true);
+const match_elapsed = new Trend(`match_elapsed`, true);
+const ready_elapsed = new Trend(`ready_elapsed`, true);
+
+const established_success = new Rate(`established_success`);
+const ready_success = new Rate(`ready_success`);
+const match_success = new Rate(`match_success`);
+
+const error_counter = new Counter(`error_counter`);
+
+const success_counter = new Counter(`success_counter`);
+
 export default function () {
   const secure = false;
   const domain = __ENV.HOST || `localhost:8888`;
@@ -18,11 +29,28 @@ export default function () {
 
   socket.setOnConnect(() => {
     socket
-      .sendWithAck(`myping`, `ping1`)
-      .then(() => {
-        success_counter.add(1);
+      .expectMessage(`established`)
+      .catch((error) => {
+        established_success.add(false);
+        return Promise.reject(error);
+      })
+      .then((data: any) => {
+        console.log(`established`);
+        established_success.add(true);
+        established_elapsed.add(data.elapsed);
+        return socket.sendWithAck(`ready`, {});
+      })
+      .catch((error) => {
+        ready_success.add(false);
+        return Promise.reject(error);
+      })
+      .then((data: any) => {
+        console.log(`got ready`);
+        ready_success.add(true);
+        ready_elapsed.add(data.elapsed);
       })
       .finally(() => {
+        console.log(`finally`);
         socket.close();
       });
   });
