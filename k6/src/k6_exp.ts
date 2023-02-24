@@ -2,8 +2,8 @@ import { Counter, Rate, Trend } from 'k6/metrics';
 import { K6SocketIoExp } from '../libs/K6SocketIoExp';
 
 export const options = {
-  vus: 100,
-  duration: `1m`,
+  vus: 500,
+  duration: `5m`,
 };
 
 const established_elapsed = new Trend(`established_elapsed`, true);
