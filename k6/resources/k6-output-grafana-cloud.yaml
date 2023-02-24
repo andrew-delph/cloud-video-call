@@ -9,7 +9,7 @@ kind: K6
 metadata:
   name: k6-output-grafana-cloud
 spec:
-  parallelism: 5
+  parallelism: 1
   script:
     configMap:
       # Remember...we created the 'test-scripts' ConfigMap with the available scripts inside.
@@ -17,6 +17,7 @@ spec:
       name: test-scripts
       # TODO - Want a different test script? Change it here.
       file: k6_main.js
+      # file: k6_exp2.js
   arguments: --tag testid=k6-output-grafana-cloud
   runner:
     # TODO Change the image to your published image!

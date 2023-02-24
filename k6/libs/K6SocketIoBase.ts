@@ -2,6 +2,7 @@ import { responseCode, responseType } from './constants';
 import { checkResponse, getArrayFromRequest, getCallbackId } from './socket.io';
 import { uuidv4 as uuid } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { setTimeout, clearTimeout } from 'k6/experimental/timers';
+import { check } from 'k6';
 
 export abstract class K6SocketIoBase {
   socket: any;
@@ -44,9 +45,12 @@ export abstract class K6SocketIoBase {
       }, this.max_time);
     }
     this.on(`error`, (error) => {
+      console.log(`error.`);
+      check(false, { error: (r) => r });
       this.socket.close();
     });
     this.on(`close`, () => {
+      console.log(`close...`);
       clearTimeout(max_time_timeout);
       this.failWaitingEvents();
     });
@@ -80,6 +84,7 @@ export abstract class K6SocketIoBase {
 
     switch (code) {
       case responseCode.connect: {
+        console.log(`connect...`);
         if (this.onConnect != null) this.onConnect();
         this.connected = true;
         break;
@@ -108,10 +113,11 @@ export abstract class K6SocketIoBase {
 
         const eventMessageHandle = this.eventMessageHandleMap[event];
         if (eventMessageHandle != undefined) {
+          console.log(`Event`, event);
           eventMessageHandle(message, callback);
         } else {
           if (event == `message` || event == `activeCount`) break;
-          console.debug(`no eventMessageHandle:`, event);
+          console.log(`no eventMessageHandle:`, event);
         }
         break;
       }
@@ -157,6 +163,8 @@ export abstract class K6SocketIoBase {
       wrapper.waitingEventMap[waitingEventId] = reject;
 
       const eventMessageHandle = (data: any, callback: any) => {
+        console.log(`expected callback!!!`);
+
         const elapsed = Date.now() - startTime;
         const isSuccess = elapsed < timeout;
         delete wrapper.waitingEventMap[waitingEventId];

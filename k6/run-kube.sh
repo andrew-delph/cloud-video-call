@@ -16,7 +16,7 @@ SCRIPT_NAME="$(yq -r '.spec.script.configMap.file' $RESOURCE_FILENAME)"
 echo "SCRIPT_NAME:" $SCRIPT_NAME
 # Clean up the script name and append the unique timestamp
 TAG_PREFIX="$(basename -s .js $SCRIPT_NAME)"
-TAG_NAME="$TAG_PREFIX-$(date +%H-%M-%S)"
+TAG_NAME="99999-$(date +%H-%M-%S)"
 echo "test id:" $TAG_NAME
 
 # Replacement doesn't seem to trigger, so we need to delete any previous execution

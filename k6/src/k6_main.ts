@@ -2,7 +2,7 @@ import { EventName, WebSocket } from 'k6/experimental/websockets';
 
 import ws, { Socket } from 'k6/ws';
 import { check, sleep } from 'k6';
-import { Counter, Trend } from 'k6/metrics';
+import { Counter, Rate, Trend } from 'k6/metrics';
 import { SocketWrapper } from '../libs/old/SocketWrapper';
 
 // export const options = {
@@ -45,6 +45,8 @@ const ready_waiting_time = new Trend(`ready_waiting_time`, true);
 
 const match_waiting_time = new Trend(`match_waiting_time`, true);
 
+const success_counter = new Counter(`success_counter`);
+
 export default function (): void {
   const secure = false;
   const domain = __ENV.HOST || `localhost:8888`;
@@ -71,6 +73,7 @@ export default function (): void {
 
           if (isSuccess) {
             match_waiting_time.add(elapsed);
+            success_counter.add(1);
             socket.close();
           } else {
             // console.log("match failure:" + data);
@@ -93,13 +96,12 @@ export default function (): void {
       );
     };
 
-    socketWrapper.setOnConnect(() => {
-      sleep(2); // TODO test without this
-      readyEvent();
-    });
+    // socketWrapper.setOnConnect(() => {
+    //   readyEvent();
+    // });
 
-    socketWrapper.setEventMessageHandle(`message`, (msg: any) => {
-      // console.log("message:", msg);
+    socketWrapper.setEventMessageHandle(`established`, (msg: any) => {
+      readyEvent();
     });
 
     socketWrapper.setEventMessageHandle(`myping`, (msg: any, callback) => {
@@ -120,14 +122,6 @@ export default function (): void {
         console.log(`An unexpected error occured: `, e.error());
       }
     });
-
-    socket.on(`open`, () => {
-      socket.send(`40`);
-    });
-
-    socket.setTimeout(function () {
-      socket.close();
-    }, 1000 * 60 * 2);
   });
 
   check(response, { 'status is 101': (r) => r && r.status === 101 });
@@ -138,7 +132,7 @@ export function longConnection(): void {
   connect for a long time and send pings.3
   */
   const secure = false;
-  const domain = __ENV.HOST || `34.69.116.114:80`; // `localhost:8080`
+  const domain = __ENV.HOST || `localhost:8888`; // `localhost:8080`
 
   // Let's do some websockets
   const url = `${
@@ -148,33 +142,23 @@ export function longConnection(): void {
   const response = ws.connect(url, {}, function (socket) {
     const socketWrapper = new SocketWrapper(socket);
 
-    socketWrapper.setEventMessageHandle(`myping`, (msg: any, callback) => {
-      if (callback) callback(`k6 myping ack`);
-    });
-
     socketWrapper.setOnConnect(() => {
-      sleep(2);
-
-      socket.setInterval(() => {
-        console.log(`hi`);
-        socketWrapper!.sendWithAck(
-          `myping`,
-          { test: `looking for ack` },
-          90000,
-          (isSuccess: boolean, elapsed: number, data: any) => {
-            check(isSuccess, { 'longConnection ping': (r) => r });
-          },
-        );
-      }, 10000);
-    });
-
-    socket.on(`open`, () => {
-      socket.send(`40`);
+      socketWrapper!.sendWithAck(
+        `myping`,
+        { test: `looking for ack` },
+        90000,
+        (isSuccess: boolean, elapsed: number, data: any) => {
+          // console.log(`got ping ack`, data);
+          success_counter.add(1);
+          check(isSuccess, { '1longConnection ping': (r) => r });
+          socket.close();
+        },
+      );
     });
 
     socket.setTimeout(function () {
       socket.close();
-    }, 1000 * 40);
+    }, 1000 * 10);
   });
 
   check(response, {

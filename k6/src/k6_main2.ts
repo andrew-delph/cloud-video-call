@@ -1,11 +1,13 @@
 import { check } from 'k6';
+import { Counter } from 'k6/metrics';
 import { K6SocketIoMain } from '../libs/K6SocketIoMain';
 
 export const options = {
-  //   vus: 15,
-  //   duration: `10s`,
+  vus: 15,
+  duration: `10s`,
 };
 
+const success_counter = new Counter(`andrew`);
 export default function () {
   const secure = false;
   const domain = __ENV.HOST || `localhost:8888`;
@@ -16,21 +18,9 @@ export default function () {
 
   socket.setOnConnect(() => {
     socket
-      .expectMessage(`established`)
-      .then((data) => {
-        console.log(`established!!`);
-        return socket.sendWithAck(`myping`, `ping1`);
-      })
-      .then((data: any) => {
-        check(data, {
-          ping1: (data) => data && data.data[0] == `ping1`,
-        });
-      })
-      .catch((error) => {
-        check(false, {
-          errror: () => false,
-        });
-        console.error(`error`, error);
+      .sendWithAck(`myping`, `ping1`)
+      .then(() => {
+        success_counter.add(1);
       })
       .finally(() => {
         socket.close();
