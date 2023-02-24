@@ -41,6 +41,7 @@ export abstract class K6SocketIoBase {
     });
     this.on(`error`, (msg) => {
       this.hasError = true;
+      console.error(msg);
     });
     let max_time_timeout: number;
     if (this.max_time != 0) {
