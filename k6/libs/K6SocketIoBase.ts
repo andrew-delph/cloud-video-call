@@ -1,64 +1,67 @@
-import { EventName, WebSocket } from 'k6/experimental/websockets';
 import { responseCode, responseType } from './constants';
 import { checkResponse, getArrayFromRequest, getCallbackId } from './socket.io';
 import { uuidv4 as uuid } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
-import { sleep } from 'k6';
-import {
-  setTimeout,
-  clearTimeout,
-  setInterval,
-  clearInterval,
-} from 'k6/experimental/timers';
+import { setTimeout, clearTimeout } from 'k6/experimental/timers';
 
-export class WebSocketWrapper {
-  socket;
+export abstract class K6SocketIoBase {
+  socket: any;
 
   callbackCount = 0;
-  ackCallbackMap = {};
   connected = false;
-  onConnect = false;
-  eventMessageHandleMap = {};
-  waitingEventMap = {};
+  onConnect: (() => void) | undefined;
+  ackCallbackMap: Record<string, (data: any) => void> = {};
+  eventMessageHandleMap: Record<
+    string,
+    (data: any, callback?: (data: any) => void) => void
+  > = {};
+  waitingEventMap: Record<string, (data: any) => void> = {};
+  url: string;
+  max_time: number;
 
-  constructor(url, max_time = null) {
-    this.socket = new WebSocket(url);
-    this.socket.addEventListener(`message`, (msg) => {
+  constructor(url: string, max_time: number = 0) {
+    this.url = url;
+    this.max_time = max_time;
+  }
+
+  connect(): void {
+    this.on(`message`, (msg) => {
       this.handleMessage(msg.data);
     });
-    let max_time_timeout;
-
-    if (max_time != null) {
+    let max_time_timeout: number;
+    if (this.max_time != 0) {
       max_time_timeout = setTimeout(() => {
         this.close();
-      }, max_time);
+      }, this.max_time);
     }
-    this.socket.addEventListener(`error`, (error) => {
+    this.on(`error`, (error) => {
       console.log(`error:`, error);
       this.socket.close();
     });
-    this.socket.addEventListener(`close`, () => {
-      clearInterval(max_time_timeout);
+    this.on(`close`, () => {
+      clearTimeout(max_time_timeout);
       this.failWaitingEvents();
     });
   }
 
+  abstract on(event: string, callback: (data: any) => void): void;
+
   listen() {
-    this.socket.addEventListener(`open`, () => {});
+    this.on(`open`, () => {});
   }
 
   close() {
     this.socket.close();
   }
 
-  setOnConnect(callback) {
+  setOnConnect(callback: () => void) {
     this.onConnect = callback;
   }
 
-  setOnError(callback) {
-    this.socket.addEventListener(`error`, callback);
+  setOnError(callback: () => void) {
+    this.on(`error`, callback);
   }
 
-  handleMessage(msg) {
+  handleMessage(msg: string) {
     const response = checkResponse(msg);
     const type = response.type;
     const code = response.code;
@@ -90,7 +93,7 @@ export class WebSocketWrapper {
         const message = msgObject[1];
         const callbackId = getCallbackId(msg);
         const callback = !Number.isNaN(callbackId)
-          ? (data) => {
+          ? (data: any) => {
               this.sendAck(callbackId, data);
             }
           : undefined;
@@ -107,11 +110,11 @@ export class WebSocketWrapper {
     }
   }
 
-  setEventMessageHandle(event, handler) {
+  setEventMessageHandle(event: any, handler: any) {
     this.eventMessageHandleMap[event] = handler;
   }
 
-  send(event, data, callback) {
+  send(event: string, data: any, callback: any) {
     if (callback == null) {
       this.socket.send(
         `${responseType.message}${
@@ -129,7 +132,7 @@ export class WebSocketWrapper {
     }
   }
 
-  sendAck(callbackId, data) {
+  sendAck(callbackId: number, data: any) {
     this.socket.send(
       `${responseType.message}${responseCode.ack}${callbackId}[${JSON.stringify(
         data,
@@ -137,15 +140,15 @@ export class WebSocketWrapper {
     );
   }
 
-  expectMessage(event, timeout = 0) {
+  expectMessage(event: string, timeout = 0) {
     const startTime = Date.now();
-    const waitingEventId = uuid();
+    const waitingEventId: string = uuid();
     const wrapper = this;
 
     return new Promise(function (resolve, reject) {
       wrapper.waitingEventMap[waitingEventId] = reject;
 
-      const eventMessageHandle = (data, callback) => {
+      const eventMessageHandle = (data: any, callback: any) => {
         const elapsed = Date.now() - startTime;
         const isSuccess = elapsed < timeout;
         delete wrapper.waitingEventMap[waitingEventId];
@@ -160,7 +163,7 @@ export class WebSocketWrapper {
     });
   }
 
-  sendWithAck(event, data, timeout = 0) {
+  sendWithAck(event: string, data: any, timeout = 0) {
     const startTime = Date.now();
     const waitingEventId = uuid();
 
@@ -168,7 +171,7 @@ export class WebSocketWrapper {
 
     return new Promise(function (resolve, reject) {
       wrapper.waitingEventMap[waitingEventId] = reject;
-      wrapper.send(event, data, (callbackData) => {
+      wrapper.send(event, data, (callbackData: any) => {
         const elapsed = Date.now() - startTime;
         const isSuccess = elapsed < timeout;
         delete wrapper.waitingEventMap[waitingEventId];

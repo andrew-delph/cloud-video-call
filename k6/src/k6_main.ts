@@ -14,7 +14,7 @@ import { SocketWrapper } from '../libs/SocketWrapper';
 const vus = 100;
 export const options = {
   vus: 15,
-  duration: `60s`,
+  duration: `10s`,
   // scenarios: {
   //   matchTest: {
   //     executor: `ramping-vus`,
