@@ -3,7 +3,7 @@ import { EventName, WebSocket } from 'k6/experimental/websockets';
 import ws, { Socket } from 'k6/ws';
 import { check, sleep } from 'k6';
 import { Counter, Trend } from 'k6/metrics';
-import { SocketWrapper } from '../libs/SocketWrapper';
+import { SocketWrapper } from '../libs/old/SocketWrapper';
 
 // export const options = {
 //   // stages: [{ duration: "10s", target: 50 }],
@@ -46,16 +46,8 @@ const ready_waiting_time = new Trend(`ready_waiting_time`, true);
 const match_waiting_time = new Trend(`match_waiting_time`, true);
 
 export default function (): void {
-  // const secure = __ENV.REMOTE == "true" ? true : false;
-
-  // const domain = secure
-  //   ? `react-video-call-fjutjsrlaa-uc.a.run.app`
-  //   : `34.27.73.223`;
-
   const secure = false;
   const domain = __ENV.HOST || `localhost:8888`;
-
-  // Let's do some websockets
   const url = `${
     secure ? `wss` : `ws`
   }://${domain}/socket.io/?EIO=4&transport=websocket`;

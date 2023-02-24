@@ -1,6 +1,10 @@
 import { EventName, WebSocket } from 'k6/experimental/websockets';
-import { responseCode, responseType } from './constants';
-import { checkResponse, getArrayFromRequest, getCallbackId } from './socket.io';
+import { responseCode, responseType } from '../constants';
+import {
+  checkResponse,
+  getArrayFromRequest,
+  getCallbackId,
+} from '../socket.io';
 import { uuidv4 as uuid } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { sleep } from 'k6';
 import {
@@ -100,7 +104,7 @@ export class WebSocketWrapper {
           eventMessageHandle(message, callback);
         } else {
           if (event == `message` || event == `activeCount`) break;
-          console.log(`no eventMessageHandle:`, event);
+          console.debug(`no eventMessageHandle:`, event);
         }
         break;
       }

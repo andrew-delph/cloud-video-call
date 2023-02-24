@@ -26,9 +26,16 @@ export abstract class K6SocketIoBase {
     this.max_time = max_time;
   }
 
-  socketSetup(callback: void): void {
+  abstract connect(): void;
+
+  abstract on(event: string, callback: (data: any) => void): void;
+
+  abstract parseMessage(message: any): string;
+
+  setSocket(socket: any): void {
+    this.socket = socket;
     this.on(`message`, (msg) => {
-      this.handleMessage(msg.data);
+      this.handleMessage(this.parseMessage(msg));
     });
     let max_time_timeout: number;
     if (this.max_time != 0) {
@@ -45,8 +52,6 @@ export abstract class K6SocketIoBase {
       this.failWaitingEvents();
     });
   }
-
-  abstract on(event: string, callback: (data: any) => void): void;
 
   listen() {
     this.on(`open`, () => {});
@@ -70,12 +75,14 @@ export abstract class K6SocketIoBase {
     const code = response.code;
 
     if (type == responseType.open) {
+      console.log(`send 40`);
       this.socket.send(`40`);
       return;
     }
 
     switch (code) {
       case responseCode.connect: {
+        console.log(`connected response`);
         if (this.onConnect != null) this.onConnect();
         this.connected = true;
         break;
@@ -94,6 +101,8 @@ export abstract class K6SocketIoBase {
         const msgObject = getArrayFromRequest(msg);
         const event = msgObject[0];
         const message = msgObject[1];
+        console.log(`got event`, event);
+
         const callbackId = getCallbackId(msg);
         const callback = !Number.isNaN(callbackId)
           ? (data: any) => {
@@ -103,6 +112,7 @@ export abstract class K6SocketIoBase {
 
         const eventMessageHandle = this.eventMessageHandleMap[event];
         if (eventMessageHandle != undefined) {
+          console.log(`eventMessageHandle`, event);
           eventMessageHandle(message, callback);
         } else {
           if (event == `message` || event == `activeCount`) break;
@@ -148,17 +158,22 @@ export abstract class K6SocketIoBase {
     const waitingEventId: string = uuid();
     const wrapper = this;
 
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       wrapper.waitingEventMap[waitingEventId] = reject;
+      console.log(`the resolve`, resolve);
 
       const eventMessageHandle = (data: any, callback: any) => {
+        console.log(`eventMessageHandle INSIDE`);
         const elapsed = Date.now() - startTime;
         const isSuccess = elapsed < timeout;
         delete wrapper.waitingEventMap[waitingEventId];
 
+        reject(`timeout reached for ${event}`);
         if (isSuccess || timeout == 0) {
+          console.log(`resolve...`, resolve);
           resolve({ data, callback, elapsed });
         } else {
+          console.log(`reject`);
           reject(`timeout reached for ${event}`);
         }
       };
