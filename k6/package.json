@@ -26,7 +26,8 @@
     "node": ">=16 <17"
   },
   "scripts": {
-    "local": "bash ./run-local.sh dist/k6_exp2.js",
+    "local1": "bash ./run-local.sh dist/k6_main2.js",
+    "local2": "bash ./run-local.sh dist/k6_exp2.js",
     "webpack": "webpack --progress",
     "webpack:watch": "webpack --progress --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
