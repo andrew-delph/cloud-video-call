@@ -165,6 +165,7 @@ export abstract class K6SocketIoBase {
         const elapsed = Date.now() - startTime;
         const isSuccess = elapsed < timeout;
         delete wrapper.waitingEventMap[waitingEventId];
+        // delete wrapper.eventMessageHandleMap[event];
 
         if (isSuccess || timeout == 0) {
           resolve({ data, callback, elapsed });
