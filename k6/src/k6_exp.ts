@@ -1,9 +1,31 @@
 import { Counter, Rate, Trend } from 'k6/metrics';
 import { K6SocketIoExp } from '../libs/K6SocketIoExp';
 
+const vus = 500;
 export const options = {
-  vus: 100,
-  duration: `2m`,
+  // vus: 100,
+  // duration: `1m`,
+  scenarios: {
+    matchTest: {
+      executor: `ramping-vus`,
+      startVUs: 0,
+      stages: [
+        { duration: `3m`, target: vus * 2 },
+        { duration: `2h`, target: vus * 3 },
+        { duration: `10m`, target: 20 },
+      ],
+    },
+    // longConnection: {
+    //   executor: `ramping-vus`,
+    //   exec: `longConnection`,
+    //   startVUs: 0,
+    //   stages: [
+    //     { duration: `2m`, target: vus * 3 },
+    //     { duration: `2h`, target: vus * 4 },
+    //     { duration: `10m`, target: vus },
+    //   ],
+    // },
+  },
 };
 
 const established_elapsed = new Trend(`established_elapsed`, true);
