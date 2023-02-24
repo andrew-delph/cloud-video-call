@@ -15,18 +15,19 @@ export const auth_middleware = async (
       ? socket.handshake.query.auth
       : ``;
 
-  logger.info(`got auth: ${auth}`);
-
   if (!auth) {
+    logger.debug(`Authentication token missing`);
     next(new Error(`Authentication token missing`));
     return;
   }
   if (typeof auth != `string`) {
+    logger.debug(`Authentication format error`);
     next(new Error(`Authentication format error`));
     return;
   }
 
   if (await mainRedisClient.hexists(connectedAuthMapName, auth)) {
+    logger.debug(`User already connected: ${auth}`);
     next(new Error(`User already connected`));
     return;
   }
