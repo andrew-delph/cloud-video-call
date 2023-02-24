@@ -3,7 +3,7 @@ import { WebSocket } from 'k6/experimental/websockets';
 export class K6SocketIoExp extends K6SocketIoBase {
   connect(): void {
     const socketIo = this;
-    socketIo.setSocket(new WebSocket(this.url));
+    socketIo.setSocket(new WebSocket(this.url, null, this.params));
     this.socket.addEventListener(`open`, () => {});
   }
   on(event: string, callback: (data: any) => void): void {

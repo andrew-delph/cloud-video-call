@@ -21,7 +21,7 @@ import {
   createNeo4jClient,
 } from 'neo4j-grpc-common';
 import { listenGlobalExceptions } from 'react-video-call-common';
-import { auth_middleware } from './auth_middleware';
+import { auth_middleware } from './authentication';
 
 const logger = common.getLogger();
 
@@ -60,7 +60,7 @@ const io = new Server(httpServer, {
 io.use(auth_middleware);
 
 app.get(`/health`, (req, res) => {
-  logger.info(`got health check`);
+  logger.debug(`got health check`);
   res.send(`Health is good.`);
 });
 
