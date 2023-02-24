@@ -670,7 +670,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 12,
         "x": 0,
         "y": 17
@@ -679,7 +679,7 @@
       "options": {
         "legend": {
           "calcs": [],
-          "displayMode": "list",
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
@@ -695,8 +695,8 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "k6_match_elapsed_avg{testid=~\"$testid\"}",
-          "legendFormat": "__auto",
+          "expr": "avg (k6_match_elapsed_avg{testid=~\"$testid\"}) by(testid)",
+          "legendFormat": "match avg: {{testid}}",
           "range": true,
           "refId": "A"
         },
@@ -706,9 +706,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "k6_match_elapsed_p90{testid=~\"$testid\"}",
+          "expr": "avg (k6_match_elapsed_p90{testid=~\"$testid\"}) by(testid)",
           "hide": false,
-          "legendFormat": "__auto",
+          "legendFormat": "match p90: {{testid}}",
           "range": true,
           "refId": "B"
         }
@@ -774,7 +774,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 12,
         "x": 12,
         "y": 17
@@ -783,7 +783,7 @@
       "options": {
         "legend": {
           "calcs": [],
-          "displayMode": "list",
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
@@ -799,8 +799,8 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "k6_established_elapsed_avg{testid=~\"$testid\"}",
-          "legendFormat": "__auto",
+          "expr": "avg(k6_established_elapsed_avg{testid=~\"$testid\"}) by (testid)",
+          "legendFormat": "established avg: {{testid}}",
           "range": true,
           "refId": "A"
         },
@@ -810,9 +810,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "k6_established_elapsed_p90{testid=~\"$testid\"}",
+          "expr": "avg(k6_established_elapsed_p90{testid=~\"$testid\"}) by (testid)",
           "hide": false,
-          "legendFormat": "__auto",
+          "legendFormat": "established p90: {{testid}}",
           "range": true,
           "refId": "B"
         },
@@ -822,9 +822,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "k6_ready_elapsed_avg{testid=~\"$testid\"}",
+          "expr": "avg(k6_ready_elapsed_avg{testid=~\"$testid\"}) by (testid)",
           "hide": false,
-          "legendFormat": "__auto",
+          "legendFormat": "ready avg: {{testid}}",
           "range": true,
           "refId": "C"
         },
@@ -834,9 +834,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "k6_ready_elapsed_p90{testid=~\"$testid\"}",
+          "expr": "avg(k6_ready_elapsed_p90{testid=~\"$testid\"}) by (testid)",
           "hide": false,
-          "legendFormat": "__auto",
+          "legendFormat": "ready p90: {{testid}}",
           "range": true,
           "refId": "D"
         }
@@ -850,7 +850,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 27
       },
       "id": 47,
       "panels": [],
@@ -914,7 +914,7 @@
         "h": 5,
         "w": 4,
         "x": 0,
-        "y": 26
+        "y": 28
       },
       "id": 49,
       "interval": "1s",
@@ -1010,7 +1010,7 @@
         "h": 5,
         "w": 4,
         "x": 4,
-        "y": 26
+        "y": 28
       },
       "id": 71,
       "interval": "1s",
@@ -1107,7 +1107,7 @@
         "h": 5,
         "w": 4,
         "x": 8,
-        "y": 26
+        "y": 28
       },
       "id": 51,
       "interval": "5s",
@@ -1204,7 +1204,7 @@
         "h": 5,
         "w": 4,
         "x": 12,
-        "y": 26
+        "y": 28
       },
       "id": 52,
       "interval": "5",
@@ -1302,7 +1302,7 @@
         "h": 5,
         "w": 4,
         "x": 16,
-        "y": 26
+        "y": 28
       },
       "id": 63,
       "options": {
@@ -1398,7 +1398,7 @@
         "h": 5,
         "w": 4,
         "x": 20,
-        "y": 26
+        "y": 28
       },
       "id": 64,
       "options": {
@@ -1493,7 +1493,7 @@
         "h": 5,
         "w": 4,
         "x": 0,
-        "y": 31
+        "y": 33
       },
       "id": 85,
       "interval": "1s",
@@ -1619,7 +1619,7 @@
         "h": 10,
         "w": 9,
         "x": 4,
-        "y": 31
+        "y": 33
       },
       "id": 18,
       "interval": "5s",
@@ -1772,7 +1772,7 @@
         "h": 10,
         "w": 11,
         "x": 13,
-        "y": 31
+        "y": 33
       },
       "id": 78,
       "interval": "5",
@@ -1886,7 +1886,7 @@
         "h": 5,
         "w": 4,
         "x": 0,
-        "y": 36
+        "y": 38
       },
       "id": 92,
       "interval": "1s",
@@ -1942,8 +1942,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1995,7 +1994,7 @@
         "h": 7,
         "w": 11,
         "x": 13,
-        "y": 41
+        "y": 43
       },
       "id": 107,
       "interval": "1",
@@ -2107,7 +2106,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 48
+        "y": 50
       },
       "id": 32,
       "panels": [],
@@ -2144,8 +2143,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "blue",
-                "value": null
+                "color": "blue"
               }
             ]
           },
@@ -2650,7 +2648,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 49
+        "y": 51
       },
       "id": 43,
       "interval": "1",
@@ -2907,7 +2905,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 58
+        "y": 60
       },
       "id": 41,
       "interval": "1s",
@@ -3140,7 +3138,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 69
+        "y": 71
       },
       "id": 54,
       "interval": "5s",
@@ -3330,7 +3328,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 76
+        "y": 78
       },
       "id": 35,
       "panels": [],
@@ -3440,7 +3438,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 77
+        "y": 79
       },
       "id": 116,
       "interval": "5s",
@@ -3872,7 +3870,7 @@
         "h": 13,
         "w": 24,
         "x": 0,
-        "y": 84
+        "y": 86
       },
       "id": 117,
       "interval": "5",
@@ -4104,6 +4102,6 @@
   "timezone": "",
   "title": "Test Result",
   "uid": "01npcT44k",
-  "version": 2,
+  "version": 1,
   "weekStart": ""
 }
