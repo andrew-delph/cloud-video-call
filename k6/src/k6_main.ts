@@ -3,7 +3,7 @@ import { EventName, WebSocket } from 'k6/experimental/websockets';
 import ws, { Socket } from 'k6/ws';
 import { check, sleep } from 'k6';
 import { Counter, Rate, Trend } from 'k6/metrics';
-import { SocketWrapper } from '../libs/old/SocketWrapper';
+import { SocketWrapperCallback } from '../libs/SocketWrapperCallback';
 
 // export const options = {
 //   // stages: [{ duration: "10s", target: 50 }],
@@ -56,7 +56,7 @@ export default function (): void {
   }://${domain}/socket.io/?EIO=4&transport=websocket`;
 
   const response = ws.connect(url, {}, function (socket: Socket) {
-    const socketWrapper = new SocketWrapper(socket);
+    const socketWrapper = new SocketWrapperCallback(socket);
 
     const readyEvent = () => {
       socketWrapper!.listen(
@@ -142,7 +142,7 @@ export function longConnection(): void {
   }://${domain}/socket.io/?EIO=4&transport=websocket`;
 
   const response = ws.connect(url, {}, function (socket) {
-    const socketWrapper = new SocketWrapper(socket);
+    const socketWrapper = new SocketWrapperCallback(socket);
 
     socketWrapper.setOnConnect(() => {
       socketWrapper!.sendWithAck(
