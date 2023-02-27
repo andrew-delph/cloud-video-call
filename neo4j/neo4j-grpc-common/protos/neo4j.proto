@@ -10,6 +10,8 @@ service Neo4j {
   rpc CreateMatch (CreateMatchRequest) returns (CreateMatchResponse) {}
 
   rpc UpdateMatch (UpdateMatchRequest) returns (UpdateMatchResponse) {}
+
+  rpc GetRelationShipScores (GetRelationShipScoresRequest) returns (GetRelationShipScoresResponse) {}
 }
 
 message CreateUserRequest {
@@ -46,4 +48,15 @@ message UpdateMatchRequest {
 message UpdateMatchResponse {
   bool error = 1;
   string message = 2;
+}
+
+message GetRelationShipScoresRequest {
+  string user_id1 = 1;
+  repeated string other_users = 2;
+}
+
+message GetRelationShipScoresResponse {
+  bool error = 1;
+  string message = 2;
+  map<string, int32> relationship_scores = 3;
 }

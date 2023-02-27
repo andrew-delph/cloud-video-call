@@ -274,9 +274,14 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
     relationshipScoresMap.set(otherId, relationshipScore);
   });
 
+  // neo4jRpcClient.getRelationShipScores
+  return Array.from(relationshipScoresMap.entries());
+
   // get relationship scores from neo4j
 
   // TODO REPLACE WITH CLIENT CALL
+
+  // neo4jRpcClient.
 
   // const session = driver.session();
   // const result = await session.run(
@@ -300,7 +305,7 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
   //   relationshipScoresMap.set(b, score);
   // });
 
-  return Array.from(relationshipScoresMap.entries());
+  // return Array.from(relationshipScoresMap.entries());
 };
 
 if (require.main === module) {
