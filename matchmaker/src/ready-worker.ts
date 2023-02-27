@@ -276,38 +276,43 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
     relationshipScoresMap.set(otherId, relationshipScore);
   });
 
-  // get relationship scores from neo4j
-
-  const getRelationshipScoresRequest = new GetRelationshipScoresRequest();
-  getRelationshipScoresRequest.setUserId(userId);
-  getRelationshipScoresRequest.setOtherUsersList(Array.from(readyset));
-
-  const getRelationshipScoresMap = await new Promise<Map<string, number>>(
-    async (resolve, reject) => {
-      await neo4jRpcClient.getRelationshipScores(
-        getRelationshipScoresRequest,
-        (error: any, response: GetRelationshipScoresResponse) => {
-          if (!error) {
-            reject(error);
-          } else {
-            resolve(response.getRelationshipScoresMap());
-          }
-        },
-      );
-    },
+  logger.info(
+    `found relationship scores in cache: ${relationshipScoresMap.size}`,
   );
 
-  // write them to the cache
-  // store them in map
-  getRelationshipScoresMap.forEach(async (score, otherId) => {
-    await mainRedisClient.set(
-      getRealtionshipScoreCacheKey(userId, otherId),
-      score,
-      `EX`,
-      60,
+  // get relationship scores from neo4j
+  if (readyset.size > 0) {
+    const getRelationshipScoresRequest = new GetRelationshipScoresRequest();
+    getRelationshipScoresRequest.setUserId(userId);
+    getRelationshipScoresRequest.setOtherUsersList(Array.from(readyset));
+
+    const getRelationshipScoresMap = await new Promise<Map<string, number>>(
+      async (resolve, reject) => {
+        await neo4jRpcClient.getRelationshipScores(
+          getRelationshipScoresRequest,
+          (error: any, response: GetRelationshipScoresResponse) => {
+            if (!error) {
+              reject(error);
+            } else {
+              resolve(response.getRelationshipScoresMap());
+            }
+          },
+        );
+      },
     );
-    relationshipScoresMap.set(otherId, score);
-  });
+
+    // write them to the cache
+    // store them in map
+    getRelationshipScoresMap.forEach(async (score, otherId) => {
+      await mainRedisClient.set(
+        getRealtionshipScoreCacheKey(userId, otherId),
+        score,
+        `EX`,
+        60,
+      );
+      relationshipScoresMap.set(otherId, score);
+    });
+  }
 
   return Array.from(relationshipScoresMap.entries());
 };
