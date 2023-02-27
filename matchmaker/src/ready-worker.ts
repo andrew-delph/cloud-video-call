@@ -278,9 +278,7 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
     relationshipScoresMap.set(otherId, relationshipScore);
   }
 
-  logger.debug(
-    `found relationship scores in cache: ${relationshipScoresMap.size}`,
-  );
+  logger.debug(`relationship scores in cache: ${relationshipScoresMap.size}`);
 
   if (readyset.size == 0) return Array.from(relationshipScoresMap.entries());
 
@@ -305,7 +303,7 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
   );
 
   logger.debug(
-    `relationship scores from requested:${
+    `relationship scores requested:${
       readyset.size
     } responded: ${getRelationshipScoresMap.getLength()}`,
   );
