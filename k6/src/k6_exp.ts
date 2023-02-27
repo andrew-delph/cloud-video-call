@@ -1,6 +1,8 @@
 import { Counter, Rate, Trend } from 'k6/metrics';
 import { K6SocketIoExp } from '../libs/K6SocketIoExp';
 import { randomString } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+import redis from 'k6/experimental/redis';
+import { check } from 'k6';
 
 const vus = 50;
 export const options = {
@@ -40,7 +42,30 @@ const match_success = new Rate(`match_success`);
 const error_counter = new Counter(`error_counter`);
 const success_counter = new Counter(`success_counter`);
 
+const redisClient = new redis.Client({
+  addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
+});
+const authKeysNum = 11;
+const authKeysName = `authKeysName`;
+export function setup() {
+  const authKeys: string[] = [];
+  for (let i = 0; i < authKeysNum; i++) {
+    authKeys.push(`k6_auth_${i}`);
+  }
+  redisClient.del(authKeysName).then(() => {
+    redisClient.lpush(authKeysName, ...authKeys);
+  });
+}
+
 export default function () {
+  //   redisClient.del([authKeysName]);
+  //   for (let i = 0; i < authKeysNum; i++) {
+  //     redisClient.rpush(authKeysName, [`k6_auth_${i}`]);
+  //   }
+  // for (let i = 0; i < authKeysNum; i++) {
+  //   redisClient.lpush(authKeysName, `k6_auth_${i}`);
+  // }
+
   const secure = false;
   const domain = __ENV.HOST || `localhost:8888`;
   let url = `${
@@ -71,6 +96,10 @@ export default function () {
         expectMatch = socket.expectMessage(`match`);
         const readyPromise = socket.sendWithAck(`ready`, {});
         return readyPromise;
+      })
+      .then(async (data) => {
+        await redisClient.set(`test`, `fromk6`, 0);
+        return data;
       })
       .catch((error) => {
         ready_success.add(false);
