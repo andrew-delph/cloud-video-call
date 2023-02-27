@@ -13,6 +13,8 @@ import {
   CreateMatchResponse,
   CreateUserResponse,
   createNeo4jClient,
+  GetRelationshipScoresRequest,
+  GetRelationshipScoresResponse,
 } from 'neo4j-grpc-common';
 import { listenGlobalExceptions } from 'react-video-call-common';
 
@@ -274,38 +276,40 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
     relationshipScoresMap.set(otherId, relationshipScore);
   });
 
-  // neo4jRpcClient.getRelationShipScores
-  return Array.from(relationshipScoresMap.entries());
-
   // get relationship scores from neo4j
 
-  // TODO REPLACE WITH CLIENT CALL
+  const getRelationshipScoresRequest = new GetRelationshipScoresRequest();
+  getRelationshipScoresRequest.setUserId(userId);
+  getRelationshipScoresRequest.setOtherUsersList(Array.from(readyset));
 
-  // neo4jRpcClient.
+  const getRelationshipScoresMap = await new Promise<Map<string, number>>(
+    async (resolve, reject) => {
+      await neo4jRpcClient.getRelationshipScores(
+        getRelationshipScoresRequest,
+        (error: any, response: GetRelationshipScoresResponse) => {
+          if (!error) {
+            reject(error);
+          } else {
+            resolve(response.getRelationshipScoresMap());
+          }
+        },
+      );
+    },
+  );
 
-  // const session = driver.session();
-  // const result = await session.run(
-  //   `
-  //   UNWIND $otherIds AS otherId
-  //   MATCH (a { name: $userId })-[r:KNOWS]->(b { name: otherId })
-  //   RETURN r.score, a.name, b.name
-  //   `,
-  //   { userId, otherIds: readyset },
-  // );
-  // await session.close();
+  // write them to the cache
+  // store them in map
+  getRelationshipScoresMap.forEach(async (score, otherId) => {
+    await mainRedisClient.set(
+      getRealtionshipScoreCacheKey(userId, otherId),
+      score,
+      `EX`,
+      60,
+    );
+    relationshipScoresMap.set(otherId, score);
+  });
 
-  // // write them to the cache
-  // // store them in map
-  // result.records.forEach(async (record) => {
-  //   const score: number = record.get(`r.score`).properties.score;
-  //   const a = record.get(`a.name`);
-  //   const b = record.get(`b.name`);
-  //   const cacheKey = getRealtionshipScoreCacheKey(a, b);
-  //   await mainRedisClient.set(cacheKey, score, `EX`, 60);
-  //   relationshipScoresMap.set(b, score);
-  // });
-
-  // return Array.from(relationshipScoresMap.entries());
+  return Array.from(relationshipScoresMap.entries());
 };
 
 if (require.main === module) {

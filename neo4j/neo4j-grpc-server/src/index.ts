@@ -3,6 +3,8 @@ import {
   CreateMatchResponse,
   CreateUserRequest,
   CreateUserResponse,
+  GetRelationshipScoresRequest,
+  GetRelationshipScoresResponse,
   grpc,
   Neo4jService,
   UpdateMatchRequest,
@@ -115,6 +117,45 @@ const updateMatch = (
   // call.request.getUserId();
   const reply = new UpdateMatchResponse();
   reply.setMessage(`Updated match succesfully`);
+  callback(null, reply);
+};
+
+const getRelationshipScores = async (
+  call: grpc.ServerUnaryCall<
+    GetRelationshipScoresRequest,
+    GetRelationshipScoresResponse
+  >,
+  callback: grpc.sendUnaryData<GetRelationshipScoresResponse>,
+): Promise<void> => {
+  const userId = call.request.getUserId1();
+  const otherUsers = call.request.getOtherUsersList();
+  const reply = new GetRelationshipScoresResponse();
+
+  otherUsers.forEach((otherUser) => {
+    if (Math.random() > 0.8) return;
+    reply.getRelationshipScoresMap().set(otherUser, Math.random() * 10);
+  });
+
+  const start_time = performance.now();
+
+  // const session = driver.session();
+  // await session.run(
+  //   `MATCH (a:Person), (b:Person) WHERE a.userId = $userId1 AND b.userId = $userId2 MERGE (a)-[:MATCHED]->(b) MERGE (b)-[:MATCHED]->(a)`,
+  //   {
+  //     userId1: userId1,
+  //     userId2: userId2,
+  //   },
+  // );
+  // await session.close();
+
+  const duration = (performance.now() - start_time) / 1000;
+
+  if (duration > durationWarn) {
+    logger.warn(`getRelationshipScores duration: \t ${duration}s`);
+  } else {
+    logger.debug(`getRelationshipScores duration: \t ${duration}s`);
+  }
+
   callback(null, reply);
 };
 
