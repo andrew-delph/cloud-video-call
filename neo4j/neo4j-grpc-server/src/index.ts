@@ -47,7 +47,7 @@ const createUser = async (
   call: grpc.ServerUnaryCall<CreateUserRequest, CreateUserResponse>,
   callback: grpc.sendUnaryData<CreateUserResponse>,
 ): Promise<void> => {
-  const socketId = call.request.getUserId();
+  const userId = call.request.getUserId();
   const reply = new CreateUserResponse();
 
   const start_time = performance.now();
@@ -55,10 +55,10 @@ const createUser = async (
   const session = driver.session();
   await session.run(
     `
-      CREATE (:Person {socketid: $socketid});
+      CREATE (:Person {userId: $userId});
       `,
     {
-      socketid: socketId,
+      userId: userId,
     },
   );
   await session.close();
@@ -80,19 +80,19 @@ const createMatch = async (
   call: grpc.ServerUnaryCall<CreateMatchRequest, CreateMatchResponse>,
   callback: grpc.sendUnaryData<CreateMatchResponse>,
 ): Promise<void> => {
-  const socket1 = call.request.getUserId1();
-  const socket2 = call.request.getUserId2();
+  const userId1 = call.request.getUserId1();
+  const userId2 = call.request.getUserId2();
   const reply = new CreateMatchResponse();
-  reply.setMessage(`Created match succesfully for: ${socket1} ${socket2}`);
+  reply.setMessage(`Created match succesfully for: ${userId1} ${userId2}`);
 
   const start_time = performance.now();
 
   const session = driver.session();
   await session.run(
-    `MATCH (a:Person), (b:Person) WHERE a.socketid = $socket1 AND b.socketid = $socket2 MERGE (a)-[:MATCHED]->(b) MERGE (b)-[:MATCHED]->(a)`,
+    `MATCH (a:Person), (b:Person) WHERE a.userId = $userId1 AND b.userId = $userId2 MERGE (a)-[:MATCHED]->(b) MERGE (b)-[:MATCHED]->(a)`,
     {
-      socket1: socket1,
-      socket2: socket2,
+      userId1: userId1,
+      userId2: userId2,
     },
   );
   await session.close();
