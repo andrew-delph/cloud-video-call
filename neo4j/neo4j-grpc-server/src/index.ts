@@ -132,7 +132,6 @@ const getRelationshipScores = async (
   const reply = new GetRelationshipScoresResponse();
 
   otherUsers.forEach((otherUser) => {
-    if (Math.random() > 0.8) return;
     reply.getRelationshipScoresMap().set(otherUser, Math.random() * 10);
   });
 
@@ -160,7 +159,12 @@ const getRelationshipScores = async (
 };
 
 var server = new grpc.Server();
-server.addService(Neo4jService, { createUser, createMatch, updateMatch });
+server.addService(Neo4jService, {
+  createUser,
+  createMatch,
+  updateMatch,
+  getRelationshipScores,
+});
 const addr = `0.0.0.0:${process.env.PORT || 8080}`;
 server.bindAsync(addr, grpc.ServerCredentials.createInsecure(), async () => {
   await verifyIndexes();
