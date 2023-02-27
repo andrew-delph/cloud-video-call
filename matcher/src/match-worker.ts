@@ -30,6 +30,7 @@ dotenv.config();
 
 const matchTimeout = 5000;
 
+let mainRedisClient: Client;
 let pubRedisClient: Client;
 let subRedisClient: Client;
 
@@ -44,6 +45,9 @@ export async function matchConsumer() {
   });
   logger.info(`rabbitmq connected`);
 
+  mainRedisClient = new Client({
+    host: `${process.env.REDIS_HOST || `redis`}`,
+  });
   pubRedisClient = new Client({
     host: `${process.env.REDIS_HOST || `redis`}`,
   });
@@ -68,10 +72,12 @@ export async function matchConsumer() {
       try {
         const msgContent: [string, string] = JSON.parse(msg.content.toString());
 
-        const socket1 = msgContent[0];
-        const socket2 = msgContent[1];
+        const userId1 = msgContent[0];
+        const userId2 = msgContent[1];
 
-        await match(socket1, socket2);
+        logger.debug(`matching ${userId1} ${userId2}`);
+
+        await match(userId1, userId2);
       } catch (e) {
         logger.debug(`matchEvent error=` + e);
       } finally {
@@ -84,17 +90,31 @@ export async function matchConsumer() {
   );
 }
 
-export const match = async (socket1: string, socket2: string) => {
-  if (!socket1 || !socket2) {
-    logger.error(`(!socket1 || !socket2) ${socket1} ${socket2}`);
-    throw Error(`(!socket1 || !socket2) ${socket1} ${socket2}`);
+export const match = async (userId1: string, userId2: string) => {
+  if (!userId1 || !userId2) {
+    logger.error(`(!userId1 || !userId2) ${userId1} ${userId2}`);
+    throw Error(`(!userId1 || !userId2) ${userId1} ${userId2}`);
   }
-  logger.debug(`matching: ${socket1} ${socket2}`);
+  logger.debug(`matching: ${userId1} ${userId2}`);
 
   const request = new CreateMatchRequest();
 
-  request.setUserId1(socket1);
-  request.setUserId2(socket2);
+  request.setUserId1(userId1);
+  request.setUserId2(userId2);
+
+  const socket1 = await mainRedisClient.hget(
+    common.connectedAuthMapName,
+    userId1,
+  );
+  const socket2 = await mainRedisClient.hget(
+    common.connectedAuthMapName,
+    userId2,
+  );
+
+  if (!socket1 || !socket2) {
+    logger.error(`(!socket1 || !socket2 ${socket1} ${socket2}`);
+    throw Error(`!socket1 || !socket2 ${socket1} ${socket2}`);
+  }
 
   await neo4jRpcClient.createMatch(request, (error, response) => {
     if (error) {
@@ -141,7 +161,7 @@ export const match = async (socket1: string, socket2: string) => {
       return new Promise(hostCallback);
     })
     .then(() => {
-      // console.log(`match success: ${socket1} ${socket2}`);
+      // console.log(`match success: ${userId1} ${userId2}`);
     })
     .catch((error) => {
       logger.debug(`host paring failed: ${error}`);

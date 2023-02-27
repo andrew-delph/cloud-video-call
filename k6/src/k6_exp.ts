@@ -2,12 +2,12 @@ import { Counter, Rate, Trend } from 'k6/metrics';
 import { K6SocketIoExp } from '../libs/K6SocketIoExp';
 import { randomString } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 import redis from 'k6/experimental/redis';
-import { check } from 'k6';
+import { check, sleep } from 'k6';
 
 const vus = 50;
 export const options = {
-  vus: 50,
-  duration: `2h`,
+  vus: 20,
+  duration: `2m`,
   // scenarios: {
   //   matchTest: {
   //     executor: `ramping-vus`,
@@ -45,14 +45,14 @@ const success_counter = new Counter(`success_counter`);
 const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 100;
+const authKeysNum = 1000;
 const authKeysName = `authKeysName`;
 export function setup() {
   const authKeys: string[] = [];
   for (let i = 0; i < authKeysNum; i++) {
     authKeys.push(`k6_auth_${i}`);
   }
-  redisClient.del(authKeysName).then(() => {
+  redisClient.del(authKeysName).finally(() => {
     redisClient.lpush(authKeysName, ...authKeys);
   });
 }
@@ -66,13 +66,42 @@ export default async function () {
 
   let auth: string | null = null;
 
-  while (!auth) {
-    auth = await redisClient.lpop(authKeysName);
+  const popAuth = async () => {
+    const auth = await redisClient.lpop(authKeysName);
+    if (Math.random() > 0.5) {
+      await redisClient.rpush(authKeysName, auth);
+      return await redisClient.lpop(authKeysName);
+    }
+    return auth;
+  };
+
+  try {
+    auth = await popAuth();
+    while (!auth) {
+      console.log(`trying to get auth`);
+      sleep(1);
+      auth = await popAuth();
+    }
+  } catch (e) {
+    console.log(`error with getting auth`, e);
+    sleep(10);
+    return;
   }
 
   url = url + `&auth=${auth}`;
 
   const socket = new K6SocketIoExp(url);
+
+  // socket.on(`close`, async () => {
+  //   await redisClient.rpush(authKeysName, auth);
+  // });
+  // socket.on(`error`, async () => {
+  //   await redisClient.rpush(authKeysName, auth);
+  // });
+
+  socket.setOnClose(async () => {
+    await redisClient.rpush(authKeysName, auth);
+  });
 
   socket.setOnConnect(() => {
     let expectMatch: any;
@@ -120,7 +149,6 @@ export default async function () {
         success_counter.add(1);
       })
       .finally(async () => {
-        await redisClient.rpush(authKeysName, auth);
         socket.close();
       });
   });

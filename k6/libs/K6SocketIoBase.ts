@@ -11,6 +11,7 @@ export abstract class K6SocketIoBase {
   hasError = false;
   callbackCount = 0;
   onConnect: (() => void) | undefined;
+  onClose: (() => void) | undefined;
   ackCallbackMap: Record<string, (data: any) => void> = {};
   eventMessageHandleMap: Record<
     string,
@@ -49,7 +50,8 @@ export abstract class K6SocketIoBase {
         this.close();
       }, this.max_time);
     }
-    this.on(`close`, () => {
+    this.on(`close`, async () => {
+      if (this.onClose != null) await this.onClose();
       clearTimeout(max_time_timeout);
       this.failWaitingEvents();
       check(this.connected, { connected: (r) => r });
@@ -67,6 +69,10 @@ export abstract class K6SocketIoBase {
 
   setOnConnect(callback: () => void) {
     this.onConnect = callback;
+  }
+
+  setOnClose(callback: () => void) {
+    this.onClose = callback;
   }
 
   handleMessage(msg: string) {

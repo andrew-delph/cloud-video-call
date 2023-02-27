@@ -96,11 +96,11 @@ io.on(`connection`, async (socket) => {
     //   messages: [{ value: socket.id }],
     // });
 
-    await mainRedisClient.sadd(common.readySetName, socket.id);
+    await mainRedisClient.sadd(common.readySetName, socket.data.auth);
 
     await rabbitChannel.sendToQueue(
       common.readyQueueName,
-      Buffer.from(JSON.stringify([socket.id])),
+      Buffer.from(JSON.stringify([socket.data.auth])),
     );
 
     if (callback != undefined) {
@@ -115,8 +115,8 @@ io.on(`connection`, async (socket) => {
         io.sockets.sockets.size
       } duration: ${Math.round(duration / 1000)}`,
     );
-    mainRedisClient.srem(common.activeSetName, socket.id);
-    mainRedisClient.srem(common.readySetName, socket.id);
+    mainRedisClient.srem(common.activeSetName, socket.data.auth);
+    mainRedisClient.srem(common.readySetName, socket.data.auth);
     pubRedisClient.publish(common.activeCountChannel, `change`);
   });
 
@@ -146,7 +146,7 @@ io.on(`connection`, async (socket) => {
   //   });
   // }, 1000);
 
-  await mainRedisClient.sadd(common.activeSetName, socket.id);
+  await mainRedisClient.sadd(common.activeSetName, socket.data.auth);
 
   const createUserRequest = new CreateUserRequest();
   createUserRequest.setUserId(socket.data.auth);

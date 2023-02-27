@@ -71,26 +71,23 @@ export const startReadyConsumer = async () => {
 
       const msgContent: [string] = JSON.parse(msg.content.toString());
 
-      const socketId = msgContent[0];
-      if (!socketId) {
-        logger.error(`socketId is null`);
+      const userId = msgContent[0];
+      if (!userId) {
+        logger.error(`userId is null`);
         rabbitChannel.ack(msg);
       }
-      // console.log(`socketid ${socketId}`);
+      logger.debug(`matching: ${userId}`);
 
       const cleanup: (() => void)[] = [];
       try {
-        await matchmakerFlow(socketId, 1, cleanup);
+        await matchmakerFlow(userId, 1, cleanup);
         rabbitChannel.ack(msg);
       } catch (e: any) {
         if (e instanceof CompleteError) {
-          // console.log(`CompleteError:\t ${e.message}`);
+          logger.debug(`CompleteError ${userId} ${e}`);
           rabbitChannel.ack(msg);
         } else if (e instanceof RetryError) {
-          // console.log(`RetryError: \t ${socketId} \t ${e.message}`);
-
-          // TODO change to delay with rabbitmq
-          // await common.delay(5000); // hold 5 seconds before retry
+          logger.debug(`RetryError ${userId} ${e}`);
           rabbitChannel.nack(msg);
         } else {
           logger.error(`Unknown error: ${e}`);
@@ -131,12 +128,12 @@ class RetrySignal {
   }
 }
 
-const getSocketChannel = (socketId: string) => {
-  return `${matchmakerChannelPrefix}${socketId}`;
+const getSocketChannel = (userId: string) => {
+  return `${matchmakerChannelPrefix}${userId}`;
 };
 
 const matchmakerFlow = async (
-  socketId: string,
+  userId: string,
   priority: number,
   cleanup: (() => void)[],
 ) => {
@@ -144,12 +141,12 @@ const matchmakerFlow = async (
 
   const retrySignal = new RetrySignal();
 
-  if (!(await mainRedisClient.smismember(common.readySetName, socketId))[0]) {
-    throw new CompleteError(`no longer ready: ${socketId}`);
+  if (!(await mainRedisClient.smismember(common.readySetName, userId))[0]) {
+    throw new CompleteError(`no longer ready: ${userId}`);
   }
 
   const notifyListeners = async (targetId: string) => {
-    const msg = { priority, owner: socketId };
+    const msg = { priority, owner: userId };
     await pubRedisClient.publish(
       getSocketChannel(targetId),
       JSON.stringify(msg),
@@ -175,12 +172,12 @@ const matchmakerFlow = async (
           return;
         }
 
-        if (msg.owner == socketId) {
+        if (msg.owner == userId) {
           // ignore messages from outself
           return;
         } else if (msg.priority > priority) {
           retrySignal.setSignal(`higher priority for ${targetId}`);
-        } else if (msg.priority == priority && msg.owner > socketId) {
+        } else if (msg.priority == priority && msg.owner > userId) {
           retrySignal.setSignal(`higher priority for ${targetId}`);
         } else {
           await notifyListeners(targetId);
@@ -194,16 +191,16 @@ const matchmakerFlow = async (
     subRedisClient.on(`pmessage`, listener);
   };
 
-  // listen and publish on socketID
-  registerSubscriptionListener(socketId);
-  await notifyListeners(socketId);
+  // listen and publish on userId
+  registerSubscriptionListener(userId);
+  await notifyListeners(userId);
 
   const readySet = new Set(await mainRedisClient.smembers(common.readySetName));
-  readySet.delete(socketId);
+  readySet.delete(userId);
 
   if (readySet.size == 0) throw new RetryError(`ready set is 0`);
 
-  const relationShipScores = await getRelationshipScores(socketId, readySet);
+  const relationShipScores = await getRelationshipScores(userId, readySet);
 
   // select the otherId
   let otherId: string;
@@ -232,12 +229,10 @@ const matchmakerFlow = async (
   retrySignal.checkSignal();
 
   await redlock
-    .using([socketId, otherId], 5000, async (signal) => {
+    .using([userId, otherId], 5000, async (signal) => {
       // make sure both are in the set
-      if (
-        !(await mainRedisClient.smismember(common.readySetName, socketId))[0]
-      ) {
-        throw new CompleteError(`socketId is no longer ready`);
+      if (!(await mainRedisClient.smismember(common.readySetName, userId))[0]) {
+        throw new CompleteError(`userId is no longer ready`);
       }
       if (
         !(await mainRedisClient.smismember(common.readySetName, otherId))[0]
@@ -246,27 +241,24 @@ const matchmakerFlow = async (
       }
 
       // remove both from ready set
-      await mainRedisClient.srem(common.readySetName, socketId);
+      await mainRedisClient.srem(common.readySetName, userId);
       await mainRedisClient.srem(common.readySetName, otherId);
 
       // send to matcher
 
       await rabbitChannel.sendToQueue(
         common.matchQueueName,
-        Buffer.from(JSON.stringify([socketId, otherId])),
+        Buffer.from(JSON.stringify([userId, otherId])),
       );
     })
     .catch(onError);
 };
 
-const getRealtionshipScoreCacheKey = (socketId: string, otherId: string) => {
-  return `relationship-score-${socketId}-${otherId}`;
+const getRealtionshipScoreCacheKey = (userId: string, otherId: string) => {
+  return `relationship-score-${userId}-${otherId}`;
 };
 
-const getRelationshipScores = async (
-  socketId: string,
-  readyset: Set<string>,
-) => {
+const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
   const relationshipScoresMap = new Map<string, number>();
 
   // get values that are in cache
@@ -274,7 +266,7 @@ const getRelationshipScores = async (
   readyset.forEach(async (otherId) => {
     const relationshipScore = parseInt(
       (await mainRedisClient.get(
-        getRealtionshipScoreCacheKey(socketId, otherId),
+        getRealtionshipScoreCacheKey(userId, otherId),
       )) as string,
     );
     if (!relationshipScore) return;
@@ -290,10 +282,10 @@ const getRelationshipScores = async (
   // const result = await session.run(
   //   `
   //   UNWIND $otherIds AS otherId
-  //   MATCH (a { name: $socketId })-[r:KNOWS]->(b { name: otherId })
+  //   MATCH (a { name: $userId })-[r:KNOWS]->(b { name: otherId })
   //   RETURN r.score, a.name, b.name
   //   `,
-  //   { socketId, otherIds: readyset },
+  //   { userId, otherIds: readyset },
   // );
   // await session.close();
 
