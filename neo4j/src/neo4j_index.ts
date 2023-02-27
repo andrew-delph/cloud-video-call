@@ -43,7 +43,7 @@ function printResults(
 
     await funcs.createGraph();
     result = await funcs.callAlgo();
-    result = await funcs.getSimilarTarget(`k6_auth_1`, Array.from(x));
+    // result = await funcs.getSimilarTarget(`k6_auth_1`, Array.from(x));
 
     printResults(result, 10);
   } finally {
