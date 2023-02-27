@@ -6,7 +6,7 @@ import { check, sleep } from 'k6';
 
 const vus = 50;
 export const options = {
-  vus: 20,
+  vus: 4,
   duration: `1h`,
   // scenarios: {
   //   matchTest: {

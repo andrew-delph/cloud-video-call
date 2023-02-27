@@ -52,7 +52,13 @@ export async function createData(
 
   if (deleteData) {
     console.log(`Deleting`);
-    await session.run(`MATCH (n) DETACH DELETE n`);
+    await session.run(`
+    :auto MATCH (n)
+    CALL {
+      WITH n
+      DETACH DELETE n
+    } IN TRANSACTIONS
+    `);
   }
 
   console.log(`create nodes ${nodesNum}`);
@@ -99,10 +105,10 @@ export async function callAlgo() {
   const query1 = `
       CALL gds.nodeSimilarity.stream('myGraph' , {})
           YIELD node1, node2, similarity
-          RETURN gds.util.asNode(node1).name
-          AS Person1, gds.util.asNode(node2).name
-          AS Person2, similarity 
-          ORDER BY similarity DESCENDING, Person1, Person2
+          RETURN gds.util.asNode(node1).userid
+          AS User1, gds.util.asNode(node2).userid
+          AS User2, similarity 
+          ORDER BY similarity DESCENDING, User1, User2
           `;
 
   const query2 = `
@@ -176,6 +182,28 @@ export async function callAlgo() {
   return result;
 }
 
+export async function callWriteSimilar() {
+  // run simularity
+  console.log(``);
+  console.log(`--- callWriteSimilar`);
+
+  const query7 = `CALL gds.nodeSimilarity.write('myGraph', {
+            writeRelationshipType: 'SIMILAR',
+            writeProperty: 'score'
+        })
+        YIELD nodesCompared, relationshipsWritten`;
+
+  let start_time = performance.now();
+
+  let result = await session.run(query7);
+
+  const end_time = performance.now();
+
+  console.log(`query`, end_time - start_time);
+
+  return result;
+}
+
 export async function changeRandomReady() {
   //   const start_time = performance.now();
   //   // create myGraph
@@ -237,10 +265,10 @@ export async function getSimilar(names: Array<string>) {
   result = await session.run(
     `
   MATCH (a)-[rel:SIMILAR]->(b) 
-  WHERE a.name < b.name 
-  AND a.name IN $names
-  AND b.name IN $names
-  RETURN a.name, b.name, rel.score
+  WHERE a.userId < b.userId 
+  AND a.userId IN $names
+  AND b.userId IN $names
+  RETURN a.userId, b.userId, rel.score
   ORDER BY rel.score DESCENDING
     `,
     { names },
@@ -253,6 +281,33 @@ export async function getSimilar(names: Array<string>) {
   // RETURN n.name AS node1, m.name AS node2, r.score AS similarity
   // ORDER BY r.score DESCENDING, node1, node2
   //     `);
+
+  const end_time = performance.now();
+
+  console.log(`it took: `, end_time - start_time);
+
+  return result;
+}
+
+export async function getSimilarTarget(target: string, names: Array<string>) {
+  console.log();
+  console.log(`running getSimilar`);
+
+  const start_time = performance.now();
+  // create myGraph
+
+  let result;
+
+  result = await session.run(
+    `
+  MATCH (a)-[rel:SIMILAR]->(b) 
+  WHERE a.userId = $target
+  AND b.userId IN $names
+  RETURN a.userId, b.userId, rel.score
+  ORDER BY rel.score DESCENDING
+    `,
+    { target, names },
+  );
 
   const end_time = performance.now();
 

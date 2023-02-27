@@ -8,5 +8,6 @@
     "declarationMap": true,
     "module": "commonjs",
     "target": "es2016"
-  }
+  },
+  "include": ["src/**/*"]
 }

@@ -23,8 +23,7 @@ function printResults(
       console.log(`a`, record.get(`a.name`));
       console.log(`b`, record.get(`b.name`));
     } catch (e) {
-      console.log(`...`);
-      // console.log(record);
+      console.log(record);
     }
   });
   console.log(`records.length:`, records.length);
@@ -32,31 +31,21 @@ function printResults(
 
 (async () => {
   try {
-    // for (var i = 0; i < 3; i++) {
-    //   result = await funcs.changeRandomReady()
-    // }
-
-    // await funcs.createData(10, 20, true);
-
     let result;
 
-    const x = new Set();
-    x.add(`node2`);
-    x.add(`node3`);
-    x.add(`node4`);
-    x.add(`node5`);
+    const x = new Set<string>();
 
-    result = await funcs.session.run(
-      `
-    UNWIND $others AS otherId
-    MATCH (a { name: $main })-[r:KNOWS]->(b { name: otherId })
-    RETURN r.value, a.name, b.name
-    `,
-      { main: `node1`, others: x },
-    );
+    for (let i = 1; i < 5; i++) {
+      x.add(`k6_auth_${i}`);
+    }
+
+    await funcs.createGraph();
+    result = await funcs.callAlgo();
+    result = await funcs.getSimilarTarget(`k6_auth_1`, Array.from(x));
+
     printResults(result, 10);
   } finally {
-    console.log(`closing`);
+    console.log(`closing.`);
     await funcs.session.close();
     await funcs.driver.close();
   }
