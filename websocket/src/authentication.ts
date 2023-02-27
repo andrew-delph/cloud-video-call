@@ -2,7 +2,7 @@ import { getLogger } from 'react-video-call-common';
 import { Socket } from 'socket.io';
 import { mainRedisClient } from './socketio_server';
 
-const connectedAuthMapName = `connectedAuthMapName`;
+import * as common from 'react-video-call-common';
 
 const logger = getLogger();
 
@@ -26,17 +26,17 @@ export const auth_middleware = async (
     return;
   }
 
-  if (await mainRedisClient.hexists(connectedAuthMapName, auth)) {
+  if (await mainRedisClient.hexists(common.connectedAuthMapName, auth)) {
     logger.debug(`User already connected: ${auth}`);
     next(new Error(`User already connected`));
     return;
   }
 
   socket.on(`disconnect`, async () => {
-    await mainRedisClient.hdel(connectedAuthMapName, auth, socket.id);
+    await mainRedisClient.hdel(common.connectedAuthMapName, auth, socket.id);
   });
 
-  await mainRedisClient.hset(connectedAuthMapName, auth, socket.id);
+  await mainRedisClient.hset(common.connectedAuthMapName, auth, socket.id);
 
   // socket.auth = auth;
   socket.data.auth = auth;

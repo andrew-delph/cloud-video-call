@@ -10,3 +10,5 @@ export const matchQueueName = `matchQueue`;
 export const readyTopicName = `readyTopicName`;
 
 export const neo4jCreateUserTopicName = `createUserTopicName`;
+
+export const connectedAuthMapName = `connectedAuthMapName`;
