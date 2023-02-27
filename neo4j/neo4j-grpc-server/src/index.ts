@@ -127,7 +127,7 @@ const getRelationshipScores = async (
   >,
   callback: grpc.sendUnaryData<GetRelationshipScoresResponse>,
 ): Promise<void> => {
-  const userId = call.request.getUserId1();
+  const userId = call.request.getUserId();
   const otherUsers = call.request.getOtherUsersList();
   const reply = new GetRelationshipScoresResponse();
 
