@@ -289,7 +289,7 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
   getRelationshipScoresRequest.setUserId(userId);
   getRelationshipScoresRequest.setOtherUsersList(Array.from(readyset));
 
-  const getRelationshipScoresMap = await new Promise<Map<string, number>>(
+  const getRelationshipScoresMap = await new Promise<any>(
     async (resolve, reject) => {
       await neo4jRpcClient.getRelationshipScores(
         getRelationshipScoresRequest,
@@ -305,7 +305,9 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
   );
 
   logger.debug(
-    `relationship scores from request: ${getRelationshipScoresMap.size} requested: ${readyset.size}`,
+    `relationship scores from requested:${
+      readyset.size
+    } responded: ${getRelationshipScoresMap.getLength()}`,
   );
 
   // write them to the cache

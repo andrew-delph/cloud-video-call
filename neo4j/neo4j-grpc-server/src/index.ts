@@ -127,6 +127,8 @@ const getRelationshipScores = async (
   >,
   callback: grpc.sendUnaryData<GetRelationshipScoresResponse>,
 ): Promise<void> => {
+  const start_time = performance.now();
+
   const userId = call.request.getUserId();
   const otherUsers = call.request.getOtherUsersList();
   const reply = new GetRelationshipScoresResponse();
@@ -134,8 +136,6 @@ const getRelationshipScores = async (
   for (const otherUser of otherUsers) {
     reply.getRelationshipScoresMap().set(otherUser, Math.random() * 10);
   }
-
-  const start_time = performance.now();
 
   // const session = driver.session();
   // await session.run(
