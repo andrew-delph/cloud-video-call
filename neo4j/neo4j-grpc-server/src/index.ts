@@ -133,19 +133,24 @@ const getRelationshipScores = async (
   const otherUsers = call.request.getOtherUsersList();
   const reply = new GetRelationshipScoresResponse();
 
-  for (const otherUser of otherUsers) {
-    reply.getRelationshipScoresMap().set(otherUser, Math.random() * 10);
-  }
+  const session = driver.session();
+  const result = await session.run(
+    `
+        MATCH (a)-[rel:SIMILAR]->(b) 
+        WHERE a.userId = $target
+        AND b.userId IN $otherUsers
+        RETURN a.userId as targetId, b.userId as otherId, rel.score as score
+        ORDER BY rel.score DESCENDING
+      `,
+    { target: userId, otherUsers },
+  );
+  await session.close();
 
-  // const session = driver.session();
-  // await session.run(
-  //   `MATCH (a:Person), (b:Person) WHERE a.userId = $userId1 AND b.userId = $userId2 MERGE (a)-[:MATCHED]->(b) MERGE (b)-[:MATCHED]->(a)`,
-  //   {
-  //     userId1: userId1,
-  //     userId2: userId2,
-  //   },
-  // );
-  // await session.close();
+  for (const record of result.records) {
+    reply
+      .getRelationshipScoresMap()
+      .set(record.get(`otherId`), record.get(`score`));
+  }
 
   const duration = (performance.now() - start_time) / 1000;
 

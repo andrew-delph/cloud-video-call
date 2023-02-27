@@ -303,7 +303,7 @@ export async function getSimilarTarget(target: string, names: Array<string>) {
   MATCH (a)-[rel:SIMILAR]->(b) 
   WHERE a.userId = $target
   AND b.userId IN $names
-  RETURN a.userId, b.userId, rel.score
+  RETURN a.userId as targetId, b.userId as otherId, rel.score as score
   ORDER BY rel.score DESCENDING
     `,
     { target, names },

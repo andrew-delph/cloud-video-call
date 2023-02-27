@@ -19,9 +19,11 @@ function printResults(
     try {
       // console.log(record.get(`r`));
       // console.log(`value`, Object.keys(record.get(`r`)));
-      console.log(`value`, record.get(`r.value`));
-      console.log(`a`, record.get(`a.name`));
-      console.log(`b`, record.get(`b.name`));
+      console.log(`>`);
+      console.log(`targetId`, record.get(`targetId`));
+      console.log(`otherId`, record.get(`otherId`));
+      console.log(`score`, record.get(`score`));
+      console.log(`>`);
     } catch (e) {
       console.log(record);
     }
