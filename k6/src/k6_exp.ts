@@ -45,16 +45,14 @@ const success_counter = new Counter(`success_counter`);
 const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 300;
+const authKeysNum = 1000;
 const authKeysName = `authKeysName`;
 export function setup() {
   const authKeys: string[] = [];
   for (let i = 0; i < authKeysNum; i++) {
     authKeys.push(`k6_auth_${i}`);
   }
-  redisClient.del(authKeysName).finally(() => {
-    redisClient.lpush(authKeysName, ...authKeys);
-  });
+  redisClient.del(authKeysName);
 }
 
 export default async function () {
@@ -68,7 +66,7 @@ export default async function () {
 
   const popAuth = async (count: number = 0) => {
     const auth = await redisClient.lpop(authKeysName);
-    if (Math.random() > 0.5 && count < 4) {
+    if (Math.random() > 0.5 && count < 10) {
       await redisClient.rpush(authKeysName, auth);
       return await popAuth(count + 1);
     }
