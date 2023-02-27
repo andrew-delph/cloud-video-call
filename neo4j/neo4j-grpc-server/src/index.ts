@@ -31,7 +31,7 @@ const verifyIndexes = async () => {
 
   const session = driver.session();
   await session.run(
-    `CREATE INDEX  Person_socketid IF NOT EXISTS  FOR (n:Person) ON (n.socketid);`,
+    `CREATE INDEX  Person_userId IF NOT EXISTS  FOR (n:Person) ON (n.userId);`,
   );
 
   await session.close();
@@ -55,7 +55,7 @@ const createUser = async (
   const session = driver.session();
   await session.run(
     `
-      CREATE (:Person {userId: $userId});
+      Merge (:Person {userId: $userId});
       `,
     {
       userId: userId,

@@ -70,7 +70,9 @@ io.on(`error`, (err) => {
 
 io.on(`connection`, async (socket) => {
   const start_time = performance.now();
-  logger.debug(`connected ${process.env.HOSTNAME} ${io.sockets.sockets.size}`);
+  logger.debug(
+    `connected ${process.env.HOSTNAME} ${io.sockets.sockets.size} auth: ${socket.data.auth}`,
+  );
 
   socket.on(`error`, (err) => {
     logger.error(`socket err`, err);
@@ -147,7 +149,7 @@ io.on(`connection`, async (socket) => {
   await mainRedisClient.sadd(common.activeSetName, socket.id);
 
   const createUserRequest = new CreateUserRequest();
-  createUserRequest.setUserId(socket.id);
+  createUserRequest.setUserId(socket.data.auth);
 
   await neo4jRpcClient.createUser(
     createUserRequest,

@@ -119,8 +119,8 @@ export default async function () {
         match_elapsed.add(data.elapsed);
         success_counter.add(1);
       })
-      .finally(() => {
-        redisClient.rpush(authKeysName, auth);
+      .finally(async () => {
+        await redisClient.rpush(authKeysName, auth);
         socket.close();
       });
   });

@@ -38,5 +38,8 @@ export const auth_middleware = async (
 
   await mainRedisClient.hset(connectedAuthMapName, auth, socket.id);
 
+  // socket.auth = auth;
+  socket.data.auth = auth;
+
   next();
 };
