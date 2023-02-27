@@ -66,11 +66,11 @@ export default async function () {
 
   let auth: string | null = null;
 
-  const popAuth = async () => {
+  const popAuth = async (count: number = 0) => {
     const auth = await redisClient.lpop(authKeysName);
-    if (Math.random() > 0.5) {
+    if (Math.random() > 0.5 && count < 4) {
       await redisClient.rpush(authKeysName, auth);
-      return await redisClient.lpop(authKeysName);
+      return await popAuth(count + 1);
     }
     return auth;
   };
