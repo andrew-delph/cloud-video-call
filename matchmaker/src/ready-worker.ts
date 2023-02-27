@@ -86,10 +86,10 @@ export const startReadyConsumer = async () => {
         rabbitChannel.ack(msg);
       } catch (e: any) {
         if (e instanceof CompleteError) {
-          logger.debug(`CompleteError ${userId} ${e}`);
+          // logger.debug(`CompleteError ${userId} ${e}`);
           rabbitChannel.ack(msg);
         } else if (e instanceof RetryError) {
-          logger.debug(`RetryError ${userId} ${e}`);
+          // logger.debug(`RetryError ${userId} ${e}`);
           rabbitChannel.nack(msg);
         } else {
           logger.error(`Unknown error: ${e}`);
@@ -265,20 +265,24 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
 
   // get values that are in cache
   // pop from the readySet if in cache
-  readyset.forEach(async (otherId) => {
-    const relationshipScore = parseInt(
+
+  for (const otherId of readyset.values()) {
+    const relationshipScore = parseFloat(
       (await mainRedisClient.get(
         getRealtionshipScoreCacheKey(userId, otherId),
       )) as string,
     );
-    if (!relationshipScore) return;
+
+    if (!relationshipScore) continue;
     readyset.delete(otherId);
     relationshipScoresMap.set(otherId, relationshipScore);
-  });
+  }
 
-  logger.info(
+  logger.debug(
     `found relationship scores in cache: ${relationshipScoresMap.size}`,
   );
+
+  if (readyset.size == 0) return Array.from(relationshipScoresMap.entries());
 
   // get relationship scores from neo4j
   const getRelationshipScoresRequest = new GetRelationshipScoresRequest();
@@ -290,28 +294,31 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
       await neo4jRpcClient.getRelationshipScores(
         getRelationshipScoresRequest,
         (error: any, response: GetRelationshipScoresResponse) => {
-          if (!error) {
+          if (error) {
             reject(error);
           } else {
-            logger.info(`response`, response);
-            resolve(response.getRelationshipScoresMap() || {});
+            resolve(response.getRelationshipScoresMap());
           }
         },
       );
     },
   );
 
+  logger.debug(
+    `relationship scores from request: ${getRelationshipScoresMap.size} requested: ${readyset.size}`,
+  );
+
   // write them to the cache
   // store them in map
-  getRelationshipScoresMap.forEach(async (score, otherId) => {
+  for (const scoreEntry of getRelationshipScoresMap.entries()) {
     await mainRedisClient.set(
-      getRealtionshipScoreCacheKey(userId, otherId),
-      score,
+      getRealtionshipScoreCacheKey(userId, scoreEntry[0]),
+      scoreEntry[1],
       `EX`,
       60,
     );
-    relationshipScoresMap.set(otherId, score);
-  });
+    relationshipScoresMap.set(scoreEntry[0], scoreEntry[1]);
+  }
 
   return Array.from(relationshipScoresMap.entries());
 };

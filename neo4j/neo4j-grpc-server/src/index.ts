@@ -131,9 +131,9 @@ const getRelationshipScores = async (
   const otherUsers = call.request.getOtherUsersList();
   const reply = new GetRelationshipScoresResponse();
 
-  otherUsers.forEach((otherUser) => {
+  for (const otherUser of otherUsers) {
     reply.getRelationshipScoresMap().set(otherUser, Math.random() * 10);
-  });
+  }
 
   const start_time = performance.now();
 

@@ -7,7 +7,7 @@ import { check, sleep } from 'k6';
 const vus = 50;
 export const options = {
   vus: 20,
-  duration: `5m`,
+  duration: `1h`,
   // scenarios: {
   //   matchTest: {
   //     executor: `ramping-vus`,
@@ -45,7 +45,7 @@ const success_counter = new Counter(`success_counter`);
 const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 1000;
+const authKeysNum = 300;
 const authKeysName = `authKeysName`;
 export function setup() {
   const authKeys: string[] = [];
@@ -90,7 +90,7 @@ export default async function () {
 
   url = url + `&auth=${auth}`;
 
-  const socket = new K6SocketIoExp(url);
+  const socket = new K6SocketIoExp(url, {}, 10000);
 
   // socket.on(`close`, async () => {
   //   await redisClient.rpush(authKeysName, auth);
