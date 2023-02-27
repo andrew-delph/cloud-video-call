@@ -52,7 +52,9 @@ export function setup() {
   for (let i = 0; i < authKeysNum; i++) {
     authKeys.push(`k6_auth_${i}`);
   }
-  redisClient.del(authKeysName);
+  redisClient.del(authKeysName).finally(() => {
+    redisClient.lpush(authKeysName, ...authKeys);
+  });
 }
 
 export default async function () {
@@ -120,10 +122,6 @@ export default async function () {
         expectMatch = socket.expectMessage(`match`);
         const readyPromise = socket.sendWithAck(`ready`, {});
         return readyPromise;
-      })
-      .then(async (data) => {
-        await redisClient.set(`test`, `fromk6`, 0);
-        return data;
       })
       .catch((error) => {
         ready_success.add(false);
