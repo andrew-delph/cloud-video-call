@@ -45,7 +45,7 @@ const success_counter = new Counter(`success_counter`);
 const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 11;
+const authKeysNum = 100;
 const authKeysName = `authKeysName`;
 export function setup() {
   const authKeys: string[] = [];
@@ -57,22 +57,19 @@ export function setup() {
   });
 }
 
-export default function () {
-  //   redisClient.del([authKeysName]);
-  //   for (let i = 0; i < authKeysNum; i++) {
-  //     redisClient.rpush(authKeysName, [`k6_auth_${i}`]);
-  //   }
-  // for (let i = 0; i < authKeysNum; i++) {
-  //   redisClient.lpush(authKeysName, `k6_auth_${i}`);
-  // }
-
+export default async function () {
   const secure = false;
   const domain = __ENV.HOST || `localhost:8888`;
   let url = `${
     secure ? `wss` : `ws`
   }://${domain}/socket.io/?EIO=4&transport=websocket`;
 
-  const auth = randomString(10);
+  let auth: string | null = null;
+
+  while (!auth) {
+    auth = await redisClient.lpop(authKeysName);
+  }
+
   url = url + `&auth=${auth}`;
 
   const socket = new K6SocketIoExp(url);
@@ -123,6 +120,7 @@ export default function () {
         success_counter.add(1);
       })
       .finally(() => {
+        redisClient.rpush(authKeysName, auth);
         socket.close();
       });
   });
