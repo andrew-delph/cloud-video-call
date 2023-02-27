@@ -211,6 +211,13 @@ const matchmakerFlow = async (
     otherId = Array.from(readySet)[randomIndex];
   } else {
     otherId = relationShipScores.reduce((a, b) => (b[1] > a[1] ? b : a))[0];
+    logger.info(
+      `score highest: ${
+        relationShipScores.reduce((a, b) => (b[1] > a[1] ? b : a))[1]
+      } lowest: ${
+        relationShipScores.reduce((a, b) => (b[1] < a[1] ? b : a))[1]
+      } size: ${relationShipScores.length}`,
+    );
   }
   // listen and publish on otherId
   registerSubscriptionListener(otherId);
