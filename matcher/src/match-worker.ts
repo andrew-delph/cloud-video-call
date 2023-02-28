@@ -24,7 +24,7 @@ const neo4jRpcClient = createNeo4jClient();
 
 const serverID = uuid();
 
-import { connect, Channel, ConsumeMessage } from 'amqplib';
+import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
 
 dotenv.config();
 
@@ -37,10 +37,13 @@ let subRedisClient: Client;
 const httpServer = createServer();
 const io = new Server(httpServer, {});
 
+let rabbitConnection: Connection;
+let rabbitChannel: Channel;
+
 export async function matchConsumer() {
-  const connection = await connect(`amqp://rabbitmq`);
-  const channel = await connection.createChannel();
-  await channel.assertQueue(common.matchQueueName, {
+  rabbitConnection = await connect(`amqp://rabbitmq`);
+  rabbitChannel = await rabbitConnection.createChannel();
+  await rabbitChannel.assertQueue(common.matchQueueName, {
     durable: true,
   });
   logger.info(`rabbitmq connected`);
@@ -60,8 +63,8 @@ export async function matchConsumer() {
 
   logger.info(`socket io connected`);
 
-  channel.prefetch(40);
-  channel.consume(
+  rabbitChannel.prefetch(40);
+  rabbitChannel.consume(
     common.matchQueueName,
     async (msg: ConsumeMessage | null) => {
       if (msg == null) {
@@ -81,7 +84,7 @@ export async function matchConsumer() {
       } catch (e) {
         logger.debug(`matchEvent error=` + e);
       } finally {
-        channel.ack(msg);
+        rabbitChannel.ack(msg);
       }
     },
     {
@@ -115,13 +118,6 @@ export const match = async (userId1: string, userId2: string) => {
     logger.error(`(!socket1 || !socket2 ${socket1} ${socket2}`);
     throw Error(`!socket1 || !socket2 ${socket1} ${socket2}`);
   }
-
-  await neo4jRpcClient.createMatch(request, (error, response) => {
-    if (error) {
-      logger.error(`neo4j create match error: ${error}`);
-      throw error;
-    }
-  });
 
   io.socketsLeave(`room-${socket1}`);
   io.socketsLeave(`room-${socket2}`);
@@ -160,18 +156,33 @@ export const match = async (userId1: string, userId2: string) => {
     .then(() => {
       return new Promise(hostCallback);
     })
-    .then(() => {
-      // console.log(`match success: ${userId1} ${userId2}`);
+    .catch(async (error) => {
+      logger.debug(`pairing failed with: ${error}`);
+      if (await mainRedisClient.sismember(common.activeSetName, userId1)) {
+        await mainRedisClient.sadd(common.readySetName, userId1);
+        await rabbitChannel.sendToQueue(
+          common.readyQueueName,
+          Buffer.from(JSON.stringify([userId1])),
+        );
+      }
+      if (await mainRedisClient.sismember(common.activeSetName, userId2)) {
+        await mainRedisClient.sadd(common.readySetName, userId2);
+        await rabbitChannel.sendToQueue(
+          common.readyQueueName,
+          Buffer.from(JSON.stringify([userId2])),
+        );
+      }
     })
-    .catch((error) => {
-      logger.debug(`host paring failed: ${error}`);
-      io.in(socket1).emit(`message`, `host paring: failed with ${error}`);
-      io.in(socket2).emit(`message`, `guest paring: failed with ${error}`);
-      throw `match failed with \t ${error}`;
+    .then(async (data) => {
+      // create match and supply feedback ids
+
+      await neo4jRpcClient.createMatch(request, (error, response) => {
+        if (error) {
+          logger.error(`neo4j create match error: ${error}`);
+          throw error;
+        }
+      });
     });
-  // .finally(() => {
-  //   console.log(`finally :)`);
-  // });
 };
 
 if (require.main === module) {
