@@ -218,18 +218,19 @@ export async function changeRandomReady() {
   //   return result;
 }
 
-export async function getAllReady() {
-  //   const start_time = performance.now();
-  //   // create myGraph
-  //   let result;
-  //   console.log(`running getAllReady`);
-  //   result = await session.run(`
-  //       MATCH (n)
-  //         RETURN n
-  //     `);
-  //   const end_time = performance.now();
-  //   console.log(`it took: `, end_time - start_time);
-  //   return result;
+export async function test() {
+  const start_time = performance.now();
+  // create myGraph
+  let result;
+  console.log(`running getAllReady`);
+  result = await session.run(`
+  MATCH (n1)-[r]->(n2)
+  WHERE id(r) = 9999999
+  RETURN n1.user_id, n2.user_id, r
+      `);
+  const end_time = performance.now();
+  console.log(`it took: `, end_time - start_time);
+  return result;
 }
 
 export async function getFirstN() {
