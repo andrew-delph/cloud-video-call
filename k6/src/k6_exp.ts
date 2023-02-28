@@ -158,7 +158,7 @@ export default async function () {
             },
           },
         );
-        check(r, { 'feedback response status is 200': r && r.status == 200 });
+        check(r, { 'feedback response status is 201': r && r.status == 201 });
       })
       .finally(async () => {
         socket.close();

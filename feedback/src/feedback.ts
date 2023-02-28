@@ -68,8 +68,6 @@ app.post(`/providefeedback`, async (req, res) => {
     return;
   }
 
-  logger.info(`got users: ${n1_userId} ${n2_userId}`);
-
   // create new feedback relationship with score and id
   // merge so it can only be done once per match rel
   const feedback_rel = await session.run(
@@ -93,7 +91,7 @@ app.post(`/providefeedback`, async (req, res) => {
   } else {
     logger.debug(`providefeedback duration: \t ${duration}s`);
   }
-  res.send(`Feedback created.`);
+  res.status(201).send(`Feedback created.`);
 });
 
 app.listen(port, () => {
