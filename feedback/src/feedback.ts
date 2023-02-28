@@ -33,7 +33,9 @@ app.post(`/providefeedback`, async (req, res) => {
     res.status(401).send(`Missing Authorization`);
     return;
   } else if (!feedback_id || !score) {
-    logger.debug(`!feedback_id || !score) ${feedback_id} , ${score} .`);
+    logger.debug(
+      `!feedback_id || !score) feedback_id: ${feedback_id} score: ${score}`,
+    );
     res.status(400).json({ error: `feedback_id and score are required` });
     return;
   }
@@ -53,8 +55,8 @@ app.post(`/providefeedback`, async (req, res) => {
   );
   // if doesnt exist return error
   if (match_rel.records.length == 0) {
-    logger.debug(`No records found for: ${feedback_id}`);
-    res.status(404).send(`No records found for: ${feedback_id}`);
+    logger.debug(`No records found for feedback_id: ${feedback_id}`);
+    res.status(404).send(`No records found for feedback_id: ${feedback_id}`);
     return;
   }
 
