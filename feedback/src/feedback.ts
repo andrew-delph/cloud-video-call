@@ -25,8 +25,11 @@ app.get(`/health`, (req, res) => {
 
 app.post(`/providefeedback`, async (req, res) => {
   const { match_id, score } = req.body;
-  if (!req.headers.authorization) {
-    res.status(401).send(`Unauthorized`);
+
+  const auth = req.headers.authorization;
+
+  if (!auth) {
+    res.status(401).send(`Missing Authorization`);
     return;
   } else if (!match_id || !score) {
     res.status(400).json({ error: `match_id and score are required` });
@@ -34,20 +37,59 @@ app.post(`/providefeedback`, async (req, res) => {
   }
 
   const start_time = performance.now();
-
   const session = driver.session();
-  await session.run(
-    `CREATE INDEX  Person_userId IF NOT EXISTS  FOR (n:Person) ON (n.userId);`,
+
+  // get the match with id
+
+  const match_rel = await session.run(
+    `
+      MATCH (n1)-[r]->(n2)
+      WHERE id(r) = $match_id
+      RETURN r, n1.userId, n2.userId
+    `,
+    { match_id },
+  );
+  // if doesnt exist return error
+  if (match_rel.records.length == 0) {
+    res.status(400).send(`No records found`);
+    return;
+  }
+
+  const n1_userId = match_rel.records[0].get(`n1.userId`);
+  const n2_userId = match_rel.records[0].get(`n2.userId`);
+
+  // verify request owns the rel
+  if (n1_userId != auth) {
+    res.status(403).send(`Forbidden ${n1_userId} ${auth}`);
+    return;
+  }
+
+  logger.info(`got users: ${n1_userId} ${n2_userId}`);
+
+  // create new feedback relationship with score and id
+  // merge so it can only be done once per match rel
+  const feedback_rel = await session.run(
+    // TODO only allow one feedback for match.
+    `
+      MATCH (n1:Person {userId: $n1_userId}), (n2:Person {userId: $n2_userId })
+      CREATE (n1)-[r:FEEDBACK {score: $score}]->(n2) return r
+    `,
+    { score, n1_userId, n2_userId },
   );
 
   await session.close();
+
+  if (feedback_rel.records.length != 1) {
+    res.status(500).send(`Failed to create feedback`);
+    return;
+  }
   const duration = (performance.now() - start_time) / 1000;
   if (duration > durationWarn) {
     logger.warn(`providefeedback duration: \t ${duration}s`);
   } else {
     logger.debug(`providefeedback duration: \t ${duration}s`);
   }
-  res.send(`feedback accepted.`);
+  res.send(`Feedback created.`);
 });
 
 app.listen(port, () => {
