@@ -21,7 +21,7 @@ app.get(`/health`, (req, res) => {
   res.send(`Health is good.`);
 });
 
-app.get(`/test`, async (req, res) => {
+app.post(`/providefeedback`, async (req, res) => {
   const start_time = performance.now();
 
   const session = driver.session();
@@ -37,7 +37,7 @@ app.get(`/test`, async (req, res) => {
     logger.debug(`verifyIndexes duration: \t ${duration}s`);
   }
 
-  res.send(`test is good. duration: ${duration}`);
+  res.send(`provideFeedback is good. duration: ${duration}`);
 });
 
 app.listen(port, () => {
