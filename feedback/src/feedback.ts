@@ -41,7 +41,7 @@ app.post(`/providefeedback`, async (req, res) => {
   }
 
   const start_time = performance.now();
-  const session = driver.session();
+  let session = driver.session();
 
   // get the match with id
 
@@ -53,6 +53,8 @@ app.post(`/providefeedback`, async (req, res) => {
     `,
     { feedback_id: parseInt(feedback_id) },
   );
+
+  await session.close();
   // if doesnt exist return error
   if (match_rel.records.length == 0) {
     logger.debug(`No records found for feedback_id: ${feedback_id}`);
@@ -72,6 +74,7 @@ app.post(`/providefeedback`, async (req, res) => {
 
   // create new feedback relationship with score and id
   // merge so it can only be done once per match rel
+  session = driver.session();
   const feedback_rel = await session.run(
     // TODO only allow one feedback for match.
     `
