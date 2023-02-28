@@ -11,6 +11,8 @@ const durationWarn = 2;
 const app = express();
 const port = 8080;
 
+app.use(express.json());
+
 const driver = neo4j.driver(
   `neo4j://neo4j:7687`,
   neo4j.auth.basic(`neo4j`, `password`),
@@ -32,9 +34,9 @@ app.post(`/providefeedback`, async (req, res) => {
   await session.close();
   const duration = (performance.now() - start_time) / 1000;
   if (duration > durationWarn) {
-    logger.warn(`verifyIndexes duration: \t ${duration}s`);
+    logger.warn(`providefeedback duration: \t ${duration}s`);
   } else {
-    logger.debug(`verifyIndexes duration: \t ${duration}s`);
+    logger.debug(`providefeedback duration: \t ${duration}s`);
   }
 
   res.send(`provideFeedback is good. duration: ${duration}`);
