@@ -86,6 +86,8 @@ const createMatch = async (
   const userId2 = call.request.getUserId2();
   const reply = new CreateMatchResponse();
   reply.setMessage(`Created match succesfully for: ${userId1} ${userId2}`);
+  reply.setUserId1(userId1);
+  reply.setUserId2(userId2);
 
   const start_time = performance.now();
 
@@ -109,8 +111,8 @@ const createMatch = async (
   const r1_id = matchResult.records[0].get(`id(r1)`);
   const r2_id = matchResult.records[0].get(`id(r2)`);
 
-  reply.setRelationshipId1(r1_id);
-  reply.setRelationshipId2(r2_id);
+  reply.setRelationshipId1(`${r1_id}`);
+  reply.setRelationshipId2(`${r2_id}`);
 
   const duration = (performance.now() - start_time) / 1000;
 

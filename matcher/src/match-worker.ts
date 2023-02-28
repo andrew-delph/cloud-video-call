@@ -150,12 +150,22 @@ export const match = async (userId1: string, userId2: string) => {
           if (error) {
             logger.error(`neo4j create match error: ${error}`);
             reject(error);
+          } else if (
+            !response.getRelationshipId1() ||
+            !response.getRelationshipId2()
+          ) {
+            reject(
+              `!matchResponse.getRelationshipId1() || !matchResponse.getRelationshipId2()`,
+            );
           } else {
             resolve(response);
           }
         });
       },
-    );
+    ).catch((error) => {
+      logger.error(`createMatch: ${error}`);
+      throw error;
+    });
 
     const hostCallback = (resolve: any, reject: any) => {
       io.in(socket1)
