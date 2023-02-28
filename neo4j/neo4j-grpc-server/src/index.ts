@@ -90,14 +90,27 @@ const createMatch = async (
   const start_time = performance.now();
 
   const session = driver.session();
-  await session.run(
-    `MATCH (a:Person), (b:Person) WHERE a.userId = $userId1 AND b.userId = $userId2 MERGE (a)-[:MATCHED]->(b) MERGE (b)-[:MATCHED]->(a)`,
+  const matchResult = await session.run(
+    `MATCH (a:Person), (b:Person) 
+    WHERE a.userId = $userId1 AND b.userId = $userId2 
+    CREATE (a)-[r1:MATCHED]->(b) CREATE (b)-[r2:MATCHED]->(a)
+    RETURN id(r1), id(r2)
+    `,
     {
       userId1: userId1,
       userId2: userId2,
     },
   );
   await session.close();
+
+  if (matchResult.records.length == 0) {
+  }
+
+  const r1_id = matchResult.records[0].get(`id(r1)`);
+  const r2_id = matchResult.records[0].get(`id(r2)`);
+
+  reply.setRelationshipId1(r1_id);
+  reply.setRelationshipId2(r2_id);
 
   const duration = (performance.now() - start_time) / 1000;
 
