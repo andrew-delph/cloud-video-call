@@ -24,15 +24,17 @@ app.get(`/health`, (req, res) => {
 });
 
 app.post(`/providefeedback`, async (req, res) => {
-  const { match_id, score } = req.body;
+  const { feedback_id, score } = req.body;
 
   const auth = req.headers.authorization;
 
   if (!auth) {
+    logger.debug(`Missing Authorization`);
     res.status(401).send(`Missing Authorization`);
     return;
-  } else if (!match_id || !score) {
-    res.status(400).json({ error: `match_id and score are required` });
+  } else if (!feedback_id || !score) {
+    logger.debug(`!feedback_id || !score) ${feedback_id} , ${score} .`);
+    res.status(400).json({ error: `feedback_id and score are required` });
     return;
   }
 
@@ -44,14 +46,15 @@ app.post(`/providefeedback`, async (req, res) => {
   const match_rel = await session.run(
     `
       MATCH (n1)-[r]->(n2)
-      WHERE id(r) = $match_id
+      WHERE id(r) = $feedback_id
       RETURN r, n1.userId, n2.userId
     `,
-    { match_id },
+    { feedback_id: parseInt(feedback_id) },
   );
   // if doesnt exist return error
   if (match_rel.records.length == 0) {
-    res.status(400).send(`No records found`);
+    logger.debug(`No records found for: ${feedback_id}`);
+    res.status(404).send(`No records found for: ${feedback_id}`);
     return;
   }
 
@@ -60,6 +63,7 @@ app.post(`/providefeedback`, async (req, res) => {
 
   // verify request owns the rel
   if (n1_userId != auth) {
+    logger.debug(`Forbidden ${n1_userId} ${auth}`);
     res.status(403).send(`Forbidden ${n1_userId} ${auth}`);
     return;
   }

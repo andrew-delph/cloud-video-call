@@ -1,8 +1,12 @@
 import { Counter, Rate, Trend } from 'k6/metrics';
 import { K6SocketIoExp } from '../libs/K6SocketIoExp';
-import { randomString } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+import {
+  randomString,
+  randomIntBetween,
+} from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 import redis from 'k6/experimental/redis';
 import { check, sleep } from 'k6';
+import http from 'k6/http';
 
 const vus = 50;
 export const options = {
@@ -141,6 +145,20 @@ export default async function () {
             data && data.data && data.data.feedback_id,
           'match has role': (data: any) => data && data.data && data.data.role,
         });
+        return data.data.feedback_id;
+      })
+      .then((feedback_id) => {
+        const r = http.post(
+          `${secure ? `https` : `http`}://${domain}/feedback/providefeedback`,
+          JSON.stringify({ feedback_id, score: randomIntBetween(0, 5) }),
+          {
+            headers: {
+              authorization: auth,
+              'Content-Type': `application/json`,
+            },
+          },
+        );
+        check(r, { 'feedback response status is 200': r && r.status == 200 });
       })
       .finally(async () => {
         socket.close();
