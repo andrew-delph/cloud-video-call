@@ -136,6 +136,11 @@ export default async function () {
         match_success.add(true);
         match_elapsed.add(data.elapsed);
         success_counter.add(1);
+        check(data, {
+          'match has feedback id': (data: any) =>
+            data && data.data && data.data.feedback_id,
+          'match has role': (data: any) => data && data.data && data.data.role,
+        });
       })
       .finally(async () => {
         socket.close();
