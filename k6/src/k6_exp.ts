@@ -49,7 +49,7 @@ const success_counter = new Counter(`success_counter`);
 const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 299;
+const authKeysNum = 10000;
 const authKeysName = `authKeysName`;
 export function setup() {
   const authKeys: string[] = [];
