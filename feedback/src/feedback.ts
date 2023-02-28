@@ -47,7 +47,7 @@ app.post(`/providefeedback`, async (req, res) => {
   } else {
     logger.debug(`providefeedback duration: \t ${duration}s`);
   }
-  res.send(`provideFeedback is good. duration: ${duration}`);
+  res.send(`feedback accepted.`);
 });
 
 app.listen(port, () => {
