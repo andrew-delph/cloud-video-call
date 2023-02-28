@@ -72,17 +72,32 @@ export async function matchConsumer() {
         return;
       }
 
+      let userId1: string = ``;
+      let userId2: string = ``;
+
       try {
         const msgContent: [string, string] = JSON.parse(msg.content.toString());
-
-        const userId1 = msgContent[0];
-        const userId2 = msgContent[1];
+        userId1 = msgContent[0];
+        userId2 = msgContent[1];
 
         logger.debug(`matching ${userId1} ${userId2}`);
-
         await match(userId1, userId2);
       } catch (e) {
         logger.debug(`matchEvent error=` + e);
+        if (await mainRedisClient.sismember(common.activeSetName, userId1)) {
+          await mainRedisClient.sadd(common.readySetName, userId1);
+          await rabbitChannel.sendToQueue(
+            common.readyQueueName,
+            Buffer.from(JSON.stringify([userId1])),
+          );
+        }
+        if (await mainRedisClient.sismember(common.activeSetName, userId2)) {
+          await mainRedisClient.sadd(common.readySetName, userId2);
+          await rabbitChannel.sendToQueue(
+            common.readyQueueName,
+            Buffer.from(JSON.stringify([userId2])),
+          );
+        }
       } finally {
         rabbitChannel.ack(msg);
       }
@@ -99,11 +114,6 @@ export const match = async (userId1: string, userId2: string) => {
     throw Error(`(!userId1 || !userId2) ${userId1} ${userId2}`);
   }
   logger.debug(`matching: ${userId1} ${userId2}`);
-
-  const request = new CreateMatchRequest();
-
-  request.setUserId1(userId1);
-  request.setUserId2(userId2);
 
   const socket1 = await mainRedisClient.hget(
     common.connectedAuthMapName,
@@ -128,60 +138,69 @@ export const match = async (userId1: string, userId2: string) => {
   io.in(socket1).emit(`message`, `pairing with ${socket2}`);
   io.in(socket2).emit(`message`, `pairing with ${socket1}`);
 
-  const hostCallback = (resolve: any, reject: any) => {
-    io.in(socket1)
-      .timeout(matchTimeout)
-      .emit(`match`, `host`, (err: any, response: any) => {
-        if (err) {
-          reject(`host: ${err.message}`);
-        } else {
-          resolve();
-        }
-      });
+  const matchPromiseChain = async (): Promise<any> => {
+    const request = new CreateMatchRequest();
+
+    request.setUserId1(userId1);
+    request.setUserId2(userId2);
+
+    const matchResponse = await new Promise<CreateMatchResponse>(
+      async (resolve: any, reject: any) => {
+        await neo4jRpcClient.createMatch(request, (error, response) => {
+          if (error) {
+            logger.error(`neo4j create match error: ${error}`);
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+      },
+    );
+
+    const hostCallback = (resolve: any, reject: any) => {
+      io.in(socket1)
+        .timeout(matchTimeout)
+        .emit(
+          `match`,
+          { role: `host`, feedback_id: matchResponse.getRelationshipId1() },
+          (err: any, response: any) => {
+            if (err) {
+              reject(`host: ${err.message}`);
+            } else {
+              resolve();
+            }
+          },
+        );
+    };
+
+    const guestCallback = (resolve: any, reject: any) => {
+      io.in(socket2)
+        .timeout(matchTimeout)
+        .emit(
+          `match`,
+          { role: `guest`, feedback_id: matchResponse.getRelationshipId2() },
+          (err: any, response: any) => {
+            if (err) {
+              reject(`guest: ${err.message}`);
+            } else {
+              resolve();
+            }
+          },
+        );
+    };
+
+    return await new Promise(guestCallback).then(async () => {
+      return await new Promise(hostCallback);
+    });
   };
 
-  const guestCallback = (resolve: any, reject: any) => {
-    io.in(socket2)
-      .timeout(matchTimeout)
-      .emit(`match`, `guest`, (err: any, response: any) => {
-        if (err) {
-          reject(`guest: ${err.message}`);
-        } else {
-          resolve();
-        }
-      });
-  };
-
-  return await new Promise(guestCallback)
-    .then(() => {
-      return new Promise(hostCallback);
-    })
-    .catch(async (error) => {
+  return await matchPromiseChain()
+    .catch(async (error: any) => {
       logger.debug(`pairing failed with: ${error}`);
-      if (await mainRedisClient.sismember(common.activeSetName, userId1)) {
-        await mainRedisClient.sadd(common.readySetName, userId1);
-        await rabbitChannel.sendToQueue(
-          common.readyQueueName,
-          Buffer.from(JSON.stringify([userId1])),
-        );
-      }
-      if (await mainRedisClient.sismember(common.activeSetName, userId2)) {
-        await mainRedisClient.sadd(common.readySetName, userId2);
-        await rabbitChannel.sendToQueue(
-          common.readyQueueName,
-          Buffer.from(JSON.stringify([userId2])),
-        );
-      }
+      throw `pairing failed with: ${error}`;
     })
-    .then(async (data) => {
-      // create match and supply feedback ids
-
-      await neo4jRpcClient.createMatch(request, (error, response) => {
-        if (error) {
-          logger.error(`neo4j create match error: ${error}`);
-          throw error;
-        }
-      });
+    .then(async () => {
+      logger.debug(`match sucessful`);
     });
 };
 
