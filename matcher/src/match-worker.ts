@@ -210,7 +210,7 @@ export const match = async (userId1: string, userId2: string) => {
       throw `pairing failed with: ${error}`;
     })
     .then(async () => {
-      logger.debug(`match sucessful`);
+      logger.debug(`match sucessful ${[userId1, userId2]}`);
     });
 };
 
