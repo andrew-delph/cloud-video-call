@@ -24,6 +24,15 @@ app.get(`/health`, (req, res) => {
 });
 
 app.post(`/providefeedback`, async (req, res) => {
+  const { match_id, score } = req.body;
+  if (!req.headers.authorization) {
+    res.status(401).send(`Unauthorized`);
+    return;
+  } else if (!match_id || !score) {
+    res.status(400).json({ error: `match_id and score are required` });
+    return;
+  }
+
   const start_time = performance.now();
 
   const session = driver.session();
@@ -38,7 +47,6 @@ app.post(`/providefeedback`, async (req, res) => {
   } else {
     logger.debug(`providefeedback duration: \t ${duration}s`);
   }
-
   res.send(`provideFeedback is good. duration: ${duration}`);
 });
 
