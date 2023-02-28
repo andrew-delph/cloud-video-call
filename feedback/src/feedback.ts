@@ -6,7 +6,7 @@ common.listenGlobalExceptions();
 const logger = common.getLogger();
 
 const app = express();
-const port = 3000;
+const port = 8080;
 
 app.get(`/health`, (req, res) => {
   logger.debug(`got health check`);

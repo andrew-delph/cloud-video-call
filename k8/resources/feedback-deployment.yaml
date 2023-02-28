@@ -28,7 +28,7 @@ spec:
           image: andrewdelph/video-call-feedback:latest
           name: feedback
           ports:
-            - containerPort: 3000
+            - containerPort: 8080
           resources:
             # requests:
             #   cpu: '100m'
