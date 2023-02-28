@@ -6,8 +6,8 @@ import { check, sleep } from 'k6';
 
 const vus = 50;
 export const options = {
-  vus: 40,
-  duration: `1h`,
+  vus: 20,
+  duration: `2m`,
   // scenarios: {
   //   matchTest: {
   //     executor: `ramping-vus`,
