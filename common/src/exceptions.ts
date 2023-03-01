@@ -9,13 +9,14 @@ export const listenGlobalExceptions = (clean_up?: () => Promise<void>) => {
     process.on(type, async (error) => {
       try {
         logger.error(`errorTypes: ${type} error: ${error}`);
-        if (clean_up != null) await clean_up();
 
         if (type == `unhandledRejection`) {
           logger.error(
             `reason.command.name: ${error.command.name} reason.command.args: ${error.command.args}`,
           );
         }
+
+        if (clean_up != null) await clean_up();
 
         process.exit(0);
       } catch (_) {
