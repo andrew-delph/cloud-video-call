@@ -33,14 +33,14 @@ export const auth_middleware = async (
     return;
   }
 
+  // socket.auth = auth;
+  socket.data.auth = auth;
+
   socket.on(`disconnect`, async () => {
     await cleanSocket(auth);
   });
 
   await registerSocket(socket);
-
-  // socket.auth = auth;
-  socket.data.auth = auth;
 
   next();
 };

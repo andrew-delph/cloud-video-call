@@ -15,7 +15,7 @@ const heartbeatPrefix = `socketio_headbeat_`;
 export const registerServerHeartbeat = async () => {
   // register time to server heartbeat key
   const time = await mainRedisClient.time();
-  await mainRedisClient.set(`heartbeatPrefix` + getServerKey(), time[0]);
+  await mainRedisClient.set(heartbeatPrefix + getServerKey(), time[0]);
 };
 
 export const registerSocket = async (socket: Socket) => {
