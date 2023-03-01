@@ -22,6 +22,7 @@ import {
 } from 'neo4j-grpc-common';
 import { listenGlobalExceptions } from 'react-video-call-common';
 import { auth_middleware } from './authentication';
+import { registerServerHeartbeat } from './management';
 
 const logger = common.getLogger();
 
@@ -198,6 +199,11 @@ export const getServer = async (listen: boolean) => {
       subRedisClient.on(`message`, async (channel) => {
         if (channel == common.activeCountChannel) await activeCountThrottle();
       });
+
+      await registerServerHeartbeat();
+      setInterval(async () => {
+        await registerServerHeartbeat();
+      }, 20 * 1000);
 
       return io;
     });
