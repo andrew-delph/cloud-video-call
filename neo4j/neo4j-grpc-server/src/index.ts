@@ -108,11 +108,21 @@ const createMatch = async (
   if (matchResult.records.length == 0) {
   }
 
-  const r1_id = matchResult.records[0].get(`id(r1)`);
-  const r2_id = matchResult.records[0].get(`id(r2)`);
-
-  reply.setRelationshipId1(`${r1_id}`);
-  reply.setRelationshipId2(`${r2_id}`);
+  try {
+    const r1_id = matchResult.records[0].get(`id(r1)`);
+    const r2_id = matchResult.records[0].get(`id(r2)`);
+    reply.setRelationshipId1(`${r1_id}`);
+    reply.setRelationshipId2(`${r2_id}`);
+  } catch (e: any) {
+    logger.error(`stupid get error: ${e}`);
+    return callback(
+      {
+        message: `${e}`,
+        code: grpc.status.NOT_FOUND,
+      },
+      null,
+    );
+  }
 
   const duration = (performance.now() - start_time) / 1000;
 
@@ -168,6 +178,65 @@ const getRelationshipScores = async (
   }
 
   const duration = (performance.now() - start_time) / 1000;
+
+  if (duration > durationWarn) {
+    logger.warn(`getRelationshipScores duration: \t ${duration}s`);
+  } else {
+    logger.debug(`getRelationshipScores duration: \t ${duration}s`);
+  }
+
+  callback(null, reply);
+};
+
+const getRelationshipScores2 = async (
+  call: grpc.ServerUnaryCall<
+    GetRelationshipScoresRequest,
+    GetRelationshipScoresResponse
+  >,
+  callback: grpc.sendUnaryData<GetRelationshipScoresResponse>,
+): Promise<void> => {
+  const start_time = performance.now();
+
+  const userId = call.request.getUserId();
+  const otherUsers = call.request.getOtherUsersList();
+  const reply = new GetRelationshipScoresResponse();
+
+  const session = driver.session();
+
+  for (const otherUser of otherUsers) {
+    const result = await session.run(
+      `
+      MATCH (p1:Person {userId: $target})
+      MATCH (p2:Person {userId: $otherUser})
+      RETURN gds.alpha.linkprediction.commonNeighbors(p1, p2) AS score
+        `,
+      { target: userId, otherUser },
+    );
+
+    reply
+      .getRelationshipScoresMap()
+      .set(otherUser, result.records[0].get(`score`));
+
+    logger.debug(
+      `score: ${result.records[0].get(
+        `score`,
+      )} target: ${userId} otherUser: ${otherUser}`,
+    );
+  }
+
+  await session.close();
+
+  // for (const record of result.records) {
+  //   reply
+  //     .getRelationshipScoresMap()
+  //     .set(record.get(`otherId`), record.get(`score`));
+  // }
+
+  const duration = (performance.now() - start_time) / 1000;
+
+  logger.info(
+    `getRelationshipScores duration: \t ${duration}s otherUsers.length: ${otherUsers.length}`,
+  );
 
   if (duration > durationWarn) {
     logger.warn(`getRelationshipScores duration: \t ${duration}s`);
