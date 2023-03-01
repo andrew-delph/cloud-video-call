@@ -8,13 +8,7 @@ export const listenGlobalExceptions = (clean_up?: () => Promise<void>) => {
   errorTypes.forEach((type) => {
     process.on(type, async (error) => {
       try {
-        logger.error(`errorTypes: ${type} error: ${error}`);
-
-        if (type == `unhandledRejection`) {
-          logger.error(
-            `reason.command.name: ${error.command.name} reason.command.args: ${error.command.args}`,
-          );
-        }
+        logger.error(`errorTypes: ${type} error: ${JSON.stringify(error)}`);
 
         if (clean_up != null) await clean_up();
 
