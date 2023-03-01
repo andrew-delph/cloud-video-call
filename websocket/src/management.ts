@@ -58,6 +58,7 @@ export const cleanMySocketServer = async () => {
 };
 
 export const cleanAllSocketServer = async () => {
+  logger.info(`cleanAllSocketServer`);
   scanKeys(heartbeatPrefix + `*`).then(async (heartbeat_ids) => {
     for (const heartbeat_id of heartbeat_ids) {
       const time = (await mainRedisClient.time())[0];
@@ -66,16 +67,16 @@ export const cleanAllSocketServer = async () => {
         continue;
       }
 
-      logger.error(
-        `time - parseFloat(heartbeat_time) ${
-          time - parseFloat(heartbeat_time)
-        } ... ${heartbeat_id}`,
-      );
-
       if (time - parseFloat(heartbeat_time) > 60) {
+        logger.error(
+          `cleanAllSocketServer ${heartbeat_id} : ${
+            time - parseFloat(heartbeat_time)
+          }`,
+        );
         await cleanSocketServer(heartbeat_id.substring(heartbeatPrefix.length));
       }
     }
+    logger.info(`cleanAllSocketServer completed`);
   });
 };
 
