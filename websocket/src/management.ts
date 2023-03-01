@@ -53,7 +53,7 @@ const cleanSocketServer = async (server_hostname: string) => {
 };
 
 export const cleanMySocketServer = async () => {
-  logger.info(`cleanSocketServer ${getServerKey()}`);
+  logger.info(`calling cleanSocketServer ${getServerKey()}`);
   await cleanSocketServer(getServerKey());
 };
 
