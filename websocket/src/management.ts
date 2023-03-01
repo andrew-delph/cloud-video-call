@@ -44,9 +44,14 @@ export const cleanSocket = async (
 };
 
 const cleanSocketServer = async (server_hostname: string) => {
-  mainRedisClient.set(`cleanup${server_hostname}`, `done`);
+  logger.info(`cleanSocketServer server_hostname: ${server_hostname}`);
+  const connectedAuths = await mainRedisClient.smembers(server_hostname);
+
+  for (const auth of connectedAuths) {
+    await cleanSocket(auth, server_hostname);
+  }
 };
 
 export const cleanMySocketServer = async () => {
-  await cleanSocketServer(process.env.HOSTNAME as string);
+  await cleanSocketServer(getServerKey());
 };

@@ -10,7 +10,7 @@ import http from 'k6/http';
 
 const vus = 50;
 export const options = {
-  vus: 200,
+  vus: 50,
   duration: `3h`,
   // scenarios: {
   //   matchTest: {
