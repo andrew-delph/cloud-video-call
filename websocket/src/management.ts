@@ -50,8 +50,48 @@ const cleanSocketServer = async (server_hostname: string) => {
   for (const auth of connectedAuths) {
     await cleanSocket(auth, server_hostname);
   }
+  await mainRedisClient.del(heartbeatPrefix + server_hostname);
 };
 
 export const cleanMySocketServer = async () => {
   await cleanSocketServer(getServerKey());
+};
+
+export const cleanAllSocketServer = async () => {
+  scanKeys(heartbeatPrefix + `*`).then(async (heartbeat_ids) => {
+    for (const heartbeat_id of heartbeat_ids) {
+      const time = (await mainRedisClient.time())[0];
+      const heartbeat_time = await mainRedisClient.get(heartbeat_id);
+      if (heartbeat_time == null) {
+        continue;
+      }
+
+      logger.error(
+        `time - parseFloat(heartbeat_time) ${
+          time - parseFloat(heartbeat_time)
+        } ... ${heartbeat_id}`,
+      );
+
+      if (time - parseFloat(heartbeat_time) > 60) {
+        await cleanSocketServer(heartbeat_id.substring(heartbeatPrefix.length));
+      }
+    }
+  });
+};
+
+const scanKeys = async (prefix = ``): Promise<Set<string>> => {
+  let stream = mainRedisClient.scanStream({
+    match: prefix,
+  });
+  return new Promise((res, rej) => {
+    let keysSet = new Set<string>();
+    stream.on(`data`, async (keys: string[] = []) => {
+      for (const key of keys) {
+        keysSet.add(key);
+      }
+    });
+    stream.on(`end`, () => {
+      res(keysSet);
+    });
+  });
 };
