@@ -1,23 +1,47 @@
 import { delay, getLogger } from 'react-video-call-common';
-import { mainRedisClient } from './socketio_server';
+import { mainRedisClient, pubRedisClient } from './socketio_server';
+import { Socket } from 'socket.io';
+import * as common from 'react-video-call-common';
 
 const logger = getLogger();
 
-const getServerHeartbeatKey = () => {
-  return `socketio_server_heatbeat_${process.env.HOSTNAME}`;
+const socketio_server_heartbeat = `socketio_server_heartbeat`;
+
+const getServerKey = () => {
+  return `socketio_server_${process.env.HOSTNAME}`;
 };
 
+const heartbeatPrefix = `socketio_headbeat_`;
 export const registerServerHeartbeat = async () => {
   // register time to server heartbeat key
   const time = await mainRedisClient.time();
-  await mainRedisClient.set(getServerHeartbeatKey(), time[0]);
+  await mainRedisClient.set(`heartbeatPrefix` + getServerKey(), time[0]);
 };
 
-const registerSocket = () => {};
+export const registerSocket = async (socket: Socket) => {
+  await mainRedisClient.hset(
+    common.connectedAuthMapName,
+    socket.data.auth,
+    socket.id,
+  );
+  await mainRedisClient.sadd(common.activeSetName, socket.data.auth);
+  await mainRedisClient.sadd(getServerKey(), socket.data.auth);
+};
 
-const registerSocketReady = () => {};
+export const registerSocketReady = async (socket: Socket) => {
+  await mainRedisClient.sadd(common.readySetName, socket.data.auth);
+};
 
-const cleanSocket = () => {};
+export const cleanSocket = async (
+  auth: string,
+  server_key: string = getServerKey(),
+) => {
+  await mainRedisClient.hdel(common.connectedAuthMapName, auth);
+  await mainRedisClient.srem(common.activeSetName, auth);
+  await mainRedisClient.srem(common.readySetName, auth);
+  await pubRedisClient.publish(common.activeCountChannel, `change`);
+  await mainRedisClient.srem(server_key, auth);
+};
 
 const cleanSocketServer = async (server_hostname: string) => {
   mainRedisClient.set(`cleanup${server_hostname}`, `done`);

@@ -3,6 +3,7 @@ import { Socket } from 'socket.io';
 import { mainRedisClient } from './socketio_server';
 
 import * as common from 'react-video-call-common';
+import { cleanSocket, registerSocket } from './management';
 
 const logger = getLogger();
 
@@ -33,10 +34,10 @@ export const auth_middleware = async (
   }
 
   socket.on(`disconnect`, async () => {
-    await mainRedisClient.hdel(common.connectedAuthMapName, auth, socket.id);
+    await cleanSocket(auth);
   });
 
-  await mainRedisClient.hset(common.connectedAuthMapName, auth, socket.id);
+  await registerSocket(socket);
 
   // socket.auth = auth;
   socket.data.auth = auth;

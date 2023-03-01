@@ -22,7 +22,11 @@ import {
 } from 'neo4j-grpc-common';
 import { listenGlobalExceptions } from 'react-video-call-common';
 import { auth_middleware } from './authentication';
-import { cleanMySocketServer, registerServerHeartbeat } from './management';
+import {
+  cleanMySocketServer,
+  registerServerHeartbeat,
+  registerSocketReady,
+} from './management';
 
 const logger = common.getLogger();
 
@@ -44,7 +48,7 @@ initializeApp();
 
 const serverID = uuid();
 
-let pubRedisClient: Client;
+export let pubRedisClient: Client;
 let subRedisClient: Client;
 export let mainRedisClient: Client;
 
@@ -92,12 +96,7 @@ io.on(`connection`, async (socket) => {
   });
 
   socket.on(`ready`, async (data, callback) => {
-    //   await kafkaProducer.send({
-    //   topic: common.readyTopicName,
-    //   messages: [{ value: socket.id }],
-    // });
-
-    await mainRedisClient.sadd(common.readySetName, socket.data.auth);
+    await registerSocketReady(socket);
 
     await rabbitChannel.sendToQueue(
       common.readyQueueName,
@@ -116,9 +115,6 @@ io.on(`connection`, async (socket) => {
         io.sockets.sockets.size
       } duration: ${Math.round(duration / 1000)}`,
     );
-    mainRedisClient.srem(common.activeSetName, socket.data.auth);
-    mainRedisClient.srem(common.readySetName, socket.data.auth);
-    pubRedisClient.publish(common.activeCountChannel, `change`);
   });
 
   socket.on(`client_host`, (value) => {
@@ -146,8 +142,6 @@ io.on(`connection`, async (socket) => {
   //     }
   //   });
   // }, 1000);
-
-  await mainRedisClient.sadd(common.activeSetName, socket.data.auth);
 
   const createUserRequest = new CreateUserRequest();
   createUserRequest.setUserId(socket.data.auth);
