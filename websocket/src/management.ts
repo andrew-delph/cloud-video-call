@@ -44,7 +44,6 @@ export const cleanSocket = async (
 };
 
 const cleanSocketServer = async (server_hostname: string) => {
-  logger.info(`cleanSocketServer server_hostname: ${server_hostname}`);
   const connectedAuths = await mainRedisClient.smembers(server_hostname);
 
   for (const auth of connectedAuths) {
@@ -54,6 +53,7 @@ const cleanSocketServer = async (server_hostname: string) => {
 };
 
 export const cleanMySocketServer = async () => {
+  logger.info(`cleanSocketServer ${getServerKey()}`);
   await cleanSocketServer(getServerKey());
 };
 

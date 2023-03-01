@@ -27,6 +27,10 @@ spec:
             - name: REDIS_PORT
               value: '6379'
           image: andrewdelph/video-call-websocket:latest
+          # lifecycle:
+          #   postStart:
+          #     exec:
+          #       command: ['node', './dist/postStart.js']
           ports:
             - containerPort: 4000
           livenessProbe:
