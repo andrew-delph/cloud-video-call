@@ -252,7 +252,7 @@ server.addService(Neo4jService, {
   createUser,
   createMatch,
   updateMatch,
-  getRelationshipScores,
+  getRelationshipScores2,
 });
 const addr = `0.0.0.0:${process.env.PORT || 8080}`;
 server.bindAsync(addr, grpc.ServerCredentials.createInsecure(), async () => {
