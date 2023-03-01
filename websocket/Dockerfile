@@ -31,4 +31,4 @@ RUN cd websocket && npm run build
 
 WORKDIR /usr/src/app/websocket
 # # Run the web service on container startup.
-CMD [ "npm", "run" , "prod" ]
+CMD [ "node", "./dist/socketio_server.js" ]

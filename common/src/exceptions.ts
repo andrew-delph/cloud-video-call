@@ -1,15 +1,15 @@
 import { getLogger } from './logger';
+const logger = getLogger();
 
-export const listenGlobalExceptions = () => {
+export const listenGlobalExceptions = (clean_up?: () => Promise<void>) => {
   const errorTypes = [`unhandledRejection`, `uncaughtException`];
   const signalTraps = [`SIGTERM`, `SIGINT`, `SIGUSR2`];
-
-  const logger = getLogger();
 
   errorTypes.forEach((type) => {
     process.on(type, async (error) => {
       try {
         logger.error(`errorTypes: ${type} error: ${error}`);
+        if (clean_up != null) await clean_up();
         process.exit(0);
       } catch (_) {
         process.exit(1);
@@ -21,6 +21,7 @@ export const listenGlobalExceptions = () => {
     process.once(type, async (error) => {
       try {
         logger.error(`signalTraps ${type}  error: ${error}`);
+        if (clean_up != null) await clean_up();
       } finally {
         process.kill(process.pid, type);
       }
