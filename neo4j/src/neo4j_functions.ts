@@ -173,7 +173,7 @@ export async function callAlgo() {
 
   let start_time = performance.now();
 
-  let result = await session.run(query7);
+  let result = await session.run(query1);
 
   const end_time = performance.now();
 

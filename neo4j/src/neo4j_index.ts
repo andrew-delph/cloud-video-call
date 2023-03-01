@@ -41,8 +41,8 @@ function printResults(
       x.add(`k6_auth_${i}`);
     }
 
-    // await funcs.createGraph();
-    result = await funcs.test();
+    await funcs.createGraph();
+    result = await funcs.callAlgo();
     // result = await funcs.getSimilarTarget(`k6_auth_1`, Array.from(x));
 
     printResults(result, 10);

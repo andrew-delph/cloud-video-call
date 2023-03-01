@@ -45,7 +45,7 @@ metadata:
   name: hpa-matchmaker
 spec:
   minReplicas: 1
-  maxReplicas: 5
+  maxReplicas: 2
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
