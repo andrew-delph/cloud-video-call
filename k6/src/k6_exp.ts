@@ -8,6 +8,21 @@ import redis from 'k6/experimental/redis';
 import { check, sleep } from 'k6';
 import http from 'k6/http';
 
+const redisClient = new redis.Client({
+  addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
+});
+const authKeysNum = 1000;
+const authKeysName = `authKeysName`;
+export function setup() {
+  const authKeys: string[] = [];
+  for (let i = 0; i < authKeysNum; i++) {
+    authKeys.push(`k6_auth_${i}`);
+  }
+  redisClient.del(authKeysName).finally(() => {
+    redisClient.lpush(authKeysName, ...authKeys);
+  });
+}
+
 const vus = 50;
 export const options = {
   vus: 50,
@@ -45,21 +60,6 @@ const match_success = new Rate(`match_success`);
 
 const error_counter = new Counter(`error_counter`);
 const success_counter = new Counter(`success_counter`);
-
-const redisClient = new redis.Client({
-  addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
-});
-const authKeysNum = 1000;
-const authKeysName = `authKeysName`;
-export function setup() {
-  const authKeys: string[] = [];
-  for (let i = 0; i < authKeysNum; i++) {
-    authKeys.push(`k6_auth_${i}`);
-  }
-  redisClient.del(authKeysName).finally(() => {
-    redisClient.lpush(authKeysName, ...authKeys);
-  });
-}
 
 export default async function () {
   const secure = false;
