@@ -94,7 +94,7 @@ export default async function () {
 
   url = url + `&auth=${auth}`;
 
-  const socket = new K6SocketIoExp(url, {});
+  const socket = new K6SocketIoExp(url, {}, 20000);
 
   socket.setOnClose(async () => {
     await redisClient.rpush(authKeysName, auth);
