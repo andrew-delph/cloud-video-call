@@ -307,7 +307,9 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
         },
       );
     },
-  );
+  ).catch((e) => {
+    throw new RetryError(e.message);
+  });
 
   logger.debug(
     `relationship scores requested:${
@@ -322,7 +324,7 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
       getRealtionshipScoreCacheKey(userId, scoreEntry[0]),
       scoreEntry[1],
       `EX`,
-      60,
+      60 * 5,
     );
     relationshipScoresMap.set(scoreEntry[0], scoreEntry[1]);
   }
