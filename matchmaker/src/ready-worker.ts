@@ -94,7 +94,7 @@ export const startReadyConsumer = async () => {
         } else {
           logger.error(`Unknown error: ${e}`);
           logger.error(e.stack);
-          process.exit(1);
+          rabbitChannel.nack(msg);
         }
       } finally {
         cleanup.forEach((cleanupFunc) => {
@@ -308,7 +308,7 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
       );
     },
   ).catch((e) => {
-    throw new RetryError(e.message);
+    throw e;
   });
 
   logger.debug(
