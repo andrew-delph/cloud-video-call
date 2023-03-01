@@ -49,7 +49,7 @@ const success_counter = new Counter(`success_counter`);
 const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 20000;
+const authKeysNum = 1000;
 const authKeysName = `authKeysName`;
 export function setup() {
   const authKeys: string[] = [];
@@ -94,7 +94,7 @@ export default async function () {
 
   url = url + `&auth=${auth}`;
 
-  const socket = new K6SocketIoExp(url, {}, 10000);
+  const socket = new K6SocketIoExp(url, {});
 
   socket.setOnClose(async () => {
     await redisClient.rpush(authKeysName, auth);
