@@ -135,8 +135,8 @@ export const match = async (userId1: string, userId2: string) => {
   io.in(socket1).socketsJoin(`room-${socket2}`);
   io.in(socket2).socketsJoin(`room-${socket1}`);
 
-  io.in(socket1).emit(`message`, `pairing with ${socket2}`);
-  io.in(socket2).emit(`message`, `pairing with ${socket1}`);
+  io.in(socket1).emit(`message`, `1pairing with ${socket2}`);
+  io.in(socket2).emit(`message`, `2pairing with ${socket1}`);
 
   const matchPromiseChain = async (): Promise<any> => {
     const request = new CreateMatchRequest();

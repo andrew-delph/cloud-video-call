@@ -74,6 +74,10 @@ io.on(`error`, (err) => {
 });
 
 io.on(`connection`, async (socket) => {
+  socket.emit(
+    `message`,
+    `Hey from server :) I am ${serverID} and you are ${socket.data.auth}.`,
+  );
   const start_time = performance.now();
   logger.debug(
     `connected ${process.env.HOSTNAME} ${io.sockets.sockets.size} auth: ${socket.data.auth}`,
@@ -130,8 +134,6 @@ io.on(`connection`, async (socket) => {
   });
 
   await pubRedisClient.publish(common.activeCountChannel, `change`);
-
-  socket.emit(`message`, `Hey from server :) I am ${serverID}.`);
 
   // setTimeout(() => {
   //   socket.timeout(1000).emit("myping", "hello", (err: any, response: any) => {

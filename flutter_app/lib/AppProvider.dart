@@ -179,9 +179,10 @@ class AppProvider extends ChangeNotifier {
 
     socket!.on("match", (request) async {
       List data = request as List;
-      String value = data[0] as String;
+      dynamic value = data[0] as dynamic;
       Function callback = data[1] as Function;
-      switch (value) {
+      String role = value["role"];
+      switch (role) {
         case "host":
           {
             await setClientHost();
@@ -194,7 +195,7 @@ class AppProvider extends ChangeNotifier {
           break;
         default:
           {
-            print("match is not host/guest: $value");
+            print("role is not host/guest: $role");
           }
           break;
       }
@@ -221,7 +222,7 @@ class AppProvider extends ChangeNotifier {
     });
     // END HANDLE ICE CANDIDATES
 
-    socket!.emitWithAck("ready", {}, ack: () => print("ready ack"));
+    socket!.emitWithAck("ready", {}, ack: (data) => print("ready ack"));
   }
 
   Future<void> setClientHost() async {
