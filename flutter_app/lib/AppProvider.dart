@@ -76,7 +76,7 @@ class AppProvider extends ChangeNotifier {
         socketAddress,
         OptionBuilder()
             .setTransports(['websocket'])
-            .disableAutoConnect().setAuth({"authy":generateRandomString(10)})
+            .disableAutoConnect().setAuth({"auth":generateRandomString(10)})
             .build());
 
     socket!.emit("message", "I am a client");
