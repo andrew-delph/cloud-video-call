@@ -31,6 +31,8 @@ spec:
         value: 'nginx.default.svc.cluster.local'
       - name: K6_PROMETHEUS_RW_SERVER_URL
         value: 'http://kube-stack-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090/api/v1/write'
+      - name: K6_LOG_FORMAT
+        value: json
     # envFrom:
     #   - configMapRef:
     #       name: prometheus-config
