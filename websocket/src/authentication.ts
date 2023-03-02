@@ -11,10 +11,7 @@ export const auth_middleware = async (
   socket: Socket,
   next: (err?: any) => void,
 ) => {
-  const auth: string =
-    typeof socket.handshake.query.auth == `string`
-      ? socket.handshake.query.auth
-      : ``;
+  const auth: string = socket.handshake?.auth?.auth;
 
   if (!auth) {
     logger.debug(`Authentication token missing`);
@@ -35,8 +32,6 @@ export const auth_middleware = async (
 
   // socket.auth = auth;
   socket.data.auth = auth;
-
-  logger.info(`socket auth ${JSON.stringify(socket.handshake.auth)}`);
 
   socket.on(`disconnect`, async () => {
     await cleanSocket(auth);
