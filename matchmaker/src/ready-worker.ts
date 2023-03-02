@@ -60,7 +60,7 @@ export const startReadyConsumer = async () => {
 
   await subRedisClient.psubscribe(`${matchmakerChannelPrefix}*`);
 
-  rabbitChannel.prefetch(40);
+  rabbitChannel.prefetch(1);
   logger.info(` [x] Awaiting RPC requests`);
 
   rabbitChannel.consume(
@@ -94,7 +94,8 @@ export const startReadyConsumer = async () => {
         } else {
           logger.error(`Unknown error: ${e}`);
           logger.error(e.stack);
-          rabbitChannel.nack(msg);
+          // rabbitChannel.nack(msg);
+          throw e;
         }
       } finally {
         cleanup.forEach((cleanupFunc) => {
@@ -324,7 +325,7 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
       getRealtionshipScoreCacheKey(userId, scoreEntry[0]),
       scoreEntry[1],
       `EX`,
-      60 * 5,
+      60 * 20,
     );
     relationshipScoresMap.set(scoreEntry[0], scoreEntry[1]);
   }

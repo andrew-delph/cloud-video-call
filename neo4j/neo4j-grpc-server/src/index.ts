@@ -115,13 +115,6 @@ const createMatch = async (
     reply.setRelationshipId2(`${r2_id}`);
   } catch (e: any) {
     logger.error(`stupid get error: ${e}`);
-    return callback(
-      {
-        message: `${e}`,
-        code: grpc.status.NOT_FOUND,
-      },
-      null,
-    );
   }
 
   const duration = (performance.now() - start_time) / 1000;
@@ -252,7 +245,7 @@ server.addService(Neo4jService, {
   createUser,
   createMatch,
   updateMatch,
-  getRelationshipScores: getRelationshipScores2,
+  getRelationshipScores: getRelationshipScores,
 });
 const addr = `0.0.0.0:${process.env.PORT || 8080}`;
 server.bindAsync(addr, grpc.ServerCredentials.createInsecure(), async () => {
