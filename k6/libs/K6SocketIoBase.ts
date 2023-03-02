@@ -21,10 +21,17 @@ export abstract class K6SocketIoBase {
   url: string;
   max_time: number;
 
+  auth: any = false;
   params: any;
 
-  constructor(url: string, params: any = {}, max_time: number = 0) {
+  constructor(
+    url: string,
+    auth: any = {},
+    params: any = {},
+    max_time: number = 0,
+  ) {
     this.url = url;
+    this.auth = auth;
     this.params = params;
     this.max_time = max_time;
   }
@@ -81,7 +88,7 @@ export abstract class K6SocketIoBase {
     const code = response.code;
 
     if (type == responseType.open) {
-      this.socket.send(`40`);
+      this.socket.send(`40${this.auth ? JSON.stringify(this.auth) : ``}`);
       return;
     }
 
