@@ -154,7 +154,7 @@ class AppWidgetState extends State<AppWidget> {
 
         // display loading if socket not connected and not in a chat
         isDisplayLoading() {
-          if (!appProvider.socket!.connected) {
+          if (!appProvider.socket!.connected || !appProvider.established) {
             return !isInChat();
           }
           return false;

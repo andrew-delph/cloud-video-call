@@ -21,6 +21,7 @@ class AppProvider extends ChangeNotifier {
   RTCVideoRenderer get localVideoRenderer => _localVideoRenderer;
 
   io.Socket? socket;
+  bool established = false;
 
   Function(SocketConnectionState, dynamic)? onSocketStateChange;
   Function(RTCPeerConnectionState)? onPeerConnectionStateChange;
@@ -96,12 +97,18 @@ class AppProvider extends ChangeNotifier {
       notifyListeners();
     });
 
+    socket!.on('established', (data) {
+      established = true;
+      notifyListeners();
+    });
+
     socket!.onConnect((_) {
       socket!.emit('message', 'from flutter app connected');
       notifyListeners();
     });
     socket!.on('message', (data) => print(data));
     socket!.onDisconnect((details) {
+      established = false;
       handleSocketStateChange(SocketConnectionState.disconnected, details);
       notifyListeners();
     });
