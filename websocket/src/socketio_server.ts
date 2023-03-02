@@ -159,7 +159,7 @@ io.on(`connection`, async (socket) => {
     },
   );
 
-  socket.emit(`established`, `established ack`);
+  socket.emit(`established`, `Connection established.`);
 });
 
 export const getServer = async (listen: boolean) => {
@@ -181,7 +181,7 @@ export const getServer = async (listen: boolean) => {
     .then(() => {
       io.adapter(createAdapter(pubRedisClient, subRedisClient));
       if (listen) httpServer.listen(4000);
-      logger.info(`server started`);
+      logger.info(`Server started.`);
     })
     .then(async () => {
       const activeCountThrottle = throttle(async () => {

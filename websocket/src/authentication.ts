@@ -36,6 +36,8 @@ export const auth_middleware = async (
   // socket.auth = auth;
   socket.data.auth = auth;
 
+  logger.info(`socket auth ${JSON.stringify(socket.handshake.auth)}`);
+
   socket.on(`disconnect`, async () => {
     await cleanSocket(auth);
   });

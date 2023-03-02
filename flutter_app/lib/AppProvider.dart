@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:socket_io_client/socket_io_client.dart';
 
 import 'Factory.dart';
 import 'dart:math';
+
 enum SocketConnectionState { connected, connectionError, error, disconnected }
 
 class AppProvider extends ChangeNotifier {
@@ -64,14 +66,18 @@ class AppProvider extends ChangeNotifier {
 
     String generateRandomString(int len) {
       var r = Random();
-      return String.fromCharCodes(List.generate(len, (index) => r.nextInt(33) + 89));
+      return String.fromCharCodes(
+          List.generate(len, (index) => r.nextInt(33) + 89));
     }
+
     socketAddress = "$socketAddress?auth=local${generateRandomString(5)}";
     // only websocket works on windows
-    socket = io.io(socketAddress, <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': false
-    });
+    socket = io.io(
+        socketAddress,
+        OptionBuilder()
+            .setTransports(['websocket'])
+            .disableAutoConnect().setAuth({"authy":generateRandomString(10)})
+            .build());
 
     socket!.emit("message", "I am a client");
 
