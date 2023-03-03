@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Factory.dart';
@@ -7,7 +9,9 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import 'AppProvider.dart';
-import 'FeedbackPopup.dart';
+import 'Feedback.dart';
+
+import 'package:http/http.dart' as http;
 
 class AppWidget extends StatefulWidget {
   const AppWidget({super.key});
@@ -158,22 +162,33 @@ class AppWidgetState extends State<AppWidget> {
 
         if (appProvider.chatMachine.current?.identifier ==
             ChatStates.feedback) {
-          var content = IntrinsicHeight(
-            child: Column(
-              children: [
-                FeedbackPopup(
-                  minValue: 0,
-                  maxValue: 10,
-                  initialValue: 5,
-                  onChanged: (value) {
-                    print('Slider value changed to: $value');
-                  },
-                )
-              ],
-            ),
-          );
+          return FeedbackWidget(
+              min: 0,
+              max: 10,
+              initialValue: 5,
+              onSubmit: (score) async {
+                // print("the score: $score");
+                // print("feedbackId: " + appProvider.feedbackId!);
+                // print("auth: " + appProvider.auth!);
+                var url = Uri.http(
+                    Factory.getHostAddress(), 'feedback/providefeedback');
+                final headers = {
+                  'Access-Control-Allow-Origin': '*',
+                  'Content-Type': 'application/json',
+                  'authorization': appProvider.auth!
+                };
+                final body = {
+                  'feedback_id': appProvider.feedbackId!,
+                  'score': score
+                };
+                var response = await http.post(url,
+                    headers: headers, body: json.encode(body));
+                print('Response status: ${response.statusCode}');
+                print('Response body: ${response.body}');
 
-          showDialogAlert(-1, const Text("Provide Feedback"), content);
+                appProvider.chatMachine.current = ChatStates.waiting;
+              },
+              label: 'Submit Feedback');
         }
 
         Widget newChatButton = TextButton(

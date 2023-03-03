@@ -9,7 +9,6 @@ import 'package:socket_io_client/socket_io_client.dart';
 import 'Factory.dart';
 import 'dart:math';
 import 'package:statemachine/statemachine.dart';
-import 'package:http/http.dart' as http;
 
 enum SocketConnectionState { connected, connectionError, error, disconnected }
 
@@ -58,22 +57,6 @@ class AppProvider extends ChangeNotifier {
       }
       await tryResetRemote();
       chatMachine.current = ChatStates.feedback;
-    });
-
-    chatMachine[ChatStates.feedback].onEntry(() async {
-      print("feedbackId: " + feedbackId!);
-      print("auth: " + auth!);
-      var url = Uri.http(Factory.getHostAddress(), 'feedback/providefeedback');
-      final headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-        'authorization': auth!
-      };
-      final body = {'feedback_id': feedbackId!, 'score': 5};
-      var response =
-          await http.post(url, headers: headers, body: json.encode(body));
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
     });
 
     socketMachine.start();
