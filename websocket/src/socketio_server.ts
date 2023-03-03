@@ -113,6 +113,7 @@ io.on(`connection`, async (socket) => {
   });
 
   socket.on(`disconnect`, async () => {
+    socket.to(`room-${socket.id}`).emit(`endchat`, `disconnected`);
     const duration = performance.now() - start_time;
     logger.debug(
       `disconnected ${process.env.HOSTNAME} #${
