@@ -6,6 +6,7 @@ dependencies:
     sdk: flutter
   flutter_native_splash: ^2.0.4
   flutter_webrtc: ^0.9.19
+  http: ^0.13.5
   loading_animation_widget: ^1.2.0+4
   provider: ^6.0.5
   socket_io_client: ^2.0.1

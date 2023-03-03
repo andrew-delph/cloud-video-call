@@ -30,7 +30,7 @@ app.post(`/providefeedback`, async (req, res) => {
 
   if (!auth) {
     logger.debug(`Missing Authorization`);
-    res.status(401).send(`Missing Authorization`);
+    res.status(401).json({ error: `Missing Authorization` });
     return;
   } else if (!feedback_id || score == null) {
     logger.debug(

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/state_machines.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -7,6 +9,7 @@ import 'package:socket_io_client/socket_io_client.dart';
 import 'Factory.dart';
 import 'dart:math';
 import 'package:statemachine/statemachine.dart';
+import 'package:http/http.dart' as http;
 
 enum SocketConnectionState { connected, connectionError, error, disconnected }
 
@@ -29,6 +32,7 @@ class AppProvider extends ChangeNotifier {
 
   io.Socket? socket;
   String? feedbackId;
+  String? auth;
   bool established = false;
 
   // late Machine<String> stateMachine;
@@ -58,6 +62,18 @@ class AppProvider extends ChangeNotifier {
 
     chatMachine[ChatStates.feedback].onEntry(() async {
       print("feedbackId: " + feedbackId!);
+      print("auth: " + auth!);
+      var url = Uri.http(Factory.getHostAddress(), 'feedback/providefeedback');
+      final headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'authorization': auth!
+      };
+      final body = {'feedback_id': feedbackId!, 'score': 5};
+      var response =
+          await http.post(url, headers: headers, body: json.encode(body));
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
     });
 
     socketMachine.start();
@@ -108,13 +124,14 @@ class AppProvider extends ChangeNotifier {
           List.generate(len, (index) => r.nextInt(33) + 89));
     }
 
+    auth = generateRandomString(10);
     // only websocket works on windows
     socket = io.io(
         socketAddress,
         OptionBuilder()
             .setTransports(['websocket'])
             .disableAutoConnect()
-            .setAuth({"auth": generateRandomString(10)})
+            .setAuth({"auth": auth})
             .build());
 
     socket!.emit("message", "I am a client");
