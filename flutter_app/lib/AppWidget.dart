@@ -7,6 +7,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import 'AppProvider.dart';
+import 'FeedbackPopup.dart';
 
 class AppWidget extends StatefulWidget {
   const AppWidget({super.key});
@@ -39,9 +40,8 @@ class AppWidgetState extends State<AppWidget> {
 
   void showDialogAlert(int lockID, Widget title, Widget content) {
     if (dialogLock.contains(lockID) == true) return;
-    dialogLock.add(lockID);
-    func() =>
-        showDialog(
+    if (lockID > 0) dialogLock.add(lockID);
+    func() => showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
@@ -63,8 +63,8 @@ class AppWidgetState extends State<AppWidget> {
     Future.microtask(func);
   }
 
-  void handleSocketStateChange(SocketConnectionState socketState,
-      dynamic details) {
+  void handleSocketStateChange(
+      SocketConnectionState socketState, dynamic details) {
     var content = IntrinsicHeight(
       child: Column(
         children: [
@@ -86,7 +86,7 @@ class AppWidgetState extends State<AppWidget> {
         }
         break;
       case SocketConnectionState.connected:
-      // TODO: Handle this case.
+        // TODO: Handle this case.
         break;
       case SocketConnectionState.error:
         showDialogAlert(2, const Text("Socket Error"), content);
@@ -101,22 +101,22 @@ class AppWidgetState extends State<AppWidget> {
       RTCPeerConnectionState peerConnectionState) {
     switch (peerConnectionState) {
       case RTCPeerConnectionState.RTCPeerConnectionStateDisconnected:
-      // TODO: Handle this case.
+        // TODO: Handle this case.
         break;
       case RTCPeerConnectionState.RTCPeerConnectionStateClosed:
-      // TODO: Handle this case.
+        // TODO: Handle this case.
         break;
       case RTCPeerConnectionState.RTCPeerConnectionStateFailed:
-      // TODO: Handle this case.
+        // TODO: Handle this case.
         break;
       case RTCPeerConnectionState.RTCPeerConnectionStateNew:
-      // TODO: Handle this case.
+        // TODO: Handle this case.
         break;
       case RTCPeerConnectionState.RTCPeerConnectionStateConnecting:
-      // TODO: Handle this case.
+        // TODO: Handle this case.
         break;
       case RTCPeerConnectionState.RTCPeerConnectionStateConnected:
-      // TODO: Handle this case.
+        // TODO: Handle this case.
         break;
     }
   }
@@ -137,11 +137,11 @@ class AppWidgetState extends State<AppWidget> {
 
         Widget loadingWidget = Scaffold(
             body: Center(
-              child: LoadingAnimationWidget.staggeredDotsWave(
-                color: Colors.blue,
-                size: 200,
-              ),
-            ));
+          child: LoadingAnimationWidget.staggeredDotsWave(
+            color: Colors.blue,
+            size: 200,
+          ),
+        ));
 
         isInChat() {
           return appProvider.chatMachine.current?.identifier ==
@@ -155,6 +155,26 @@ class AppWidgetState extends State<AppWidget> {
         }
 
         if (isDisplayLoading()) return loadingWidget;
+
+        if (appProvider.chatMachine.current?.identifier ==
+            ChatStates.feedback) {
+          var content = IntrinsicHeight(
+            child: Column(
+              children: [
+                FeedbackPopup(
+                  minValue: 0,
+                  maxValue: 10,
+                  initialValue: 5,
+                  onChanged: (value) {
+                    print('Slider value changed to: $value');
+                  },
+                )
+              ],
+            ),
+          );
+
+          showDialogAlert(-1, const Text("Provide Feedback"), content);
+        }
 
         Widget newChatButton = TextButton(
           onPressed: () async {
