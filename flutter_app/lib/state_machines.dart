@@ -2,7 +2,16 @@ import 'package:statemachine/statemachine.dart';
 
 enum SocketStates { connecting, connected, established }
 
-enum ChatStates { waiting, ready, matched, connected, feedback, error }
+enum ChatStates {
+  waiting,
+  ready,
+  matched,
+  matchedError,
+  connectionError,
+  connected,
+  feedback,
+  error
+}
 
 void stateChangeOnEntry(Machine machine, void Function() callback) {
   for (var state in machine.states) {

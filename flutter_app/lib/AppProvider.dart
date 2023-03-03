@@ -43,6 +43,9 @@ class AppProvider extends ChangeNotifier {
     stateChangeOnEntry(chatMachine, () {
       notifyListeners();
     });
+    chatMachine[ChatStates.matched].onTimeout(const Duration(seconds: 10), () {
+      chatMachine.current = ChatStates.connectionError;
+    });
     socketMachine.start();
   }
 
@@ -232,9 +235,13 @@ class AppProvider extends ChangeNotifier {
       List data = request as List;
       dynamic value = data[0] as dynamic;
       Function callback = data[1] as Function;
-      String role = value["role"];
-      String feedbackId = value["feedback_id"];
+      String? role = value["role"];
+      String? feedbackId = value["feedback_id"];
       print("feedback_id: $feedbackId");
+      if (feedbackId == null) {
+        chatMachine.current = ChatStates.matchedError;
+        return;
+      }
       switch (role) {
         case "host":
           {
@@ -248,6 +255,7 @@ class AppProvider extends ChangeNotifier {
           break;
         default:
           {
+            chatMachine.current = ChatStates.matchedError;
             print("role is not host/guest: $role");
           }
           break;
