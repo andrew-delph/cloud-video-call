@@ -28,6 +28,7 @@ class AppProvider extends ChangeNotifier {
   RTCVideoRenderer get localVideoRenderer => _localVideoRenderer;
 
   io.Socket? socket;
+  String? feedbackId;
   bool established = false;
 
   // late Machine<String> stateMachine;
@@ -53,6 +54,10 @@ class AppProvider extends ChangeNotifier {
       }
       await tryResetRemote();
       chatMachine.current = ChatStates.feedback;
+    });
+
+    chatMachine[ChatStates.feedback].onEntry(() async {
+      print("feedbackId: " + feedbackId!);
     });
 
     socketMachine.start();
@@ -93,7 +98,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> initSocket() async {
-    String socketAddress = Factory.getSocketAddress();
+    String socketAddress = "ws://${Factory.getHostAddress()}";
 
     print("SOCKET_ADDRESS is $socketAddress");
 
@@ -245,7 +250,7 @@ class AppProvider extends ChangeNotifier {
       dynamic value = data[0] as dynamic;
       Function callback = data[1] as Function;
       String? role = value["role"];
-      String? feedbackId = value["feedback_id"];
+      feedbackId = value["feedback_id"];
       print("feedback_id: $feedbackId");
       if (feedbackId == null) {
         chatMachine.current = ChatStates.matchedError;

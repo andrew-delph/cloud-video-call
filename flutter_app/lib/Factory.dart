@@ -33,8 +33,8 @@ class Factory {
     return peerConnection;
   }
 
-  static String getSocketAddress() {
+  static String getHostAddress() {
     return const String.fromEnvironment('SOCKET_ADDRESS',
-        defaultValue: 'http://localhost');
+        defaultValue: 'localhost:8888');
   }
 }
