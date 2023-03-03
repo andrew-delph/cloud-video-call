@@ -18,8 +18,5 @@ void main() {
     expect(chatMachine.current?.identifier, equals(ChatStates.waiting));
 
     socketMachine.current = SocketStates.connecting;
-
-    print("socketMachine " + socketMachine.current.toString());
-    print("chatMachine" + chatMachine.current.toString());
   });
 }
