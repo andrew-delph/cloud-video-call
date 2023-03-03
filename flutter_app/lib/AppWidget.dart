@@ -164,7 +164,7 @@ class AppWidgetState extends State<AppWidget> {
 
         Widget endChatButton = TextButton(
           onPressed: () async {
-            await appProvider.tryResetRemote();
+            appProvider.chatMachine.current = ChatStates.ended;
           },
           child: const Text('End chat'),
         );

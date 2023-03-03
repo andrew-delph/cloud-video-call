@@ -9,6 +9,7 @@ enum ChatStates {
   matchedError,
   connectionError,
   connected,
+  ended,
   feedback,
   error
 }

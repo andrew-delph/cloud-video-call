@@ -46,6 +46,15 @@ class AppProvider extends ChangeNotifier {
     chatMachine[ChatStates.matched].onTimeout(const Duration(seconds: 10), () {
       chatMachine.current = ChatStates.connectionError;
     });
+
+    chatMachine[ChatStates.ended].onEntry(() async {
+      if (socket != null && socket?.connected == true) {
+        socket!.emit("endchat", "endchat");
+      }
+      await tryResetRemote();
+      chatMachine.current = ChatStates.feedback;
+    });
+
     socketMachine.start();
   }
 
@@ -141,7 +150,8 @@ class AppProvider extends ChangeNotifier {
 
     socket!.on('message', (data) => print(data));
     socket!.on('endchat', (data) async {
-      await tryResetRemote();
+      print("got endchat event");
+      chatMachine.current = ChatStates.ended;
     });
     socket!.onDisconnect((details) {
       socketMachine.current = SocketStates.connecting;
@@ -178,13 +188,9 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> tryResetRemote() async {
-    if (socket != null && socket?.connected == true) {
-      socket!.emit("endchat", "endchat");
-    }
     if (peerConnection != null) {
       await peerConnection?.close();
     }
-    peerConnection = null;
     await resetRemoteMediaStream();
   }
 
@@ -202,6 +208,9 @@ class AppProvider extends ChangeNotifier {
     peerConnection?.onConnectionState = (state) {
       if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
         chatMachine.current = ChatStates.connected;
+      } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
+          state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
+        chatMachine.current = ChatStates.ended;
       }
       // print("peerConnection changed state: $state");
       handlePeerConnectionStateChange(state);
