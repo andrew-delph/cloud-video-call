@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/state_machines.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:socket_io_client/socket_io_client.dart';
 
 import 'Factory.dart';
 import 'dart:math';
+import 'package:statemachine/statemachine.dart';
 
 enum SocketConnectionState { connected, connectionError, error, disconnected }
 
@@ -16,14 +18,30 @@ class AppProvider extends ChangeNotifier {
   RTCVideoRenderer _remoteVideoRenderer = RTCVideoRenderer();
 
   MediaStream? get localMediaStream => _localMediaStream;
+
   MediaStream? get remoteMediaStream => _remoteMediaStream;
+
   RTCPeerConnection? get peerConnection => _peerConnection;
 
   RTCVideoRenderer get remoteVideoRenderer => _remoteVideoRenderer;
+
   RTCVideoRenderer get localVideoRenderer => _localVideoRenderer;
 
   io.Socket? socket;
   bool established = false;
+
+  // late Machine<String> stateMachine;
+
+  Machine<SocketStates> socketMachine = getSocketMachine();
+  Machine<ChatStates> chatMachine = getChatMachine();
+
+  AppProvider() {
+    socketMachine[SocketStates.established].addNested(chatMachine);
+    stateChangeOnEntry(socketMachine, () {
+      notifyListeners();
+    });
+    socketMachine.start();
+  }
 
   Function(SocketConnectionState, dynamic)? onSocketStateChange;
   Function(RTCPeerConnectionState)? onPeerConnectionStateChange;
@@ -75,7 +93,8 @@ class AppProvider extends ChangeNotifier {
         socketAddress,
         OptionBuilder()
             .setTransports(['websocket'])
-            .disableAutoConnect().setAuth({"auth":generateRandomString(10)})
+            .disableAutoConnect()
+            .setAuth({"auth": generateRandomString(10)})
             .build());
 
     socket!.emit("message", "I am a client");
@@ -104,18 +123,22 @@ class AppProvider extends ChangeNotifier {
 
     socket!.on('established', (data) {
       established = true;
+      socketMachine.current = SocketStates.established;
       notifyListeners();
     });
 
     socket!.onConnect((_) {
+      socketMachine.current = SocketStates.connected;
       socket!.emit('message', 'from flutter app connected');
       notifyListeners();
     });
+
     socket!.on('message', (data) => print(data));
     socket!.on('endchat', (data) async {
       await tryResetRemote();
     });
     socket!.onDisconnect((details) {
+      socketMachine.current = SocketStates.connecting;
       established = false;
       handleSocketStateChange(SocketConnectionState.disconnected, details);
       notifyListeners();
@@ -149,10 +172,10 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> tryResetRemote() async {
-    if(socket != null && socket?.connected == true){
-      socket!.emit("endchat","endchat");
+    if (socket != null && socket?.connected == true) {
+      socket!.emit("endchat", "endchat");
     }
-    if(peerConnection != null){
+    if (peerConnection != null) {
       await peerConnection?.close();
     }
     peerConnection = null;
@@ -160,6 +183,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> ready() async {
+    chatMachine.current = ChatStates.ready;
     await tryResetRemote();
     await initLocalStream();
     socket!.off("client_host");
@@ -170,7 +194,10 @@ class AppProvider extends ChangeNotifier {
     // START SETUP PEER CONNECTION
     peerConnection = await Factory.createPeerConnection();
     peerConnection?.onConnectionState = (state) {
-      print("peerConnection changed state: $state");
+      if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
+        chatMachine.current = ChatStates.connected;
+      }
+      // print("peerConnection changed state: $state");
       handlePeerConnectionStateChange(state);
       notifyListeners();
     };
@@ -184,24 +211,27 @@ class AppProvider extends ChangeNotifier {
 
     // START collect the streams/tracks from remote
     peerConnection!.onAddStream = (stream) {
-      print("onAddStream");
+      // print("onAddStream");
       remoteMediaStream = stream;
     };
     peerConnection!.onAddTrack = (stream, track) async {
-      print("onAddTrack");
+      // print("onAddTrack");
       await addRemoteTrack(track);
     };
     peerConnection!.onTrack = (RTCTrackEvent track) async {
-      print("onTrack");
+      // print("onTrack");
       await addRemoteTrack(track.track);
     };
     // END collect the streams/tracks from remote
 
     socket!.on("match", (request) async {
+      chatMachine.current = ChatStates.matched;
       List data = request as List;
       dynamic value = data[0] as dynamic;
       Function callback = data[1] as Function;
       String role = value["role"];
+      String feedbackId = value["feedback_id"];
+      print("feedback_id: $feedbackId");
       switch (role) {
         case "host":
           {
@@ -233,7 +263,7 @@ class AppProvider extends ChangeNotifier {
       });
     };
     socket!.on("icecandidate", (data) async {
-      print("got ice!");
+      // print("got ice!");
       RTCIceCandidate iceCandidate = RTCIceCandidate(
           data["icecandidate"]['candidate'],
           data["icecandidate"]['sdpMid'],
@@ -262,7 +292,7 @@ class AppProvider extends ChangeNotifier {
 
     socket!.on("client_host", (data) {
       if (data['answer'] != null) {
-        print("got answer");
+        // print("got answer");
         RTCSessionDescription answerDescription = RTCSessionDescription(
             data['answer']["sdp"], data['answer']["type"]);
         peerConnection!.setRemoteDescription(answerDescription);
@@ -275,7 +305,7 @@ class AppProvider extends ChangeNotifier {
 
     socket!.on("client_guest", (data) async {
       if (data["offer"] != null) {
-        print("got offer");
+        // print("got offer");
         await peerConnection!.setRemoteDescription(
             RTCSessionDescription(data["offer"]["sdp"], data["offer"]["type"]));
 

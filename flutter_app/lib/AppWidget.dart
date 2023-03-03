@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Factory.dart';
+import 'package:flutter_app/state_machines.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
@@ -123,9 +124,10 @@ class AppWidgetState extends State<AppWidget> {
   Widget build(BuildContext context) {
     var child = Consumer<AppProvider>(
       builder: (consumerContext, appProvider, child) {
-        appProvider.init(
-            onSocketStateChange: handleSocketStateChange,
-            onPeerConnectionStateChange: handlePeerConnectionStateChange);
+        appProvider.init();
+        // appProvider.init(
+        //     onSocketStateChange: handleSocketStateChange,
+        //     onPeerConnectionStateChange: handlePeerConnectionStateChange);
 
         // if connected to peerconnection. show end chat
         // if not connected to peerconnection
@@ -141,23 +143,14 @@ class AppWidgetState extends State<AppWidget> {
         ));
 
         isInChat() {
-          if (appProvider.peerConnection?.connectionState ==
-              RTCPeerConnectionState.RTCPeerConnectionStateConnecting) {
-            return true;
-          }
-          if (appProvider.peerConnection?.connectionState ==
-              RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
-            return true;
-          }
-          return false;
+          return appProvider.chatMachine.current?.identifier ==
+              ChatStates.connected;
         }
 
-        // display loading if socket not connected and not in a chat
+        // display loading if socket is not established
         isDisplayLoading() {
-          if (!appProvider.socket!.connected || !appProvider.established) {
-            return !isInChat();
-          }
-          return false;
+          return appProvider.socketMachine.current?.identifier !=
+              SocketStates.established;
         }
 
         if (isDisplayLoading()) return loadingWidget;
