@@ -30,7 +30,5 @@ Machine<ChatStates> getChatMachine() {
     });
   }
 
-  // chatMachine.start();
-
   return chatMachine;
 }

@@ -10,20 +10,21 @@ import 'firebase_options.dart';
 void main() async {
   print("Start main...");
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
-  var db = FirebaseFirestore.instance;
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
+  //
+  // var db = FirebaseFirestore.instance;
 
   // await db.collection("users").doc("count").get().then((value) {
   //   print("count from firestore ${value.data()}");
   // });
 
-  db.collection("users").doc("count").snapshots().listen(
-        (event) => print("live count from firestore: ${event.data()}"),
-        onError: (error) => print("Listen failed: $error"),
-      );
+  // db.collection("users").doc("count").snapshots().listen(
+  //       (event) => print("live count from firestore: ${event.data()}"),
+  //       onError: (error) => print("Listen failed: $error"),
+  //     );
 
   runApp(const MyApp());
 }
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var child =
-        Consumer<AppProvider>(builder: (consumerContext, appProvider, child) {
+    Consumer<AppProvider>(builder: (consumerContext, appProvider, child) {
       String title = 'Random video chat (${appProvider.activeCount})';
       return MaterialApp(
           title: title,

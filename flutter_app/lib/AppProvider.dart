@@ -40,6 +40,9 @@ class AppProvider extends ChangeNotifier {
     stateChangeOnEntry(socketMachine, () {
       notifyListeners();
     });
+    stateChangeOnEntry(chatMachine, () {
+      notifyListeners();
+    });
     socketMachine.start();
   }
 
