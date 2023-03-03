@@ -133,6 +133,11 @@ io.on(`connection`, async (socket) => {
     socket.to(`room-${socket.id}`).emit(`icecandidate`, value);
   });
 
+  socket.on(`endchat`, (value) => {
+    socket.to(`room-${socket.id}`).emit(`endchat`, value);
+    io.socketsLeave(`room-${socket.id}`);
+  });
+
   await pubRedisClient.publish(common.activeCountChannel, `change`);
 
   // setTimeout(() => {
@@ -188,7 +193,7 @@ export const getServer = async (listen: boolean) => {
         const activeCount = await mainRedisClient.scard(common.activeSetName);
         logger.info(`activeCount #${activeCount}`);
         io.emit(`activeCount`, activeCount);
-      }, 30000);
+      }, 5000);
 
       await subRedisClient.subscribe(common.activeCountChannel);
 

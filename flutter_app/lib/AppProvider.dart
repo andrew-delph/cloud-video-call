@@ -70,7 +70,6 @@ class AppProvider extends ChangeNotifier {
           List.generate(len, (index) => r.nextInt(33) + 89));
     }
 
-    socketAddress = "$socketAddress?auth=local${generateRandomString(5)}";
     // only websocket works on windows
     socket = io.io(
         socketAddress,
@@ -113,6 +112,9 @@ class AppProvider extends ChangeNotifier {
       notifyListeners();
     });
     socket!.on('message', (data) => print(data));
+    socket!.on('endchat', (data) async {
+      await tryResetRemote();
+    });
     socket!.onDisconnect((details) {
       established = false;
       handleSocketStateChange(SocketConnectionState.disconnected, details);
@@ -147,7 +149,12 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> tryResetRemote() async {
-    await peerConnection?.close();
+    if(socket != null && socket?.connected == true){
+      socket!.emit("endchat","endchat");
+    }
+    if(peerConnection != null){
+      await peerConnection?.close();
+    }
     peerConnection = null;
     await resetRemoteMediaStream();
   }
