@@ -27,3 +27,11 @@ data:
   max-non-active-revisions: '0'
   retain-since-create-time: 'disabled'
   retain-since-last-active-time: 'disabled'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-autoscaler
+  namespace: knative-serving
+data:
+  enable-scale-to-zero: 'true'
