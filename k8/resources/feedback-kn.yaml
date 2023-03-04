@@ -1,0 +1,19 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: feedback
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/min-scale: '1'
+        autoscaling.knative.dev/max-scale: '5'
+        autoscaling.knative.dev/initial-scale: '1'
+        autoscaling.knative.dev/class: 'hpa.autoscaling.knative.dev'
+        autoscaling.knative.dev/metric: 'cpu'
+        autoscaling.knative.dev/target: '50'
+    spec:
+      containers:
+        - image: andrewdelph/video-call-feedback:latest
+          ports:
+            - containerPort: 80

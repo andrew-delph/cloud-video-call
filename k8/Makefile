@@ -6,6 +6,8 @@ pneo4j:
 	kubectl port-forward svc/neo4j tcp-bolt tcp-http tcp-https
 
 apply:
+	kubectl apply -f https://github.com/knative/operator/releases/download/knative-v1.9.2/operator.yaml --wait
+	kubectl apply -f ./knative.yaml --wait
 	kubectl apply -f ./resources/.
 
 delete:
