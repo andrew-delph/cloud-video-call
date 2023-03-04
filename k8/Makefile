@@ -12,6 +12,7 @@ apply:
 
 delete:
 	kubectl delete -f ./resources/.
+	kubectl delete -f ./knative.yaml
 
 restart:
 	kubectl rollout restart -f ./resources/.
