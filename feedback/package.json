@@ -9,7 +9,7 @@
     "build:watch": "nodemon --watch ./src -e ts --exec 'npm run build'",
     "dev": "nodemon --delay 1000ms --ignore dist --ext ts --exec 'npm run k8-restart'",
     "docker": "docker build -f Dockerfile -t andrewdelph/video-call-feedback:latest ../ && docker push andrewdelph/video-call-feedback:latest",
-    "k8-restart": "npm run docker && kubectl rollout restart deployment/feedback && kubectl rollout status deployment/feedback --watch=true --timeout=60s  && date"
+    "k8-restart": "npm run docker && kn service update feedback --image=andrewdelph/video-call-feedback:latest --wait && date"
   },
   "dependencies": {
     "neo4j-driver": "^5.5.0",
