@@ -188,8 +188,8 @@ export const getServer = async (listen: boolean) => {
     })
     .then(() => {
       io.adapter(createAdapter(pubRedisClient, subRedisClient));
-      if (listen) httpServer.listen(4000);
-      logger.info(`Server started.`);
+      if (listen) httpServer.listen(80);
+      logger.info(`Server started on port 80.`);
     })
     .then(async () => {
       const activeCountThrottle = throttle(async () => {

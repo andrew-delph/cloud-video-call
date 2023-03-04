@@ -69,15 +69,20 @@ export default async function () {
     secure ? `wss` : `ws`
   }://${domain}/socket.io/?EIO=4&transport=websocket`;
 
+  // let url = `${
+  //   secure ? `wss` : `ws`
+  // }://websocket.default.svc.cluster.local/socket.io/?EIO=4&transport=websocket`;
+
   let auth: string | null = null;
 
   const popAuth = async (count: number = 0) => {
-    const auth = await redisClient.lpop(authKeysName);
-    if (Math.random() > 0.5 && count < 10) {
-      await redisClient.rpush(authKeysName, auth);
-      return await popAuth(count + 1);
-    }
-    return auth;
+    // const auth = await redisClient.lpop(authKeysName);
+    // if (Math.random() > 0.5 && count < 10) {
+    //   await redisClient.rpush(authKeysName, auth);
+    //   return await popAuth(count + 1);
+    // }
+    // return auth;
+    return randomString(10);
   };
 
   try {
@@ -92,6 +97,14 @@ export default async function () {
     sleep(10);
     return;
   }
+
+  const r = http.get(
+    `${secure ? `https` : `http`}://${domain}/feedback/health`,
+  );
+  check(r, { 'feedback health': r && r.status == 200 });
+
+  const r2 = http.get(`${secure ? `https` : `http`}://${domain}/ws/health`);
+  check(r2, { 'websocket health': r2 && r2.status == 200 });
 
   const socket = new K6SocketIoExp(url, { auth: auth }, {}, 20000);
 
