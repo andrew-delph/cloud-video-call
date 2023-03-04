@@ -247,7 +247,9 @@ server.addService(Neo4jService, {
   updateMatch,
   getRelationshipScores: getRelationshipScores,
 });
-const addr = `0.0.0.0:${process.env.PORT || 8080}`;
+
+const addr = `0.0.0.0:${process.env.PORT || 80}`;
+
 server.bindAsync(addr, grpc.ServerCredentials.createInsecure(), async () => {
   await verifyIndexes();
   logger.info(`starting on: ${addr}`);

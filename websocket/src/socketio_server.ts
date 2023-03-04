@@ -160,7 +160,8 @@ io.on(`connection`, async (socket) => {
     (error: any, response: any) => {
       if (!error) {
       } else {
-        logger.error(`createUser error:`, error.message);
+        logger.error(`createUser error: ${error.message}`);
+        logger.error(`createUser error: ${JSON.stringify(error)}`);
         socket.disconnect();
       }
     },

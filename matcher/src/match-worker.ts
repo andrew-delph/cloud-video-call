@@ -80,7 +80,6 @@ export async function matchConsumer() {
         userId1 = msgContent[0];
         userId2 = msgContent[1];
 
-        logger.debug(`matching ${userId1} ${userId2}`);
         await match(userId1, userId2);
       } catch (e) {
         logger.debug(`matchEvent error=` + e);
@@ -113,7 +112,7 @@ export const match = async (userId1: string, userId2: string) => {
     logger.error(`(!userId1 || !userId2) ${userId1} ${userId2}`);
     throw Error(`(!userId1 || !userId2) ${userId1} ${userId2}`);
   }
-  logger.debug(`matching: ${userId1} ${userId2}`);
+  logger.debug(`matching users: [${userId1}, ${userId2}]`);
 
   const socket1 = await mainRedisClient.hget(
     common.connectedAuthMapName,
