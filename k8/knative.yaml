@@ -16,3 +16,14 @@ spec:
   config:
     network:
       ingress-class: 'kourier.ingress.networking.knative.dev'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-gc
+  namespace: knative-serving
+data:
+  min-non-active-revisions: '0'
+  max-non-active-revisions: '0'
+  retain-since-create-time: 'disabled'
+  retain-since-last-active-time: 'disabled'
