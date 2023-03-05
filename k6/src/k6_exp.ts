@@ -98,11 +98,6 @@ export default async function () {
     return;
   }
 
-  const r = http.get(
-    `${secure ? `https` : `http`}://${domain}/feedback/health`,
-  );
-  check(r, { 'feedback health': r && r.status == 200 });
-
   const r2 = http.get(`${secure ? `https` : `http`}://${domain}/ws/health`);
   check(r2, { 'websocket health': r2 && r2.status == 200 });
 
