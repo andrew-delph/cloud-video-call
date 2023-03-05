@@ -16,3 +16,15 @@ spec:
           ports:
             - containerPort: 80
               protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: websocket-lb
+spec:
+  selector:
+    serving.knative.dev/service: websocket
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
