@@ -24,16 +24,19 @@ loki:
 promtail:
   enabled: true
   config:
-    logLevel: info
+    logLevel: debug
     serverPort: 3101
     clients:
       - url: http://{{ .Release.Name }}:3100/loki/api/v1/push
     snippets:
       # addScrapeJobLabel: true
-      # extraRelabelConfigs:
-      #   # keep all kubernetes labels
-      #   - action: labelmap
-      #     regex: __meta_kubernetes_pod_label_(.+)
+      extraRelabelConfigs:
+        # keep all kubernetes labels
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - source_labels: [serving_knative_dev_service]
+          regex: '(.+)'
+          target_label: 'app'
       pipelineStages:
         - docker:
         - json:
