@@ -26,7 +26,7 @@ export const listenGlobalExceptions = (clean_up?: () => Promise<void>) => {
   signalTraps.forEach((type) => {
     process.once(type, async (error) => {
       try {
-        logger.debug(`signalTraps ${type}  error: ${error}`);
+        logger.warn(`signalTraps ${type}  error: ${error}`);
         if (clean_up != null) await clean_up();
       } finally {
         process.kill(process.pid, type);
