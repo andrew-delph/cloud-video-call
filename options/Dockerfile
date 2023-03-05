@@ -11,8 +11,8 @@ RUN cd common && npm install
 COPY neo4j/neo4j-grpc-common/package*.json ./neo4j/neo4j-grpc-common/
 RUN cd neo4j/neo4j-grpc-common && npm install
 
-COPY feedback/package*.json ./feedback/
-RUN cd feedback && npm install
+COPY options/package*.json ./options/
+RUN cd options && npm install
 
 COPY common common
 RUN cd common && npm run build
@@ -20,9 +20,9 @@ RUN cd common && npm run build
 COPY neo4j/neo4j-grpc-common neo4j/neo4j-grpc-common
 RUN cd neo4j/neo4j-grpc-common && npm run build
 
-COPY feedback feedback
-RUN cd feedback && npm run build
+COPY options options
+RUN cd options && npm run build
 
-WORKDIR /usr/src/app/feedback
+WORKDIR /usr/src/app/options
 # # Run the web service on container startup.
-CMD [ "npm", "run" , "prod" ]
+CMD [ "node", "/dist/options.js" ]
