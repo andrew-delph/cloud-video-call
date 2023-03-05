@@ -171,7 +171,7 @@ class AppWidgetState extends State<AppWidget> {
                 // print("feedbackId: " + appProvider.feedbackId!);
                 // print("auth: " + appProvider.auth!);
                 var url = Uri.http(
-                    Factory.getHostAddress(), 'feedback/providefeedback');
+                    Factory.getHostAddress(), 'options/providefeedback');
                 final headers = {
                   'Access-Control-Allow-Origin': '*',
                   'Content-Type': 'application/json',

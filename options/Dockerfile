@@ -25,4 +25,4 @@ RUN cd options && npm run build
 
 WORKDIR /usr/src/app/options
 # # Run the web service on container startup.
-CMD [ "node", "/dist/options.js" ]
+CMD [ "node", "./dist/options.js" ]
