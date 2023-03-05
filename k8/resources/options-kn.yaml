@@ -1,7 +1,7 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: feedback
+  name: options
 spec:
   template:
     metadata:
@@ -12,7 +12,7 @@ spec:
         autoscaling.knative.dev/class: 'kpa.autoscaling.knative.dev'
     spec:
       containers:
-        - image: andrewdelph/video-call-feedback:latest
+        - image: andrewdelph/video-call-options:latest
           ports:
             - containerPort: 80
           livenessProbe:

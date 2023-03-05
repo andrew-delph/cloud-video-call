@@ -148,7 +148,7 @@ export default async function () {
       })
       .then((feedback_id) => {
         const r = http.post(
-          `${secure ? `https` : `http`}://${domain}/feedback/providefeedback`,
+          `${secure ? `https` : `http`}://${domain}/options/providefeedback`,
           JSON.stringify({ feedback_id, score: randomIntBetween(0, 5) }),
           {
             headers: {
