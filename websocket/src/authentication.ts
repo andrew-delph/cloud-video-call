@@ -11,7 +11,6 @@ export const auth_middleware = async (
   socket: Socket,
   next: (err?: any) => void,
 ) => {
-  logger.error(`HERE`);
   const auth: string = socket.handshake?.auth?.auth;
 
   if (!auth) {
