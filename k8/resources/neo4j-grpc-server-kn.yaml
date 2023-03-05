@@ -16,3 +16,7 @@ spec:
           ports:
             - name: h2c
               containerPort: 80
+          livenessProbe:
+            exec:
+              command: ['/bin/grpc_health_probe', '-addr=:80']
+            initialDelaySeconds: 10

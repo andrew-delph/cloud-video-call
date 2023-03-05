@@ -5,6 +5,12 @@ WORKDIR /usr/src/app
 
 RUN npm i -g grpc-tools
 
+RUN apt update && apt install wget -y
+
+RUN GRPC_HEALTH_PROBE_VERSION=v0.4.13 && \
+    wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+    chmod +x /bin/grpc_health_probe
+
 # Install
 COPY common/package*.json ./common/
 RUN cd common && npm install
