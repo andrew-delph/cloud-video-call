@@ -1,0 +1,34 @@
+{
+  "name": "neo4j-grpc-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --delay 1000ms --ignore dist --ext ts --exec 'npm run k8-restart'",
+    "dev2": "tsc-watch --onSuccess \"npm run k8-restart\" --onCompilationStarted \"echo 'watching neo4j-grpc-server'\"",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "prod": "node ./dist/index.js",
+    "docker": "docker build -f Dockerfile  -t andrewdelph/video-call-neo4j-grpc-server:latest ../../ && docker push andrewdelph/video-call-neo4j-grpc-server:latest",
+    "k8-restart": "npm run docker && kn service update neo4j-grpc-server --image=andrewdelph/video-call-neo4j-grpc-server:latest --wait && date"
+  },
+  "dependencies": {
+    "uuid": "^9.0.0",
+    "neo4j-driver": "^5.5.0",
+    "neo4j-grpc-common": "^1.0.0",
+    "react-video-call-common": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/uuid": "^9.0.0",
+    "typescript": "^4.4.4"
+  },
+  "author": "",
+  "license": "ISC",
+  "workspaces": {
+    "packages": [
+      "../../common",
+      "../neo4j-grpc-common"
+    ]
+  }
+}

@@ -1,9 +1,0 @@
-{
-  "delay": 2500,
-  "restartable": "rs",
-  "verbose": true,
-
-  "exec": "npm run reset-dev",
-  "watch": ["src", "../common/react-video-call-common-1.0.0.tgz"],
-  "ext": "ts"
-}

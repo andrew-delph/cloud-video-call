@@ -1,1 +1,0 @@
-gcloud container clusters delete ${GKE_CLUSTER} --region ${REGION}

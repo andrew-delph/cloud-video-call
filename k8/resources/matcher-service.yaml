@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: matcher
+  name: matcher
+spec:
+  ports:
+    - name: '4000'
+      port: 4000
+      targetPort: 4000
+  selector:
+    app: matcher
+status:
+  loadBalancer: {}

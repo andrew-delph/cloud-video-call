@@ -1,0 +1,23 @@
+{
+  "name": "neo4j",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsc-watch --onCompilationStarted \"echo 'watching neo4j'\"",
+    "build": "tsc",
+    "run": "node dist/neo4j_index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/uuid": "^9.0.0",
+    "tsc-watch": "^6.0.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "neo4j-driver": "^5.5.0",
+    "uuid": "^9.0.0"
+  }
+}

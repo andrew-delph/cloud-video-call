@@ -1,0 +1,13 @@
+{
+  "name": "nginx",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --delay 1000ms --ignore dist --ext conf --exec 'npm run k8-restart'",
+    "docker": "docker build -t andrewdelph/video-call-nginx:latest . && docker push andrewdelph/video-call-nginx:latest",
+    "k8-restart": "npm run docker && kn service update nginx --image=andrewdelph/video-call-nginx:latest --wait && date"
+  },
+  "author": "",
+  "license": "ISC"
+}

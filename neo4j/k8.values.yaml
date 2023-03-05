@@ -1,0 +1,20 @@
+neo4j:
+  name: my-standalone
+  resources:
+    cpu: '1'
+    memory: '4Gi'
+
+  password: 'password'
+
+volumes:
+  data:
+    mode: defaultStorageClass
+    defaultStorageClass:
+      requests:
+        storage: 2Gi
+env:
+  NEO4J_PLUGINS: '["graph-data-science"]'
+config:
+  dbms.security.procedures.unrestricted: 'gds.*'
+  dbms.memory.transaction.total.max: '1GB'
+  server.bolt.thread_pool_max_size: '1000'

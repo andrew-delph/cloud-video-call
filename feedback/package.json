@@ -1,0 +1,33 @@
+{
+  "name": "feedback",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "prod": "node ./dist/feedback.js",
+    "build": "tsc",
+    "build:watch": "nodemon --watch ./src -e ts --exec 'npm run build'",
+    "dev": "nodemon --delay 1000ms --ignore dist --ext ts --exec 'npm run k8-restart'",
+    "docker": "docker build -f Dockerfile -t andrewdelph/video-call-feedback:latest ../ && docker push andrewdelph/video-call-feedback:latest",
+    "k8-restart": "npm run docker && kn service update feedback --image=andrewdelph/video-call-feedback:latest --wait && date"
+  },
+  "dependencies": {
+    "neo4j-driver": "^5.5.0",
+    "express": "^4.18.2",
+    "neo4j-grpc-common": "^1.0.0",
+    "react-video-call-common": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "nodemon": "^2.0.20",
+    "typescript": "^4.4.4"
+  },
+  "workspaces": {
+    "packages": [
+      "../common",
+      "../neo4j/neo4j-grpc-common"
+    ]
+  },
+  "author": "",
+  "license": "ISC"
+}

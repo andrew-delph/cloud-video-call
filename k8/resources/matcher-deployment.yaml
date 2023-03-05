@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: matcher
+  name: matcher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: matcher
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: matcher
+    spec:
+      containers:
+        - env:
+            - name: FIREBASE_CONFIG
+              value: '{"projectId":"react-video-call-thing72","storageBucket":"react-video-call-thing72.appspot.com","locationId":"us-central"}'
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: '6379'
+          image: andrewdelph/video-call-matcher:latest
+          name: matcher
+          ports:
+            - containerPort: 4000
+          resources:
+            # requests:
+            #   cpu: '512m'
+            #   memory: '250Mi'
+            limits:
+              cpu: '512m'
+              memory: '250Mi'
+      restartPolicy: Always
+status: {}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-matcher
+spec:
+  minReplicas: 1
+  maxReplicas: 5
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: matcher
+  metrics:
+    - type: Object
+      object:
+        metric:
+          name: matchQueue
+        target:
+          type: Value
+          value: 100
+        describedObject:
+          apiVersion: '/v1'
+          kind: 'Service'
+          name: prometheus-rabbitmq-exporter
+    # - type: Resource
+    #   resource:
+    #     name: cpu
+    #     target:
+    #       type: Utilization
+    #       averageUtilization: 80
+    # - type: Resource
+    #   resource:
+    #     name: memory
+    #     target:
+    #       type: Utilization
+    #       averageUtilization: 80

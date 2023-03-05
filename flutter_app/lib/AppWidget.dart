@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Factory.dart';
+import 'package:flutter_app/state_machines.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import 'AppProvider.dart';
+import 'Feedback.dart';
+
+import 'package:http/http.dart' as http;
 
 class AppWidget extends StatefulWidget {
   const AppWidget({super.key});
@@ -38,7 +44,7 @@ class AppWidgetState extends State<AppWidget> {
 
   void showDialogAlert(int lockID, Widget title, Widget content) {
     if (dialogLock.contains(lockID) == true) return;
-    dialogLock.add(lockID);
+    if (lockID > 0) dialogLock.add(lockID);
     func() => showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -66,7 +72,7 @@ class AppWidgetState extends State<AppWidget> {
     var content = IntrinsicHeight(
       child: Column(
         children: [
-          Text("Socket Address: ${Factory.getSocketAddress()}"),
+          Text("Socket Address: ${Factory.getHostAddress()}"),
           const Text(""),
           Text(
               style: const TextStyle(
@@ -123,9 +129,10 @@ class AppWidgetState extends State<AppWidget> {
   Widget build(BuildContext context) {
     var child = Consumer<AppProvider>(
       builder: (consumerContext, appProvider, child) {
-        appProvider.init(
-            onSocketStateChange: handleSocketStateChange,
-            onPeerConnectionStateChange: handlePeerConnectionStateChange);
+        appProvider.init();
+        // appProvider.init(
+        //     onSocketStateChange: handleSocketStateChange,
+        //     onPeerConnectionStateChange: handlePeerConnectionStateChange);
 
         // if connected to peerconnection. show end chat
         // if not connected to peerconnection
@@ -141,26 +148,48 @@ class AppWidgetState extends State<AppWidget> {
         ));
 
         isInChat() {
-          if (appProvider.peerConnection?.connectionState ==
-              RTCPeerConnectionState.RTCPeerConnectionStateConnecting) {
-            return true;
-          }
-          if (appProvider.peerConnection?.connectionState ==
-              RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
-            return true;
-          }
-          return false;
+          return appProvider.chatMachine.current?.identifier ==
+              ChatStates.connected;
         }
 
-        // display loading if socket not connected and not in a chat
+        // display loading if socket is not established
         isDisplayLoading() {
-          if (!appProvider.socket!.connected) {
-            return !isInChat();
-          }
-          return false;
+          return appProvider.socketMachine.current?.identifier !=
+              SocketStates.established;
         }
 
         if (isDisplayLoading()) return loadingWidget;
+
+        if (appProvider.chatMachine.current?.identifier ==
+            ChatStates.feedback) {
+          return FeedbackWidget(
+              min: 0,
+              max: 10,
+              initialValue: 5,
+              onSubmit: (score) async {
+                // print("the score: $score");
+                // print("feedbackId: " + appProvider.feedbackId!);
+                // print("auth: " + appProvider.auth!);
+                var url = Uri.http(
+                    Factory.getHostAddress(), 'feedback/providefeedback');
+                final headers = {
+                  'Access-Control-Allow-Origin': '*',
+                  'Content-Type': 'application/json',
+                  'authorization': appProvider.auth!
+                };
+                final body = {
+                  'feedback_id': appProvider.feedbackId!,
+                  'score': score
+                };
+                var response = await http.post(url,
+                    headers: headers, body: json.encode(body));
+                print('Response status: ${response.statusCode}');
+                print('Response body: ${response.body}');
+
+                appProvider.chatMachine.current = ChatStates.waiting;
+              },
+              label: 'Submit Feedback');
+        }
 
         Widget newChatButton = TextButton(
           onPressed: () async {
@@ -171,7 +200,7 @@ class AppWidgetState extends State<AppWidget> {
 
         Widget endChatButton = TextButton(
           onPressed: () async {
-            await appProvider.tryResetRemote();
+            appProvider.chatMachine.current = ChatStates.ended;
           },
           child: const Text('End chat'),
         );

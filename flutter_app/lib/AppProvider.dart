@@ -1,8 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/state_machines.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:socket_io_client/socket_io_client.dart';
 
 import 'Factory.dart';
+import 'dart:math';
+import 'package:statemachine/statemachine.dart';
 
 enum SocketConnectionState { connected, connectionError, error, disconnected }
 
@@ -14,13 +20,47 @@ class AppProvider extends ChangeNotifier {
   RTCVideoRenderer _remoteVideoRenderer = RTCVideoRenderer();
 
   MediaStream? get localMediaStream => _localMediaStream;
+
   MediaStream? get remoteMediaStream => _remoteMediaStream;
+
   RTCPeerConnection? get peerConnection => _peerConnection;
 
   RTCVideoRenderer get remoteVideoRenderer => _remoteVideoRenderer;
+
   RTCVideoRenderer get localVideoRenderer => _localVideoRenderer;
 
   io.Socket? socket;
+  String? feedbackId;
+  String? auth;
+  bool established = false;
+
+  // late Machine<String> stateMachine;
+
+  Machine<SocketStates> socketMachine = getSocketMachine();
+  Machine<ChatStates> chatMachine = getChatMachine();
+
+  AppProvider() {
+    socketMachine[SocketStates.established].addNested(chatMachine);
+    stateChangeOnEntry(socketMachine, () {
+      notifyListeners();
+    });
+    stateChangeOnEntry(chatMachine, () {
+      notifyListeners();
+    });
+    chatMachine[ChatStates.matched].onTimeout(const Duration(seconds: 10), () {
+      chatMachine.current = ChatStates.connectionError;
+    });
+
+    chatMachine[ChatStates.ended].onEntry(() async {
+      if (socket != null && socket?.connected == true) {
+        socket!.emit("endchat", "endchat");
+      }
+      await tryResetRemote();
+      chatMachine.current = ChatStates.feedback;
+    });
+
+    socketMachine.start();
+  }
 
   Function(SocketConnectionState, dynamic)? onSocketStateChange;
   Function(RTCPeerConnectionState)? onPeerConnectionStateChange;
@@ -57,15 +97,25 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> initSocket() async {
-    String socketAddress = Factory.getSocketAddress();
+    String socketAddress = "ws://${Factory.getHostAddress()}";
 
     print("SOCKET_ADDRESS is $socketAddress");
 
+    String generateRandomString(int len) {
+      var r = Random();
+      return String.fromCharCodes(
+          List.generate(len, (index) => r.nextInt(33) + 89));
+    }
+
+    auth = generateRandomString(10);
     // only websocket works on windows
-    socket = io.io(socketAddress, <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': false
-    });
+    socket = io.io(
+        socketAddress,
+        OptionBuilder()
+            .setTransports(['websocket'])
+            .disableAutoConnect()
+            .setAuth({"auth": auth})
+            .build());
 
     socket!.emit("message", "I am a client");
 
@@ -77,8 +127,8 @@ class AppProvider extends ChangeNotifier {
       callback("flutter responded");
     });
 
-    socket!
-        .emitWithAck("myping", "I am a client", ack: () => print("ping ack"));
+    socket!.emitWithAck("myping", "I am a client",
+        ack: (data) => print("ping ack"));
 
     socket!.onConnectError((details) {
       print('connectError');
@@ -91,12 +141,26 @@ class AppProvider extends ChangeNotifier {
       notifyListeners();
     });
 
+    socket!.on('established', (data) {
+      established = true;
+      socketMachine.current = SocketStates.established;
+      notifyListeners();
+    });
+
     socket!.onConnect((_) {
+      socketMachine.current = SocketStates.connected;
       socket!.emit('message', 'from flutter app connected');
       notifyListeners();
     });
+
     socket!.on('message', (data) => print(data));
+    socket!.on('endchat', (data) async {
+      print("got endchat event");
+      chatMachine.current = ChatStates.ended;
+    });
     socket!.onDisconnect((details) {
+      socketMachine.current = SocketStates.connecting;
+      established = false;
       handleSocketStateChange(SocketConnectionState.disconnected, details);
       notifyListeners();
     });
@@ -129,12 +193,14 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> tryResetRemote() async {
-    await peerConnection?.close();
-    peerConnection = null;
+    if (peerConnection != null) {
+      await peerConnection?.close();
+    }
     await resetRemoteMediaStream();
   }
 
   Future<void> ready() async {
+    chatMachine.current = ChatStates.ready;
     await tryResetRemote();
     await initLocalStream();
     socket!.off("client_host");
@@ -145,7 +211,13 @@ class AppProvider extends ChangeNotifier {
     // START SETUP PEER CONNECTION
     peerConnection = await Factory.createPeerConnection();
     peerConnection?.onConnectionState = (state) {
-      print("peerConnection changed state: $state");
+      if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
+        chatMachine.current = ChatStates.connected;
+      } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
+          state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
+        chatMachine.current = ChatStates.ended;
+      }
+      // print("peerConnection changed state: $state");
       handlePeerConnectionStateChange(state);
       notifyListeners();
     };
@@ -159,24 +231,32 @@ class AppProvider extends ChangeNotifier {
 
     // START collect the streams/tracks from remote
     peerConnection!.onAddStream = (stream) {
-      print("onAddStream");
+      // print("onAddStream");
       remoteMediaStream = stream;
     };
     peerConnection!.onAddTrack = (stream, track) async {
-      print("onAddTrack");
+      // print("onAddTrack");
       await addRemoteTrack(track);
     };
     peerConnection!.onTrack = (RTCTrackEvent track) async {
-      print("onTrack");
+      // print("onTrack");
       await addRemoteTrack(track.track);
     };
     // END collect the streams/tracks from remote
 
     socket!.on("match", (request) async {
+      chatMachine.current = ChatStates.matched;
       List data = request as List;
-      String value = data[0] as String;
+      dynamic value = data[0] as dynamic;
       Function callback = data[1] as Function;
-      switch (value) {
+      String? role = value["role"];
+      feedbackId = value["feedback_id"];
+      print("feedback_id: $feedbackId");
+      if (feedbackId == null) {
+        chatMachine.current = ChatStates.matchedError;
+        return;
+      }
+      switch (role) {
         case "host":
           {
             await setClientHost();
@@ -189,7 +269,8 @@ class AppProvider extends ChangeNotifier {
           break;
         default:
           {
-            print("match is not host/guest: $value");
+            chatMachine.current = ChatStates.matchedError;
+            print("role is not host/guest: $role");
           }
           break;
       }
@@ -207,7 +288,7 @@ class AppProvider extends ChangeNotifier {
       });
     };
     socket!.on("icecandidate", (data) async {
-      print("got ice!");
+      // print("got ice!");
       RTCIceCandidate iceCandidate = RTCIceCandidate(
           data["icecandidate"]['candidate'],
           data["icecandidate"]['sdpMid'],
@@ -216,7 +297,7 @@ class AppProvider extends ChangeNotifier {
     });
     // END HANDLE ICE CANDIDATES
 
-    socket!.emitWithAck("ready", {}, ack: () => print("ready ack"));
+    socket!.emitWithAck("ready", {}, ack: (data) => print("ready ack"));
   }
 
   Future<void> setClientHost() async {
@@ -236,7 +317,7 @@ class AppProvider extends ChangeNotifier {
 
     socket!.on("client_host", (data) {
       if (data['answer'] != null) {
-        print("got answer");
+        // print("got answer");
         RTCSessionDescription answerDescription = RTCSessionDescription(
             data['answer']["sdp"], data['answer']["type"]);
         peerConnection!.setRemoteDescription(answerDescription);
@@ -249,7 +330,7 @@ class AppProvider extends ChangeNotifier {
 
     socket!.on("client_guest", (data) async {
       if (data["offer"] != null) {
-        print("got offer");
+        // print("got offer");
         await peerConnection!.setRemoteDescription(
             RTCSessionDescription(data["offer"]["sdp"], data["offer"]["type"]));
 

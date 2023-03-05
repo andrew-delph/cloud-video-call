@@ -1,0 +1,20 @@
+rabbitmq:
+  url: http://rabbitmq.default.svc.cluster.local:15672
+  user: guest
+  password: guest
+  capabilities: bert,no_sort
+  include_queues: '.*'
+  include_vhost: '.*'
+  skip_queues: '^$'
+  skip_verify: 'false'
+  skip_vhost: '^$'
+  exporters: 'exchange,node,overview,queue'
+  output_format: 'TTY'
+  timeout: 30
+  max_queues: 0
+  excludeMetrics: ''
+prometheus:
+  monitor:
+    enabled: true
+    additionalLabels:
+      release: kube-stack # this has to be the same name as the kube-prometheus-stack name

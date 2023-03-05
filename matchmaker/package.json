@@ -1,0 +1,44 @@
+{
+  "name": "matchmaker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "prod": "node ./dist/ready-worker.js",
+    "dev": "nodemon --delay 1000ms --ignore dist --ext ts --exec 'npm run k8-restart'",
+    "dev2": "tsc-watch --onSuccess \"npm run k8-restart\" --onCompilationStarted \"echo 'watching matchmaker'\"",
+    "docker": "docker build -f Dockerfile -t andrewdelph/video-call-matchmaker:latest ../ && docker push andrewdelph/video-call-matchmaker:latest",
+    "k8-restart": "npm run docker && kubectl rollout restart deployment/matchmaker && kubectl rollout status deployment/matchmaker --watch=true --timeout=60s && date"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/uuid": "^9.0.0",
+    "@types/amqplib": "^0.10.1",
+    "@types/lodash.throttle": "^4.1.7",
+    "@types/node": "^18.13.0",
+    "tsc-watch": "^6.0.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "cluster": "^0.7.7",
+    "redlock": "^5.0.0-beta.2",
+    "ioredis": "5.2.5",
+    "uuid": "^9.0.0",
+    "amqplib": "^0.10.3",
+    "lodash": "^4.17.21",
+    "lodash.throttle": "^4.1.1",
+    "neo4j-grpc-common": "^1.0.0",
+    "react-video-call-common": "^1.0.0"
+  },
+  "workspaces": {
+    "packages": [
+      "../common",
+      "../neo4j/neo4j-grpc-common"
+    ]
+  }
+}
