@@ -8,4 +8,3 @@ This is a distributed random chat service created with flutter and works on all 
 2. ui communication with options server
 3. requirements(gender, geolocation)
 4. pretty ui
-5. marketing
