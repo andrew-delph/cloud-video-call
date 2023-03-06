@@ -13,7 +13,7 @@ volumes:
       requests:
         storage: 2Gi
 env:
-  NEO4J_PLUGINS: '["graph-data-science"]'
+  NEO4J_PLUGINS: '["graph-data-science","apoc"]'
 config:
   dbms.security.procedures.unrestricted: 'gds.*'
   dbms.memory.transaction.total.max: '1GB'
