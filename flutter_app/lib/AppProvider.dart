@@ -108,7 +108,7 @@ class AppProvider extends ChangeNotifier {
           List.generate(len, (index) => r.nextInt(33) + 89));
     }
 
-    auth = FirebaseAuth.instance.currentUser?.uid;
+    auth = await FirebaseAuth.instance.currentUser?.getIdToken(true);
     // only websocket works on windows
     socket = io.io(
         socketAddress,

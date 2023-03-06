@@ -44,7 +44,7 @@ const connectRabbit = async () => {
 
 dotenv.config();
 
-initializeApp();
+const firebaseApp = initializeApp();
 
 const serverID = uuid();
 

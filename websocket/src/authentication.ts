@@ -5,6 +5,8 @@ import { mainRedisClient } from './socketio_server';
 import * as common from 'react-video-call-common';
 import { cleanSocket, registerSocket } from './management';
 
+import { getAuth } from 'firebase-admin/auth';
+
 const logger = getLogger();
 
 export const auth_middleware = async (
@@ -30,14 +32,27 @@ export const auth_middleware = async (
     return;
   }
 
+  await getAuth()
+    .verifyIdToken(auth)
+    .then(async (decodedToken: { uid: any }) => {
+      const uid = decodedToken.uid;
+      socket.data.auth = uid;
+
+      logger.debug(`firebase auth uid: ${uid} , auth: ${auth}`);
+
+      socket.on(`disconnect`, async () => {
+        await cleanSocket(uid);
+      });
+
+      await registerSocket(socket);
+
+      next();
+    })
+    .catch((error) => {
+      logger.debug(`firebase auth error: ${error}`);
+      next(error);
+      return;
+    });
+
   // socket.auth = auth;
-  socket.data.auth = auth;
-
-  socket.on(`disconnect`, async () => {
-    await cleanSocket(auth);
-  });
-
-  await registerSocket(socket);
-
-  next();
 };
