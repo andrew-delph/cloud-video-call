@@ -1,6 +1,10 @@
 
 pnginx:
-	kubectl port-forward svc/nginx-lb 8888:80
+	while true; do \
+        kubectl port-forward svc/nginx-lb 8888:80 || true; \
+        sleep 1; \
+    done
+	
 
 pneo4j:
 	kubectl port-forward svc/neo4j tcp-bolt tcp-http tcp-https
