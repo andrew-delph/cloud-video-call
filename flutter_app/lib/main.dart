@@ -7,13 +7,33 @@ import 'AppProvider.dart';
 import 'AppWidget.dart';
 import 'firebase_options.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 void main() async {
   print("Start main...");
   WidgetsFlutterBinding.ensureInitialized();
 
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  try {
+    final userCredential = await FirebaseAuth.instance.signInAnonymously();
+    print("Signed in with temporary account. ${userCredential.user?.uid}");
+
+
+    print("data: ${userCredential.user}");
+  } on FirebaseAuthException catch (e) {
+    switch (e.code) {
+      case "operation-not-allowed":
+        print("Anonymous auth hasn't been enabled for this project.");
+        break;
+      default:
+        print("Unknown error.");
+    }
+  }
+
+
   //
   // var db = FirebaseFirestore.instance;
 

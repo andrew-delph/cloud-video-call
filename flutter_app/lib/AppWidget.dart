@@ -167,9 +167,6 @@ class AppWidgetState extends State<AppWidget> {
               max: 10,
               initialValue: 5,
               onSubmit: (score) async {
-                // print("the score: $score");
-                // print("feedbackId: " + appProvider.feedbackId!);
-                // print("auth: " + appProvider.auth!);
                 var url = Uri.http(
                     Factory.getHostAddress(), 'options/providefeedback');
                 final headers = {
@@ -183,8 +180,8 @@ class AppWidgetState extends State<AppWidget> {
                 };
                 var response = await http.post(url,
                     headers: headers, body: json.encode(body));
-                print('Response status: ${response.statusCode}');
-                print('Response body: ${response.body}');
+                print('Feedback status: ${response.statusCode}');
+                print('Feedback body: ${response.body}');
 
                 appProvider.chatMachine.current = ChatStates.waiting;
               },

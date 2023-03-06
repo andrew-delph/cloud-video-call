@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/state_machines.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -107,7 +108,7 @@ class AppProvider extends ChangeNotifier {
           List.generate(len, (index) => r.nextInt(33) + 89));
     }
 
-    auth = generateRandomString(10);
+    auth = FirebaseAuth.instance.currentUser?.uid;
     // only websocket works on windows
     socket = io.io(
         socketAddress,
