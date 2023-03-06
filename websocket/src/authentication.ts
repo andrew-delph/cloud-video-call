@@ -26,17 +26,17 @@ export const auth_middleware = async (
     return;
   }
 
-  if (await mainRedisClient.hexists(common.connectedAuthMapName, auth)) {
-    logger.debug(`User already connected: ${auth}`);
-    next(new Error(`User already connected`));
-    return;
-  }
-
   await getAuth()
     .verifyIdToken(auth)
     .then(async (decodedToken: { uid: any }) => {
       const uid = decodedToken.uid;
       socket.data.auth = uid;
+
+      if (await mainRedisClient.hexists(common.connectedAuthMapName, uid)) {
+        logger.debug(`User already connected: ${uid}`);
+        next(new Error(`User already connected`));
+        return;
+      }
 
       logger.debug(`firebase auth uid: ${uid} , auth: ${auth}`);
 
