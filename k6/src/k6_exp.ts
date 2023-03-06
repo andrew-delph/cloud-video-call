@@ -25,7 +25,7 @@ export function setup() {
 
 const vus = 50;
 export const options = {
-  vus: 50,
+  vus: 5,
   // iterations: authKeysNum * 10,
   duration: `3h`,
   // scenarios: {

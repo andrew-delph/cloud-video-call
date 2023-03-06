@@ -25,34 +25,38 @@ export const auth_middleware = async (
     next(new Error(`Authentication format error`));
     return;
   }
+  let uid: string;
 
-  await getAuth()
-    .verifyIdToken(auth)
-    .then(async (decodedToken: { uid: any }) => {
-      const uid = decodedToken.uid;
-      socket.data.auth = uid;
-
-      if (await mainRedisClient.hexists(common.connectedAuthMapName, uid)) {
-        logger.debug(`User already connected: ${uid}`);
-        next(new Error(`User already connected`));
+  if (auth.startsWith(`k6`)) {
+    logger.debug(`k6 auth: ${auth}`);
+    uid = auth;
+  } else {
+    uid = await getAuth()
+      .verifyIdToken(auth)
+      .then(async (decodedToken: { uid: any }) => {
+        logger.debug(`firebase auth uid: ${decodedToken.uid} , auth: ${auth}`);
+        return decodedToken.uid;
+      })
+      .catch((error) => {
+        logger.debug(`firebase auth error: ${error}`);
+        next(error);
         return;
-      }
-
-      logger.debug(`firebase auth uid: ${uid} , auth: ${auth}`);
-
-      socket.on(`disconnect`, async () => {
-        await cleanSocket(uid);
       });
+  }
 
-      await registerSocket(socket);
+  socket.data.auth = uid;
 
-      next();
-    })
-    .catch((error) => {
-      logger.debug(`firebase auth error: ${error}`);
-      next(error);
-      return;
-    });
+  if (await mainRedisClient.hexists(common.connectedAuthMapName, uid)) {
+    logger.debug(`User already connected: ${uid}`);
+    next(new Error(`User already connected`));
+    return;
+  }
 
-  // socket.auth = auth;
+  socket.on(`disconnect`, async () => {
+    await cleanSocket(uid);
+  });
+
+  await registerSocket(socket);
+
+  next();
 };
