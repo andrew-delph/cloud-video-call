@@ -23,26 +23,26 @@ export const driver = neo4j.driver(
 );
 
 (async () => {
-  let session = driver.session();
+  const session = driver.session();
 
   let result;
 
   try {
-    await session.run(`CALL gds.graph.drop('similariyGraph');`);
+    await session.run(`CALL gds.graph.drop('similarityGraph');`);
     logger.debug(`graph delete successfully`);
   } catch (e) {
     logger.debug(`graph doesn't exist`);
   }
 
   await session.run(
-    `CALL gds.graph.project( 'similariyGraph', 'Person', 'FEEDBACK' ,{ relationshipProperties: ['score'] });`,
+    `CALL gds.graph.project( 'similarityGraph', 'Person', 'FEEDBACK' ,{ relationshipProperties: ['score'] });`,
   );
 
   logger.debug(`graph created`);
 
   result = await session.run(
     `
-    CALL gds.nodeSimilarity.stream('similariyGraph', { relationshipWeightProperty: 'score', similarityCutoff: 0.3 })
+    CALL gds.nodeSimilarity.stream('similarityGraph', { relationshipWeightProperty: 'score', similarityCutoff: 0.3 })
         YIELD node1, node2, similarity
         WITH gds.util.asNode(node1) AS n1, gds.util.asNode(node2) AS n2, similarity
         CREATE (n1)-[r:SIMILAR_TO {similarity: similarity, jobId: $jobId }]->(n2)
@@ -57,9 +57,6 @@ export const driver = neo4j.driver(
       result.summary.counters.updates().relationshipsCreated
     }`,
   );
-
-  session.close();
-  session = driver.session();
 
   result = await session.run(
     `
