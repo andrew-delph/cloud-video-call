@@ -42,7 +42,7 @@ export const driver = neo4j.driver(
 
   result = await session.run(
     `
-    CALL gds.pageRank.write('priorityGraph', { relationshipWeightProperty: 'score',  scaler: "L1Norm", writeProperty: 'pagerank' })
+    CALL gds.pageRank.write('priorityGraph', { relationshipWeightProperty: 'score',  scaler: "L1Norm", writeProperty: 'priority' })
         YIELD nodePropertiesWritten, ranIterations
   `,
   );
