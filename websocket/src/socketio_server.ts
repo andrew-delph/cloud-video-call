@@ -166,7 +166,7 @@ io.on(`connection`, async (socket) => {
       createUserRequest,
       (error: any, response: CreateUserResponse) => {
         if (!error) {
-          priority = parseFloat(response.getPriority());
+          priority = parseFloat(response.getPriority()) || 0;
           socket.emit(`established`, `Connection established.`);
         } else {
           logger.error(`createUser error: ${error.message}`);
