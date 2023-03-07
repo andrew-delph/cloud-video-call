@@ -106,6 +106,7 @@ const createMatch = async (
   await session.close();
 
   if (matchResult.records.length == 0) {
+    logger.error(`match doesnt exist?`);
   }
 
   try {
