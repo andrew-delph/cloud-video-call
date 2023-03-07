@@ -11,7 +11,7 @@ import http from 'k6/http';
 const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 200;
+const authKeysNum = 2000;
 const authKeysName = `authKeysName`;
 export function setup() {
   const authKeys: string[] = [];

@@ -52,7 +52,7 @@ export const driver = neo4j.driver(
     { jobId },
   );
 
-  logger.info(
+  logger.debug(
     `relationshipsCreated: ${
       result.summary.counters.updates().relationshipsCreated
     }`,
@@ -68,7 +68,7 @@ export const driver = neo4j.driver(
     { jobId },
   );
 
-  logger.info(
+  logger.debug(
     `relationshipsDeleted: ${
       result.summary.counters.updates().relationshipsDeleted
     }`,

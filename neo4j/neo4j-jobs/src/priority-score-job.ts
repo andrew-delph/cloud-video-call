@@ -47,7 +47,7 @@ export const driver = neo4j.driver(
   `,
   );
 
-  logger.info(
+  logger.debug(
     `nodePropertiesWritten: ${JSON.stringify(
       result.records[0].get(`nodePropertiesWritten`),
     )}`,

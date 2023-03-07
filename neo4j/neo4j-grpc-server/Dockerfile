@@ -33,4 +33,4 @@ RUN cd neo4j/neo4j-grpc-server && npm run build
 
 WORKDIR /usr/src/app/neo4j/neo4j-grpc-server
 # # Run the web service on container startup.
-CMD [ "node", "./dist/index.js" ]
+CMD [ "node", "./dist/neo4j-grpc-server.js" ]
