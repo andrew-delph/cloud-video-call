@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: index-neo4j-jobs
+spec:
+  schedule: '*/2 * * * *'
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: index
+              image: andrewdelph/video-call-neo4j-jobs:latest
+              imagePullPolicy: Always
+              command:
+                - node
+                - ./dist/index.js
+          restartPolicy: Never
