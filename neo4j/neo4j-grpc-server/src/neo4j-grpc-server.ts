@@ -155,10 +155,10 @@ const getRelationshipScores = async (
   const session = driver.session();
   const result = await session.run(
     `
-        MATCH (a)-[rel:SIMILAR]->(b) 
+        MATCH (a)-[rel:SIMILAR_TO]->(b) 
         WHERE a.userId = $target
         AND b.userId IN $otherUsers
-        RETURN a.userId as targetId, b.userId as otherId, rel.score as score
+        RETURN a.userId as targetId, b.userId as otherId, rel.similarity as score
         ORDER BY rel.score DESCENDING
       `,
     { target: userId, otherUsers },
@@ -182,7 +182,7 @@ const getRelationshipScores = async (
   callback(null, reply);
 };
 
-const getRelationshipScores2 = async (
+const getRelationshipScoresLinkPrediction = async (
   call: grpc.ServerUnaryCall<
     GetRelationshipScoresRequest,
     GetRelationshipScoresResponse

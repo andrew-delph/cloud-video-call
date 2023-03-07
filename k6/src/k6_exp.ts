@@ -25,9 +25,9 @@ export function setup() {
 
 const vus = 50;
 export const options = {
-  vus: 30,
-  iterations: authKeysNum * 10,
-  // duration: `3h`,
+  vus: 20,
+  // iterations: authKeysNum * 10,
+  duration: `3h`,
   // scenarios: {
   //   matchTest: {
   //     executor: `ramping-vus`,
