@@ -15,5 +15,5 @@ spec:
               imagePullPolicy: Always
               command:
                 - node
-                - ./dist/index.js
+                - ./dist/priority-score-job.js
           restartPolicy: Never

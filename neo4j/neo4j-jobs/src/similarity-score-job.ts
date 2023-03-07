@@ -29,16 +29,16 @@ export const driver = neo4j.driver(
 
   try {
     await session.run(`CALL gds.graph.drop('similarityGraph');`);
-    logger.debug(`graph delete successfully`);
+    logger.debug(`similarityGraph delete successfully`);
   } catch (e) {
-    logger.debug(`graph doesn't exist`);
+    logger.debug(`similarityGraph doesn't exist`);
   }
 
   await session.run(
     `CALL gds.graph.project( 'similarityGraph', 'Person', 'FEEDBACK' ,{ relationshipProperties: ['score'] });`,
   );
 
-  logger.debug(`graph created`);
+  logger.debug(`similarityGraph created`);
 
   result = await session.run(
     `
