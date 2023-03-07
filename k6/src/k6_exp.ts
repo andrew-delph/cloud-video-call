@@ -11,7 +11,7 @@ import http from 'k6/http';
 const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 4000;
+const authKeysNum = 200;
 const authKeysName = `authKeysName`;
 export function setup() {
   const authKeys: string[] = [];
@@ -26,8 +26,8 @@ export function setup() {
 const vus = 50;
 export const options = {
   vus: 5,
-  // iterations: authKeysNum * 10,
-  duration: `3h`,
+  iterations: authKeysNum * 10,
+  // duration: `3h`,
   // scenarios: {
   //   matchTest: {
   //     executor: `ramping-vus`,
