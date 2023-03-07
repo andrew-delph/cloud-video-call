@@ -6,13 +6,9 @@ export const listenGlobalExceptions = (clean_up?: () => Promise<void>) => {
   const signalTraps = [`SIGTERM`, `SIGINT`, `SIGUSR2`];
 
   errorTypes.forEach((type) => {
-    process.on(type, async (error, other) => {
+    process.on(type, async (...args) => {
       try {
-        logger.error(
-          `errorTypes: ${type} error: ${JSON.stringify(
-            error,
-          )}  other: ${JSON.stringify(other)}`,
-        );
+        logger.error(`errorTypes: ${type} args: ${JSON.stringify(args)}`);
 
         if (clean_up != null) await clean_up();
 
@@ -24,9 +20,9 @@ export const listenGlobalExceptions = (clean_up?: () => Promise<void>) => {
   });
 
   signalTraps.forEach((type) => {
-    process.once(type, async (error) => {
+    process.once(type, async (...args) => {
       try {
-        logger.warn(`signalTraps ${type}  error: ${error}`);
+        logger.warn(`signalTraps ${type} args: ${JSON.stringify(args)}`);
         if (clean_up != null) await clean_up();
       } finally {
         process.kill(process.pid, type);
