@@ -109,6 +109,9 @@ io.on(`connection`, async (socket) => {
     await rabbitChannel.sendToQueue(
       common.readyQueueName,
       Buffer.from(JSON.stringify([socket.data.auth])),
+      {
+        priority: priority * 10,
+      },
     );
 
     if (callback != undefined) {
@@ -164,7 +167,8 @@ io.on(`connection`, async (socket) => {
       (error: any, response: CreateUserResponse) => {
         if (!error) {
           priority = parseFloat(response.getPriority());
-          logger.debug(`priority is ${response.getPriority()}`);
+          logger.error(`after parse ${priority}`);
+          socket.emit(`established`, `Connection established.`);
         } else {
           logger.error(`createUser error: ${error.message}`);
           logger.error(`createUser error: ${JSON.stringify(error)}`);
@@ -176,8 +180,6 @@ io.on(`connection`, async (socket) => {
     logger.error(`creat user error! ${e}`);
     socket.disconnect();
   }
-
-  socket.emit(`established`, `Connection established.`);
 });
 
 export const getServer = async (listen: boolean) => {

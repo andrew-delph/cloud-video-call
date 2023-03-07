@@ -72,7 +72,6 @@ const createUser = async (
   }
 
   reply.setPriority(`${priority}`);
-  logger.info(`priority is ${priority}`);
 
   const duration = (performance.now() - start_time) / 1000;
 
