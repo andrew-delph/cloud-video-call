@@ -6,14 +6,15 @@ export const listenGlobalExceptions = (clean_up?: () => Promise<void>) => {
   const signalTraps = [`SIGTERM`, `SIGINT`, `SIGUSR2`];
 
   errorTypes.forEach((type) => {
-    process.on(type, async (...args) => {
+    process.on(type, async (err) => {
       try {
-        logger.error(`errorTypes: ${type} args: ${JSON.stringify(args)}`);
-
+        console.error(`Uncaught Exception: ${err.message}`);
+        console.error(err.stack);
         if (clean_up != null) await clean_up();
 
         process.exit(0);
-      } catch (_) {
+      } catch (e) {
+        logger.error(e);
         process.exit(1);
       }
     });

@@ -38,7 +38,10 @@ let rabbitChannel: amqp.Channel;
 const connectRabbit = async () => {
   rabbitConnection = await amqp.connect(`amqp://rabbitmq`);
   rabbitChannel = await rabbitConnection.createChannel();
-  await rabbitChannel.assertQueue(common.readyQueueName, { durable: true });
+  await rabbitChannel.assertQueue(common.readyQueueName, {
+    durable: true,
+    maxPriority: 10,
+  });
   logger.info(`rabbitmq connected`);
 };
 
@@ -74,6 +77,7 @@ io.on(`error`, (err) => {
 });
 
 io.on(`connection`, async (socket) => {
+  let priority = 0;
   socket.emit(
     `message`,
     `Hey from server :) I am ${serverID} and you are ${socket.data.auth}.`,
@@ -116,11 +120,11 @@ io.on(`connection`, async (socket) => {
     socket.to(`room-${socket.id}`).emit(`endchat`, `disconnected`);
     io.socketsLeave(`room-${socket.id}`);
     const duration = performance.now() - start_time;
-    logger.debug(
-      `disconnected ${process.env.HOSTNAME} #${
-        io.sockets.sockets.size
-      } duration: ${Math.round(duration / 1000)}`,
-    );
+    // logger.debug(
+    //   `disconnected ${process.env.HOSTNAME} #${
+    //     io.sockets.sockets.size
+    //   } duration: ${Math.round(duration / 1000)}`,
+    // );
   });
 
   socket.on(`client_host`, (value) => {
@@ -154,18 +158,24 @@ io.on(`connection`, async (socket) => {
 
   const createUserRequest = new CreateUserRequest();
   createUserRequest.setUserId(socket.data.auth);
-
-  await neo4jRpcClient.createUser(
-    createUserRequest,
-    (error: any, response: any) => {
-      if (!error) {
-      } else {
-        logger.error(`createUser error: ${error.message}`);
-        logger.error(`createUser error: ${JSON.stringify(error)}`);
-        socket.disconnect();
-      }
-    },
-  );
+  try {
+    await neo4jRpcClient.createUser(
+      createUserRequest,
+      (error: any, response: CreateUserResponse) => {
+        if (!error) {
+          priority = parseFloat(response.getPriority());
+          logger.debug(`priority is ${response.getPriority()}`);
+        } else {
+          logger.error(`createUser error: ${error.message}`);
+          logger.error(`createUser error: ${JSON.stringify(error)}`);
+          socket.disconnect();
+        }
+      },
+    );
+  } catch (e) {
+    logger.error(`creat user error! ${e}`);
+    socket.disconnect();
+  }
 
   socket.emit(`established`, `Connection established.`);
 });
@@ -210,6 +220,9 @@ export const getServer = async (listen: boolean) => {
       }, 20 * 1000);
 
       return io;
+    })
+    .catch((error) => {
+      logger.error(`setup error: ${error}`);
     });
 };
 

@@ -224,10 +224,8 @@ export async function test() {
   let result;
   console.log(`running getAllReady`);
   result = await session.run(`
-  MATCH (n1)-[r]->(n2)
-  WHERE id(r) = 9999999
-  RETURN n1.user_id, n2.user_id, r
-      `);
+    MATCH (n:Person) return n.priority as priority
+  `);
   const end_time = performance.now();
   console.log(`it took: `, end_time - start_time);
   return result;

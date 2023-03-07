@@ -20,9 +20,7 @@ function printResults(
       // console.log(record.get(`r`));
       // console.log(`value`, Object.keys(record.get(`r`)));
       console.log(`>`);
-      console.log(`targetId`, record.get(`targetId`));
-      console.log(`otherId`, record.get(`otherId`));
-      console.log(`score`, record.get(`score`));
+      console.log(`n`, record.get(`priority`), typeof record.get(`priority`));
       console.log(`>`);
     } catch (e) {
       console.log(record);
@@ -41,11 +39,11 @@ function printResults(
       x.add(`k6_auth_${i}`);
     }
 
-    await funcs.createGraph();
-    result = await funcs.callAlgo();
+    // await funcs.createGraph();
+    result = await funcs.test();
     // result = await funcs.getSimilarTarget(`k6_auth_1`, Array.from(x));
 
-    printResults(result, 10);
+    printResults(result, 1);
   } finally {
     console.log(`closing.`);
     await funcs.session.close();

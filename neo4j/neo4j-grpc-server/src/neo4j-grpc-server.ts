@@ -55,15 +55,24 @@ const createUser = async (
   const start_time = performance.now();
 
   const session = driver.session();
-  await session.run(
+  const result = await session.run(
     `
-      Merge (:Person {userId: $userId});
+      Merge (n:Person {userId: $userId}) return n.priority as priority;
       `,
     {
       userId: userId,
     },
   );
   await session.close();
+  let priority;
+  try {
+    priority = result.records[0].get(`priority`);
+  } catch (e) {
+    priority = 0;
+  }
+
+  reply.setPriority(`${priority}`);
+  logger.info(`priority is ${priority}`);
 
   const duration = (performance.now() - start_time) / 1000;
 

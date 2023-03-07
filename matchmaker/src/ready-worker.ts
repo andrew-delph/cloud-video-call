@@ -33,7 +33,9 @@ let rabbitChannel: amqp.Channel;
 const connectRabbit = async () => {
   rabbitConnection = await amqp.connect(`amqp://rabbitmq`);
   rabbitChannel = await rabbitConnection.createChannel();
-  await rabbitChannel.assertQueue(common.matchQueueName, { durable: true });
+  await rabbitChannel.assertQueue(common.matchQueueName, {
+    durable: true,
+  });
   logger.info(`rabbit connected`);
 };
 
@@ -297,16 +299,21 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
 
   const getRelationshipScoresMap = await new Promise<any>(
     async (resolve, reject) => {
-      await neo4jRpcClient.getRelationshipScores(
-        getRelationshipScoresRequest,
-        (error: any, response: GetRelationshipScoresResponse) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(response.getRelationshipScoresMap());
-          }
-        },
-      );
+      try {
+        await neo4jRpcClient.getRelationshipScores(
+          getRelationshipScoresRequest,
+          (error: any, response: GetRelationshipScoresResponse) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(response.getRelationshipScoresMap());
+            }
+          },
+        );
+      } catch (e) {
+        logger.error(`getRelationshipScores error: ${e}`);
+        reject(e);
+      }
     },
   ).catch((e) => {
     throw e;
