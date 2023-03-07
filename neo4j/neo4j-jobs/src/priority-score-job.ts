@@ -42,13 +42,15 @@ export const driver = neo4j.driver(
 
   result = await session.run(
     `
-    CALL gds.pageRank.write('priorityGraph', { relationshipWeightProperty: 'score',  scaler: "L1Norm", writeProperty: 'priority' })
+    CALL gds.pageRank.write('priorityGraph', { relationshipWeightProperty: 'score',  scaler: "L1Norm", writeProperty: 'priority1' })
         YIELD nodePropertiesWritten, ranIterations
   `,
   );
 
   logger.info(
-    `propertiesSet: ${result.summary.counters.updates().propertiesSet}`,
+    `nodePropertiesWritten: ${JSON.stringify(
+      result.records[0].get(`nodePropertiesWritten`),
+    )}`,
   );
 
   session.close();
