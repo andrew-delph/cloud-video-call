@@ -44,10 +44,7 @@ const lastFeedbackCountKey = `last-simularity-feedbackCount`;
     (await mainRedisClient.get(lastFeedbackCountKey)) || `0`,
   );
 
-  if (
-    feedbackCount - lastFeedbackCount < newFeedbackThreshold ||
-    lastFeedbackCount > feedbackCount
-  ) {
+  if (Math.abs(feedbackCount - lastFeedbackCount) < newFeedbackThreshold) {
     logger.info(
       `skipping simularity jobs. diff is ${feedbackCount - lastFeedbackCount}`,
     );
