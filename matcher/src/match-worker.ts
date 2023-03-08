@@ -175,7 +175,11 @@ export const match = async (userId1: string, userId2: string) => {
         .timeout(matchTimeout)
         .emit(
           `match`,
-          { role: `host`, feedback_id: matchResponse.getRelationshipId1() },
+          {
+            role: `host`,
+            feedback_id: matchResponse.getRelationshipId1(),
+            other: userId2,
+          },
           (err: any, response: any) => {
             if (err) {
               reject(`host: ${err.message}`);
@@ -191,7 +195,11 @@ export const match = async (userId1: string, userId2: string) => {
         .timeout(matchTimeout)
         .emit(
           `match`,
-          { role: `guest`, feedback_id: matchResponse.getRelationshipId2() },
+          {
+            role: `guest`,
+            feedback_id: matchResponse.getRelationshipId2(),
+            other: userId1,
+          },
           (err: any, response: any) => {
             if (err) {
               reject(`guest: ${err.message}`);
