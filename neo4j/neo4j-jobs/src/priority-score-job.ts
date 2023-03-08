@@ -45,7 +45,10 @@ export const driver = neo4j.driver(
     (await mainRedisClient.get(lastFeedbackCountKey)) || `0`,
   );
 
-  if (feedbackCount - lastFeedbackCount < newFeedbackThreshold) {
+  if (
+    feedbackCount - lastFeedbackCount < newFeedbackThreshold ||
+    lastFeedbackCount > feedbackCount
+  ) {
     logger.info(
       `skipping simularity jobs. diff is ${feedbackCount - lastFeedbackCount}`,
     );
