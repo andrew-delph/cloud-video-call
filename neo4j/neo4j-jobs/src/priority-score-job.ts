@@ -3,9 +3,10 @@
 // delete all priority rels not using the jobs id
 
 import * as common from 'react-video-call-common';
-
+import Client from 'ioredis';
 import * as neo4j from 'neo4j-driver';
 import { v4 as uuid } from 'uuid';
+import { newFeedbackThreshold } from '.';
 
 common.listenGlobalExceptions();
 
@@ -17,6 +18,12 @@ const start_time = performance.now();
 
 logger.info(`priority-score-job jobId: ${jobId}`);
 
+const mainRedisClient = new Client({
+  host: `${process.env.REDIS_HOST || `redis`}`,
+});
+
+const lastFeedbackCountKey = `last-priority-feedbackCount`;
+
 export const driver = neo4j.driver(
   `neo4j://neo4j:7687`,
   neo4j.auth.basic(`neo4j`, `password`),
@@ -26,6 +33,26 @@ export const driver = neo4j.driver(
   const session = driver.session();
 
   let result;
+
+  result = await session.run(
+    `MATCH ()-[r:FEEDBACK]->()
+    RETURN COUNT(r) AS feedbackCount;`,
+  );
+
+  const feedbackCount = parseInt(result.records[0].get(`feedbackCount`));
+
+  const lastFeedbackCount = parseInt(
+    (await mainRedisClient.get(lastFeedbackCountKey)) || `0`,
+  );
+
+  if (feedbackCount - lastFeedbackCount < newFeedbackThreshold) {
+    logger.info(
+      `skipping simularity jobs. diff is ${feedbackCount - lastFeedbackCount}`,
+    );
+    return;
+  } else {
+    logger.info(`diff is ${feedbackCount - lastFeedbackCount}`);
+  }
 
   try {
     await session.run(`CALL gds.graph.drop('priorityGraph');`);
@@ -52,6 +79,8 @@ export const driver = neo4j.driver(
       result.records[0].get(`nodePropertiesWritten`),
     )}`,
   );
+
+  await mainRedisClient.set(lastFeedbackCountKey, feedbackCount);
 
   session.close();
 })()
