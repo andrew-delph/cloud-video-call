@@ -32,7 +32,6 @@ class AppProvider extends ChangeNotifier {
 
   io.Socket? socket;
   String? feedbackId;
-  String? auth;
   bool established = false;
 
   // late Machine<String> stateMachine;
@@ -106,14 +105,15 @@ class AppProvider extends ChangeNotifier {
 
     print("SOCKET_ADDRESS is $socketAddress");
 
-    auth = await FirebaseAuth.instance.currentUser?.getIdToken(true);
     // only websocket works on windows
     socket = io.io(
         socketAddress,
         OptionBuilder()
             .setTransports(['websocket'])
             .disableAutoConnect()
-            .setAuth({"auth": auth})
+            .setAuth({
+              "auth": await FirebaseAuth.instance.currentUser?.getIdToken(true)
+            })
             .build());
 
     socket!.emit("message", "I am a client");

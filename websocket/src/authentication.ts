@@ -1,4 +1,4 @@
-import { getLogger } from 'react-video-call-common';
+import { getLogger, getUid } from 'react-video-call-common';
 import { Socket } from 'socket.io';
 import { mainRedisClient } from './socketio_server';
 
@@ -25,24 +25,11 @@ export const auth_middleware = async (
     next(new Error(`Authentication format error`));
     return;
   }
-  let uid: string;
-
-  if (auth.startsWith(`k6`)) {
-    logger.debug(`k6 auth: ${auth}`);
-    uid = auth;
-  } else {
-    uid = await getAuth()
-      .verifyIdToken(auth)
-      .then(async (decodedToken: { uid: any }) => {
-        logger.debug(`firebase auth uid: ${decodedToken.uid} , auth: ${auth}`);
-        return decodedToken.uid;
-      })
-      .catch((error) => {
-        logger.debug(`firebase auth error: ${error}`);
-        next(error);
-        return;
-      });
-  }
+  let uid: string = await getUid(auth).catch((error) => {
+    logger.debug(`getUid error: ${error}`);
+    next(error);
+    return;
+  });
 
   socket.data.auth = uid;
 

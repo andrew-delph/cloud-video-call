@@ -49,8 +49,6 @@ dotenv.config();
 
 const firebaseApp = initializeApp();
 
-const serverID = uuid();
-
 export let pubRedisClient: Client;
 let subRedisClient: Client;
 export let mainRedisClient: Client;

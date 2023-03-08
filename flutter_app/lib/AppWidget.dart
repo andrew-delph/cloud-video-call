@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Factory.dart';
@@ -172,7 +173,8 @@ class AppWidgetState extends State<AppWidget> {
                 final headers = {
                   'Access-Control-Allow-Origin': '*',
                   'Content-Type': 'application/json',
-                  'authorization': appProvider.auth!
+                  'authorization':
+                      await FirebaseAuth.instance.currentUser!.getIdToken(true)
                 };
                 final body = {
                   'feedback_id': appProvider.feedbackId!,

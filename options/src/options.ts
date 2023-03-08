@@ -1,6 +1,7 @@
 import express from 'express';
 import * as common from 'react-video-call-common';
 import * as neo4j from 'neo4j-driver';
+import { getUid } from 'react-video-call-common';
 
 common.listenGlobalExceptions();
 
@@ -40,6 +41,12 @@ app.post(`/providefeedback`, async (req, res) => {
     return;
   }
 
+  let uid: string = await getUid(auth).catch((error) => {
+    logger.debug(`getUid error: ${error}`);
+    res.status(401).send(`failed authentication`);
+    return;
+  });
+
   const start_time = performance.now();
   let session = driver.session();
 
@@ -66,9 +73,9 @@ app.post(`/providefeedback`, async (req, res) => {
   const n2_userId = match_rel.records[0].get(`n2.userId`);
 
   // verify request owns the rel
-  if (n1_userId != auth) {
-    logger.debug(`Forbidden ${n1_userId} ${auth}`);
-    res.status(403).send(`Forbidden ${n1_userId} ${auth}`);
+  if (n1_userId != uid) {
+    logger.debug(`Forbidden ${n1_userId} ${uid}`);
+    res.status(403).send({ message: `Forbidden`, auth, uid, n1_userId });
     return;
   }
 
