@@ -11,7 +11,7 @@ import http from 'k6/http';
 const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 10000;
+const authKeysNum = 1000;
 const authKeysName = `authKeysName`;
 export function setup() {
   const authKeys: string[] = [];
@@ -61,6 +61,8 @@ const match_success = new Rate(`match_success`);
 
 const error_counter = new Counter(`error_counter`);
 const success_counter = new Counter(`success_counter`);
+
+const other_parity = new Rate(`other_parity`);
 
 export default async function () {
   const secure = false;
@@ -143,13 +145,36 @@ export default async function () {
           'match has feedback id': (data: any) =>
             data && data.data && data.data.feedback_id,
           'match has role': (data: any) => data && data.data && data.data.role,
+          'match has other': (data: any) =>
+            data && data.data && data.data.other,
         });
-        return data.data.feedback_id;
+        return data.data;
       })
-      .then((feedback_id) => {
+      .then((data: any) => {
+        const stripAuth = (auth: string) => {
+          const auth_id = auth.replace(/k6_auth_/g, ``);
+          console.log(`auth_id ${auth_id}`); // Output: "123"
+          return auth_id;
+        };
+
+        let score;
+
+        if (
+          parseInt(stripAuth(auth!)) % 2 ==
+          parseInt(stripAuth(data.other!)) % 2
+        ) {
+          other_parity.add(true);
+          score = 5;
+        } else {
+          score = 0;
+          other_parity.add(false);
+        }
         const r = http.post(
           `${secure ? `https` : `http`}://${domain}/options/providefeedback`,
-          JSON.stringify({ feedback_id, score: randomIntBetween(0, 5) }),
+          JSON.stringify({
+            feedback_id: data.feedback_id,
+            score: score,
+          }),
           {
             headers: {
               authorization: auth,
