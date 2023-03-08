@@ -32,6 +32,7 @@ let rabbitChannel: amqp.Channel;
 
 const connectRabbit = async () => {
   rabbitConnection = await amqp.connect(`amqp://rabbitmq`);
+
   rabbitChannel = await rabbitConnection.createChannel();
   await rabbitChannel.assertQueue(common.matchQueueName, {
     durable: true,
@@ -62,6 +63,11 @@ export const startReadyConsumer = async () => {
 
   await subRedisClient.psubscribe(`${matchmakerChannelPrefix}*`);
 
+  await rabbitChannel.assertQueue(common.readyQueueName, {
+    durable: true,
+    maxPriority: 10,
+  });
+
   rabbitChannel.prefetch(1);
   logger.info(` [x] Awaiting RPC requests`);
 
@@ -73,6 +79,10 @@ export const startReadyConsumer = async () => {
         return;
       }
 
+      if (msg.properties.priority == null) {
+        logger.warn(`msg.properties.priority == null`);
+      }
+
       const msgContent: [string] = JSON.parse(msg.content.toString());
 
       const userId = msgContent[0];
@@ -80,11 +90,12 @@ export const startReadyConsumer = async () => {
         logger.error(`userId is null`);
         rabbitChannel.ack(msg);
       }
+
       logger.debug(`matching: ${userId}`);
 
       const cleanup: (() => void)[] = [];
       try {
-        await matchmakerFlow(userId, 1, cleanup);
+        await matchmakerFlow(userId, msg.properties.priority || 0, cleanup);
         rabbitChannel.ack(msg);
       } catch (e: any) {
         if (e instanceof CompleteError) {
@@ -214,7 +225,7 @@ const matchmakerFlow = async (
     otherId = Array.from(readySet)[randomIndex];
   } else {
     otherId = relationShipScores.reduce((a, b) => (b[1] > a[1] ? b : a))[0];
-    logger.info(
+    logger.debug(
       `score highest: ${
         relationShipScores.reduce((a, b) => (b[1] > a[1] ? b : a))[1]
       } lowest: ${
@@ -341,6 +352,8 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
 };
 
 if (require.main === module) {
-  listenGlobalExceptions();
+  listenGlobalExceptions(async () => {
+    logger.debug(`clean up ready-worker`);
+  });
   startReadyConsumer();
 }
