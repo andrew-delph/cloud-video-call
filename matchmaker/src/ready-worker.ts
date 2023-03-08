@@ -183,8 +183,10 @@ const matchmakerFlow = async (
           logger.error(e);
           return;
         }
-        if (!msg.priority || !msg.owner) {
-          logger.error(`!msg.priority || !msg.owner`);
+        if (msg.priority == null || msg.owner == null) {
+          logger.error(
+            `registerSubscriptionListener ... !msg.priority || !msg.owner `,
+          );
           return;
         }
 
@@ -238,7 +240,7 @@ const matchmakerFlow = async (
   await notifyListeners(otherId);
 
   retrySignal.checkSignal();
-  await common.delay(10000); // Give tasks events 10 second
+  await common.delay(5000); // Give tasks events 10 second
   retrySignal.checkSignal();
 
   const redlock = new Redlock([lockRedisClient]);

@@ -11,7 +11,7 @@ import http from 'k6/http';
 const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 1000;
+const authKeysNum = 100;
 const authKeysName = `authKeysName`;
 export function setup() {
   const authKeys: string[] = [];
@@ -25,7 +25,7 @@ export function setup() {
 
 const vus = 50;
 export const options = {
-  vus: 20,
+  vus: 50,
   // iterations: authKeysNum * 10,
   duration: `1h`,
   // scenarios: {
@@ -97,7 +97,7 @@ export default async function () {
     return;
   }
 
-  const socket = new K6SocketIoExp(url, { auth: auth }, {}, 20000);
+  const socket = new K6SocketIoExp(url, { auth: auth }, {}, 0);
 
   socket.setOnClose(async () => {
     await redisClient.rpush(authKeysName, auth);
