@@ -64,6 +64,8 @@ const success_counter = new Counter(`success_counter`);
 
 const other_parity = new Rate(`other_parity`);
 
+const score_trend = new Trend(`score_trend`);
+
 export default async function () {
   const secure = false;
   const domain = __ENV.HOST || `localhost:8888`;
@@ -169,6 +171,8 @@ export default async function () {
           score = 0;
           other_parity.add(false);
         }
+
+        score_trend.add(score);
         const r = http.post(
           `${secure ? `https` : `http`}://${domain}/options/providefeedback`,
           JSON.stringify({
