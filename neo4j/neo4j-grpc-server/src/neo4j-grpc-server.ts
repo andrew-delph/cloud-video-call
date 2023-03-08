@@ -42,6 +42,10 @@ const verifyIndexes = async () => {
     `CREATE INDEX  Person_userId IF NOT EXISTS  FOR (n:Person) ON (n.userId);`,
   );
 
+  await session.run(
+    `CREATE INDEX  SIMILAR_TO_jobId IF NOT EXISTS  FOR ()-[r:SIMILAR_TO]-() ON (r.jobId);`,
+  );
+
   await session.close();
   const duration = (performance.now() - start_time) / 1000;
   if (duration > durationWarn) {
