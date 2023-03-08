@@ -30,6 +30,8 @@ import {
 
 const logger = common.getLogger();
 
+listenGlobalExceptions(cleanMySocketServer);
+
 const neo4jRpcClient = createNeo4jClient();
 
 let rabbitConnection: amqp.Connection;
@@ -226,6 +228,5 @@ export const getServer = async (listen: boolean) => {
 };
 
 if (require.main === module) {
-  listenGlobalExceptions(cleanMySocketServer);
   getServer(true);
 }

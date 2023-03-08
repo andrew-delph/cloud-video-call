@@ -13,9 +13,9 @@ spec:
     spec:
       containers:
         - image: andrewdelph/video-call-options:latest
-          env:
-            - name: FIREBASE_CONFIG
-              value: '{"projectId":"react-video-call-thing72","storageBucket":"react-video-call-thing72.appspot.com","locationId":"us-central"}'
+          envFrom:
+            - configMapRef:
+                name: secrets
           ports:
             - containerPort: 80
           livenessProbe:
