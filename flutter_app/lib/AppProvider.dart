@@ -48,6 +48,11 @@ class AppProvider extends ChangeNotifier {
     stateChangeOnEntry(chatMachine, () {
       notifyListeners();
     });
+
+    socketMachine[SocketStates.connecting].onEntry(() async {
+      await initSocket();
+    });
+
     chatMachine[ChatStates.matched].onTimeout(const Duration(seconds: 10), () {
       chatMachine.current = ChatStates.connectionError;
     });
@@ -82,7 +87,6 @@ class AppProvider extends ChangeNotifier {
       Function(RTCPeerConnectionState)? onPeerConnectionStateChange}) async {
     this.onSocketStateChange = onSocketStateChange;
     this.onPeerConnectionStateChange = onPeerConnectionStateChange;
-    socket ?? initSocket();
   }
 
   void handleSocketStateChange(
@@ -101,12 +105,6 @@ class AppProvider extends ChangeNotifier {
     String socketAddress = "ws://${Factory.getHostAddress()}";
 
     print("SOCKET_ADDRESS is $socketAddress");
-
-    String generateRandomString(int len) {
-      var r = Random();
-      return String.fromCharCodes(
-          List.generate(len, (index) => r.nextInt(33) + 89));
-    }
 
     auth = await FirebaseAuth.instance.currentUser?.getIdToken(true);
     // only websocket works on windows
