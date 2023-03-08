@@ -16,7 +16,7 @@ import {
   GetRelationshipScoresRequest,
   GetRelationshipScoresResponse,
 } from 'neo4j-grpc-common';
-import { listenGlobalExceptions } from 'react-video-call-common';
+import { delay, listenGlobalExceptions } from 'react-video-call-common';
 
 const logger = common.getLogger();
 
@@ -68,7 +68,7 @@ export const startReadyConsumer = async () => {
     maxPriority: 10,
   });
 
-  rabbitChannel.prefetch(1);
+  rabbitChannel.prefetch(5);
   logger.info(` [x] Awaiting RPC requests`);
 
   rabbitChannel.consume(
@@ -237,7 +237,9 @@ const matchmakerFlow = async (
   registerSubscriptionListener(otherId);
   await notifyListeners(otherId);
 
-  // await common.delay(1000); // Give tasks events 1 second
+  retrySignal.checkSignal();
+  await common.delay(10000); // Give tasks events 10 second
+  retrySignal.checkSignal();
 
   const redlock = new Redlock([lockRedisClient]);
   const onError = (e: any) => {
@@ -248,8 +250,6 @@ const matchmakerFlow = async (
     }
     throw e;
   };
-
-  retrySignal.checkSignal();
 
   await redlock
     .using([userId, otherId], 5000, async (signal) => {
