@@ -15,7 +15,13 @@ import * as neo4j from 'neo4j-driver';
 import * as common from 'react-video-call-common';
 import { v4 } from 'uuid';
 
-common.listenGlobalExceptions();
+var server = new grpc.Server();
+
+common.listenGlobalExceptions(async () => {
+  await server.tryShutdown(() => {
+    logger.info(`try shutdown completed`);
+  });
+});
 
 const serverID = v4();
 
@@ -249,7 +255,6 @@ const getRelationshipScoresLinkPrediction = async (
   callback(null, reply);
 };
 
-var server = new grpc.Server();
 server.addService(Neo4jService, {
   createUser,
   createMatch,
