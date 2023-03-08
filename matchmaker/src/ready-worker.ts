@@ -239,8 +239,8 @@ const matchmakerFlow = async (
   registerSubscriptionListener(otherId);
   await notifyListeners(otherId);
 
-  retrySignal.checkSignal();
-  await common.delay(5000); // Give tasks events 10 second
+  // retrySignal.checkSignal();
+  // await common.delay(5000); // Give tasks events 10 second
   retrySignal.checkSignal();
 
   const redlock = new Redlock([lockRedisClient]);

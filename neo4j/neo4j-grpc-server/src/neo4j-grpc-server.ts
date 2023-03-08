@@ -184,6 +184,10 @@ const getRelationshipScores = async (
   );
   await session.close();
 
+  logger.debug(
+    `found SIMILAR_TO relationships is ${result.records.length} requested: ${otherUsers.length}`,
+  );
+
   for (const record of result.records) {
     reply
       .getRelationshipScoresMap()
