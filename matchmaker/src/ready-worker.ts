@@ -327,7 +327,8 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
       }
     },
   ).catch((e) => {
-    throw e;
+    logger.error(`neo4j grpc error: ${e}`);
+    throw new RetryError(e);
   });
 
   logger.debug(

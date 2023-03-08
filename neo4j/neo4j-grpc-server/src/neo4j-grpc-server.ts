@@ -9,6 +9,7 @@ import {
   Neo4jService,
   UpdateMatchRequest,
   UpdateMatchResponse,
+  HealthService,
 } from 'neo4j-grpc-common';
 
 import * as neo4j from 'neo4j-driver';
@@ -264,6 +265,10 @@ server.addService(Neo4jService, {
   createMatch,
   updateMatch,
   getRelationshipScores: getRelationshipScores,
+});
+
+server.addService(HealthService, {
+  Check: (_call: any, callback: any) => callback(null, { status: `SERVING` }),
 });
 
 const addr = `0.0.0.0:${process.env.PORT || 80}`;

@@ -3,6 +3,9 @@ import { Neo4jClient as LocalNeo4jClient } from '../proto_gen/neo4j_grpc_pb';
 export * from '../proto_gen/neo4j_grpc_pb';
 export * from '../proto_gen/neo4j_pb';
 
+export * from '../proto_gen/health_grpc_pb';
+export * from '../proto_gen/health_pb';
+
 export * as grpc from '@grpc/grpc-js';
 
 export const createNeo4jClient = (
