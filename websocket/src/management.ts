@@ -1,5 +1,5 @@
 import { delay, getLogger } from 'react-video-call-common';
-import { mainRedisClient, pubRedisClient } from './socketio_server';
+import { io, mainRedisClient, pubRedisClient } from './socketio_server';
 import { Socket } from 'socket.io';
 import * as common from 'react-video-call-common';
 
@@ -36,6 +36,14 @@ export const cleanSocket = async (
   auth: string,
   server_key: string = getServerKey(),
 ) => {
+  const socket_id = await mainRedisClient.hget(
+    common.connectedAuthMapName,
+    auth,
+  );
+  if (socket_id) {
+    io.in(socket_id).emit(`closing`, `cleanSocket`);
+    io.in(socket_id).disconnectSockets();
+  }
   await mainRedisClient.hdel(common.connectedAuthMapName, auth);
   await mainRedisClient.srem(common.activeSetName, auth);
   await mainRedisClient.srem(common.readySetName, auth);

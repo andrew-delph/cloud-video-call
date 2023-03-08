@@ -58,7 +58,7 @@ export let mainRedisClient: Client;
 const app = express();
 const httpServer = createServer(app);
 
-const io = new Server(httpServer, {
+export const io = new Server(httpServer, {
   cors: {
     origin: `*`,
     methods: [`GET`, `POST`],
@@ -80,7 +80,7 @@ io.on(`connection`, async (socket) => {
   let priority = 0;
   socket.emit(
     `message`,
-    `Hey from server :) I am ${serverID} and you are ${socket.data.auth}.`,
+    `I am ${process.env.HOSTNAME} and you are ${socket.data.auth}.`,
   );
   const start_time = performance.now();
   logger.debug(
