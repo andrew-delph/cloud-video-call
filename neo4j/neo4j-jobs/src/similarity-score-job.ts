@@ -42,7 +42,7 @@ export const driver = neo4j.driver(
 
   result = await session.run(
     `
-    CALL gds.nodeSimilarity.stream('similarityGraph', { relationshipWeightProperty: 'score', similarityCutoff: 0.3 })
+    CALL gds.nodeSimilarity.stream('similarityGraph', { relationshipWeightProperty: 'score'})
         YIELD node1, node2, similarity
         WITH gds.util.asNode(node1) AS n1, gds.util.asNode(node2) AS n2, similarity
         CREATE (n1)-[r:SIMILAR_TO {similarity: similarity, jobId: $jobId }]->(n2)
