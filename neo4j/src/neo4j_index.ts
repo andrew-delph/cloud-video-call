@@ -42,9 +42,9 @@ function printResults(
     // await funcs.createData(0, 0, true);
     await funcs.createGraph();
     // result = await funcs.callWriteSimilar();
-    // await funcs.callPriority();
+    await funcs.callPriority();
     result = await funcs.callCommunities();
-    // result = await funcs.getSimilarTarget(`k6_auth_1`, Array.from(x));
+    result = await funcs.linkPredictionML();
 
     printResults(result, 1);
   } finally {

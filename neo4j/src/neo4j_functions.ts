@@ -245,6 +245,84 @@ export async function callCommunities() {
   return result;
 }
 
+export async function linkPredictionML() {
+  console.log(``);
+  console.log(`--- linkPredictionML`);
+  let result;
+
+  // delete pipline if it exists
+  result = await session.run(
+    `CALL gds.beta.pipeline.drop('lp-pipeline', False);`,
+  );
+  console.log(`graph delete successfully`);
+
+  let start_time = performance.now();
+
+  result = await session.run(
+    `
+    CALL gds.beta.pipeline.linkPrediction.create('lp-pipeline')
+  `,
+  );
+
+  result = await session.run(
+    `
+    CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'hadamard', {
+      nodeProperties: ['community']
+    }) YIELD featureSteps
+  `,
+  );
+
+  result = await session.run(
+    `
+    CALL gds.beta.pipeline.linkPrediction.configureSplit('lp-pipeline', {
+      testFraction: 0.25,
+      trainFraction: 0.6,
+      validationFolds: 3
+    })
+    YIELD splitConfig
+  `,
+  );
+
+  result = await session.run(
+    `
+    CALL gds.alpha.pipeline.linkPrediction.configureAutoTuning('lp-pipeline', {
+      maxTrials: 2
+    }) YIELD autoTuningConfig
+  `,
+  );
+
+  result = await session.run(
+    `
+    CALL gds.alpha.pipeline.linkPrediction.addRandomForest('lp-pipeline', {numberOfDecisionTrees: 10})
+      YIELD parameterSpace
+  `,
+  );
+
+  result = await session.run(
+    `
+    CALL gds.beta.pipeline.linkPrediction.train('myGraph', {
+      pipeline: 'lp-pipeline',
+      modelName: 'lp-pipeline-model',
+      metrics: ['AUCPR', 'OUT_OF_BAG_ERROR'],
+      targetRelationshipType: 'FEEDBACK',
+      randomSeed: 12
+    }) YIELD modelInfo, modelSelectionStats
+    RETURN
+      modelInfo.bestParameters AS winningModel,
+      modelInfo.metrics.AUCPR.train.avg AS avgTrainScore,
+      modelInfo.metrics.AUCPR.outerTrain AS outerTrainScore,
+      modelInfo.metrics.AUCPR.test AS testScore,
+      [cand IN modelSelectionStats.modelCandidates | cand.metrics.AUCPR.validation.avg] AS validationScores
+  `,
+  );
+
+  const end_time = performance.now();
+
+  console.log(`query`, end_time - start_time);
+
+  return result;
+}
+
 export async function changeRandomReady() {
   //   const start_time = performance.now();
   //   // create myGraph
