@@ -25,12 +25,12 @@ export async function createData(
     nodes.push(`node${i}`);
   }
 
-  //   nodes.push(`andrew1`);
-  //   nodes.push(`andrew2`);
-  //   nodes.push(`andrew3`);
-  //   nodes.push(`andrew4`);
-  //   nodes.push(`andrew5`);
-  //   nodes.push(`andrew6`);
+  nodes.push(`andrew1`);
+  nodes.push(`andrew2`);
+  nodes.push(`andrew3`);
+  nodes.push(`andrew4`);
+  nodes.push(`andrew5`);
+  nodes.push(`andrew6`);
 
   for (var i = 0; i < edgesNum; i++) {
     const a = nodes[Math.floor(Math.random() * nodesNum)];
@@ -41,19 +41,19 @@ export async function createData(
     edges.push({ a, b });
   }
 
-  //   edges.push({ a: `andrew1`, b: `andrew2` });
-  //   edges.push({ a: `andrew2`, b: `andrew3` });
-  //   edges.push({ a: `andrew3`, b: `andrew4` });
-  //   edges.push({ a: `andrew4`, b: `andrew5` });
-  //   edges.push({ a: `andrew3`, b: `andrew6` });
+  edges.push({ a: `andrew1`, b: `andrew2` });
+  edges.push({ a: `andrew2`, b: `andrew3` });
+  edges.push({ a: `andrew3`, b: `andrew4` });
+  edges.push({ a: `andrew4`, b: `andrew2` });
+  edges.push({ a: `andrew4`, b: `andrew5` });
+  edges.push({ a: `andrew3`, b: `andrew6` });
 
-  //   edges.push({ a: `node1`, b: `node2` });
-  //   edges.push({ a: `andrew2`, b: `andrew3` });
+  edges.push({ a: `andrew2`, b: `andrew3` });
 
   if (deleteData) {
     console.log(`Deleting`);
     await session.run(`
-    :auto MATCH (n)
+    MATCH (n)
     CALL {
       WITH n
       DETACH DELETE n
@@ -173,7 +173,7 @@ export async function callAlgo() {
 
   let start_time = performance.now();
 
-  let result = await session.run(query1);
+  let result = await session.run(query7);
 
   const end_time = performance.now();
 
@@ -196,6 +196,46 @@ export async function callWriteSimilar() {
   let start_time = performance.now();
 
   let result = await session.run(query7);
+
+  const end_time = performance.now();
+
+  console.log(`query`, end_time - start_time);
+
+  return result;
+}
+
+export async function callPriority() {
+  console.log(``);
+  console.log(`--- callPriority`);
+
+  let start_time = performance.now();
+
+  let result = await session.run(
+    `
+    CALL gds.pageRank.write('myGraph', {  scaler: "MinMax", writeProperty: 'priority' })
+        YIELD nodePropertiesWritten, ranIterations
+  `,
+  );
+
+  const end_time = performance.now();
+
+  console.log(`query`, end_time - start_time);
+
+  return result;
+}
+
+export async function callCommunities() {
+  console.log(``);
+  console.log(`--- callCommunities`);
+
+  let start_time = performance.now();
+
+  let result = await session.run(
+    `
+    CALL gds.louvain.write('myGraph', { writeProperty: 'community' })
+      YIELD communityCount, modularity, modularities
+  `,
+  );
 
   const end_time = performance.now();
 
