@@ -40,10 +40,10 @@ function printResults(
     }
 
     // await funcs.createData(0, 0, true);
-    await funcs.createGraph();
-    // result = await funcs.callWriteSimilar();
-    await funcs.callPriority();
-    result = await funcs.callCommunities();
+    // await funcs.createGraph();
+    // // result = await funcs.callWriteSimilar();
+    // await funcs.callPriority();
+    // result = await funcs.callCommunities();
     result = await funcs.linkPredictionML();
 
     printResults(result, 1);

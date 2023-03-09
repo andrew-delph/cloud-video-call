@@ -300,12 +300,29 @@ export async function linkPredictionML() {
 
   result = await session.run(
     `
+    MATCH (a)-[r1:FEEDBACK]->(b), (a)<-[r2:FEEDBACK]-(b)
+    WHERE r1.score > 4 AND r2.score > 4
+    MERGE (a)-[:FRIENDS]-(b)
+`,
+  );
+
+  try {
+    result = await session.run(`CALL gds.graph.drop('myGraph');`);
+    console.log(`graph delete successfully`);
+  } catch (e) {
+    console.log(`graph doesn't exist`);
+  }
+
+  result = await session.run(
+    `CALL gds.graph.project( 'myGraph', 'Person', {FRIENDS:{orientation:'UNDIRECTED'}}, { nodeProperties: ['community'] });`,
+  );
+
+  result = await session.run(
+    `
     CALL gds.beta.pipeline.linkPrediction.train('myGraph', {
       pipeline: 'lp-pipeline',
       modelName: 'lp-pipeline-model',
-      metrics: ['AUCPR', 'OUT_OF_BAG_ERROR'],
-      targetRelationshipType: 'FEEDBACK',
-      randomSeed: 12
+      targetRelationshipType: 'FRIENDS'
     }) YIELD modelInfo, modelSelectionStats
     RETURN
       modelInfo.bestParameters AS winningModel,
