@@ -47,7 +47,6 @@ export async function createData(
   edges.push({ a: `andrew4`, b: `andrew2` });
   edges.push({ a: `andrew4`, b: `andrew5` });
   edges.push({ a: `andrew3`, b: `andrew6` });
-
   edges.push({ a: `andrew2`, b: `andrew3` });
 
   if (deleteData) {
@@ -91,7 +90,9 @@ export async function createGraph() {
   let start_time = performance.now();
   // create myGraph
   console.log(`creating graph`);
-  result = await session.run(`CALL gds.graph.project( 'myGraph', '*', '*' );`);
+  result = await session.run(
+    `CALL gds.graph.project( 'myGraph', 'Person', 'FEEDBACK' ,{ relationshipProperties: ['score'] } );`,
+  );
   console.log(`created graph`, performance.now() - start_time);
 
   return result;

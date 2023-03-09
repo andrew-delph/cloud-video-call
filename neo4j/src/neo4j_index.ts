@@ -39,11 +39,11 @@ function printResults(
       x.add(`k6_auth_${i}`);
     }
 
-    await funcs.createData(0, 0, true);
+    // await funcs.createData(0, 0, true);
     await funcs.createGraph();
-    result = await funcs.callWriteSimilar();
-    await funcs.callPriority();
-    await funcs.callCommunities();
+    // result = await funcs.callWriteSimilar();
+    // await funcs.callPriority();
+    result = await funcs.callCommunities();
     // result = await funcs.getSimilarTarget(`k6_auth_1`, Array.from(x));
 
     printResults(result, 1);
