@@ -266,37 +266,60 @@ export async function linkPredictionML() {
 
   result = await session.run(
     `
-    CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'hadamard', {
+    CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'SAME_CATEGORY', {
       nodeProperties: ['community']
     }) YIELD featureSteps
   `,
   );
 
-  result = await session.run(
-    `
-    CALL gds.beta.pipeline.linkPrediction.configureSplit('lp-pipeline', {
-      testFraction: 0.25,
-      trainFraction: 0.6,
-      validationFolds: 3
-    })
-    YIELD splitConfig
-  `,
-  );
+  // result = await session.run(
+  //   `
+  //   CALL gds.beta.pipeline.linkPrediction.configureSplit('lp-pipeline', {
+  //     testFraction: 0.25,
+  //     trainFraction: 0.6,
+  //     validationFolds: 30
+  //   })
+  //   YIELD splitConfig
+  // `,
+  // );
+
+  // result = await session.run(
+  //   `
+  //   CALL gds.alpha.pipeline.linkPrediction.configureAutoTuning('lp-pipeline', {
+  //     maxTrials: 5
+  //   }) YIELD autoTuningConfig
+  // `,
+  // );
 
   result = await session.run(
     `
-    CALL gds.alpha.pipeline.linkPrediction.configureAutoTuning('lp-pipeline', {
-      maxTrials: 2
-    }) YIELD autoTuningConfig
-  `,
-  );
-
-  result = await session.run(
-    `
-    CALL gds.alpha.pipeline.linkPrediction.addRandomForest('lp-pipeline', {numberOfDecisionTrees: 10})
+    CALL gds.alpha.pipeline.linkPrediction.addRandomForest('lp-pipeline', {})
       YIELD parameterSpace
   `,
   );
+
+  // result = await session.run(
+  //   `
+  //   CALL gds.beta.pipeline.linkPrediction.addLogisticRegression('lp-pipeline')
+  //     YIELD parameterSpace
+  // `,
+  // );
+
+  // result = await session.run(
+  //   `
+  //   CALL gds.alpha.pipeline.linkPrediction.addMLP('lp-pipeline',
+  //     {hiddenLayerSizes: [4, 2], penalty: 0.5, patience: 2, classWeights: [0.55, 0.45], focusWeight: {range: [0.0, 0.1]}})
+  //     YIELD parameterSpace
+  // `,
+  // );
+
+  // result = await session.run(
+  //   `
+  //   CALL gds.beta.pipeline.linkPrediction.addLogisticRegression('lp-pipeline', {maxEpochs: 500, penalty: {range: [1e-4, 1e2]}})
+  //     YIELD parameterSpace
+  //     RETURN parameterSpace.RandomForest AS randomForestSpace, parameterSpace.LogisticRegression AS logisticRegressionSpace, parameterSpace.MultilayerPerceptron AS MultilayerPerceptronSpace
+  // `,
+  // );
 
   result = await session.run(
     `
@@ -318,6 +341,12 @@ export async function linkPredictionML() {
   );
 
   result = await session.run(
+    `CALL gds.beta.model.drop('lp-pipeline-model', False)
+    YIELD modelInfo, loaded, shared, stored
+    RETURN modelInfo.modelName AS modelName, loaded, shared, stored`,
+  );
+
+  result = await session.run(
     `
     CALL gds.beta.pipeline.linkPrediction.train('myGraph', {
       pipeline: 'lp-pipeline',
@@ -331,6 +360,19 @@ export async function linkPredictionML() {
       modelInfo.metrics.AUCPR.test AS testScore,
       [cand IN modelSelectionStats.modelCandidates | cand.metrics.AUCPR.validation.avg] AS validationScores
   `,
+  );
+
+  result = await session.run(
+    `
+  CALL gds.beta.pipeline.linkPrediction.predict.stream('myGraph', {
+    modelName: 'lp-pipeline-model',
+    topN: 5,
+    threshold: 0
+  })
+   YIELD node1, node2, probability
+   RETURN gds.util.asNode(node1).userId AS person1, gds.util.asNode(node2).userId AS person2, probability
+   ORDER BY probability DESC, person1
+    `,
   );
 
   const end_time = performance.now();

@@ -19,8 +19,12 @@ function printResults(
     try {
       // console.log(record.get(`r`));
       // console.log(`value`, Object.keys(record.get(`r`)));
-      console.log(`>`);
-      console.log(`n`, record.get(`priority`), typeof record.get(`priority`));
+      console.log(`>zz`);
+      console.log(
+        record.get(`person1`),
+        record.get(`person2`),
+        record.get(`probability`),
+      );
       console.log(`>`);
     } catch (e) {
       console.log(record);
@@ -46,7 +50,7 @@ function printResults(
     // result = await funcs.callCommunities();
     result = await funcs.linkPredictionML();
 
-    printResults(result, 1);
+    printResults(result, 4);
   } finally {
     console.log(`closing.`);
     await funcs.session.close();
