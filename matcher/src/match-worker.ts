@@ -25,6 +25,7 @@ const neo4jRpcClient = createNeo4jClient();
 const serverID = uuid();
 
 import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
+import { MatchMessage, ReadyMessage } from 'react-video-call-common';
 
 dotenv.config();
 
@@ -76,25 +77,26 @@ export async function matchConsumer() {
       let userId2: string = ``;
 
       try {
-        const msgContent: [string, string] = JSON.parse(msg.content.toString());
-        userId1 = msgContent[0];
-        userId2 = msgContent[1];
+        const msgContent: MatchMessage = JSON.parse(msg.content.toString());
+        userId1 = msgContent.userId1;
+        userId2 = msgContent.userId2;
 
         await match(userId1, userId2);
       } catch (e) {
-        logger.debug(`matchEvent error=` + e);
+        logger.debug(`matchEvent error=` + e); // TODO fix for types
         if (await mainRedisClient.sismember(common.activeSetName, userId1)) {
           await mainRedisClient.sadd(common.readySetName, userId1);
+
           await rabbitChannel.sendToQueue(
             common.readyQueueName,
-            Buffer.from(JSON.stringify([userId1])),
+            Buffer.from(JSON.stringify({ userId: userId1 } as ReadyMessage)),
           );
         }
         if (await mainRedisClient.sismember(common.activeSetName, userId2)) {
           await mainRedisClient.sadd(common.readySetName, userId2);
           await rabbitChannel.sendToQueue(
             common.readyQueueName,
-            Buffer.from(JSON.stringify([userId2])),
+            Buffer.from(JSON.stringify({ userId: userId2 } as ReadyMessage)),
           );
         }
       } finally {

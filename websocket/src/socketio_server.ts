@@ -20,7 +20,7 @@ import {
   CreateUserResponse,
   createNeo4jClient,
 } from 'neo4j-grpc-common';
-import { listenGlobalExceptions } from 'react-video-call-common';
+import { listenGlobalExceptions, ReadyMessage } from 'react-video-call-common';
 import { auth_middleware } from './authentication';
 import {
   cleanMySocketServer,
@@ -106,9 +106,11 @@ io.on(`connection`, async (socket) => {
   socket.on(`ready`, async (data, callback) => {
     await registerSocketReady(socket);
 
+    const readyMesage: ReadyMessage = { userId: socket.data.auth };
+
     await rabbitChannel.sendToQueue(
       common.readyQueueName,
-      Buffer.from(JSON.stringify([socket.data.auth])),
+      Buffer.from(JSON.stringify(readyMesage)),
       {
         priority: priority * 10,
       },

@@ -16,7 +16,12 @@ import {
   GetRelationshipScoresRequest,
   GetRelationshipScoresResponse,
 } from 'neo4j-grpc-common';
-import { delay, listenGlobalExceptions } from 'react-video-call-common';
+import {
+  delay,
+  listenGlobalExceptions,
+  MatchMessage,
+  ReadyMessage,
+} from 'react-video-call-common';
 
 const logger = common.getLogger();
 
@@ -83,15 +88,16 @@ export const startReadyConsumer = async () => {
         logger.warn(`msg.properties.priority == null`);
       }
 
-      const msgContent: [string] = JSON.parse(msg.content.toString());
+      const msgContent: ReadyMessage = JSON.parse(msg.content.toString());
 
-      const userId = msgContent[0];
-      if (!userId) {
-        logger.error(`userId is null`);
-        rabbitChannel.ack(msg);
-      }
+      const userId = msgContent.userId;
 
       logger.debug(`matching: ${userId}`);
+      if (!userId) {
+        logger.error(`recieved ready event has null userId`);
+        rabbitChannel.ack(msg);
+        return;
+      }
 
       const cleanup: (() => void)[] = [];
       try {
@@ -270,10 +276,11 @@ const matchmakerFlow = async (
       await mainRedisClient.srem(common.readySetName, otherId);
 
       // send to matcher
+      const matchMessage: MatchMessage = { userId1: userId, userId2: otherId };
 
       await rabbitChannel.sendToQueue(
         common.matchQueueName,
-        Buffer.from(JSON.stringify([userId, otherId])),
+        Buffer.from(JSON.stringify(matchMessage)),
       );
     })
     .catch(onError);
