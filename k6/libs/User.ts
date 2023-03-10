@@ -4,8 +4,15 @@ const domain = __ENV.HOST || `localhost:8888`;
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { redisClient } from '../src/k6_exp';
+
+import {
+  randomString,
+  randomIntBetween,
+} from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+
 export enum UserType {
   Female = `Female`,
+  FemalePicky = `FemalePicky`,
   Male = `Male`,
 }
 
@@ -16,8 +23,15 @@ export const createFemale = (auth: string): User => {
   return new User(auth, attributes, preferences, UserType.Female);
 };
 
+export const createFemalePicky = (auth: string): User => {
+  const attributes = { gender: `femalepicky` };
+  const preferences = {};
+
+  return new User(auth, attributes, preferences, UserType.FemalePicky);
+};
+
 export const createMale = (auth: string): User => {
-  const attributes = { gender: `male` };
+  const attributes = { gender: `male`, hot: randomIntBetween(0, 5) };
   const preferences = {};
 
   return new User(auth, attributes, preferences, UserType.Male);
@@ -34,13 +48,19 @@ export const calcScoreMap = new Map<UserType, (otherAttr: any) => number>([
   [
     UserType.Male,
     (otherAttr: any) => {
-      return otherAttr.gender == `female` ? 5 : 1;
+      return otherAttr.gender.startsWith(`female`) ? 5 : 1;
     },
   ],
   [
     UserType.Female,
     (otherAttr: any) => {
-      return otherAttr.gender == `male` ? 5 : 1;
+      return otherAttr.gender.startsWith(`male`) ? 5 : 1;
+    },
+  ],
+  [
+    UserType.FemalePicky,
+    (otherAttr: any) => {
+      return (otherAttr.hot && otherAttr.hot) > 4 ? 5 : 1;
     },
   ],
 ]);

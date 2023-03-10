@@ -7,12 +7,17 @@ import {
 import redis from 'k6/experimental/redis';
 import { check, sleep } from 'k6';
 import http from 'k6/http';
-import { createFemale, createMale, fromRedis } from '../libs/User';
+import {
+  createFemale,
+  createFemalePicky,
+  createMale,
+  fromRedis,
+} from '../libs/User';
 
 export const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 100;
+const authKeysNum = 1000;
 const authKeysName = `authKeysName`;
 export function setup() {
   const authKeys: string[] = [];
@@ -24,7 +29,11 @@ export function setup() {
       let user;
 
       if (Math.random() < 0.5) {
-        user = createFemale(auth);
+        if (Math.random() < 0.5) {
+          user = createFemalePicky(auth);
+        } else {
+          user = createFemale(auth);
+        }
       } else {
         user = createMale(auth);
       }
@@ -38,7 +47,7 @@ export function setup() {
 const vus = 50;
 export const options = {
   vus: 10,
-  iterations: authKeysNum * 30,
+  iterations: authKeysNum * 10,
   // duration: `10m`,
   // scenarios: {
   //   matchTest: {
