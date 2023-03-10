@@ -29,11 +29,12 @@ export function setup() {
       let user;
 
       if (Math.random() < 0.5) {
-        if (Math.random() < 0.5) {
-          user = createFemalePicky(auth);
-        } else {
-          user = createFemale(auth);
-        }
+        user = createFemale(auth);
+        // if (Math.random() < 0.5) {
+        //   user = createFemalePicky(auth);
+        // } else {
+        //   user = createFemale(auth);
+        // }
       } else {
         user = createMale(auth);
       }
