@@ -81,7 +81,7 @@ export async function matchConsumer() {
         userId1 = msgContent.userId1;
         userId2 = msgContent.userId2;
 
-        await match(userId1, userId2);
+        await match(msgContent);
       } catch (e) {
         logger.debug(`matchEvent error=` + e); // TODO fix for types
         if (await mainRedisClient.sismember(common.activeSetName, userId1)) {
@@ -109,12 +109,15 @@ export async function matchConsumer() {
   );
 }
 
-export const match = async (userId1: string, userId2: string) => {
-  if (!userId1 || !userId2) {
-    logger.error(`(!userId1 || !userId2) ${userId1} ${userId2}`);
-    throw Error(`(!userId1 || !userId2) ${userId1} ${userId2}`);
+export const match = async (msgContent: MatchMessage) => {
+  if (!msgContent.userId1 || !msgContent.userId2 || msgContent.score == null) {
+    logger.error(`MatchMessage is missing data ${JSON.stringify(msgContent)}`);
+    throw Error(`MatchMessage is missing data ${JSON.stringify(msgContent)}`);
   }
-  logger.debug(`matching users: [${userId1}, ${userId2}]`);
+  const userId1 = msgContent.userId1;
+  const userId2 = msgContent.userId2;
+  const score = msgContent.score;
+  logger.debug(`matching users: [${userId1}, ${userId2}] score: ${score}`);
 
   const socket1 = await mainRedisClient.hget(
     common.connectedAuthMapName,
@@ -181,6 +184,7 @@ export const match = async (userId1: string, userId2: string) => {
             role: `host`,
             feedback_id: matchResponse.getRelationshipId1(),
             other: userId2,
+            score: score,
           },
           (err: any, response: any) => {
             if (err) {
@@ -201,6 +205,7 @@ export const match = async (userId1: string, userId2: string) => {
             role: `guest`,
             feedback_id: matchResponse.getRelationshipId2(),
             other: userId1,
+            score: score,
           },
           (err: any, response: any) => {
             if (err) {

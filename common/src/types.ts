@@ -5,4 +5,5 @@ export type ReadyMessage = {
 export type MatchMessage = {
   userId1: string;
   userId2: string;
+  score: number;
 };

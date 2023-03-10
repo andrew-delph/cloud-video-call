@@ -228,11 +228,15 @@ const matchmakerFlow = async (
 
   // select the otherId
   let otherId: string;
+  let score: number;
   if (relationShipScores.length == 0) {
     const randomIndex = Math.floor(Math.random() * readySet.size);
     otherId = Array.from(readySet)[randomIndex];
+    score = 0;
   } else {
-    otherId = relationShipScores.reduce((a, b) => (b[1] > a[1] ? b : a))[0];
+    const rel = relationShipScores.reduce((a, b) => (b[1] > a[1] ? b : a));
+    otherId = rel[0];
+    score = rel[1];
     logger.debug(
       `score highest: ${
         relationShipScores.reduce((a, b) => (b[1] > a[1] ? b : a))[1]
@@ -276,7 +280,11 @@ const matchmakerFlow = async (
       await mainRedisClient.srem(common.readySetName, otherId);
 
       // send to matcher
-      const matchMessage: MatchMessage = { userId1: userId, userId2: otherId };
+      const matchMessage: MatchMessage = {
+        userId1: userId,
+        userId2: otherId,
+        score: score,
+      };
 
       await rabbitChannel.sendToQueue(
         common.matchQueueName,

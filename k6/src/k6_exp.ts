@@ -149,6 +149,8 @@ export default async function () {
           'match has role': (data: any) => data && data.data && data.data.role,
           'match has other': (data: any) =>
             data && data.data && data.data.other,
+          'match has score': (data: any) =>
+            data && data.data && data.data.score != null,
         });
         return data.data;
       })
@@ -158,6 +160,8 @@ export default async function () {
           console.log(`auth_id ${auth_id}`); // Output: "123"
           return auth_id;
         };
+
+        score_trend.add(data.score);
 
         let score;
 
@@ -172,7 +176,6 @@ export default async function () {
           other_parity.add(false);
         }
 
-        score_trend.add(score);
         const r = http.post(
           `${secure ? `https` : `http`}://${domain}/options/providefeedback`,
           JSON.stringify({
