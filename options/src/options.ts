@@ -106,6 +106,80 @@ app.post(`/providefeedback`, async (req, res) => {
   res.status(201).send(`Feedback created.`);
 });
 
+app.put(`/updateattributes`, async (req, res) => {
+  const { attributes } = req.body;
+
+  const auth = req.headers.authorization;
+
+  if (!auth) {
+    logger.debug(`Missing Authorization`);
+    res.status(401).json({ error: `Missing Authorization` });
+    return;
+  }
+
+  let uid: string = await getUid(auth).catch((error) => {
+    logger.debug(`getUid error: ${error}`);
+    res.status(401).send(`failed authentication`);
+    return;
+  });
+
+  const session = driver.session();
+  const results = await session.run(
+    // TODO only allow one feedback for match.
+    `
+    MERGE (p:Person {userId: $uid})
+    MERGE (md:MetaData)
+    MERGE (p)-[:USER_DEFINED_MD]->(md)
+    SET md = $attributes
+    RETURN p, md
+    `,
+    { uid, attributes },
+  );
+
+  const md = results.records[0].get(`md`);
+
+  await session.close();
+
+  res.status(200).send(md.properties);
+});
+
+app.put(`/updatepreferences`, async (req, res) => {
+  const { preferences } = req.body;
+
+  const auth = req.headers.authorization;
+
+  if (!auth) {
+    logger.debug(`Missing Authorization`);
+    res.status(401).json({ error: `Missing Authorization` });
+    return;
+  }
+
+  let uid: string = await getUid(auth).catch((error) => {
+    logger.debug(`getUid error: ${error}`);
+    res.status(401).send(`failed authentication`);
+    return;
+  });
+
+  const session = driver.session();
+  const results = await session.run(
+    // TODO only allow one feedback for match.
+    `
+    MERGE (p:Person {userId: $uid})
+    MERGE (md:MetaData)
+    MERGE (p)-[:USER_PREFERENCES]->(md)
+    SET md = $preferences
+    RETURN p, md
+    `,
+    { uid, preferences },
+  );
+
+  const md = results.records[0].get(`md`);
+
+  await session.close();
+
+  res.status(200).send(md.properties);
+});
+
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });

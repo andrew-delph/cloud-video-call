@@ -8,8 +8,8 @@ export const listenGlobalExceptions = (clean_up?: () => Promise<void>) => {
   errorTypes.forEach((type) => {
     process.on(type, async (err) => {
       try {
-        console.error(`Uncaught Exception: ${err.message}`);
-        console.error(err.stack);
+        logger.error(`Uncaught Exception: ${err.message}`);
+        logger.error(err.stack);
         if (clean_up != null) await clean_up();
 
         process.exit(0);
