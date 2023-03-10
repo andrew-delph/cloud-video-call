@@ -1,5 +1,6 @@
 import * as neo4j from 'neo4j-driver';
 import { Dict } from 'neo4j-driver-core/types/record';
+import { linkPredictionML } from './lp_pipeling';
 import * as funcs from './neo4j_functions';
 
 let result: neo4j.QueryResult<Dict<PropertyKey, any>>;
@@ -49,7 +50,7 @@ export function printResults(
     // // result = await funcs.callWriteSimilar();
     // await funcs.callPriority();
     // result = await funcs.callCommunities();
-    result = await funcs.linkPredictionML();
+    result = await linkPredictionML();
 
     // printResults(result, 400);
   } finally {
