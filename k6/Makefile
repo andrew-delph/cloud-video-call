@@ -29,7 +29,7 @@ setup:
 	kubectl delete configmap prometheus-config --ignore-not-found -n k6
 
 	kubectl create configmap test-scripts  \
-		--from-file=./dist/k6_main.js --from-file=./dist/k6_exp.js -n k6
+		--from-file=./dist/k6_exp.js -n k6
 
 
 run:

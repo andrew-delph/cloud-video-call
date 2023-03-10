@@ -3,7 +3,7 @@ import { EventName, WebSocket } from 'k6/experimental/websockets';
 import ws, { Socket } from 'k6/ws';
 import { check, sleep } from 'k6';
 import { Counter, Rate, Trend } from 'k6/metrics';
-import { SocketWrapperCallback } from '../libs/SocketWrapperCallback';
+import { SocketWrapperCallback } from './SocketWrapperCallback';
 
 // export const options = {
 //   // stages: [{ duration: "10s", target: 50 }],

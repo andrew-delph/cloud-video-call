@@ -7,8 +7,9 @@ import {
 import redis from 'k6/experimental/redis';
 import { check, sleep } from 'k6';
 import http from 'k6/http';
+import { createFemale, createMale, fromRedis } from '../libs/UserFactory';
 
-const redisClient = new redis.Client({
+export const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
 });
 const authKeysNum = 1000;
@@ -18,8 +19,19 @@ export function setup() {
   for (let i = 0; i < authKeysNum; i++) {
     authKeys.push(`k6_auth_${i}`);
   }
-  redisClient.del(authKeysName).finally(() => {
-    redisClient.lpush(authKeysName, ...authKeys);
+  redisClient.del(authKeysName).finally(async () => {
+    for (let auth of authKeys) {
+      let user;
+
+      if (Math.random() > 0.5) {
+        user = createFemale(auth);
+      } else {
+        user = createMale(auth);
+      }
+      await user.updateAttributes();
+    }
+
+    await redisClient.lpush(authKeysName, ...authKeys);
   });
 }
 
@@ -64,6 +76,7 @@ const success_counter = new Counter(`success_counter`);
 
 const other_parity = new Rate(`other_parity`);
 
+const prediction_score_trend = new Trend(`prediction_score_trend`);
 const score_trend = new Trend(`score_trend`);
 
 export default async function () {
@@ -75,8 +88,11 @@ export default async function () {
 
   let auth: string | null = null;
 
-  const popAuth = async (count: number = 0) => {
+  const popAuth = async (count: number = 0): Promise<string> => {
     const auth = await redisClient.lpop(authKeysName);
+    if (!auth) {
+      throw `auth is nill: ${auth}`;
+    }
     if (Math.random() > 0.5 && count < 10) {
       await redisClient.rpush(authKeysName, auth);
       return await popAuth(count + 1);
@@ -87,15 +103,15 @@ export default async function () {
   try {
     auth = await popAuth();
     while (!auth) {
-      console.log(`trying to get auth`);
       sleep(1);
       auth = await popAuth();
     }
   } catch (e) {
-    console.log(`error with getting auth`, e);
+    console.log(`error with getting auth: ${e}`);
     sleep(10);
     return;
   }
+  const myUser = await fromRedis(auth);
 
   const socket = new K6SocketIoExp(url, { auth: auth }, {}, 0);
 
@@ -154,27 +170,23 @@ export default async function () {
         });
         return data.data;
       })
-      .then((data: any) => {
+      .then(async (data: any) => {
         const stripAuth = (auth: string) => {
           const auth_id = auth.replace(/k6_auth_/g, ``);
           console.log(`auth_id ${auth_id}`); // Output: "123"
           return auth_id;
         };
 
-        score_trend.add(data.score);
+        prediction_score_trend.add(data.score);
 
-        let score;
+        let score = await myUser.getScore(data.other).catch((e) => {
+          console.error(
+            `HERE HERE HERE HERE HERE HERE HERE ${myUser.type} e: ${e}`,
+          );
+          return 2;
+        });
 
-        if (
-          parseInt(stripAuth(auth!)) % 2 ==
-          parseInt(stripAuth(data.other!)) % 2
-        ) {
-          other_parity.add(true);
-          score = 5;
-        } else {
-          score = 0;
-          other_parity.add(false);
-        }
+        score_trend.add(score);
 
         const r = http.post(
           `${secure ? `https` : `http`}://${domain}/options/providefeedback`,

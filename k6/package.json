@@ -28,7 +28,7 @@
     "local": "npm run webpack && bash ./run-local.sh dist/k6_exp.js",
     "webpack": "webpack --progress",
     "webpack:watch": "webpack --progress --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run webpack && k6 run dist/test.js"
   },
   "keywords": [
     "k6"
