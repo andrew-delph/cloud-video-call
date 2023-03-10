@@ -163,11 +163,9 @@ app.put(`/updatepreferences`, async (req, res) => {
   const results = await session.run(
     // TODO only allow one feedback for match.
     `
-    MERGE (p:Person {userId: $uid})
-    MERGE (md:MetaData {type:"perferences"})
-    MERGE (p)-[:USER_PREFERENCES]->(md)
+    MERGE (p:Person{userId: $uid})-[r:USER_PREFERENCES]->(md:MetaData{type:"USER_PREFERENCES"})
     SET md = $preferences
-    SET md.type = "perferences"
+    SET md.type = "USER_PREFERENCES"
     RETURN p, md
     `,
     { uid, preferences },
