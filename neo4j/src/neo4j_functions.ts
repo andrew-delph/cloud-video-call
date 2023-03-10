@@ -1,5 +1,6 @@
 import * as neo4j from 'neo4j-driver';
 import { v4 as uuid } from 'uuid';
+import { printResults } from './neo4j_index';
 
 export const driver = neo4j.driver(
   `neo4j://localhost:7687`,
@@ -254,7 +255,7 @@ export async function linkPredictionML() {
   result = await session.run(
     `CALL gds.beta.pipeline.drop('lp-pipeline', False);`,
   );
-  console.log(`graph delete successfully`);
+  console.log(`pipeline delete successfully`);
 
   let start_time = performance.now();
 
@@ -266,27 +267,39 @@ export async function linkPredictionML() {
 
   result = await session.run(
     `
-    CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'SAME_CATEGORY', {
-      nodeProperties: ['community']
+    CALL gds.beta.pipeline.linkPrediction.addNodeProperty('lp-pipeline', 'fastRP', {
+      mutateProperty: 'embedding',
+      embeddingDimension: 256,
+      randomSeed: 42,
+      contextNodeLabels: ['Person'],
+      contextRelationshipTypes: ['FEEDBACK']
+    })
+  `,
+  );
+
+  result = await session.run(
+    `
+    CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'hadamard', {
+      nodeProperties: ['embedding']
     }) YIELD featureSteps
+  `,
+  );
+
+  result = await session.run(
+    `
+    CALL gds.beta.pipeline.linkPrediction.configureSplit('lp-pipeline', {
+      testFraction: 0.2,
+      trainFraction: 0.2,
+      validationFolds: 2
+    })
+    YIELD splitConfig
   `,
   );
 
   // result = await session.run(
   //   `
-  //   CALL gds.beta.pipeline.linkPrediction.configureSplit('lp-pipeline', {
-  //     testFraction: 0.25,
-  //     trainFraction: 0.6,
-  //     validationFolds: 30
-  //   })
-  //   YIELD splitConfig
-  // `,
-  // );
-
-  // result = await session.run(
-  //   `
   //   CALL gds.alpha.pipeline.linkPrediction.configureAutoTuning('lp-pipeline', {
-  //     maxTrials: 5
+  //     maxTrials: 10
   //   }) YIELD autoTuningConfig
   // `,
   // );
@@ -337,7 +350,7 @@ export async function linkPredictionML() {
   }
 
   result = await session.run(
-    `CALL gds.graph.project( 'myGraph', 'Person', {FRIENDS:{orientation:'UNDIRECTED'}}, { nodeProperties: ['community'] });`,
+    `CALL gds.graph.project( 'myGraph', 'Person', {FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{}}, {relationshipProperties: ['score'] });`,
   );
 
   result = await session.run(
@@ -346,11 +359,13 @@ export async function linkPredictionML() {
     RETURN modelInfo.modelName AS modelName, loaded, shared, stored`,
   );
 
-  result = await session.run(
+  console.log(`Training`);
+  const training_result = await session.run(
     `
     CALL gds.beta.pipeline.linkPrediction.train('myGraph', {
       pipeline: 'lp-pipeline',
       modelName: 'lp-pipeline-model',
+      metrics: ['AUCPR'],
       targetRelationshipType: 'FRIENDS'
     }) YIELD modelInfo, modelSelectionStats
     RETURN
@@ -362,22 +377,26 @@ export async function linkPredictionML() {
   `,
   );
 
+  console.log(`predicting`);
   result = await session.run(
     `
   CALL gds.beta.pipeline.linkPrediction.predict.stream('myGraph', {
     modelName: 'lp-pipeline-model',
-    topN: 5,
+    topN: 100,
     threshold: 0
   })
    YIELD node1, node2, probability
-   RETURN gds.util.asNode(node1).userId AS person1, gds.util.asNode(node2).userId AS person2, probability
+   RETURN gds.util.asNode(node1).userId AS person1, gds.util.asNode(node2).userId AS person2, probability, gds.util.asNode(node1).community as c1, gds.util.asNode(node2).community as c2
    ORDER BY probability DESC, person1
     `,
   );
 
   const end_time = performance.now();
 
-  console.log(`query`, end_time - start_time);
+  console.log(`query took:`, end_time - start_time);
+
+  printResults(result, 400);
+  printResults(training_result);
 
   return result;
 }

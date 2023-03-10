@@ -4,7 +4,7 @@ import * as funcs from './neo4j_functions';
 
 let result: neo4j.QueryResult<Dict<PropertyKey, any>>;
 
-function printResults(
+export function printResults(
   result: neo4j.QueryResult<Dict<PropertyKey, any>>,
   limit: number = 10,
 ) {
@@ -19,13 +19,15 @@ function printResults(
     try {
       // console.log(record.get(`r`));
       // console.log(`value`, Object.keys(record.get(`r`)));
-      console.log(`>zz`);
       console.log(
         record.get(`person1`),
         record.get(`person2`),
+        parseInt(record.get(`person1`).substring(8)) % 2 ==
+          parseInt(record.get(`person2`).substring(8)) % 2,
         record.get(`probability`),
+        record.get(`c1`),
+        record.get(`c2`),
       );
-      console.log(`>`);
     } catch (e) {
       console.log(record);
     }
@@ -50,7 +52,7 @@ function printResults(
     // result = await funcs.callCommunities();
     result = await funcs.linkPredictionML();
 
-    printResults(result, 4);
+    // printResults(result, 400);
   } finally {
     console.log(`closing.`);
     await funcs.session.close();

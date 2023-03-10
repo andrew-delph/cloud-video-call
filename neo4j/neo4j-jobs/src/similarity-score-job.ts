@@ -30,6 +30,7 @@ const mainRedisClient = new Client({
 const lastFeedbackCountKey = `last-simularity-feedbackCount`;
 
 (async () => {
+  return;
   const session = driver.session();
   let result;
 

@@ -30,6 +30,7 @@ export const driver = neo4j.driver(
 );
 
 (async () => {
+  return;
   const session = driver.session();
 
   let result;
@@ -62,15 +63,22 @@ export const driver = neo4j.driver(
   }
 
   await session.run(
-    `CALL gds.graph.project( 'priorityGraph', 'Person', 'FEEDBACK' ,{ relationshipProperties: ['score'] });`,
+    `CALL gds.graph.project( 'priorityGraph', 'Person', {FRIENDS:{orientation:'UNDIRECTED'}});`,
   );
 
   logger.debug(`priorityGraph created`);
 
+  // result = await session.run(
+  //   `
+  //   CALL gds.pageRank.write('priorityGraph', { relationshipWeightProperty: 'score',  scaler: "MinMax", writeProperty: 'priority', maxIterations: 20 })
+  //       YIELD nodePropertiesWritten, ranIterations
+  // `,
+  // );
+
   result = await session.run(
     `
-    CALL gds.pageRank.write('priorityGraph', { relationshipWeightProperty: 'score',  scaler: "MinMax", writeProperty: 'priority' })
-        YIELD nodePropertiesWritten, ranIterations
+    CALL gds.louvain.write('priorityGraph', { writeProperty: 'community' })
+      YIELD communityCount, modularity, modularities
   `,
   );
 

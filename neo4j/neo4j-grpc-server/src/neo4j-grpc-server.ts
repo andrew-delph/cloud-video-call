@@ -264,6 +264,60 @@ const getRelationshipScoresLinkPrediction = async (
   callback(null, reply);
 };
 
+const getRelationshipScoresCommunity = async (
+  call: grpc.ServerUnaryCall<
+    GetRelationshipScoresRequest,
+    GetRelationshipScoresResponse
+  >,
+  callback: grpc.sendUnaryData<GetRelationshipScoresResponse>,
+): Promise<void> => {
+  const start_time = performance.now();
+
+  const userId = call.request.getUserId();
+  const otherUsers = call.request.getOtherUsersList();
+  const reply = new GetRelationshipScoresResponse();
+
+  const session = driver.session();
+
+  for (const otherUser of otherUsers) {
+    const result = await session.run(
+      `
+      MATCH (p1:Person {userId: $target})
+      MATCH (p2:Person {userId: $otherUser})
+      RETURN p1.community , p2.community
+        `,
+      { target: userId, otherUser },
+    );
+
+    try {
+      const c1 = result.records[0].get(`p1.community`);
+      const c2 = result.records[0].get(`p2.community`);
+
+      logger.info(`c1 ${c1} c2 ${c2} ... ${c1 == c2 ? 1 : 0}`);
+
+      reply.getRelationshipScoresMap().set(otherUser, c1 == c2 ? 1 : 0);
+    } catch (e) {
+      logger.warn(`fetching comminity error: ${e}`);
+    }
+  }
+
+  await session.close();
+
+  const duration = (performance.now() - start_time) / 1000;
+
+  logger.info(
+    `getRelationshipScores duration: \t ${duration}s otherUsers.length: ${otherUsers.length}`,
+  );
+
+  if (duration > durationWarn) {
+    logger.warn(`getRelationshipScores duration: \t ${duration}s`);
+  } else {
+    logger.debug(`getRelationshipScores duration: \t ${duration}s`);
+  }
+
+  callback(null, reply);
+};
+
 server.addService(Neo4jService, {
   createUser,
   createMatch,
