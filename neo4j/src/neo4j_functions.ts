@@ -268,7 +268,20 @@ export async function linkPredictionML() {
   result = await session.run(
     `
     CALL gds.beta.pipeline.linkPrediction.addNodeProperty('lp-pipeline', 'fastRP', {
-      mutateProperty: 'embedding',
+      mutateProperty: 'embedding1',
+      embeddingDimension: 256,
+      randomSeed: 42,
+      contextNodeLabels: ['Person','MetaData'],
+      contextRelationshipTypes: ['USER_DEFINED_MD']
+    })
+  `,
+  );
+  printResults(result, 400);
+
+  result = await session.run(
+    `
+    CALL gds.beta.pipeline.linkPrediction.addNodeProperty('lp-pipeline', 'fastRP', {
+      mutateProperty: 'embedding2',
       embeddingDimension: 256,
       randomSeed: 42,
       contextNodeLabels: ['Person'],
@@ -276,14 +289,16 @@ export async function linkPredictionML() {
     })
   `,
   );
+  printResults(result, 400);
 
   result = await session.run(
     `
     CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'hadamard', {
-      nodeProperties: ['embedding']
+      nodeProperties: ['embedding1','embedding2']
     }) YIELD featureSteps
   `,
   );
+  printResults(result, 400);
 
   result = await session.run(
     `
@@ -295,6 +310,7 @@ export async function linkPredictionML() {
     YIELD splitConfig
   `,
   );
+  printResults(result, 400);
 
   // result = await session.run(
   //   `
@@ -397,8 +413,8 @@ export async function linkPredictionML() {
 
   console.log(`query took:`, end_time - start_time);
 
-  printResults(result, 400);
-  // printResults(training_result);
+  printResults(result, 10);
+  printResults(training_result);
 
   return result;
 }

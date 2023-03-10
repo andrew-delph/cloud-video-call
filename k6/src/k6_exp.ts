@@ -17,7 +17,7 @@ import {
 export const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 1000;
+const authKeysNum = 100;
 const authKeysName = `authKeysName`;
 export function setup() {
   const authKeys: string[] = [];
