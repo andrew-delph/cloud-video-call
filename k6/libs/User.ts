@@ -31,7 +31,7 @@ export const createFemalePicky = (auth: string): User => {
 };
 
 export const createMale = (auth: string): User => {
-  const attributes = { gender: `male`, hot: randomIntBetween(0, 5) };
+  const attributes = { gender: `male` };
   const preferences = {};
 
   return new User(auth, attributes, preferences, UserType.Male);
