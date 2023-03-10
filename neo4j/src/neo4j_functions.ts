@@ -387,8 +387,8 @@ export async function linkPredictionML() {
     })
      YIELD node1, node2, probability
      WITH gds.util.asNode(node1) AS person1, gds.util.asNode(node2) AS person2, probability
-     MATCH (person1)-[r1:USER_DEFINED_MD]-(md1:MetaData), (person2)-[r2:USER_DEFINED_MD]-(md2:MetaData)
-     RETURN person1.userId,  person2.userId, probability, md1.gender as gender1, md2.gender as gender2
+     MATCH (person1)-[r1:USER_DEFINED_MD]-(md1:MetaData), (person2)-[r2:USER_DEFINED_MD]-(md2:MetaData) OPTIONAL MATCH (person1)-[f:FRIENDS]-(person2)
+     RETURN person1.userId,  person2.userId, probability, md1.gender as gender1, md2.gender as gender2, count(f) as f
      ORDER BY probability DESC
     `,
   );

@@ -25,6 +25,7 @@ export function printResults(
         record.get(`probability`),
         record.get(`gender1`),
         record.get(`gender2`),
+        record.get(`f`),
       );
     } catch (e) {
       console.log(record);
