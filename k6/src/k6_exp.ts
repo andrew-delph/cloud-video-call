@@ -23,7 +23,7 @@ export function setup() {
     for (let auth of authKeys) {
       let user;
 
-      if (Math.random() > 0.5) {
+      if (Math.random() < 0.5) {
         user = createFemale(auth);
       } else {
         user = createMale(auth);
@@ -38,7 +38,7 @@ export function setup() {
 const vus = 50;
 export const options = {
   vus: 10,
-  iterations: authKeysNum * 10,
+  iterations: authKeysNum * 30,
   // duration: `10m`,
   // scenarios: {
   //   matchTest: {

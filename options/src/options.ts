@@ -124,12 +124,10 @@ app.put(`/updateattributes`, async (req, res) => {
   });
 
   const session = driver.session();
+
   const results = await session.run(
-    // TODO only allow one feedback for match.
     `
-    MERGE (p:Person {userId: $uid})
-    MERGE (md:MetaData {type:"user_defined_md"})
-    MERGE (p)-[:USER_DEFINED_MD]->(md)
+    MERGE (p:Person{userId: $uid})-[r:USER_DEFINED_MD]->(md:MetaData{type:"user_defined_md"})
     SET md = $attributes
     SET md.type = "user_defined_md"
     RETURN p, md
