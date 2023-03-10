@@ -20,13 +20,11 @@ export function printResults(
       // console.log(record.get(`r`));
       // console.log(`value`, Object.keys(record.get(`r`)));
       console.log(
-        record.get(`person1`),
-        record.get(`person2`),
-        parseInt(record.get(`person1`).substring(8)) % 2 ==
-          parseInt(record.get(`person2`).substring(8)) % 2,
+        record.get(`person1.userId`),
+        record.get(`person2.userId`),
         record.get(`probability`),
-        record.get(`c1`),
-        record.get(`c2`),
+        record.get(`gender1`),
+        record.get(`gender2`),
       );
     } catch (e) {
       console.log(record);

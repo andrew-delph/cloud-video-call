@@ -350,7 +350,7 @@ export async function linkPredictionML() {
   }
 
   result = await session.run(
-    `CALL gds.graph.project( 'myGraph', 'Person', {FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{}}, {relationshipProperties: ['score'] });`,
+    `CALL gds.graph.project( 'myGraph', {Person:{}, MetaData:{}}, {FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{}, USER_DEFINED_MD: {}}, {relationshipProperties: ['score'] });`,
   );
 
   result = await session.run(
@@ -380,14 +380,16 @@ export async function linkPredictionML() {
   console.log(`predicting`);
   result = await session.run(
     `
-  CALL gds.beta.pipeline.linkPrediction.predict.stream('myGraph', {
-    modelName: 'lp-pipeline-model',
-    topN: 100,
-    threshold: 0
-  })
-   YIELD node1, node2, probability
-   RETURN gds.util.asNode(node1).userId AS person1, gds.util.asNode(node2).userId AS person2, probability, gds.util.asNode(node1).community as c1, gds.util.asNode(node2).community as c2
-   ORDER BY probability DESC, person1
+    CALL gds.beta.pipeline.linkPrediction.predict.stream('myGraph', {
+      modelName: 'lp-pipeline-model',
+      topN: 100,
+      threshold: 0
+    })
+     YIELD node1, node2, probability
+     WITH gds.util.asNode(node1) AS person1, gds.util.asNode(node2) AS person2, probability
+     MATCH (person1)-[r1:USER_DEFINED_MD]-(md1:MetaData), (person2)-[r2:USER_DEFINED_MD]-(md2:MetaData)
+     RETURN person1.userId,  person2.userId, probability, md1.gender as gender1, md2.gender as gender2
+     ORDER BY probability DESC
     `,
   );
 
@@ -396,7 +398,7 @@ export async function linkPredictionML() {
   console.log(`query took:`, end_time - start_time);
 
   printResults(result, 400);
-  printResults(training_result);
+  // printResults(training_result);
 
   return result;
 }

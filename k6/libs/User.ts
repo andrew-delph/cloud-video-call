@@ -9,6 +9,27 @@ export enum UserType {
   Male = `Male`,
 }
 
+export const createFemale = (auth: string): User => {
+  const attributes = { gender: `female` };
+  const preferences = {};
+
+  return new User(auth, attributes, preferences, UserType.Female);
+};
+
+export const createMale = (auth: string): User => {
+  const attributes = { gender: `male` };
+  const preferences = {};
+
+  return new User(auth, attributes, preferences, UserType.Male);
+};
+
+export const fromRedis = async (auth: string): Promise<User> => {
+  const type: UserType = await redisClient.get(auth + `_type`);
+  const attributes = JSON.parse(await redisClient.get(auth + `_attributes`));
+
+  return new User(auth, attributes, {}, type);
+};
+
 export const calcScoreMap = new Map<UserType, (otherAttr: any) => number>([
   [
     UserType.Male,
@@ -19,7 +40,6 @@ export const calcScoreMap = new Map<UserType, (otherAttr: any) => number>([
   [
     UserType.Female,
     (otherAttr: any) => {
-      console.error(`female scoring: ${JSON.stringify(otherAttr)}`);
       return otherAttr.gender == `male` ? 5 : 1;
     },
   ],
