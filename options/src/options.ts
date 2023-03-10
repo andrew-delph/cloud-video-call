@@ -161,7 +161,6 @@ app.put(`/updatepreferences`, async (req, res) => {
 
   const session = driver.session();
   const results = await session.run(
-    // TODO only allow one feedback for match.
     `
     MERGE (p:Person{userId: $uid})-[r:USER_PREFERENCES]->(md:MetaData{type:"USER_PREFERENCES"})
     SET md = $preferences
