@@ -128,9 +128,10 @@ app.put(`/updateattributes`, async (req, res) => {
     // TODO only allow one feedback for match.
     `
     MERGE (p:Person {userId: $uid})
-    MERGE (md:MetaData)
+    MERGE (md:MetaData {type:"user_defined_md"})
     MERGE (p)-[:USER_DEFINED_MD]->(md)
     SET md = $attributes
+    SET md.type = "user_defined_md"
     RETURN p, md
     `,
     { uid, attributes },
@@ -165,9 +166,10 @@ app.put(`/updatepreferences`, async (req, res) => {
     // TODO only allow one feedback for match.
     `
     MERGE (p:Person {userId: $uid})
-    MERGE (md:MetaData)
+    MERGE (md:MetaData {type:"perferences"})
     MERGE (p)-[:USER_PREFERENCES]->(md)
     SET md = $preferences
+    SET md.type = "perferences"
     RETURN p, md
     `,
     { uid, preferences },
