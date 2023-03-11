@@ -93,9 +93,7 @@ export class User {
     await redisClient.set(this.auth + `_type`, this.type.toString());
     const r = http.put(
       `${secure ? `https` : `http`}://${domain}/options/updateAttributes`,
-      JSON.stringify({
-        attributes: this.attributes,
-      }),
+      JSON.stringify(this.attributes),
       {
         headers: {
           authorization: this.auth,
@@ -110,9 +108,7 @@ export class User {
   async updateFilters(): Promise<void> {
     const r = http.put(
       `${secure ? `https` : `http`}://${domain}/options/updatefilters`,
-      JSON.stringify({
-        filters: this.filters,
-      }),
+      JSON.stringify(this.filters),
       {
         headers: {
           authorization: this.auth,

@@ -340,15 +340,16 @@ const checkUserFilters = async (
       results.records.length > 0 &&
       results.records[0].get(`md`)
     ) {
-      return results.records[0].get(`md`).properties || new Map<string, any>();
+      return results.records[0].get(`md`).properties || {};
     }
-    return new Map<string, any>();
+    logger.info(`not found... ${JSON.stringify(results)}`);
+    return {};
   };
 
   const user1Attributes = await session
     .run(
       `
-    MATCH (p1:Person {userId: $userId})-[r1:USER_DEFINED_ATTRIBUTES]->(md:MetaData)
+    MATCH (p1:Person {userId: $userId})-[r1:USER_ATTRIBUTES_CONSTANT]->(md:MetaData)
     RETURN md
       `,
       { userId: userId1 },
@@ -360,7 +361,7 @@ const checkUserFilters = async (
   const user1Filters = await session
     .run(
       `
-    MATCH (p1:Person {userId: $userId})-[r1:USER_DEFINED_ATTRIBUTES]->(md:MetaData)
+    MATCH (p1:Person {userId: $userId})-[r1:USER_FILTERS_CONSTANT]->(md:MetaData)
     RETURN md
       `,
       { userId: userId1 },
@@ -372,7 +373,7 @@ const checkUserFilters = async (
   const user2Attributes = await session
     .run(
       `
-    MATCH (p1:Person {userId: $userId})-[r1:USER_DEFINED_ATTRIBUTES]->(md:MetaData)
+    MATCH (p1:Person {userId: $userId})-[r1:USER_ATTRIBUTES_CONSTANT]->(md:MetaData)
     RETURN md
       `,
       { userId: userId2 },
@@ -384,7 +385,7 @@ const checkUserFilters = async (
   const user2Filters = await session
     .run(
       `
-    MATCH (p1:Person {userId: $userId})-[r1:USER_DEFINED_ATTRIBUTES]->(md:MetaData)
+    MATCH (p1:Person {userId: $userId})-[r1:USER_FILTERS_CONSTANT]->(md:MetaData)
     RETURN md
       `,
       { userId: userId2 },
@@ -401,7 +402,7 @@ const checkUserFilters = async (
     const key = entry[0].toString();
     const value = entry[1] != null ? entry[1].toString() : null;
     if (key == `type` || value == null) return;
-    if (user2Attributes.get(key) != value) {
+    if (user2Attributes[key] != value) {
       valid = false;
     }
   });
@@ -410,7 +411,7 @@ const checkUserFilters = async (
     const key = entry[0].toString();
     const value = entry[1] != null ? entry[1].toString() : null;
     if (key == `type` || value == null) return;
-    if (user1Attributes.get(key) != value) {
+    if (user1Attributes[key] != value) {
       valid = false;
     }
   });
