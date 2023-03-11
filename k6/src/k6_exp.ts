@@ -200,7 +200,6 @@ export default async function () {
           },
         );
         check(r, { 'feedback response status is 201': r && r.status == 201 });
-        console.log(`r.status is ${r.status}`);
         sleep(5);
       })
       .finally(async () => {
