@@ -17,22 +17,22 @@ export enum UserType {
 }
 
 export const createFemale = (auth: string): User => {
-  const attributes = { gender: `female` };
-  const filters = { gender: `male` };
+  const attributes = { constant: { gender: `female` } };
+  const filters = { constant: { gender: `male` } };
 
   return new User(auth, attributes, filters, UserType.Female);
 };
 
-export const createFemalePicky = (auth: string): User => {
-  const attributes = { gender: `femalepicky` };
-  const filters = {};
+// export const createFemalePicky = (auth: string): User => {
+//   const attributes = { gender: `femalepicky` };
+//   const filters = {};
 
-  return new User(auth, attributes, filters, UserType.FemalePicky);
-};
+//   return new User(auth, attributes, filters, UserType.FemalePicky);
+// };
 
 export const createMale = (auth: string): User => {
-  const attributes = { gender: `male` };
-  const filters = { gender: `female` };
+  const attributes = { constant: { gender: `male` } };
+  const filters = { constant: { gender: `female` } };
 
   return new User(auth, attributes, filters, UserType.Male);
 };
@@ -98,7 +98,7 @@ export class User {
       },
     );
     check(r, {
-      'updateAttributes response status is 200': r && r.status == 200,
+      'updateAttributes response status is 200': r && r.status == 201,
     });
   }
   async updateFilters(): Promise<void> {
@@ -115,7 +115,7 @@ export class User {
       },
     );
     check(r, {
-      'updateFilters response status is 200': r && r.status == 200,
+      'updateFilters response status is 200': r && r.status == 201,
     });
   }
 

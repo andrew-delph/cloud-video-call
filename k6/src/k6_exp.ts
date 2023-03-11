@@ -7,12 +7,7 @@ import {
 import redis from 'k6/experimental/redis';
 import { check, sleep } from 'k6';
 import http from 'k6/http';
-import {
-  createFemale,
-  createFemalePicky,
-  createMale,
-  fromRedis,
-} from '../libs/User';
+import * as users from '../libs/User';
 import { nuke } from '../libs/utils';
 
 export const redisClient = new redis.Client({
@@ -31,9 +26,9 @@ export function setup() {
       let user;
 
       if (Math.random() < 0.5) {
-        user = createFemale(auth);
+        user = users.createFemale(auth);
       } else {
-        user = createMale(auth);
+        user = users.createMale(auth);
       }
       await user.updateAttributes();
       await user.updateFilters();
@@ -122,7 +117,7 @@ export default async function () {
 
   const auth = await getAuth();
 
-  const myUser = await fromRedis(auth);
+  const myUser = await users.fromRedis(auth);
 
   const socket = new K6SocketIoExp(url, { auth: auth }, {}, 0);
 
@@ -205,6 +200,7 @@ export default async function () {
           },
         );
         check(r, { 'feedback response status is 201': r && r.status == 201 });
+        sleep(5);
       })
       .finally(async () => {
         socket.close();
