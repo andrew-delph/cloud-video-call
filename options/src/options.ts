@@ -127,9 +127,9 @@ app.put(`/updateattributes`, async (req, res) => {
 
   const results = await session.run(
     `
-    MERGE (p:Person{userId: $uid})-[r:USER_DEFINED_MD]->(md:MetaData{type:"user_defined_md"})
+    MERGE (p:Person{userId: $uid})-[r:USER_DEFINED_ATTRIBUTES]->(md:MetaData{type:"USER_DEFINED_ATTRIBUTES"})
     SET md = $attributes
-    SET md.type = "user_defined_md"
+    SET md.type = "USER_DEFINED_ATTRIBUTES"
     RETURN p, md
     `,
     { uid, attributes },
@@ -142,7 +142,7 @@ app.put(`/updateattributes`, async (req, res) => {
   res.status(200).send(md.properties);
 });
 
-app.put(`/updatepreferences`, async (req, res) => {
+app.put(`/updatefilters`, async (req, res) => {
   const { preferences } = req.body;
 
   const auth = req.headers.authorization;
@@ -162,9 +162,9 @@ app.put(`/updatepreferences`, async (req, res) => {
   const session = driver.session();
   const results = await session.run(
     `
-    MERGE (p:Person{userId: $uid})-[r:USER_PREFERENCES]->(md:MetaData{type:"USER_PREFERENCES"})
+    MERGE (p:Person{userId: $uid})-[r:USER_FILTERS]->(md:MetaData{type:"USER_FILTERS"})
     SET md = $preferences
-    SET md.type = "USER_PREFERENCES"
+    SET md.type = "USER_FILTERS"
     RETURN p, md
     `,
     { uid, preferences },

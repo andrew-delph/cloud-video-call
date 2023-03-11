@@ -55,7 +55,17 @@ export function printResults(
     // // result = await funcs.callWriteSimilar();
     // await funcs.callPriority();
     // result = await funcs.callCommunities();
-    result = await linkPredictionML();
+    result = await funcs.test();
+
+    const n = result.records[0].get(`n`);
+
+    console.log(typeof n.properties);
+
+    console.log(n.properties);
+
+    Object.entries(n.properties).forEach((key, value) => {
+      console.log(`k`, key, `v`, value, `t`, typeof value);
+    });
 
     // printResults(result, 400);
   } finally {

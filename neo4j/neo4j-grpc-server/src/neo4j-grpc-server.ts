@@ -10,6 +10,8 @@ import {
   UpdateMatchRequest,
   UpdateMatchResponse,
   HealthService,
+  GetUserAttributesFiltersResponse,
+  GetUserAttributesFiltersRequest,
 } from 'neo4j-grpc-common';
 
 import * as neo4j from 'neo4j-driver';
@@ -318,11 +320,71 @@ const getRelationshipScoresCommunity = async (
   callback(null, reply);
 };
 
+const getUserAttributesFilters = async (
+  call: grpc.ServerUnaryCall<
+    GetUserAttributesFiltersRequest,
+    GetUserAttributesFiltersResponse
+  >,
+  callback: grpc.sendUnaryData<GetUserAttributesFiltersResponse>,
+): Promise<void> => {
+  const start_time = performance.now();
+
+  const userId = call.request.getUserId();
+  const reply = new GetUserAttributesFiltersResponse();
+
+  const session = driver.session();
+
+  const result = await session.run(
+    `
+    MATCH (p1:Person {userId: 'k6_auth_1'})
+      OPTIONAL MATCH (p1)-[r1:USER_DEFINED_ATTRIBUTES]->(a:MetaData)
+      OPTIONAL MATCH (p1)-[r1:USER_FILTERS]->(f:MetaData)
+    RETURN a, f
+      `,
+    { userId },
+  );
+
+  const attributesResult = result.records[0].get(`a`);
+  const filtersResult = result.records[0].get(`f`);
+
+  if (attributesResult) {
+    Object.entries(attributesResult.properties).forEach((entry) => {
+      const key = entry[0].toString();
+      const value = entry[1] != null ? entry[1].toString() : null;
+      if (key == `type` || value == null) return;
+
+      reply.getUserStaticAttributesMap().set(key, value);
+    });
+  }
+
+  if (filtersResult) {
+    Object.entries(filtersResult.properties).forEach((entry) => {
+      const key = entry[0].toString();
+      const value = entry[1] != null ? entry[1].toString() : null;
+      if (key == `type` || value == null) return;
+
+      reply.getUserStaticFiltersMap().set(key, value);
+    });
+  }
+
+  await session.close();
+
+  const duration = (performance.now() - start_time) / 1000;
+  if (duration > durationWarn) {
+    logger.warn(`getUserAttributesFilters duration: \t ${duration}s`);
+  } else {
+    logger.debug(`getUserAttributesFilters duration: \t ${duration}s`);
+  }
+
+  callback(null, reply);
+};
+
 server.addService(Neo4jService, {
   createUser,
   createMatch,
   updateMatch,
   getRelationshipScores: getRelationshipScores,
+  getUserAttributesFilters,
 });
 
 server.addService(HealthService, {
