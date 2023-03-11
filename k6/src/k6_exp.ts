@@ -238,6 +238,10 @@ export async function longWait() {
         established_success.add(false);
         return Promise.reject(error);
       })
+      .then((data: any) => {
+        established_success.add(true);
+        established_elapsed.add(data.elapsed);
+      })
       .then(() => {
         sleep(100);
       })
