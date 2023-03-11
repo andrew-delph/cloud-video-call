@@ -112,7 +112,7 @@ app.post(`/providefeedback`, async (req, res) => {
 });
 
 app.put(`/updateattributes`, async (req, res) => {
-  const { attributes } = req.body;
+  const { constant = {}, custom = {} } = req.body;
 
   const auth = req.headers.authorization;
 
@@ -128,33 +128,42 @@ app.put(`/updateattributes`, async (req, res) => {
     return;
   });
 
-  if (!attributes) {
-    logger.debug(`Missing attributes`);
-    res.status(400).json({ error: `Missing attributes` });
-    return;
-  }
-
   const session = driver.session();
 
-  const results = await session.run(
+  let results;
+
+  results = await session.run(
     `
-    MERGE (p:Person{userId: $uid})-[r:USER_DEFINED_ATTRIBUTES]->(md:MetaData{type:"USER_DEFINED_ATTRIBUTES"})
-    SET md = $attributes
-    SET md.type = "USER_DEFINED_ATTRIBUTES"
+    MERGE (p:Person{userId: $uid})-[r:USER_ATTRIBUTES_CONSTANT]->(md:MetaData{type:"USER_ATTRIBUTES_CONSTANT"})
+    SET md = $constant
+    SET md.type = "USER_ATTRIBUTES_CONSTANT"
     RETURN p, md
     `,
-    { uid, attributes },
+    { uid, constant },
+  );
+  const constant_md = results.records[0].get(`md`);
+
+  results = await session.run(
+    `
+    MERGE (p:Person{userId: $uid})-[r:USER_ATTRIBUTES_CUSTOM]->(md:MetaData{type:"USER_ATTRIBUTES_CUSTOM"})
+    SET md = $custom
+    SET md.type = "USER_ATTRIBUTES_CUSTOM"
+    RETURN p, md
+    `,
+    { uid, custom },
   );
 
-  const md = results.records[0].get(`md`);
+  const custom_md = results.records[0].get(`md`);
 
   await session.close();
 
-  res.status(200).send(md.properties);
+  res
+    .status(201)
+    .send({ custom: constant_md.properties, constant: custom_md.properties });
 });
 
 app.put(`/updatefilters`, async (req, res) => {
-  const { filters } = req.body;
+  const { constant = {}, custom = {} } = req.body;
 
   const auth = req.headers.authorization;
 
@@ -170,28 +179,38 @@ app.put(`/updatefilters`, async (req, res) => {
     return;
   });
 
-  if (!filters) {
-    logger.debug(`Missing filters`);
-    res.status(400).json({ error: `Missing filters` });
-    return;
-  }
-
   const session = driver.session();
-  const results = await session.run(
+
+  let results;
+
+  results = await session.run(
     `
-    MERGE (p:Person{userId: $uid})-[r:USER_FILTERS]->(md:MetaData{type:"USER_FILTERS"})
-    SET md = $filters
-    SET md.type = "USER_FILTERS"
+    MERGE (p:Person{userId: $uid})-[r:USER_FILTERS_CONSTANT]->(md:MetaData{type:"USER_FILTERS_CONSTANT"})
+    SET md = $constant
+    SET md.type = "USER_FILTERS_CONSTANT"
     RETURN p, md
     `,
-    { uid, filters },
+    { uid, constant },
+  );
+  const constant_md = results.records[0].get(`md`);
+
+  results = await session.run(
+    `
+    MERGE (p:Person{userId: $uid})-[r:USER_FILTERS_CUSTOM]->(md:MetaData{type:"USER_FILTERS_CUSTOM"})
+    SET md = $custom
+    SET md.type = "USER_FILTERS_CUSTOM"
+    RETURN p, md
+    `,
+    { uid, custom },
   );
 
-  const md = results.records[0].get(`md`);
+  const custom_md = results.records[0].get(`md`);
 
   await session.close();
 
-  res.status(200).send(md.properties);
+  res
+    .status(201)
+    .send({ custom: constant_md.properties, constant: custom_md.properties });
 });
 
 app.post(`/nukedata`, async (req, res) => {
