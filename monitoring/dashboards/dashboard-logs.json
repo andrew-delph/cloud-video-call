@@ -148,7 +148,7 @@
         "showLabels": false,
         "showTime": true,
         "sortOrder": "Descending",
-        "wrapLogMessage": false
+        "wrapLogMessage": true
       },
       "targets": [
         {
@@ -236,8 +236,8 @@
       {
         "current": {
           "selected": true,
-          "text": ["debug", "error"],
-          "value": ["debug", "error"]
+          "text": ["error"],
+          "value": ["error"]
         },
         "datasource": {
           "type": "loki",
