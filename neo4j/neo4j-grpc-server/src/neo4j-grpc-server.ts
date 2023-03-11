@@ -10,8 +10,8 @@ import {
   UpdateMatchRequest,
   UpdateMatchResponse,
   HealthService,
-  GetUserAttributesFiltersResponse,
-  GetUserAttributesFiltersRequest,
+  CheckUserFiltersResponse,
+  CheckUserFiltersRequest,
 } from 'neo4j-grpc-common';
 
 import * as neo4j from 'neo4j-driver';
@@ -320,60 +320,89 @@ const getRelationshipScoresCommunity = async (
   callback(null, reply);
 };
 
-const getUserAttributesFilters = async (
-  call: grpc.ServerUnaryCall<
-    GetUserAttributesFiltersRequest,
-    GetUserAttributesFiltersResponse
-  >,
-  callback: grpc.sendUnaryData<GetUserAttributesFiltersResponse>,
+const checkUserFilters = async (
+  call: grpc.ServerUnaryCall<CheckUserFiltersRequest, CheckUserFiltersResponse>,
+  callback: grpc.sendUnaryData<CheckUserFiltersResponse>,
 ): Promise<void> => {
   const start_time = performance.now();
 
-  const userId = call.request.getUserId();
-  const reply = new GetUserAttributesFiltersResponse();
+  const userId1 = call.request.getUserId1();
+  const userId2 = call.request.getUserId2();
+  const reply = new CheckUserFiltersResponse();
 
   const session = driver.session();
 
-  const resultAttributes = await session.run(
-    `
-    MATCH (p1:Person {userId: $userId})-[r1:USER_DEFINED_ATTRIBUTES]->(a:MetaData)
-    RETURN a
+  const user1Attributes = await session
+    .run(
+      `
+    MATCH (p1:Person {userId: $userId})-[r1:USER_DEFINED_ATTRIBUTES]->(md:MetaData)
+    RETURN md
       `,
-    { userId },
-  );
-
-  const attributesResult = resultAttributes.records[0].get(`a`);
-
-  if (attributesResult) {
-    Object.entries(attributesResult.properties).forEach((entry) => {
-      const key = entry[0].toString();
-      const value = entry[1] != null ? entry[1].toString() : null;
-      if (key == `type` || value == null) return;
-
-      reply.getUserStaticAttributesMap().set(key, value);
+      { userId: userId1 },
+    )
+    .then((results) => {
+      return (results.records[0].get(`md`) || {}).properties || {};
     });
-  }
 
-  const resultFilters = await session.run(
-    `
-    MATCH (p1:Person {userId: $userId})-[r2:USER_FILTERS]->(f:MetaData)
-    RETURN f
+  const user1Filters = await session
+    .run(
+      `
+    MATCH (p1:Person {userId: $userId})-[r1:USER_DEFINED_ATTRIBUTES]->(md:MetaData)
+    RETURN md
       `,
-    { userId },
-  );
-  const filtersResult = resultFilters.records[0].get(`f`);
-
-  if (filtersResult) {
-    Object.entries(filtersResult.properties).forEach((entry) => {
-      const key = entry[0].toString();
-      const value = entry[1] != null ? entry[1].toString() : null;
-      if (key == `type` || value == null) return;
-
-      reply.getUserStaticFiltersMap().set(key, value);
+      { userId: userId1 },
+    )
+    .then((results) => {
+      return (results.records[0].get(`md`) || {}).properties || {};
     });
-  }
+
+  const user2Attributes = await session
+    .run(
+      `
+    MATCH (p1:Person {userId: $userId})-[r1:USER_DEFINED_ATTRIBUTES]->(md:MetaData)
+    RETURN md
+      `,
+      { userId: userId2 },
+    )
+    .then((results) => {
+      return (results.records[0].get(`md`) || {}).properties || {};
+    });
+
+  const user2Filters = await session
+    .run(
+      `
+    MATCH (p1:Person {userId: $userId})-[r1:USER_DEFINED_ATTRIBUTES]->(md:MetaData)
+    RETURN md
+      `,
+      { userId: userId2 },
+    )
+    .then((results) => {
+      return (results.records[0].get(`md`) || {}).properties || {};
+    });
 
   await session.close();
+
+  let valid = true;
+
+  Object.entries(user1Filters).forEach((entry) => {
+    const key = entry[0].toString();
+    const value = entry[1] != null ? entry[1].toString() : null;
+    if (key == `type` || value == null) return;
+    if (user2Attributes.get(key) != value) {
+      valid = false;
+    }
+  });
+
+  Object.entries(user2Filters).forEach((entry) => {
+    const key = entry[0].toString();
+    const value = entry[1] != null ? entry[1].toString() : null;
+    if (key == `type` || value == null) return;
+    if (user1Attributes.get(key) != value) {
+      valid = false;
+    }
+  });
+
+  reply.setPassed(valid);
 
   const duration = (performance.now() - start_time) / 1000;
   if (duration > durationWarn) {
@@ -390,7 +419,7 @@ server.addService(Neo4jService, {
   createMatch,
   updateMatch,
   getRelationshipScores: getRelationshipScores,
-  getUserAttributesFilters,
+  checkUserFilters,
 });
 
 server.addService(HealthService, {

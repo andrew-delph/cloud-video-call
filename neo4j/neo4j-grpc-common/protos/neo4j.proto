@@ -13,7 +13,7 @@ service Neo4j {
 
   rpc GetRelationshipScores (GetRelationshipScoresRequest) returns (GetRelationshipScoresResponse) {}
 
-  rpc GetUserAttributesFilters(GetUserAttributesFiltersRequest) returns (GetUserAttributesFiltersResponse) {}
+  rpc CheckUserFilters(CheckUserFiltersRequest) returns (CheckUserFiltersResponse) {}
 }
 
 message CreateUserRequest {
@@ -65,13 +65,13 @@ message GetRelationshipScoresResponse {
 }
 
 
-message GetUserAttributesFiltersRequest {
-  string user_id = 1;
+message CheckUserFiltersRequest {
+  string user_id1 = 1;
+  string user_id2 = 2;
 }
 
-message GetUserAttributesFiltersResponse {
+message CheckUserFiltersResponse {
   bool error = 1;
   string message = 2;
-  map<string, string> user_static_attributes = 3;
-  map<string, string> user_static_filters = 4;
+  bool passed = 3;
 }
