@@ -12,9 +12,15 @@ import {
 
 export enum UserType {
   Female = `Female`,
-  FemalePicky = `FemalePicky`,
   Male = `Male`,
+  LocationBound = `LocationBound`,
 }
+
+export const getRandomUser = (auth: string): User => {
+  const userFunctions = [createFemale, createMale, createLocationBound];
+
+  return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
+};
 
 export const createFemale = (auth: string): User => {
   const attributes = { constant: { gender: `female` } };
@@ -23,18 +29,18 @@ export const createFemale = (auth: string): User => {
   return new User(auth, attributes, filters, UserType.Female);
 };
 
-// export const createFemalePicky = (auth: string): User => {
-//   const attributes = { gender: `femalepicky` };
-//   const filters = {};
-
-//   return new User(auth, attributes, filters, UserType.FemalePicky);
-// };
-
 export const createMale = (auth: string): User => {
   const attributes = { constant: { gender: `male` } };
   const filters = { constant: { gender: `female` } };
 
   return new User(auth, attributes, filters, UserType.Male);
+};
+
+export const createLocationBound = (auth: string): User => {
+  const attributes = {};
+  const filters = {};
+
+  return new User(auth, attributes, filters, UserType.LocationBound);
 };
 
 export const fromRedis = async (auth: string): Promise<User> => {
@@ -48,13 +54,13 @@ export const calcScoreMap = new Map<UserType, (otherAttr: any) => number>([
   [
     UserType.Male,
     (otherAttr: any) => {
-      return otherAttr.constant.gender.startsWith(`female`) ? 5 : 1;
+      return otherAttr?.constant?.gender?.startsWith(`female`) ? 5 : 1;
     },
   ],
   [
     UserType.Female,
     (otherAttr: any) => {
-      return otherAttr.constant.gender.startsWith(`male`) ? 5 : 1;
+      return otherAttr?.constant?.gender?.startsWith(`male`) ? 5 : 1;
     },
   ],
   // [

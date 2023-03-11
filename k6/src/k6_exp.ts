@@ -23,13 +23,7 @@ export function setup() {
   }
   redisClient.del(authKeysName).finally(async () => {
     for (let auth of authKeys) {
-      let user;
-
-      if (Math.random() < 0.5) {
-        user = users.createFemale(auth);
-      } else {
-        user = users.createMale(auth);
-      }
+      let user = users.getRandomUser(auth);
       await user.updateAttributes();
       await user.updateFilters();
     }
