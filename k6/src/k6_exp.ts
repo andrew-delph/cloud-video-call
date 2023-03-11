@@ -197,10 +197,6 @@ export default async function () {
           return -1;
         });
 
-        check(score, {
-          'user get score is valid': (score: any) => score >= 0,
-        });
-
         score_trend.add(score);
 
         const r = http.post(

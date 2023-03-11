@@ -38,11 +38,11 @@ app.post(`/providefeedback`, async (req, res) => {
     logger.debug(`Missing Authorization`);
     res.status(401).json({ error: `Missing Authorization` });
     return;
-  } else if (!feedback_id || score == null) {
+  } else if (!feedback_id || score == null || score < 0) {
     logger.debug(
       `!feedback_id || !score) feedback_id: ${feedback_id} score: ${score}`,
     );
-    res.status(400).json({ error: `feedback_id and score are required` });
+    res.status(400).json({ error: `feedback_id or score failed validation` });
     return;
   }
 
