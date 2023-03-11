@@ -15,8 +15,8 @@ import {
   createNeo4jClient,
   GetRelationshipScoresRequest,
   GetRelationshipScoresResponse,
-  GetUserAttributesFiltersRequest,
-  GetUserAttributesFiltersResponse,
+  CheckUserFiltersRequest,
+  CheckUserFiltersResponse,
 } from 'neo4j-grpc-common';
 import {
   delay,
@@ -309,28 +309,26 @@ const getRelationshipFilterCacheKey = (
   return `relationship-filter-${userId1}-${userId2}`;
 };
 
-const neo4jRequestAttributeFilters = (
-  getUserAttributesFiltersRequest: GetUserAttributesFiltersRequest,
+const neo4jCheckUserFiltersRequest = (
+  checkUserFiltersRequest: CheckUserFiltersRequest,
 ) => {
-  return new Promise<GetUserAttributesFiltersResponse>(
-    async (resolve, reject) => {
-      try {
-        await neo4jRpcClient.getUserAttributesFilters(
-          getUserAttributesFiltersRequest,
-          (error: any, response: GetUserAttributesFiltersResponse) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve(response);
-            }
-          },
-        );
-      } catch (e) {
-        logger.error(`getUserAttributesFiltersRequest error: ${e}`);
-        reject(e);
-      }
-    },
-  ).catch((e) => {
+  return new Promise<CheckUserFiltersResponse>(async (resolve, reject) => {
+    try {
+      await neo4jRpcClient.checkUserFilters(
+        checkUserFiltersRequest,
+        (error: any, response: CheckUserFiltersResponse) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        },
+      );
+    } catch (e) {
+      logger.error(`checkUserFiltersRequest error: ${e}`);
+      reject(e);
+    }
+  }).catch((e) => {
     logger.error(`neo4j grpc error: ${e}`);
     throw new RetryError(e);
   });
@@ -340,20 +338,7 @@ const applyReadySetFilters = async (
   userId: string,
   readySet: Set<string>,
 ): Promise<Set<string>> => {
-  const getUserAttributesFiltersRequest = new GetUserAttributesFiltersRequest();
-
-  getUserAttributesFiltersRequest.setUserId(userId);
-
-  const myAttributesFiltersResponse = await neo4jRequestAttributeFilters(
-    getUserAttributesFiltersRequest,
-  );
-  const myResponseAttributes =
-    myAttributesFiltersResponse.getUserStaticAttributesMap();
-  const myResponseFilters =
-    myAttributesFiltersResponse.getUserStaticFiltersMap();
-
   const approved = new Set<string>();
-  const rejected = new Set<string>();
   // check if exists in cache before making request for each id.
   for (let otherId of readySet) {
     const filter = await mainRedisClient.get(
@@ -371,59 +356,24 @@ const applyReadySetFilters = async (
   // store in cache. 1 means passes filter. 0 means rejected
 
   for (const idToRequest of readySet) {
-    const getUserAttributesFiltersRequest =
-      new GetUserAttributesFiltersRequest();
+    const checkUserFiltersRequest = new CheckUserFiltersRequest();
 
-    getUserAttributesFiltersRequest.setUserId(idToRequest);
+    checkUserFiltersRequest.setUserId1(userId);
+    checkUserFiltersRequest.setUserId2(idToRequest);
 
-    const getUserAttributesFiltersResponse = await neo4jRequestAttributeFilters(
-      getUserAttributesFiltersRequest,
+    const getUserAttributesFiltersResponse = await neo4jCheckUserFiltersRequest(
+      checkUserFiltersRequest,
     );
-    const otherResponseAttributes =
-      getUserAttributesFiltersResponse.getUserStaticAttributesMap();
-    const otherResponseFilters =
-      getUserAttributesFiltersResponse.getUserStaticFiltersMap();
-
-    let valid = true;
-    // on MY data for each filter. check if it doesnt match an attribute
-    for (const otherFilters of otherResponseFilters.entries()) {
-      const key = otherFilters[0];
-      const value = otherFilters[1];
-
-      if (
-        myResponseAttributes.has(key) &&
-        myResponseAttributes.get(key) == value
-      ) {
-        continue;
-      } else {
-        valid = false;
-        break;
-      }
-    }
-    // on OTHER data for each filter. check if it doesnt match an attribute
-    for (const myFilters of myResponseFilters.entries()) {
-      const key = myFilters[0];
-      const value = myFilters[1];
-
-      if (
-        otherResponseAttributes.has(key) &&
-        otherResponseAttributes.get(key) == value
-      ) {
-        continue;
-      } else {
-        valid = false;
-        break;
-      }
-    }
+    const passed = getUserAttributesFiltersResponse.getPassed();
 
     // set valid result
     await mainRedisClient.set(
       getRelationshipFilterCacheKey(userId, idToRequest),
-      valid ? `1` : 0,
+      passed ? `1` : 0,
       `EX`,
       60 * 5,
     );
-    if (valid) {
+    if (passed) {
       approved.add(idToRequest);
     } else {
     }
