@@ -18,7 +18,7 @@ import { nuke } from '../libs/utils';
 export const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 10;
+const authKeysNum = 1000;
 const authKeysName = `authKeysName`;
 export function setup() {
   nuke();
@@ -32,11 +32,6 @@ export function setup() {
 
       if (Math.random() < 0.5) {
         user = createFemale(auth);
-        // if (Math.random() < 0.5) {
-        //   user = createFemalePicky(auth);
-        // } else {
-        //   user = createFemale(auth);
-        // }
       } else {
         user = createMale(auth);
       }
@@ -48,32 +43,28 @@ export function setup() {
   });
 }
 
-const vus = 50;
+const vus = 5;
 export const options = {
-  vus: 5,
+  // vus: 5,
   // iterations: authKeysNum * 10,
-  duration: `1h`,
-  // scenarios: {
-  //   matchTest: {
-  //     executor: `ramping-vus`,
-  //     startVUs: 0,
-  //     stages: [
-  //       { duration: `3m`, target: vus * 2 },
-  //       { duration: `5m`, target: vus * 3 },
-  //       { duration: `3m`, target: vus * 4 },
-  //     ],
-  //   },
-  //   // longConnection: {
-  //   //   executor: `ramping-vus`,
-  //   //   exec: `longConnection`,
-  //   //   startVUs: 0,
-  //   //   stages: [
-  //   //     { duration: `2m`, target: vus * 3 },
-  //   //     { duration: `2h`, target: vus * 4 },
-  //   //     { duration: `10m`, target: vus },
-  //   //   ],
-  //   // },
-  // },
+  // duration: `1h`,
+  scenarios: {
+    matchTest: {
+      executor: `ramping-vus`,
+      startVUs: 0,
+      stages: [
+        { duration: `3m`, target: vus * 1 },
+        { duration: `5m`, target: vus * 3 },
+        { duration: `3m`, target: vus * 1 },
+      ],
+    },
+    longConnection: {
+      executor: `ramping-vus`,
+      exec: `longWait`,
+      startVUs: 10,
+      stages: [{ duration: `20m`, target: 10 }],
+    },
+  },
 };
 
 const established_elapsed = new Trend(`established_elapsed`, true);
@@ -191,12 +182,6 @@ export default async function () {
         return data.data;
       })
       .then(async (data: any) => {
-        const stripAuth = (auth: string) => {
-          const auth_id = auth.replace(/k6_auth_/g, ``);
-          console.log(`auth_id ${auth_id}`); // Output: "123"
-          return auth_id;
-        };
-
         prediction_score_trend.add(data.score);
 
         let score = await myUser.getScore(data.other).catch((e) => {
@@ -220,6 +205,46 @@ export default async function () {
           },
         );
         check(r, { 'feedback response status is 201': r && r.status == 201 });
+      })
+      .finally(async () => {
+        socket.close();
+      });
+  });
+  socket.connect();
+}
+
+export async function longWait() {
+  const secure = false;
+  const domain = __ENV.HOST || `localhost:8888`;
+  let url = `${
+    secure ? `wss` : `ws`
+  }://${domain}/socket.io/?EIO=4&transport=websocket`;
+
+  const auth = await getAuth();
+
+  const socket = new K6SocketIoExp(url, { auth: auth }, {}, 0);
+
+  socket.setOnClose(async () => {
+    await redisClient.rpush(authKeysName, auth);
+  });
+
+  socket.setOnConnect(() => {
+    socket.on(`error`, () => {
+      error_counter.add(1);
+    });
+    socket
+      .expectMessage(`established`)
+      .catch((error) => {
+        established_success.add(false);
+        return Promise.reject(error);
+      })
+      .then(() => {
+        sleep(100);
+      })
+      .then(() => {
+        check(socket.connected, {
+          'socket is still connected': socket.connected,
+        });
       })
       .finally(async () => {
         socket.close();
