@@ -13,6 +13,7 @@ import {
   createMale,
   fromRedis,
 } from '../libs/User';
+import { nuke } from '../libs/utils';
 
 export const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
@@ -20,6 +21,7 @@ export const redisClient = new redis.Client({
 const authKeysNum = 100;
 const authKeysName = `authKeysName`;
 export function setup() {
+  nuke();
   const authKeys: string[] = [];
   for (let i = 0; i < authKeysNum; i++) {
     authKeys.push(`k6_auth_${i}`);

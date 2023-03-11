@@ -177,6 +177,23 @@ app.put(`/updatefilters`, async (req, res) => {
   res.status(200).send(md.properties);
 });
 
+app.post(`/nukedata`, async (req, res) => {
+  // TODO REMOVE THIS LOL WHAT THE HECK?
+
+  const session = driver.session();
+  await session.run(`
+    MATCH (n)
+    CALL {
+      WITH n
+      DETACH DELETE n
+    } IN TRANSACTIONS
+    `);
+
+  await session.close();
+
+  res.status(200).send(`ITS DONE.`);
+});
+
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
