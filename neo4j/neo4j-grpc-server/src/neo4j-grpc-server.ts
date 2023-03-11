@@ -334,18 +334,15 @@ const getUserAttributesFilters = async (
 
   const session = driver.session();
 
-  const result = await session.run(
+  const resultAttributes = await session.run(
     `
-    MATCH (p1:Person {userId: 'k6_auth_1'})
-      OPTIONAL MATCH (p1)-[r1:USER_DEFINED_ATTRIBUTES]->(a:MetaData)
-      OPTIONAL MATCH (p1)-[r1:USER_FILTERS]->(f:MetaData)
-    RETURN a, f
+    MATCH (p1:Person {userId: $userId})-[r1:USER_DEFINED_ATTRIBUTES]->(a:MetaData)
+    RETURN a
       `,
     { userId },
   );
 
-  const attributesResult = result.records[0].get(`a`);
-  const filtersResult = result.records[0].get(`f`);
+  const attributesResult = resultAttributes.records[0].get(`a`);
 
   if (attributesResult) {
     Object.entries(attributesResult.properties).forEach((entry) => {
@@ -356,6 +353,15 @@ const getUserAttributesFilters = async (
       reply.getUserStaticAttributesMap().set(key, value);
     });
   }
+
+  const resultFilters = await session.run(
+    `
+    MATCH (p1:Person {userId: $userId})-[r2:USER_FILTERS]->(f:MetaData)
+    RETURN f
+      `,
+    { userId },
+  );
+  const filtersResult = resultFilters.records[0].get(`f`);
 
   if (filtersResult) {
     Object.entries(filtersResult.properties).forEach((entry) => {
