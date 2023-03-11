@@ -41,6 +41,7 @@ export function setup() {
         user = createMale(auth);
       }
       await user.updateAttributes();
+      await user.updateFilters();
     }
 
     await redisClient.lpush(authKeysName, ...authKeys);
@@ -49,9 +50,9 @@ export function setup() {
 
 const vus = 50;
 export const options = {
-  vus: 10,
-  iterations: authKeysNum * 10,
-  // duration: `10m`,
+  vus: 2,
+  // iterations: authKeysNum * 10,
+  duration: `1h`,
   // scenarios: {
   //   matchTest: {
   //     executor: `ramping-vus`,

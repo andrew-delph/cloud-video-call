@@ -12,13 +12,11 @@ export function delay(ms: number) {
 
 export async function getUid(auth: string) {
   if (auth.startsWith(`k6`)) {
-    logger.debug(`k6 auth: ${auth}`);
     return auth;
   } else {
     return await getAuth()
       .verifyIdToken(auth)
       .then(async (decodedToken: { uid: any }) => {
-        logger.debug(`firebase auth uid: ${decodedToken.uid} , auth: ${auth}`);
         return decodedToken.uid;
       });
   }

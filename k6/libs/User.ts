@@ -18,23 +18,23 @@ export enum UserType {
 
 export const createFemale = (auth: string): User => {
   const attributes = { gender: `female` };
-  const preferences = {};
+  const filters = { gender: `male` };
 
-  return new User(auth, attributes, preferences, UserType.Female);
+  return new User(auth, attributes, filters, UserType.Female);
 };
 
 export const createFemalePicky = (auth: string): User => {
   const attributes = { gender: `femalepicky` };
-  const preferences = {};
+  const filters = {};
 
-  return new User(auth, attributes, preferences, UserType.FemalePicky);
+  return new User(auth, attributes, filters, UserType.FemalePicky);
 };
 
 export const createMale = (auth: string): User => {
   const attributes = { gender: `male` };
-  const preferences = {};
+  const filters = { gender: `female` };
 
-  return new User(auth, attributes, preferences, UserType.Male);
+  return new User(auth, attributes, filters, UserType.Male);
 };
 
 export const fromRedis = async (auth: string): Promise<User> => {
@@ -67,15 +67,15 @@ export const calcScoreMap = new Map<UserType, (otherAttr: any) => number>([
 
 export class User {
   attributes = {};
-  preferences = {};
+  filters = {};
   auth: string = ``;
   type: UserType;
 
-  constructor(auth: string, attributes: {}, preferences: {}, type: UserType) {
+  constructor(auth: string, attributes: {}, filters: {}, type: UserType) {
     this.type = type;
     this.auth = auth;
     this.attributes = attributes;
-    this.preferences = preferences;
+    this.filters = filters;
   }
 
   async updateAttributes(): Promise<void> {
@@ -101,7 +101,23 @@ export class User {
       'updateAttributes response status is 200': r && r.status == 200,
     });
   }
-  updatePreferences(): void {}
+  async updateFilters(): Promise<void> {
+    const r = http.put(
+      `${secure ? `https` : `http`}://${domain}/options/updatefilters`,
+      JSON.stringify({
+        attributes: this.attributes,
+      }),
+      {
+        headers: {
+          authorization: this.auth,
+          'Content-Type': `application/json`,
+        },
+      },
+    );
+    check(r, {
+      'updateFilters response status is 200': r && r.status == 200,
+    });
+  }
 
   async getScore(otherAuth: string) {
     const otherAtributes = JSON.parse(
