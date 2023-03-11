@@ -92,13 +92,7 @@ const other_parity = new Rate(`other_parity`);
 const prediction_score_trend = new Trend(`prediction_score_trend`);
 const score_trend = new Trend(`score_trend`);
 
-export default async function () {
-  const secure = false;
-  const domain = __ENV.HOST || `localhost:8888`;
-  let url = `${
-    secure ? `wss` : `ws`
-  }://${domain}/socket.io/?EIO=4&transport=websocket`;
-
+const getAuth = async () => {
   let auth: string | null = null;
 
   const popAuth = async (count: number = 0): Promise<string> => {
@@ -122,8 +116,21 @@ export default async function () {
   } catch (e) {
     console.log(`error with getting auth: ${e}`);
     sleep(10);
-    return;
+    throw e;
   }
+
+  return auth;
+};
+
+export default async function () {
+  const secure = false;
+  const domain = __ENV.HOST || `localhost:8888`;
+  let url = `${
+    secure ? `wss` : `ws`
+  }://${domain}/socket.io/?EIO=4&transport=websocket`;
+
+  const auth = await getAuth();
+
   const myUser = await fromRedis(auth);
 
   const socket = new K6SocketIoExp(url, { auth: auth }, {}, 0);
