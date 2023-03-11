@@ -193,10 +193,12 @@ export default async function () {
         prediction_score_trend.add(data.score);
 
         let score = await myUser.getScore(data.other).catch((e) => {
-          console.error(
-            `HERE HERE HERE HERE HERE HERE HERE ${myUser.type} e: ${e}`,
-          );
-          return 2;
+          console.error(`error getting score: ${e}`);
+          return -1;
+        });
+
+        check(score, {
+          'user get score is valid': (score: any) => score >= 0,
         });
 
         score_trend.add(score);
