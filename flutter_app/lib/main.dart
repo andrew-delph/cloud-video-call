@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 import 'AppProvider.dart';
@@ -8,6 +9,8 @@ import 'AppWidget.dart';
 import 'firebase_options.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+
+import 'location.dart';
 
 void main() async {
   print("Start main...");
@@ -20,19 +23,19 @@ void main() async {
   try {
     final userCredential = await FirebaseAuth.instance.signInAnonymously();
     print("Signed in with temporary account. ${userCredential.user?.uid}");
-
-
-    print("data: ${userCredential.user}");
   } on FirebaseAuthException catch (e) {
     switch (e.code) {
       case "operation-not-allowed":
         print("Anonymous auth hasn't been enabled for this project.");
         break;
       default:
-        print("Unknown error.");
+        print("Authentication unknown error: $e");
     }
   }
 
+  Position position = await getLocation();
+
+  print("position: $position");
 
   //
   // var db = FirebaseFirestore.instance;
@@ -56,7 +59,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var child =
-    Consumer<AppProvider>(builder: (consumerContext, appProvider, child) {
+        Consumer<AppProvider>(builder: (consumerContext, appProvider, child) {
       String title = 'Random video chat (${appProvider.activeCount})';
       return MaterialApp(
           title: title,
