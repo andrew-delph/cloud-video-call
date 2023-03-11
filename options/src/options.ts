@@ -2,6 +2,7 @@ import express from 'express';
 import * as common from 'react-video-call-common';
 import * as neo4j from 'neo4j-driver';
 import { getUid } from 'react-video-call-common';
+import Client from 'ioredis';
 
 common.listenGlobalExceptions();
 
@@ -11,6 +12,10 @@ const durationWarn = 2;
 
 const app = express();
 const port = 80;
+
+const mainRedisClient = new Client({
+  host: `${process.env.REDIS_HOST || `redis`}`,
+});
 
 app.use(express.json());
 
@@ -202,6 +207,8 @@ app.post(`/nukedata`, async (req, res) => {
     `);
 
   await session.close();
+
+  await mainRedisClient.flushall();
 
   res.status(200).send(`ITS DONE.`);
 });
