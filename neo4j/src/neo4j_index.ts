@@ -18,6 +18,7 @@ export function printResults(
   console.log(`print records. limit is ${limit}`);
   records.slice(0, limit).forEach((record) => {
     try {
+      throw `now`;
       // console.log(record.get(`r`));
       // console.log(`value`, Object.keys(record.get(`r`)));
       console.log(
@@ -29,7 +30,11 @@ export function printResults(
         record.get(`other`),
       );
     } catch (e) {
-      console.log(record);
+      console.log(`>>`);
+      record.keys.forEach((key) => {
+        console.log(`${key.toString()}: ${JSON.stringify(record.get(key))}`);
+      });
+      console.log(`<<`);
     }
   });
   console.log(`records.length:`, records.length);
