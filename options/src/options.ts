@@ -123,6 +123,12 @@ app.put(`/updateattributes`, async (req, res) => {
     return;
   });
 
+  if (!attributes) {
+    logger.debug(`Missing attributes`);
+    res.status(400).json({ error: `Missing attributes` });
+    return;
+  }
+
   const session = driver.session();
 
   const results = await session.run(
@@ -143,7 +149,7 @@ app.put(`/updateattributes`, async (req, res) => {
 });
 
 app.put(`/updatefilters`, async (req, res) => {
-  const { preferences } = req.body;
+  const { filters } = req.body;
 
   const auth = req.headers.authorization;
 
@@ -159,15 +165,21 @@ app.put(`/updatefilters`, async (req, res) => {
     return;
   });
 
+  if (!filters) {
+    logger.debug(`Missing filters`);
+    res.status(400).json({ error: `Missing filters` });
+    return;
+  }
+
   const session = driver.session();
   const results = await session.run(
     `
     MERGE (p:Person{userId: $uid})-[r:USER_FILTERS]->(md:MetaData{type:"USER_FILTERS"})
-    SET md = $preferences
+    SET md = $filters
     SET md.type = "USER_FILTERS"
     RETURN p, md
     `,
-    { uid, preferences },
+    { uid, filters },
   );
 
   const md = results.records[0].get(`md`);

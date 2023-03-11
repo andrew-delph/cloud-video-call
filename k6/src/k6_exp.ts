@@ -18,7 +18,7 @@ import { nuke } from '../libs/utils';
 export const redisClient = new redis.Client({
   addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 100;
+const authKeysNum = 10;
 const authKeysName = `authKeysName`;
 export function setup() {
   nuke();
@@ -50,7 +50,7 @@ export function setup() {
 
 const vus = 50;
 export const options = {
-  vus: 2,
+  vus: 5,
   // iterations: authKeysNum * 10,
   duration: `1h`,
   // scenarios: {
@@ -126,7 +126,7 @@ export default async function () {
   }
   const myUser = await fromRedis(auth);
 
-  const socket = new K6SocketIoExp(url, { auth: auth }, {}, 0);
+  const socket = new K6SocketIoExp(url, { auth: auth }, {}, 20000);
 
   socket.setOnClose(async () => {
     await redisClient.rpush(authKeysName, auth);

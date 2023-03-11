@@ -105,7 +105,7 @@ export class User {
     const r = http.put(
       `${secure ? `https` : `http`}://${domain}/options/updatefilters`,
       JSON.stringify({
-        attributes: this.attributes,
+        filters: this.filters,
       }),
       {
         headers: {
