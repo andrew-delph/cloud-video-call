@@ -48,21 +48,21 @@ export const calcScoreMap = new Map<UserType, (otherAttr: any) => number>([
   [
     UserType.Male,
     (otherAttr: any) => {
-      return otherAttr.gender.startsWith(`female`) ? 5 : 1;
+      return otherAttr.constant.gender.startsWith(`female`) ? 5 : 1;
     },
   ],
   [
     UserType.Female,
     (otherAttr: any) => {
-      return otherAttr.gender.startsWith(`male`) ? 5 : 1;
+      return otherAttr.constant.gender.startsWith(`male`) ? 5 : 1;
     },
   ],
-  [
-    UserType.FemalePicky,
-    (otherAttr: any) => {
-      return (otherAttr.hot && otherAttr.hot) > 4 ? 5 : 1;
-    },
-  ],
+  // [
+  //   UserType.FemalePicky,
+  //   (otherAttr: any) => {
+  //     return (otherAttr.hot && otherAttr.hot) > 4 ? 5 : 1;
+  //   },
+  // ],
 ]);
 
 export class User {

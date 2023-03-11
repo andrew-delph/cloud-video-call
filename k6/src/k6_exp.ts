@@ -46,7 +46,7 @@ export const options = {
   scenarios: {
     matchTest: {
       executor: `ramping-vus`,
-      startVUs: 0,
+      startVUs: 4,
       stages: [
         { duration: `3m`, target: vus * 1 },
         { duration: `5m`, target: vus * 3 },
@@ -200,6 +200,7 @@ export default async function () {
           },
         );
         check(r, { 'feedback response status is 201': r && r.status == 201 });
+        console.log(`r.status is ${r.status}`);
         sleep(5);
       })
       .finally(async () => {
