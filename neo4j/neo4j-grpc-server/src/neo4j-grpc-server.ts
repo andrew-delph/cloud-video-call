@@ -341,6 +341,7 @@ const checkUserFilters = async (
       { userId: userId1 },
     )
     .then((results) => {
+      if (!results) return {};
       return (results.records[0].get(`md`) || {}).properties || {};
     });
 
@@ -353,6 +354,7 @@ const checkUserFilters = async (
       { userId: userId1 },
     )
     .then((results) => {
+      if (!results) return {};
       return (results.records[0].get(`md`) || {}).properties || {};
     });
 
@@ -365,6 +367,7 @@ const checkUserFilters = async (
       { userId: userId2 },
     )
     .then((results) => {
+      if (!results) return {};
       return (results.records[0].get(`md`) || {}).properties || {};
     });
 
@@ -377,6 +380,7 @@ const checkUserFilters = async (
       { userId: userId2 },
     )
     .then((results) => {
+      if (!results) return {};
       return (results.records[0].get(`md`) || {}).properties || {};
     });
 
