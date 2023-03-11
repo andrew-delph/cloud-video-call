@@ -17,6 +17,7 @@ import {
 import * as neo4j from 'neo4j-driver';
 import * as common from 'react-video-call-common';
 import { v4 } from 'uuid';
+import { Dict } from 'neo4j-driver-core/types/record';
 
 var server = new grpc.Server();
 
@@ -332,6 +333,18 @@ const checkUserFilters = async (
 
   const session = driver.session();
 
+  const getMdProps = (results: neo4j.QueryResult<Dict<PropertyKey, any>>) => {
+    if (
+      results &&
+      results.records &&
+      results.records.length > 0 &&
+      results.records[0].get(`md`)
+    ) {
+      return results.records[0].get(`md`).properties || new Map<string, any>();
+    }
+    return new Map<string, any>();
+  };
+
   const user1Attributes = await session
     .run(
       `
@@ -341,8 +354,7 @@ const checkUserFilters = async (
       { userId: userId1 },
     )
     .then((results) => {
-      if (!results) return {};
-      return (results.records[0].get(`md`) || {}).properties || {};
+      return getMdProps(results);
     });
 
   const user1Filters = await session
@@ -354,8 +366,7 @@ const checkUserFilters = async (
       { userId: userId1 },
     )
     .then((results) => {
-      if (!results) return {};
-      return (results.records[0].get(`md`) || {}).properties || {};
+      return getMdProps(results);
     });
 
   const user2Attributes = await session
@@ -367,8 +378,7 @@ const checkUserFilters = async (
       { userId: userId2 },
     )
     .then((results) => {
-      if (!results) return {};
-      return (results.records[0].get(`md`) || {}).properties || {};
+      return getMdProps(results);
     });
 
   const user2Filters = await session
@@ -380,8 +390,7 @@ const checkUserFilters = async (
       { userId: userId2 },
     )
     .then((results) => {
-      if (!results) return {};
-      return (results.records[0].get(`md`) || {}).properties || {};
+      return getMdProps(results);
     });
 
   await session.close();
