@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import 'AppProvider.dart';
 import 'AppWidget.dart';
+import 'ChatScreen.dart';
 import 'firebase_options.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -62,16 +63,10 @@ class MyApp extends StatelessWidget {
         Consumer<AppProvider>(builder: (consumerContext, appProvider, child) {
       String title = 'Random video chat (${appProvider.activeCount})';
       return MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: title,
           theme: ThemeData(primarySwatch: Colors.green),
-          home: Scaffold(
-            appBar: AppBar(
-              title: Text(title),
-            ),
-            body: const Center(
-              child: AppWidget(),
-            ),
-          ));
+          home: const ChatScreen());
     });
 
     return ChangeNotifierProvider(
