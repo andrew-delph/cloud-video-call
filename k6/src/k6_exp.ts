@@ -11,7 +11,7 @@ import * as users from '../libs/User';
 import { nuke } from '../libs/utils';
 
 export const redisClient = new redis.Client({
-  addrs: new Array(`redis.default.svc.cluster.local:6379`), // in the form of 'host:port', separated by commas
+  addrs: new Array(__ENV.REDIS || `localhost:6379`), // in the form of 'host:port', separated by commas
 });
 const authKeysNum = 1000;
 const authKeysName = `authKeysName`;
@@ -43,7 +43,7 @@ export const options = {
       startVUs: 4,
       stages: [
         { duration: `3m`, target: vus * 1 },
-        { duration: `5m`, target: vus * 3 },
+        { duration: `2h`, target: vus * 3 },
         { duration: `3m`, target: vus * 1 },
       ],
     },
@@ -51,7 +51,7 @@ export const options = {
       executor: `ramping-vus`,
       exec: `longWait`,
       startVUs: 10,
-      stages: [{ duration: `20m`, target: 10 }],
+      stages: [{ duration: `2h`, target: 10 }],
     },
   },
 };
@@ -233,7 +233,7 @@ export async function longWait() {
         established_elapsed.add(data.elapsed);
       })
       .then(async () => {
-        await socket.sleep(50 * 1000);
+        await socket.sleep(200 * 1000);
       })
       .then(() => {
         check(socket.connected, {
