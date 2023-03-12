@@ -99,6 +99,7 @@ app.post(`/providefeedback`, async (req, res) => {
   await session.close();
 
   if (feedback_rel.records.length != 1) {
+    logger.debug(`Failed to create feedback ${feedback_rel.records.length} `);
     res.status(500).send(`Failed to create feedback`);
     return;
   }
@@ -134,7 +135,8 @@ app.put(`/updateattributes`, async (req, res) => {
 
   results = await session.run(
     `
-    MERGE (p:Person{userId: $uid})-[r:USER_ATTRIBUTES_CONSTANT]->(md:MetaData{type:"USER_ATTRIBUTES_CONSTANT"})
+    MERGE (p:Person{userId: $uid})
+    MERGE (p)-[r:USER_ATTRIBUTES_CONSTANT]->(md:MetaData{type:"USER_ATTRIBUTES_CONSTANT"})
     SET md = $constant
     SET md.type = "USER_ATTRIBUTES_CONSTANT"
     RETURN p, md
@@ -145,7 +147,8 @@ app.put(`/updateattributes`, async (req, res) => {
 
   results = await session.run(
     `
-    MERGE (p:Person{userId: $uid})-[r:USER_ATTRIBUTES_CUSTOM]->(md:MetaData{type:"USER_ATTRIBUTES_CUSTOM"})
+    MERGE (p:Person{userId: $uid})
+    MERGE (p)-[r:USER_ATTRIBUTES_CUSTOM]->(md:MetaData{type:"USER_ATTRIBUTES_CUSTOM"})
     SET md = $custom
     SET md.type = "USER_ATTRIBUTES_CUSTOM"
     RETURN p, md
@@ -185,7 +188,8 @@ app.put(`/updatefilters`, async (req, res) => {
 
   results = await session.run(
     `
-    MERGE (p:Person{userId: $uid})-[r:USER_FILTERS_CONSTANT]->(md:MetaData{type:"USER_FILTERS_CONSTANT"})
+    MERGE (p:Person{userId: $uid})
+    MERGE (p)-[r:USER_FILTERS_CONSTANT]->(md:MetaData{type:"USER_FILTERS_CONSTANT"})
     SET md = $constant
     SET md.type = "USER_FILTERS_CONSTANT"
     RETURN p, md
@@ -196,7 +200,8 @@ app.put(`/updatefilters`, async (req, res) => {
 
   results = await session.run(
     `
-    MERGE (p:Person{userId: $uid})-[r:USER_FILTERS_CUSTOM]->(md:MetaData{type:"USER_FILTERS_CUSTOM"})
+    MERGE (p:Person{userId: $uid})
+    MERGE (p)-[r:USER_FILTERS_CUSTOM]->(md:MetaData{type:"USER_FILTERS_CUSTOM"})
     SET md = $custom
     SET md.type = "USER_FILTERS_CUSTOM"
     RETURN p, md

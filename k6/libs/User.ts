@@ -63,12 +63,12 @@ export const calcScoreMap = new Map<UserType, (otherAttr: any) => number>([
       return otherAttr?.constant?.gender?.startsWith(`male`) ? 5 : 1;
     },
   ],
-  // [
-  //   UserType.FemalePicky,
-  //   (otherAttr: any) => {
-  //     return (otherAttr.hot && otherAttr.hot) > 4 ? 5 : 1;
-  //   },
-  // ],
+  [
+    UserType.LocationBound,
+    (otherAttr: any) => {
+      return 5;
+    },
+  ],
 ]);
 
 export class User {
