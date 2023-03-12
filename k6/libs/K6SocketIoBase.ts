@@ -92,6 +92,11 @@ export abstract class K6SocketIoBase {
       return;
     }
 
+    if (type == responseType.ping) {
+      this.socket.send(`3`);
+      return;
+    }
+
     switch (code) {
       case responseCode.connect: {
         if (this.onConnect != null) this.onConnect();
@@ -132,6 +137,9 @@ export abstract class K6SocketIoBase {
         console.error(`responseCode.error:`, msg);
         this.close();
         break;
+      }
+      default: {
+        console.log(`...` + msg, `[${type} : ${code}]`);
       }
     }
   }
