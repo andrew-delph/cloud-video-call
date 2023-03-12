@@ -138,9 +138,6 @@ export abstract class K6SocketIoBase {
         this.close();
         break;
       }
-      default: {
-        console.log(`...` + msg, `[${type} : ${code}]`);
-      }
     }
   }
 
