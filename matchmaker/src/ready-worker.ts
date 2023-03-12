@@ -224,9 +224,6 @@ const matchmakerFlow = async (
   let readySet = new Set(await mainRedisClient.smembers(common.readySetName));
 
   readySet.delete(userId);
-  if (readySet.size == 0) throw new RetryError(`ready set is 0`);
-
-  // reduce ready set by filters
 
   readySet = await applyReadySetFilters(userId, readySet);
 
