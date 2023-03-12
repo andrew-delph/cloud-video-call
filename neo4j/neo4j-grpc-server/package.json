@@ -13,10 +13,11 @@
     "k8-restart": "npm run docker && kn service update neo4j-grpc-server --image=andrewdelph/video-call-neo4j-grpc-server:latest --wait && date"
   },
   "dependencies": {
-    "uuid": "^9.0.0",
+    "haversine-distance": "^1.2.1",
     "neo4j-driver": "^5.5.0",
     "neo4j-grpc-common": "^1.0.0",
-    "react-video-call-common": "^1.0.0"
+    "react-video-call-common": "^1.0.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/uuid": "^9.0.0",

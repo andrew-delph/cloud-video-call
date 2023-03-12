@@ -14,6 +14,8 @@ import {
   CheckUserFiltersRequest,
 } from 'neo4j-grpc-common';
 
+import haversine from 'haversine-distance';
+
 import * as neo4j from 'neo4j-driver';
 import * as common from 'react-video-call-common';
 import { v4 } from 'uuid';
@@ -333,65 +335,92 @@ const checkUserFilters = async (
 
   const session = driver.session();
 
-  const getMdProps = (results: neo4j.QueryResult<Dict<PropertyKey, any>>) => {
-    if (results && results.records && results.records.length) {
-      return {
-        attributes: results.records[0].get(`md1`)?.properties || {},
-        filters: results.records[0].get(`md2`)?.properties || {},
-      };
-    }
-    return { attributes: {}, filters: {} };
+  type MdObject = {
+    a_constant: any;
+    f_constant: any;
+    a_custom: any;
+    f_custom: any;
   };
 
+  const getMdProps = (
+    results: neo4j.QueryResult<Dict<PropertyKey, any>>,
+  ): MdObject => {
+    if (results && results.records && results.records.length) {
+      return {
+        a_constant: results.records[0].get(`a_constant`)?.properties || {},
+        f_constant: results.records[0].get(`f_constant`)?.properties || {},
+        a_custom: results.records[0].get(`a_custom`)?.properties || {},
+        f_custom: results.records[0].get(`f_custom`)?.properties || {},
+      };
+    }
+    return { a_constant: {}, f_constant: {}, a_custom: {}, f_custom: {} };
+  };
+
+  const queryMetadata = `
+    MATCH (p1:Person {userId: $userId})
+    OPTIONAL MATCH (p1)-[r1:USER_ATTRIBUTES_CONSTANT]->(a_constant:MetaData)
+    OPTIONAL MATCH (p1)-[r2:USER_FILTERS_CONSTANT]->(f_constant:MetaData)
+    OPTIONAL MATCH (p1)-[r3:USER_ATTRIBUTES_CUSTOM]->(a_custom:MetaData)
+    OPTIONAL MATCH (p1)-[r4:USER_FILTERS_CUSTOM]->(f_custom:MetaData)
+    RETURN p1, a_constant, f_constant, a_custom, f_custom`;
+
   const user1Data = await session
-    .run(
-      `
-      MATCH (p1:Person {userId: $userId})
-      OPTIONAL MATCH (p1)-[r1:USER_ATTRIBUTES_CONSTANT]->(md1:MetaData)
-      OPTIONAL MATCH (p1)-[r2:USER_FILTERS_CONSTANT]->(md2:MetaData)
-      RETURN p1,md1,md2
-      `,
-      { userId: userId1 },
-    )
+    .run(queryMetadata, { userId: userId1 })
     .then((results) => {
       return getMdProps(results);
     });
 
   const user2Data = await session
-    .run(
-      `
-        MATCH (p1:Person {userId: $userId})
-        OPTIONAL MATCH (p1)-[r1:USER_ATTRIBUTES_CONSTANT]->(md1:MetaData)
-        OPTIONAL MATCH (p1)-[r2:USER_FILTERS_CONSTANT]->(md2:MetaData)
-        RETURN p1,md1,md2
-      `,
-      { userId: userId2 },
-    )
+    .run(queryMetadata, { userId: userId2 })
     .then((results) => {
       return getMdProps(results);
     });
 
   await session.close();
 
+  const filterConstants = (userDataA: MdObject, userDataB: MdObject) => {
+    let inner_valid = true;
+    Object.entries(userDataA.f_constant).forEach((entry) => {
+      const key = entry[0].toString();
+      const value = entry[1] != null ? entry[1].toString() : null;
+      if (key == `type` || value == null) return;
+      if (userDataB.a_constant[key] != value) {
+        inner_valid = false;
+      }
+    });
+    return inner_valid;
+  };
+
   let valid = true;
 
-  Object.entries(user1Data.filters).forEach((entry) => {
-    const key = entry[0].toString();
-    const value = entry[1] != null ? entry[1].toString() : null;
-    if (key == `type` || value == null) return;
-    if (user2Data.attributes[key] != value) {
-      valid = false;
-    }
-  });
+  valid = valid && filterConstants(user1Data, user2Data);
+  valid = valid && filterConstants(user2Data, user1Data);
 
-  Object.entries(user2Data.filters).forEach((entry) => {
-    const key = entry[0].toString();
-    const value = entry[1] != null ? entry[1].toString() : null;
-    if (key == `type` || value == null) return;
-    if (user1Data.attributes[key] != value) {
-      valid = false;
+  const filterDistance = (userDataA: MdObject, userDataB: MdObject) => {
+    const aDistance = userDataA.f_custom.distance;
+    const aLong = userDataA.f_custom.long;
+    const aLat = userDataA.f_custom.lat;
+
+    const bLong = userDataA.f_custom.long;
+    const bLat = userDataA.f_custom.lat;
+
+    if (aDistance && aLong && aLat) {
+      if (!bLong || !bLat) return false;
+      const aCord = { lat: aLat, lng: aLong };
+      const bCord = { lat: bLat, lng: bLong };
+
+      const dist = haversine(aCord, bCord);
+      logger.info(
+        `distance is ${dist} compared to ${aDistance} ... ${dist > aDistance}`,
+      );
+
+      if (dist > aDistance) return false;
     }
-  });
+    return true;
+  };
+
+  valid = valid && filterDistance(user1Data, user2Data);
+  valid = valid && filterDistance(user2Data, user1Data);
 
   reply.setPassed(valid);
 
