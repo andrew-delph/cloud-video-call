@@ -334,23 +334,22 @@ const checkUserFilters = async (
   const session = driver.session();
 
   const getMdProps = (results: neo4j.QueryResult<Dict<PropertyKey, any>>) => {
-    if (
-      results &&
-      results.records &&
-      results.records.length > 0 &&
-      results.records[0].get(`md`)
-    ) {
-      return results.records[0].get(`md`).properties || {};
+    if (results && results.records && results.records.length) {
+      return {
+        attributes: results.records[0].get(`md1`)?.properties || {},
+        filters: results.records[0].get(`md2`)?.properties || {},
+      };
     }
-    logger.info(`not found... ${JSON.stringify(results)}`);
-    return {};
+    return { attributes: {}, filters: {} };
   };
 
-  const user1Attributes = await session
+  const user1Data = await session
     .run(
       `
-    MATCH (p1:Person {userId: $userId})-[r1:USER_ATTRIBUTES_CONSTANT]->(md:MetaData)
-    RETURN md
+      MATCH (p1:Person {userId: $userId})
+      OPTIONAL MATCH (p1)-[r1:USER_ATTRIBUTES_CONSTANT]->(md1:MetaData)
+      OPTIONAL MATCH (p1)-[r2:USER_FILTERS_CONSTANT]->(md2:MetaData)
+      RETURN p1,md1,md2
       `,
       { userId: userId1 },
     )
@@ -358,35 +357,13 @@ const checkUserFilters = async (
       return getMdProps(results);
     });
 
-  const user1Filters = await session
+  const user2Data = await session
     .run(
       `
-    MATCH (p1:Person {userId: $userId})-[r1:USER_FILTERS_CONSTANT]->(md:MetaData)
-    RETURN md
-      `,
-      { userId: userId1 },
-    )
-    .then((results) => {
-      return getMdProps(results);
-    });
-
-  const user2Attributes = await session
-    .run(
-      `
-    MATCH (p1:Person {userId: $userId})-[r1:USER_ATTRIBUTES_CONSTANT]->(md:MetaData)
-    RETURN md
-      `,
-      { userId: userId2 },
-    )
-    .then((results) => {
-      return getMdProps(results);
-    });
-
-  const user2Filters = await session
-    .run(
-      `
-    MATCH (p1:Person {userId: $userId})-[r1:USER_FILTERS_CONSTANT]->(md:MetaData)
-    RETURN md
+        MATCH (p1:Person {userId: $userId})
+        OPTIONAL MATCH (p1)-[r1:USER_ATTRIBUTES_CONSTANT]->(md1:MetaData)
+        OPTIONAL MATCH (p1)-[r2:USER_FILTERS_CONSTANT]->(md2:MetaData)
+        RETURN p1,md1,md2
       `,
       { userId: userId2 },
     )
@@ -398,20 +375,20 @@ const checkUserFilters = async (
 
   let valid = true;
 
-  Object.entries(user1Filters).forEach((entry) => {
+  Object.entries(user1Data.filters).forEach((entry) => {
     const key = entry[0].toString();
     const value = entry[1] != null ? entry[1].toString() : null;
     if (key == `type` || value == null) return;
-    if (user2Attributes[key] != value) {
+    if (user2Data.attributes[key] != value) {
       valid = false;
     }
   });
 
-  Object.entries(user2Filters).forEach((entry) => {
+  Object.entries(user2Data.filters).forEach((entry) => {
     const key = entry[0].toString();
     const value = entry[1] != null ? entry[1].toString() : null;
     if (key == `type` || value == null) return;
-    if (user1Attributes[key] != value) {
+    if (user1Data.attributes[key] != value) {
       valid = false;
     }
   });
