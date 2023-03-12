@@ -194,7 +194,7 @@ export default async function () {
           },
         );
         check(r, { 'feedback response status is 201': r && r.status == 201 });
-        sleep(5);
+        await socket.sleep(5000);
       })
       .finally(async () => {
         socket.close();
@@ -232,8 +232,8 @@ export async function longWait() {
         established_success.add(true);
         established_elapsed.add(data.elapsed);
       })
-      .then(() => {
-        sleep(100);
+      .then(async () => {
+        await socket.sleep(50 * 1000);
       })
       .then(() => {
         check(socket.connected, {

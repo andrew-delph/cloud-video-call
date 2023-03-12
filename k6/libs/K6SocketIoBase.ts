@@ -212,6 +212,14 @@ export abstract class K6SocketIoBase {
     });
   }
 
+  sleep(ms: number) {
+    return new Promise<void>((resolve, reject) => {
+      setTimeout(() => {
+        resolve();
+      }, ms);
+    });
+  }
+
   failWaitingEvents() {
     for (const waitingEvent of Object.values(this.waitingEventMap)) {
       waitingEvent(`failed wait event.`);
