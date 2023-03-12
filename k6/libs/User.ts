@@ -23,7 +23,10 @@ export const getRandomUser = (auth: string): User => {
 };
 
 export const createFemale = (auth: string): User => {
-  const attributes = { constant: { gender: `female` } };
+  const attributes = {
+    constant: { gender: `female` },
+    custom: { long: 1, lat: 1 },
+  };
   const filters = { constant: { gender: `male` } };
 
   return new User(auth, attributes, filters, UserType.Female);
@@ -37,8 +40,13 @@ export const createMale = (auth: string): User => {
 };
 
 export const createLocationBound = (auth: string): User => {
-  const attributes = {};
-  const filters = {};
+  let attributes;
+  if (Math.random() > 0.5) {
+    attributes = { custom: { long: 1, lat: 2 } };
+  } else {
+    attributes = { custom: { long: 100, lat: 200 } };
+  }
+  const filters = { custom: { distance: 100 } };
 
   return new User(auth, attributes, filters, UserType.LocationBound);
 };

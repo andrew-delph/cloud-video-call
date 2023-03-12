@@ -398,21 +398,17 @@ const checkUserFilters = async (
 
   const filterDistance = (userDataA: MdObject, userDataB: MdObject) => {
     const aDistance = userDataA.f_custom.distance;
-    const aLong = userDataA.f_custom.long;
-    const aLat = userDataA.f_custom.lat;
+    const aLong = userDataA.a_custom.long;
+    const aLat = userDataA.a_custom.lat;
 
-    const bLong = userDataA.f_custom.long;
-    const bLat = userDataA.f_custom.lat;
+    const bLong = userDataB.a_custom.long;
+    const bLat = userDataB.a_custom.lat;
 
     if (aDistance && aLong && aLat) {
       if (!bLong || !bLat) return false;
       const aCord = { lat: aLat, lng: aLong };
       const bCord = { lat: bLat, lng: bLong };
-
       const dist = haversine(aCord, bCord);
-      logger.info(
-        `distance is ${dist} compared to ${aDistance} ... ${dist > aDistance}`,
-      );
 
       if (dist > aDistance) return false;
     }
