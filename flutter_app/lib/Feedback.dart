@@ -7,7 +7,8 @@ class FeedbackWidget extends StatefulWidget {
   final int initialValue;
   final void Function(int) onSubmit;
 
-  FeedbackWidget({
+  const FeedbackWidget({
+    super.key,
     required this.label,
     required this.min,
     required this.max,
@@ -16,10 +17,10 @@ class FeedbackWidget extends StatefulWidget {
   });
 
   @override
-  _FeedbackWidgetState createState() => _FeedbackWidgetState();
+  FeedbackWidgetState createState() => FeedbackWidgetState();
 }
 
-class _FeedbackWidgetState extends State<FeedbackWidget> {
+class FeedbackWidgetState extends State<FeedbackWidget> {
   late int _value;
 
   @override

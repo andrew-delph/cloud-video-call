@@ -24,8 +24,7 @@ class ChatScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const OptionsScreen()),
+                  MaterialPageRoute(builder: (context) => OptionsScreen()),
                 );
               },
             ),

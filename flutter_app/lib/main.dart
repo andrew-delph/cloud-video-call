@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: title,
           theme: ThemeData(primarySwatch: Colors.green),
-          home: const OptionsScreen());
+          home: OptionsScreen());
     });
 
     return ChangeNotifierProvider(
