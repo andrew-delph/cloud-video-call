@@ -92,7 +92,7 @@ export class User {
     this.filters = filters;
   }
 
-  async updateAttributes(): Promise<void> {
+  async updatePreferences(): Promise<void> {
     await redisClient.set(
       this.auth + `_attributes`,
       JSON.stringify(this.attributes),
@@ -100,8 +100,8 @@ export class User {
 
     await redisClient.set(this.auth + `_type`, this.type.toString());
     const r = http.put(
-      `${secure ? `https` : `http`}://${domain}/options/updateAttributes`,
-      JSON.stringify(this.attributes),
+      `${secure ? `https` : `http`}://${domain}/options/updatepreferences`,
+      JSON.stringify({ attributes: this.attributes, filters: this.filters }),
       {
         headers: {
           authorization: this.auth,
@@ -110,22 +110,7 @@ export class User {
       },
     );
     check(r, {
-      'updateAttributes response status is 200': r && r.status == 201,
-    });
-  }
-  async updateFilters(): Promise<void> {
-    const r = http.put(
-      `${secure ? `https` : `http`}://${domain}/options/updatefilters`,
-      JSON.stringify(this.filters),
-      {
-        headers: {
-          authorization: this.auth,
-          'Content-Type': `application/json`,
-        },
-      },
-    );
-    check(r, {
-      'updateFilters response status is 200': r && r.status == 201,
+      'updatePreferences response status is 201': r && r.status == 201,
     });
   }
 

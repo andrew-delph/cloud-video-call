@@ -24,8 +24,7 @@ export function setup() {
   redisClient.del(authKeysName).finally(async () => {
     for (let auth of authKeys) {
       let user = users.getRandomUser(auth);
-      await user.updateAttributes();
-      await user.updateFilters();
+      await user.updatePreferences();
     }
 
     await redisClient.lpush(authKeysName, ...authKeys);
