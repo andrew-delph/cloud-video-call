@@ -184,26 +184,28 @@ class ChatScreenState extends State<ChatScreen> {
               label: 'Submit Feedback');
         }
 
-        Widget newChatButton = TextButton(
-          onPressed: () async {
-            await appProvider.ready();
-          },
-          child: const Text('New chat'),
-        );
-
-        Widget endChatButton = TextButton(
-          onPressed: () async {
-            appProvider.chatMachine.current = ChatStates.ended;
-          },
-          child: const Text('End chat'),
-        );
-
-        Widget buttonToDisplay = (isInChat()) ? endChatButton : newChatButton;
+        Widget chatButton = TextButton(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                  Colors.yellow.shade100), // Change the color here
+            ),
+            onPressed: () async {
+              if (isInChat()) {
+                appProvider.chatMachine.current = ChatStates.ended;
+              } else {
+                await appProvider.ready();
+              }
+            },
+            child: Text((isInChat() == false) ? 'New chat' : 'End chat'));
 
         return SizedBox(
-            height: 1000,
+            width: double.infinity,
             child: Row(children: [
-              buttonToDisplay,
+              Container(
+                  width: 100,
+                  height: double.infinity,
+                  color: Colors.white,
+                  child: chatButton),
               Flexible(
                 child: Container(
                     key: const Key('local'),
