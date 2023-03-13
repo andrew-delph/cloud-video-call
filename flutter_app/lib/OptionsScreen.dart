@@ -58,7 +58,13 @@ class OptionsScreenState extends State<OptionsScreen> {
     filtersMap.addListener(() {
       setState(() {});
     });
+    loadAttributes();
+  }
 
+  void loadAttributes() {
+    setState(() {
+      loading = true;
+    });
     FirebaseAuth.instance.currentUser!.getIdToken(true).then((token) {
       var url = Uri.http(Factory.getHostAddress(), 'options/preferences');
       final headers = {
@@ -122,6 +128,7 @@ class OptionsScreenState extends State<OptionsScreen> {
                   var response = await http.put(url,
                       headers: headers, body: json.encode(body));
                   print('preferences status: ${response.statusCode}');
+                  loadAttributes();
                 },
                 child: const Text('Submit'),
               ),
