@@ -176,7 +176,7 @@ class KeyValueListWidget extends StatelessWidget {
               itemBuilder: (context, int index) {
                 final key = model.map.keys.elementAt(index);
                 final value = model.map[key];
-                if (value == null) return null;
+                if (value == null) return SizedBox();
                 return OptionTile(
                   k: key,
                   v: value,
