@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'Factory.dart';
+import 'LoadingWidget.dart';
 
 class MapNotifier extends ChangeNotifier {
   final Map<String, String> _map = {};
@@ -41,6 +42,8 @@ class OptionsScreenState extends State<OptionsScreen> {
   final MapNotifier attributesMap = MapNotifier();
   final MapNotifier filtersMap = MapNotifier();
 
+  bool loading = true;
+
   @override
   void initState() {
     super.initState();
@@ -76,11 +79,15 @@ class OptionsScreenState extends State<OptionsScreen> {
         filtersMap.addEntries(temp.entries.map((e) =>
             MapEntry<String, String>(e.key.toString(), e.value.toString())));
       }
+      setState(() {
+        loading = false;
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (loading) loadingWidget;
     return Scaffold(
         appBar: AppBar(
           title: const Text('Options screen'),
