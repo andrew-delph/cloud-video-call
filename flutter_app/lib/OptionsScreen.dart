@@ -26,6 +26,11 @@ class MapNotifier extends ChangeNotifier {
     _map.addEntries(mapEntryList);
     notifyListeners();
   }
+
+  void deleteKey(String key) {
+    _map.remove(key);
+    notifyListeners();
+  }
 }
 
 class OptionsScreen extends StatefulWidget {
@@ -87,7 +92,7 @@ class OptionsScreenState extends State<OptionsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (loading) loadingWidget;
+    if (loading) return loadingWidget;
     return Scaffold(
         appBar: AppBar(
           title: const Text('Options screen'),
@@ -116,8 +121,7 @@ class OptionsScreenState extends State<OptionsScreen> {
                   };
                   var response = await http.put(url,
                       headers: headers, body: json.encode(body));
-                  print('Feedback status: ${response.statusCode}');
-                  print('Feedback body: ${response.body}');
+                  print('preferences status: ${response.statusCode}');
                 },
                 child: const Text('Submit'),
               ),
@@ -166,12 +170,16 @@ class KeyValueListWidget extends StatelessWidget {
                 final key = model.map.keys.elementAt(index);
                 final value = model.map[key];
                 if (value == null) return null;
-                return ListTile(
-                  title: Text(key),
-                  subtitle: Text(value),
+                return OptionTile(
+                  k: key,
+                  v: value,
+                  onDelete: () {
+                    model.deleteKey(key);
+                  },
                 );
               },
             ),
+            const Divider(),
             Row(
                 // mainAxisSize: MainAxisSize.max,
                 // mainAxisAlignment: MainAxisAlignment.center,
@@ -201,5 +209,33 @@ class KeyValueListWidget extends StatelessWidget {
                 ]),
           ],
         ));
+  }
+}
+
+class OptionTile extends StatelessWidget {
+  final String k;
+  final String v;
+
+  final VoidCallback onDelete;
+
+  const OptionTile(
+      {super.key, required this.k, required this.v, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(children: [
+      Expanded(
+        child: Text(k),
+      ),
+      Expanded(
+        child: Text(v),
+      ),
+      ElevatedButton(
+        onPressed: () {
+          onDelete();
+        },
+        child: const Text('Delete'),
+      )
+    ]);
   }
 }
