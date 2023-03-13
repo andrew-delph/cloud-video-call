@@ -112,7 +112,7 @@ app.post(`/providefeedback`, async (req, res) => {
   res.status(201).send(`Feedback created.`);
 });
 
-app.put(`/updatepreferences`, async (req, res) => {
+app.put(`/preferences`, async (req, res) => {
   const { attributes = {}, filters = {} } = req.body;
 
   const auth = req.headers.authorization;

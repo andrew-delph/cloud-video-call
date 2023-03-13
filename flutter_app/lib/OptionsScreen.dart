@@ -59,7 +59,7 @@ class OptionsScreenState extends State<OptionsScreen> {
               child: ElevatedButton(
                 onPressed: () async {
                   var url = Uri.http(
-                      Factory.getHostAddress(), 'options/updatepreferences');
+                      Factory.getHostAddress(), 'options/preferences');
                   final headers = {
                     'Access-Control-Allow-Origin': '*',
                     'Content-Type': 'application/json',
