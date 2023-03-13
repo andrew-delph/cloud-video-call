@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "nodemon --delay 1000ms --ignore dist --ext ts --exec 'npm run k8-restart'",
+    "dev": "nodemon --delay 1000ms --ignore dist --watch ./src  --ext ts --exec 'npm run k8-restart'",
     "build": "tsc",
     "prod": "node ./dist/socketio_server.js",
     "docker": "docker build -f Dockerfile  -t andrewdelph/video-call-websocket:latest ../ && docker push andrewdelph/video-call-websocket:latest",
