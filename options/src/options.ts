@@ -4,6 +4,7 @@ import * as neo4j from 'neo4j-driver';
 import { getUid } from 'react-video-call-common';
 import Client from 'ioredis';
 import { Dict } from 'neo4j-driver-core/types/record';
+var cors = require(`cors`);
 const omitDeep = require(`omit-deep-lodash`);
 
 common.listenGlobalExceptions();
@@ -20,6 +21,7 @@ const mainRedisClient = new Client({
 });
 
 app.use(express.json());
+app.use(cors());
 
 const driver = neo4j.driver(
   `neo4j://neo4j:7687`,

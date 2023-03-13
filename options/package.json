@@ -12,6 +12,7 @@
     "k8-restart": "npm run docker && kn service update options --image=andrewdelph/video-call-options:latest --wait && date"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2",
     "ioredis": "5.2.5",
     "neo4j-driver": "^5.5.0",
