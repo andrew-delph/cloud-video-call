@@ -15,6 +15,16 @@ class MapNotifier extends ChangeNotifier {
     _map[key] = value;
     notifyListeners();
   }
+
+  void addAll(Map<String, String> toAdd) {
+    _map.addAll(toAdd);
+    notifyListeners();
+  }
+
+  void addEntries(Iterable<MapEntry<String, String>> mapEntryList) {
+    _map.addEntries(mapEntryList);
+    notifyListeners();
+  }
 }
 
 class OptionsScreen extends StatefulWidget {
@@ -40,6 +50,33 @@ class OptionsScreenState extends State<OptionsScreen> {
     filtersMap.addListener(() {
       setState(() {});
     });
+
+    FirebaseAuth.instance.currentUser!.getIdToken(true).then((token) {
+      var url = Uri.http(Factory.getHostAddress(), 'options/preferences');
+      final headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'authorization': token.toString()
+      };
+      return http.get(url, headers: headers);
+    }).then((response) {
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to fetch data');
+      }
+    }).then((data) {
+      if (data["attributes"] is Map && data["attributes"]["constant"] is Map) {
+        var temp = data["attributes"]["constant"] as Map;
+        attributesMap.addEntries(temp.entries.map((e) =>
+            MapEntry<String, String>(e.key.toString(), e.value.toString())));
+      }
+      if (data["filters"] is Map && data["filters"]["constant"] is Map) {
+        var temp = data["filters"]["constant"] as Map;
+        filtersMap.addEntries(temp.entries.map((e) =>
+            MapEntry<String, String>(e.key.toString(), e.value.toString())));
+      }
+    });
   }
 
   @override
@@ -58,8 +95,8 @@ class OptionsScreenState extends State<OptionsScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  var url = Uri.http(
-                      Factory.getHostAddress(), 'options/preferences');
+                  var url =
+                      Uri.http(Factory.getHostAddress(), 'options/preferences');
                   final headers = {
                     'Access-Control-Allow-Origin': '*',
                     'Content-Type': 'application/json',
@@ -67,7 +104,8 @@ class OptionsScreenState extends State<OptionsScreen> {
                         .getIdToken(true)
                   };
                   final body = {
-                    'attributes': {'constant': attributesMap.map}
+                    'attributes': {'constant': attributesMap.map},
+                    'filters': {'constant': filtersMap.map}
                   };
                   var response = await http.put(url,
                       headers: headers, body: json.encode(body));
