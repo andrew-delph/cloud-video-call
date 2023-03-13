@@ -4,7 +4,7 @@ metadata:
   name: priority-neo4j-jobs
 spec:
   concurrencyPolicy: Forbid
-  schedule: '*/1 * * * *'
+  schedule: '*/1 * * * 1'
   jobTemplate:
     spec:
       template:
