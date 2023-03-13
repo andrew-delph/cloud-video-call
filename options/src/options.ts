@@ -4,6 +4,7 @@ import * as neo4j from 'neo4j-driver';
 import { getUid } from 'react-video-call-common';
 import Client from 'ioredis';
 import { Dict } from 'neo4j-driver-core/types/record';
+const omitDeep = require(`omit-deep-lodash`);
 
 common.listenGlobalExceptions();
 
@@ -253,16 +254,21 @@ app.get(`/preferences`, async (req, res) => {
         }
         return getMdProps(results);
       });
-    res.status(200).send({
-      attributes: {
-        custom: user1Data.a_custom,
-        constant: user1Data.a_constant,
-      },
-      filters: {
-        custom: user1Data.f_custom,
-        constant: user1Data.f_constant,
-      },
-    });
+    res.status(200).send(
+      omitDeep(
+        {
+          attributes: {
+            custom: user1Data.a_custom,
+            constant: user1Data.a_constant,
+          },
+          filters: {
+            custom: user1Data.f_custom,
+            constant: user1Data.f_constant,
+          },
+        },
+        `type`,
+      ),
+    );
   } catch (e) {
     res.status(404).send(`user not found.`);
   } finally {
