@@ -143,7 +143,7 @@ app.put(`/updatepreferences`, async (req, res) => {
     `,
     { uid, constant: attributes.constant || {} },
   );
-  const constant_md = results.records[0].get(`md`);
+  const attributes_constant_md = results.records[0].get(`md`);
 
   results = await session.run(
     `
@@ -156,38 +156,7 @@ app.put(`/updatepreferences`, async (req, res) => {
     { uid, custom: attributes.custom || {} },
   );
 
-  const custom_md = results.records[0].get(`md`);
-
-  await session.close();
-
-  res.status(201).send({
-    attributes: {
-      custom: constant_md.properties,
-      constant: custom_md.properties,
-    },
-  });
-});
-
-app.put(`/updatefilters`, async (req, res) => {
-  const { constant = {}, custom = {} } = req.body;
-
-  const auth = req.headers.authorization;
-
-  if (!auth) {
-    logger.debug(`Missing Authorization`);
-    res.status(401).json({ error: `Missing Authorization` });
-    return;
-  }
-
-  let uid: string = await getUid(auth).catch((error) => {
-    logger.debug(`getUid error: ${error}`);
-    res.status(401).send(`failed authentication`);
-    return;
-  });
-
-  const session = driver.session();
-
-  let results;
+  const attributes_custom_md = results.records[0].get(`md`);
 
   results = await session.run(
     `
@@ -197,9 +166,9 @@ app.put(`/updatefilters`, async (req, res) => {
     SET md.type = "USER_FILTERS_CONSTANT"
     RETURN p, md
     `,
-    { uid, constant },
+    { uid, constant: filters.constant || {} },
   );
-  const constant_md = results.records[0].get(`md`);
+  const filters_constant_md = results.records[0].get(`md`);
 
   results = await session.run(
     `
@@ -209,16 +178,23 @@ app.put(`/updatefilters`, async (req, res) => {
     SET md.type = "USER_FILTERS_CUSTOM"
     RETURN p, md
     `,
-    { uid, custom },
+    { uid, custom: filters.custom || {} },
   );
 
-  const custom_md = results.records[0].get(`md`);
+  const filters_custom_md = results.records[0].get(`md`);
 
   await session.close();
 
-  res
-    .status(201)
-    .send({ custom: constant_md.properties, constant: custom_md.properties });
+  res.status(201).send({
+    attributes: {
+      custom: attributes_constant_md.properties,
+      constant: attributes_custom_md.properties,
+    },
+    filters: {
+      custom: filters_custom_md.properties,
+      constant: filters_constant_md.properties,
+    },
+  });
 });
 
 app.post(`/nukedata`, async (req, res) => {
