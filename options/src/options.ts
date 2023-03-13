@@ -3,6 +3,7 @@ import * as common from 'react-video-call-common';
 import * as neo4j from 'neo4j-driver';
 import { getUid } from 'react-video-call-common';
 import Client from 'ioredis';
+import { Dict } from 'neo4j-driver-core/types/record';
 
 common.listenGlobalExceptions();
 
@@ -195,6 +196,78 @@ app.put(`/preferences`, async (req, res) => {
       constant: filters_constant_md.properties,
     },
   });
+});
+
+app.get(`/preferences`, async (req, res) => {
+  const auth = req.headers.authorization;
+
+  if (!auth) {
+    logger.debug(`Missing Authorization`);
+    res.status(401).json({ error: `Missing Authorization` });
+    return;
+  }
+
+  let uid: string = await getUid(auth).catch((error) => {
+    logger.debug(`getUid error: ${error}`);
+    res.status(401).send(`failed authentication`);
+    return;
+  });
+
+  type MdObject = {
+    a_constant: any;
+    f_constant: any;
+    a_custom: any;
+    f_custom: any;
+  };
+
+  const getMdProps = (
+    results: neo4j.QueryResult<Dict<PropertyKey, any>>,
+  ): MdObject => {
+    if (results && results.records && results.records.length) {
+      return {
+        a_constant: results.records[0].get(`a_constant`)?.properties || {},
+        f_constant: results.records[0].get(`f_constant`)?.properties || {},
+        a_custom: results.records[0].get(`a_custom`)?.properties || {},
+        f_custom: results.records[0].get(`f_custom`)?.properties || {},
+      };
+    }
+    return { a_constant: {}, f_constant: {}, a_custom: {}, f_custom: {} };
+  };
+
+  const queryMetadata = `
+  MATCH (p1:Person {userId: $userId})
+  OPTIONAL MATCH (p1)-[r1:USER_ATTRIBUTES_CONSTANT]->(a_constant:MetaData)
+  OPTIONAL MATCH (p1)-[r2:USER_FILTERS_CONSTANT]->(f_constant:MetaData)
+  OPTIONAL MATCH (p1)-[r3:USER_ATTRIBUTES_CUSTOM]->(a_custom:MetaData)
+  OPTIONAL MATCH (p1)-[r4:USER_FILTERS_CUSTOM]->(f_custom:MetaData)
+  RETURN p1, a_constant, f_constant, a_custom, f_custom`;
+
+  const session = driver.session();
+
+  try {
+    const user1Data = await session
+      .run(queryMetadata, { userId: uid })
+      .then((results) => {
+        if (results.records.length == 0) {
+          throw Error(`No results`);
+        }
+        return getMdProps(results);
+      });
+    res.status(200).send({
+      attributes: {
+        custom: user1Data.a_custom,
+        constant: user1Data.a_constant,
+      },
+      filters: {
+        custom: user1Data.f_custom,
+        constant: user1Data.f_constant,
+      },
+    });
+  } catch (e) {
+    res.status(404).send(`user not found.`);
+  } finally {
+    await session.close();
+  }
 });
 
 app.post(`/nukedata`, async (req, res) => {
