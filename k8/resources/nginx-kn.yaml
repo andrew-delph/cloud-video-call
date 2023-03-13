@@ -22,11 +22,15 @@ metadata:
   name: nginx-lb
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-name: 'nginx'
+    service.beta.kubernetes.io/do-loadbalancer-protocol: 'https'
+    service.beta.kubernetes.io/do-loadbalancer-tls-passthrough: 'false'
+    service.beta.kubernetes.io/do-loadbalancer-certificate-id: '98bc094e-e1cc-41e8-86c3-0b4ec1d20e94'
+    service.beta.kubernetes.io/do-loadbalancer-redirect-http-to-https: 'true'
 spec:
   type: LoadBalancer
   selector:
     serving.knative.dev/service: nginx
   ports:
     - name: http
-      port: 80
+      port: 443
       targetPort: 80
