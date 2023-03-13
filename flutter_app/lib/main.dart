@@ -6,8 +6,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 import 'AppProvider.dart';
-import 'AppWidget.dart';
 import 'ChatScreen.dart';
+import 'MainScreen.dart';
 import 'firebase_options.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: title,
           theme: ThemeData(primarySwatch: Colors.green),
-          home: const ChatScreen());
+          home: const MainScreen());
     });
 
     return ChangeNotifierProvider(

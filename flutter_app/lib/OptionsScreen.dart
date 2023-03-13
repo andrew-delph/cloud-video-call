@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'Factory.dart';
+import 'LoadingWidget.dart';
 
 class MapNotifier extends ChangeNotifier {
   final Map<String, String> _map = {};
@@ -25,6 +26,11 @@ class MapNotifier extends ChangeNotifier {
     _map.addEntries(mapEntryList);
     notifyListeners();
   }
+
+  void deleteKey(String key) {
+    _map.remove(key);
+    notifyListeners();
+  }
 }
 
 class OptionsScreen extends StatefulWidget {
@@ -41,6 +47,8 @@ class OptionsScreenState extends State<OptionsScreen> {
   final MapNotifier attributesMap = MapNotifier();
   final MapNotifier filtersMap = MapNotifier();
 
+  bool loading = true;
+
   @override
   void initState() {
     super.initState();
@@ -50,7 +58,13 @@ class OptionsScreenState extends State<OptionsScreen> {
     filtersMap.addListener(() {
       setState(() {});
     });
+    loadAttributes();
+  }
 
+  void loadAttributes() {
+    setState(() {
+      loading = true;
+    });
     FirebaseAuth.instance.currentUser!.getIdToken(true).then((token) {
       var url = Uri.http(Factory.getHostAddress(), 'options/preferences');
       final headers = {
@@ -76,11 +90,15 @@ class OptionsScreenState extends State<OptionsScreen> {
         filtersMap.addEntries(temp.entries.map((e) =>
             MapEntry<String, String>(e.key.toString(), e.value.toString())));
       }
+      setState(() {
+        loading = false;
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (loading) return loadingWidget;
     return Scaffold(
         appBar: AppBar(
           title: const Text('Options screen'),
@@ -109,8 +127,8 @@ class OptionsScreenState extends State<OptionsScreen> {
                   };
                   var response = await http.put(url,
                       headers: headers, body: json.encode(body));
-                  print('Feedback status: ${response.statusCode}');
-                  print('Feedback body: ${response.body}');
+                  print('preferences status: ${response.statusCode}');
+                  loadAttributes();
                 },
                 child: const Text('Submit'),
               ),
@@ -159,12 +177,16 @@ class KeyValueListWidget extends StatelessWidget {
                 final key = model.map.keys.elementAt(index);
                 final value = model.map[key];
                 if (value == null) return null;
-                return ListTile(
-                  title: Text(key),
-                  subtitle: Text(value),
+                return OptionTile(
+                  k: key,
+                  v: value,
+                  onDelete: () {
+                    model.deleteKey(key);
+                  },
                 );
               },
             ),
+            const Divider(),
             Row(
                 // mainAxisSize: MainAxisSize.max,
                 // mainAxisAlignment: MainAxisAlignment.center,
@@ -194,5 +216,33 @@ class KeyValueListWidget extends StatelessWidget {
                 ]),
           ],
         ));
+  }
+}
+
+class OptionTile extends StatelessWidget {
+  final String k;
+  final String v;
+
+  final VoidCallback onDelete;
+
+  const OptionTile(
+      {super.key, required this.k, required this.v, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(children: [
+      Expanded(
+        child: Text(k),
+      ),
+      Expanded(
+        child: Text(v),
+      ),
+      ElevatedButton(
+        onPressed: () {
+          onDelete();
+        },
+        child: const Text('Delete'),
+      )
+    ]);
   }
 }

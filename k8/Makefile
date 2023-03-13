@@ -28,7 +28,7 @@ pods:
 	kubectl get pods
 
 watch:
-	watch 'kubectl get pods -n default && kubectl get hpa && kubectl get pods -n k6 && kubectl get pods -n monitoring'
+	watch 'kubectl get pods -n default && kubectl get hpa && kubectl get pods -n k6 && kubectl get pods -n monitoring && kubectl get pods -n knative-serving'
 
 services:
 	kubectl get services

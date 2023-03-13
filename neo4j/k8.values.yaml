@@ -1,8 +1,8 @@
 neo4j:
   name: my-standalone
   resources:
-    cpu: '1'
-    memory: '4Gi'
+    cpu: '0.5'
+    memory: '2Gi'
 
   password: 'password'
 
