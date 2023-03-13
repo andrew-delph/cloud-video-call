@@ -254,7 +254,7 @@ app.get(`/preferences`, async (req, res) => {
         }
         return getMdProps(results);
       });
-    res.status(200).send(
+    res.status(200).json(
       omitDeep(
         {
           attributes: {
