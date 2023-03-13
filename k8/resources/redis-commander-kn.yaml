@@ -25,7 +25,6 @@ kind: Service
 metadata:
   name: redis-commander-lb
 spec:
-  type: LoadBalancer
   selector:
     serving.knative.dev/service: redis-commander
   ports:
