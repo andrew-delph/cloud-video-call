@@ -112,8 +112,8 @@ app.post(`/providefeedback`, async (req, res) => {
   res.status(201).send(`Feedback created.`);
 });
 
-app.put(`/updateattributes`, async (req, res) => {
-  const { constant = {}, custom = {} } = req.body;
+app.put(`/updatepreferences`, async (req, res) => {
+  const { attributes = {}, filters = {} } = req.body;
 
   const auth = req.headers.authorization;
 
@@ -141,7 +141,7 @@ app.put(`/updateattributes`, async (req, res) => {
     SET md.type = "USER_ATTRIBUTES_CONSTANT"
     RETURN p, md
     `,
-    { uid, constant },
+    { uid, constant: attributes.constant || {} },
   );
   const constant_md = results.records[0].get(`md`);
 
@@ -153,16 +153,19 @@ app.put(`/updateattributes`, async (req, res) => {
     SET md.type = "USER_ATTRIBUTES_CUSTOM"
     RETURN p, md
     `,
-    { uid, custom },
+    { uid, custom: attributes.custom || {} },
   );
 
   const custom_md = results.records[0].get(`md`);
 
   await session.close();
 
-  res
-    .status(201)
-    .send({ custom: constant_md.properties, constant: custom_md.properties });
+  res.status(201).send({
+    attributes: {
+      custom: constant_md.properties,
+      constant: custom_md.properties,
+    },
+  });
 });
 
 app.put(`/updatefilters`, async (req, res) => {

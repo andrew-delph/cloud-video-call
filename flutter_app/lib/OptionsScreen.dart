@@ -59,14 +59,16 @@ class OptionsScreenState extends State<OptionsScreen> {
               child: ElevatedButton(
                 onPressed: () async {
                   var url = Uri.http(
-                      Factory.getHostAddress(), 'options/updateattributes');
+                      Factory.getHostAddress(), 'options/updatepreferences');
                   final headers = {
                     'Access-Control-Allow-Origin': '*',
                     'Content-Type': 'application/json',
                     'authorization': await FirebaseAuth.instance.currentUser!
                         .getIdToken(true)
                   };
-                  final body = {'constants': attributesMap.map};
+                  final body = {
+                    'attributes': {'constant': attributesMap.map}
+                  };
                   var response = await http.put(url,
                       headers: headers, body: json.encode(body));
                   print('Feedback status: ${response.statusCode}');
