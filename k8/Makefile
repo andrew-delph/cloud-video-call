@@ -20,7 +20,7 @@ apply:
 
 delete:
 	kubectl delete -f ./resources/.
-	# kubectl delete -f ./knative.yaml
+	kubectl delete -f ./knative.yaml
 
 restart:
 	kubectl rollout restart -f ./resources/.
@@ -29,12 +29,16 @@ pods:
 	kubectl get pods
 
 watch:
-	watch 'kubectl get pods -n default && kubectl get hpa && kubectl get pods -n k6 && kubectl get pods -n monitoring && kubectl get pods -n knative-serving && kubectl top pod -A --sum'
+	watch 'kubectl get pods -n default && kubectl get hpa && kubectl get pods -n k6 && kubectl get pods -n monitoring && kubectl get pods -n knative-serving && kubectl top pod -A --sum && kubectl resource-capacity'
 
 services:
 	kubectl get services
 
 dashboard:
 	kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml --wait
+	kubectl apply -f ./dashboard/. --wait
 	open http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
 	kubectl proxy
+
+dtoken:
+	kubectl -n kubernetes-dashboard create token admin-user

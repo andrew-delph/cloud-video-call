@@ -30,9 +30,9 @@ spec:
           ports:
             - containerPort: 4000
           resources:
-            # requests:
-            #   cpu: '512m'
-            #   memory: '250Mi'
+            requests:
+              cpu: '25m'
+              memory: '250Mi'
             limits:
               cpu: '512m'
               memory: '250Mi'
@@ -45,7 +45,7 @@ metadata:
   name: hpa-matcher
 spec:
   minReplicas: 1
-  maxReplicas: 5
+  maxReplicas: 1
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
