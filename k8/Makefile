@@ -29,7 +29,12 @@ pods:
 	kubectl get pods
 
 watch:
-	watch 'kubectl get pods -n default && kubectl get hpa && kubectl get pods -n k6 && kubectl get pods -n monitoring && kubectl get pods -n knative-serving'
+	watch 'kubectl get pods -n default && kubectl get hpa && kubectl get pods -n k6 && kubectl get pods -n monitoring && kubectl get pods -n knative-serving && kubectl top pod -A --sum'
 
 services:
 	kubectl get services
+
+dashboard:
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml --wait
+	open http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+	kubectl proxy
