@@ -16,6 +16,25 @@ spec:
   config:
     network:
       ingress-class: 'kourier.ingress.networking.knative.dev'
+  deployments:
+    - name: activator
+      resources:
+        - container: activator
+          requests:
+            cpu: 25m
+            memory: 100Mi
+    - name: net-kourier-controller
+      resources:
+        - container: controller
+          requests:
+            cpu: 25m
+            memory: 100Mi
+    - name: 3scale-kourier-gateway
+      resources:
+        - container: kourier-gateway
+          requests:
+            cpu: 25m
+            memory: 100Mi
 ---
 apiVersion: v1
 kind: ConfigMap
