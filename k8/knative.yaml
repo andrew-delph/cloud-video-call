@@ -61,4 +61,4 @@ metadata:
   name: config-domain
   namespace: knative-serving
 data:
-  solarsim.net: ''
+  example.com: ''
