@@ -27,8 +27,10 @@ spec:
         value: xk6-prometheus-rw
       - name: K6_PROMETHEUS_RW_TREND_STATS
         value: 'avg,p(90),p(99),min,max'
-      - name: HOST
-        value: 'nginx.default.svc.cluster.local'
+      - name: WS_HOST
+        value: 'ws://websocket.default.svc.cluster.local/socket.io/?EIO=4&transport=websocket'
+      - name: OPTIONS_HOST
+        value: 'http://options.default.svc.cluster.local'
       - name: REDIS
         value: 'redis.default.svc.cluster.local:6379'
       - name: K6_PROMETHEUS_RW_SERVER_URL
