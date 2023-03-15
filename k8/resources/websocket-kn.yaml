@@ -1,44 +1,35 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: options
+  name: websocket
 spec:
   template:
     metadata:
       annotations:
         autoscaling.knative.dev/min-scale: '1'
-        autoscaling.knative.dev/max-scale: '3'
+        autoscaling.knative.dev/max-scale: '1'
         autoscaling.knative.dev/initial-scale: '1'
         autoscaling.knative.dev/class: 'kpa.autoscaling.knative.dev'
     spec:
       containers:
-        - image: andrewdelph/video-call-options:latest
-          envFrom:
-            - configMapRef:
-                name: secrets
+        - image: andrewdelph/video-call-websocket:latest
           ports:
             - containerPort: 80
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 80
-            initialDelaySeconds: 30
-            periodSeconds: 10
 ---
 apiVersion: networking.internal.knative.dev/v1alpha1
 kind: ClusterDomainClaim
 metadata:
-  name: options.solarsim.net
+  name: ws.solarsim.net
 spec:
   namespace: default
 ---
 apiVersion: serving.knative.dev/v1alpha1
 kind: DomainMapping
 metadata:
-  name: options.solarsim.net
+  name: ws.solarsim.net
   namespace: default
 spec:
   ref:
-    name: options
+    name: websocket
     kind: Service
     apiVersion: serving.knative.dev/v1
