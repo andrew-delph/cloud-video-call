@@ -24,21 +24,20 @@ spec:
       labels:
         io.kompose.service: neo4j
     spec:
-      # initContainers:
-      #   - name: init-plugins
-      #     image: "appropriate/curl:latest"
-      #     imagePullPolicy: "IfNotPresent"
-      #     volumeMounts:
-      #     - name: neo4j-plugins
-      #       mountPath: /plugins
-      #     command:
-      #       - "/bin/sh" https://graphdatascience.ninja/neo4j-graph-data-science-2.3.1.zip
-      #       - "-c"
-      #       - |
-      #         curl -L https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/3.5.0.6/apoc-3.5.0.6-all.jar -O
-      #         curl -L https://graphdatascience.ninja/neo4j-graph-data-science-2.3.1.jar -O
-      #         cp -R apoc-3.5.0.6-all.jar /plugins
-      #         cp -R neo4j-graph-data-science-2.3.1.jar /plugins
+      initContainers:
+        - name: init-plugins
+          image: 'appropriate/curl:latest'
+          imagePullPolicy: 'IfNotPresent'
+          volumeMounts:
+            - name: neo4j-claim0
+              mountPath: /plugins
+              subPath: plugins
+          command:
+            - '/bin/sh'
+            - '-c'
+            - |
+              curl -L https://graphdatascience.ninja/neo4j-graph-data-science-2.3.1.jar -O
+              cp -R neo4j-graph-data-science-2.3.1.jar /plugins
       containers:
         - env:
             - name: NEO4J_AUTH
@@ -47,7 +46,7 @@ spec:
             #   value: '["graph-data-science"]'
             - name: NEO4J_server_config_strict__validation_enabled
               value: 'false'
-          image: neo4j:5.5.0-enterprise
+          image: neo4j:5.5.0
           imagePullPolicy: 'Always'
           name: neo4j
           ports: ## Ports to map
@@ -61,6 +60,10 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: neo4j-claim0
+              subPath: data
+            - mountPath: /plugins
+              name: neo4j-claim0
+              subPath: plugins
       restartPolicy: Always
       serviceAccountName: ''
       volumes:
