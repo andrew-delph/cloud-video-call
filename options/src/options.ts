@@ -272,7 +272,9 @@ app.get(`/preferences`, async (req, res) => {
       ),
     );
   } catch (e) {
-    res.status(404).send(`user not found.`);
+    logger.debug(`user not found. ${e}`);
+    res.status(404).send({ message: `user not found.` });
+    return;
   } finally {
     await session.close();
   }
