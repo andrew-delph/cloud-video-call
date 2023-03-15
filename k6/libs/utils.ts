@@ -1,13 +1,9 @@
 import http from 'k6/http';
 
 import { check, sleep } from 'k6';
+import { options_url } from '../src/k6_exp';
 
 export const nuke = () => {
-  const secure = false;
-  const domain = __ENV.HOST || `localhost:8888`;
-
-  const r = http.post(
-    `${secure ? `https` : `http`}://${domain}/options/nukedata`,
-  );
+  const r = http.post(`${options_url}/options/nukedata`);
   check(r, { 'DATA NUKED': r && r.status == 200 });
 };

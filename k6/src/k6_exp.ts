@@ -10,6 +10,14 @@ import http from 'k6/http';
 import * as users from '../libs/User';
 import { nuke } from '../libs/utils';
 
+export const ws_url =
+  __ENV.WS_HOST || `ws://localhost:8888/socket.io/?EIO=4&transport=websocket`;
+
+export const options_url = __ENV.OPTIONS_HOST || `ws://localhost:8888`;
+
+console.log(`ws_url`, ws_url);
+console.log(`options_url`, options_url);
+
 export const redisClient = new redis.Client({
   addrs: new Array(__ENV.REDIS || `localhost:6379`), // in the form of 'host:port', separated by commas
 });
@@ -41,16 +49,16 @@ export const options = {
       executor: `ramping-vus`,
       startVUs: 4,
       stages: [
-        { duration: `3m`, target: vus * 1 },
-        { duration: `2h`, target: vus * 3 },
-        { duration: `3m`, target: vus * 1 },
+        { duration: `2m`, target: vus * 1 },
+        // { duration: `2h`, target: vus * 3 },
+        // { duration: `3m`, target: vus * 1 },
       ],
     },
     longConnection: {
       executor: `ramping-vus`,
       exec: `longWait`,
       startVUs: 10,
-      stages: [{ duration: `2h`, target: 10 }],
+      stages: [{ duration: `2m`, target: 10 }],
     },
   },
 };
@@ -102,17 +110,11 @@ const getAuth = async () => {
 };
 
 export default async function () {
-  const secure = false;
-  const domain = __ENV.HOST || `localhost:8888`;
-  let url = `${
-    secure ? `wss` : `ws`
-  }://${domain}/socket.io/?EIO=4&transport=websocket`;
-
   const auth = await getAuth();
 
   const myUser = await users.fromRedis(auth);
 
-  const socket = new K6SocketIoExp(url, { auth: auth }, {}, 0);
+  const socket = new K6SocketIoExp(ws_url, { auth: auth }, {}, 0);
 
   socket.setOnClose(async () => {
     await redisClient.rpush(authKeysName, auth);
@@ -180,7 +182,7 @@ export default async function () {
         score_trend.add(score);
 
         const r = http.post(
-          `${secure ? `https` : `http`}://${domain}/options/providefeedback`,
+          `${options_url}/options/providefeedback`,
           JSON.stringify({
             feedback_id: data.feedback_id,
             score: score,
@@ -203,15 +205,9 @@ export default async function () {
 }
 
 export async function longWait() {
-  const secure = false;
-  const domain = __ENV.HOST || `localhost:8888`;
-  let url = `${
-    secure ? `wss` : `ws`
-  }://${domain}/socket.io/?EIO=4&transport=websocket`;
-
   const auth = await getAuth();
 
-  const socket = new K6SocketIoExp(url, { auth: auth }, {}, 0);
+  const socket = new K6SocketIoExp(ws_url, { auth: auth }, {}, 0);
 
   socket.setOnClose(async () => {
     await redisClient.rpush(authKeysName, auth);

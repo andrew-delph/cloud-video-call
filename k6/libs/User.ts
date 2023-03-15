@@ -3,7 +3,7 @@ const domain = __ENV.HOST || `localhost:8888`;
 
 import http from 'k6/http';
 import { check, sleep } from 'k6';
-import { redisClient } from '../src/k6_exp';
+import { options_url, redisClient } from '../src/k6_exp';
 
 import {
   randomString,
@@ -100,7 +100,7 @@ export class User {
 
     await redisClient.set(this.auth + `_type`, this.type.toString());
     const r = http.put(
-      `${secure ? `https` : `http`}://${domain}/options/preferences`,
+      `${options_url}/options/preferences`,
       JSON.stringify({ attributes: this.attributes, filters: this.filters }),
       {
         headers: {
