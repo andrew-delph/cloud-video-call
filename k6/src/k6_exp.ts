@@ -47,7 +47,7 @@ export const options = {
   scenarios: {
     matchTest: {
       executor: `ramping-vus`,
-      startVUs: 4,
+      startVUs: 5,
       stages: [
         { duration: `2m`, target: vus * 1 },
         // { duration: `2h`, target: vus * 3 },
@@ -182,7 +182,7 @@ export default async function () {
         score_trend.add(score);
 
         const r = http.post(
-          `${options_url}/options/providefeedback`,
+          `${options_url}/providefeedback`,
           JSON.stringify({
             feedback_id: data.feedback_id,
             score: score,

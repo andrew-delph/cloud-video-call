@@ -100,7 +100,7 @@ export class User {
 
     await redisClient.set(this.auth + `_type`, this.type.toString());
     const r = http.put(
-      `${options_url}/options/preferences`,
+      `${options_url}/preferences`,
       JSON.stringify({ attributes: this.attributes, filters: this.filters }),
       {
         headers: {
