@@ -13,7 +13,7 @@ import { nuke } from '../libs/utils';
 export const redisClient = new redis.Client({
   addrs: new Array(__ENV.REDIS || `localhost:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 1000;
+const authKeysNum = 50;
 const authKeysName = `authKeysName`;
 export function setup() {
   nuke();
