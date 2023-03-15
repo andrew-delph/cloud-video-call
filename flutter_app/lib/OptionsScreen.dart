@@ -66,7 +66,8 @@ class OptionsScreenState extends State<OptionsScreen> {
       loading = true;
     });
     FirebaseAuth.instance.currentUser!.getIdToken(true).then((token) {
-      var url = Uri.https(Factory.getHostAddress(), 'options/preferences');
+      var url = Uri.parse(
+          '${Factory.getHostSecure() ? 'https' : 'http'}://options.${Factory.getHostAddress()}/preferences');
       final headers = {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
@@ -113,8 +114,8 @@ class OptionsScreenState extends State<OptionsScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  var url = Uri.https(
-                      Factory.getHostAddress(), 'options/preferences');
+                  var url = Uri.parse(
+                      '${Factory.getHostSecure() ? 'https' : 'http'}://options.${Factory.getHostAddress()}/preferences');
                   final headers = {
                     'Access-Control-Allow-Origin': '*',
                     'Content-Type': 'application/json',

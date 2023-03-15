@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="prod server" type="FlutterRunConfigurationType" factoryName="Flutter">
-    <option name="additionalArgs" value="--dart-define=&quot;SOCKET_ADDRESS=solarsim.net&quot;" />
+    <option name="additionalArgs" value="--dart-define=&quot;HOST_ADDRESS=solarsim.net:80&quot;" />
     <option name="filePath" value="$PROJECT_DIR$/lib/main.dart" />
     <method v="2" />
   </configuration>

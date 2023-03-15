@@ -34,7 +34,13 @@ class Factory {
   }
 
   static String getHostAddress() {
-    return const String.fromEnvironment('SOCKET_ADDRESS',
+    return const String.fromEnvironment('HOST_ADDRESS',
         defaultValue: 'localhost:8888');
+  }
+
+  static bool getHostSecure() {
+    String secure =
+        const String.fromEnvironment('HOST_SECURE', defaultValue: "false");
+    return secure.toLowerCase() == 'true';
   }
 }
