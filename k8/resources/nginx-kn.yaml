@@ -47,3 +47,21 @@ spec:
 #     - name: https
 #       port: 443
 #       targetPort: 80
+---
+apiVersion: networking.internal.knative.dev/v1alpha1
+kind: ClusterDomainClaim
+metadata:
+  name: nginx.solarsim.net
+spec:
+  namespace: default
+---
+apiVersion: serving.knative.dev/v1alpha1
+kind: DomainMapping
+metadata:
+  name: nginx.solarsim.net
+  namespace: default
+spec:
+  ref:
+    name: nginx
+    kind: Service
+    apiVersion: serving.knative.dev/v1
