@@ -17,7 +17,6 @@ apply:
 	kubectl apply -f https://github.com/knative/operator/releases/download/knative-v1.9.2/operator.yaml --wait
 	kubectl apply -f ./knative.yaml --wait
 	kubectl apply -f ./resources/.
-	kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.8.0/serving-default-domain.yaml
 
 delete:
 	kubectl delete -f ./resources/.
