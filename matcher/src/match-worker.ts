@@ -58,6 +58,16 @@ export async function matchConsumer() {
   subRedisClient = new Client({
     host: `${process.env.REDIS_HOST || `redis`}`,
   });
+
+  mainRedisClient.on(`error`, (err) => {
+    throw `REDIS: FAILED`;
+  });
+  pubRedisClient.on(`error`, (err) => {
+    throw `REDIS: FAILED`;
+  });
+  subRedisClient.on(`error`, (err) => {
+    throw `REDIS: FAILED`;
+  });
   logger.info(`redis connected.`);
 
   io.adapter(createAdapter(pubRedisClient, subRedisClient));

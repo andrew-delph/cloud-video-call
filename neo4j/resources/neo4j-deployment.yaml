@@ -24,20 +24,20 @@ spec:
       labels:
         io.kompose.service: neo4j
     spec:
-      initContainers:
-        - name: init-plugins
-          image: 'appropriate/curl:latest'
-          imagePullPolicy: 'IfNotPresent'
-          volumeMounts:
-            - name: neo4j-claim0
-              mountPath: /plugins
-              subPath: plugins
-          command:
-            - '/bin/sh'
-            - '-c'
-            - |
-              curl -L https://graphdatascience.ninja/neo4j-graph-data-science-2.3.1.jar -O
-              cp -R neo4j-graph-data-science-2.3.1.jar /plugins
+      # initContainers:
+      #   - name: init-plugins
+      #     image: 'appropriate/curl:latest'
+      #     imagePullPolicy: 'IfNotPresent'
+      #     volumeMounts:
+      #       - name: neo4j-claim0
+      #         mountPath: /plugins
+      #         subPath: plugins
+      #     command:
+      #       - '/bin/sh'
+      #       - '-c'
+      #       - |
+      #         curl -L https://graphdatascience.ninja/neo4j-graph-data-science-2.3.1.jar -O
+      #         cp -R neo4j-graph-data-science-2.3.1.jar /plugins
       containers:
         - env:
             - name: NEO4J_AUTH
@@ -61,9 +61,9 @@ spec:
             - mountPath: /data
               name: neo4j-claim0
               subPath: data
-            - mountPath: /plugins
-              name: neo4j-claim0
-              subPath: plugins
+            # - mountPath: /plugins
+            #   name: neo4j-claim0
+            #   subPath: plugins
       restartPolicy: Always
       serviceAccountName: ''
       volumes:

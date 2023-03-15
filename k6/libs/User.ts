@@ -17,7 +17,7 @@ export enum UserType {
 }
 
 export const getRandomUser = (auth: string): User => {
-  const userFunctions = [createFemale, createMale, createLocationBound];
+  const userFunctions = [createFemale];
 
   return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
 };

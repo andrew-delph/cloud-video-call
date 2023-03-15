@@ -67,6 +67,18 @@ export const startReadyConsumer = async () => {
   lockRedisClient = new Client({
     host: `${process.env.REDIS_HOST}`,
   });
+  mainRedisClient.on(`error`, (err) => {
+    throw `REDIS: FAILED`;
+  });
+  pubRedisClient.on(`error`, (err) => {
+    throw `REDIS: FAILED`;
+  });
+  subRedisClient.on(`error`, (err) => {
+    throw `REDIS: FAILED`;
+  });
+  lockRedisClient.on(`error`, (err) => {
+    throw `REDIS: FAILED`;
+  });
 
   await subRedisClient.psubscribe(`${matchmakerChannelPrefix}*`);
 
