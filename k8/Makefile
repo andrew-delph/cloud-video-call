@@ -42,3 +42,6 @@ dashboard:
 
 dtoken:
 	kubectl -n kubernetes-dashboard create token admin-user
+
+ehosts:
+	code /etc/hosts
