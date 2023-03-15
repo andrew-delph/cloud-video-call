@@ -21,7 +21,7 @@ console.log(`options_url`, options_url);
 export const redisClient = new redis.Client({
   addrs: new Array(__ENV.REDIS || `localhost:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 50;
+const authKeysNum = 10;
 const authKeysName = `authKeysName`;
 export function setup() {
   nuke();
@@ -54,12 +54,12 @@ export const options = {
         // { duration: `3m`, target: vus * 1 },
       ],
     },
-    longConnection: {
-      executor: `ramping-vus`,
-      exec: `longWait`,
-      startVUs: 10,
-      stages: [{ duration: `2m`, target: 10 }],
-    },
+    // longConnection: {
+    //   executor: `ramping-vus`,
+    //   exec: `longWait`,
+    //   startVUs: 10,
+    //   stages: [{ duration: `2m`, target: 10 }],
+    // },
   },
 };
 
@@ -111,10 +111,11 @@ const getAuth = async () => {
 
 export default async function () {
   const auth = await getAuth();
+  console.log(`auth`, auth);
 
   const myUser = await users.fromRedis(auth);
 
-  const socket = new K6SocketIoExp(ws_url, { auth: auth }, {}, 0);
+  const socket = new K6SocketIoExp(ws_url, { auth: auth }, {}, 40000);
 
   socket.setOnClose(async () => {
     await redisClient.rpush(authKeysName, auth);
@@ -129,6 +130,7 @@ export default async function () {
     socket
       .expectMessage(`established`)
       .catch((error) => {
+        console.error(`failed established`);
         established_success.add(false);
         return Promise.reject(error);
       })
@@ -141,19 +143,23 @@ export default async function () {
         return readyPromise;
       })
       .catch((error) => {
+        console.error(`failed ready`);
         ready_success.add(false);
         return Promise.reject(error);
       })
       .then((data: any) => {
+        console.log(`ready..`);
         ready_success.add(true);
         ready_elapsed.add(data.elapsed);
         return expectMatch;
       })
       .catch((error) => {
+        console.error(`failed match`);
         match_success.add(false);
         return Promise.reject(error);
       })
       .then((data: any) => {
+        console.log(`match`);
         if (typeof data.callback === `function`) {
           data.callback(`ok`);
         }
