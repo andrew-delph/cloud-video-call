@@ -98,43 +98,46 @@ class OptionsScreenState extends State<OptionsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (loading) return loadingWidget;
+    Widget body = loadingWidget;
+    if (!loading) {
+      body = Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          KeyValueListWidget(title: "Attributes", model: attributesMap),
+          KeyValueListWidget(title: "Filters", model: filtersMap),
+          SizedBox(
+            height: 50,
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () async {
+                var url = Uri.parse("${Factory.getOptionsHost()}/preferences");
+                final headers = {
+                  'Access-Control-Allow-Origin': '*',
+                  'Content-Type': 'application/json',
+                  'authorization':
+                      await FirebaseAuth.instance.currentUser!.getIdToken(true)
+                };
+                final body = {
+                  'attributes': {'constant': attributesMap.map},
+                  'filters': {'constant': filtersMap.map}
+                };
+                var response = await http.put(url,
+                    headers: headers, body: json.encode(body));
+                print('preferences status: ${response.statusCode}');
+                loadAttributes();
+              },
+              child: const Text('Submit'),
+            ),
+          )
+        ],
+      );
+    }
+
     return Scaffold(
         appBar: AppBar(
           title: const Text('Options screen'),
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            KeyValueListWidget(title: "Attributes", model: attributesMap),
-            KeyValueListWidget(title: "Filters", model: filtersMap),
-            SizedBox(
-              height: 50,
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () async {
-                  var url =
-                      Uri.parse("${Factory.getOptionsHost()}/preferences");
-                  final headers = {
-                    'Access-Control-Allow-Origin': '*',
-                    'Content-Type': 'application/json',
-                    'authorization': await FirebaseAuth.instance.currentUser!
-                        .getIdToken(true)
-                  };
-                  final body = {
-                    'attributes': {'constant': attributesMap.map},
-                    'filters': {'constant': filtersMap.map}
-                  };
-                  var response = await http.put(url,
-                      headers: headers, body: json.encode(body));
-                  print('preferences status: ${response.statusCode}');
-                  loadAttributes();
-                },
-                child: const Text('Submit'),
-              ),
-            )
-          ],
-        ));
+        body: body);
   }
 }
 
