@@ -162,7 +162,8 @@ class ChatScreenState extends State<ChatScreen> {
               max: 10,
               initialValue: 5,
               onSubmit: (score) async {
-                var url = Uri.parse(Factory.getOptionsHost());
+                var url =
+                    Uri.parse("${Factory.getOptionsHost()}/providefeedback");
                 final headers = {
                   'Access-Control-Allow-Origin': '*',
                   'Content-Type': 'application/json',

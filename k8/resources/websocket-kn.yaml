@@ -13,6 +13,9 @@ spec:
     spec:
       containers:
         - image: andrewdelph/video-call-websocket:latest
+          envFrom:
+            - configMapRef:
+                name: secrets
           ports:
             - containerPort: 80
 ---

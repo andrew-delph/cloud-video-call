@@ -11,15 +11,23 @@ import {
 } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
 export enum UserType {
+  Random = `Random`,
   Female = `Female`,
   Male = `Male`,
   LocationBound = `LocationBound`,
 }
 
 export const getRandomUser = (auth: string): User => {
-  const userFunctions = [createFemale];
+  const userFunctions = [createRandom];
 
   return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
+};
+
+export const createRandom = (auth: string): User => {
+  const attributes = {};
+  const filters = {};
+
+  return new User(auth, attributes, filters, UserType.Random);
 };
 
 export const createFemale = (auth: string): User => {
@@ -59,6 +67,12 @@ export const fromRedis = async (auth: string): Promise<User> => {
 };
 
 export const calcScoreMap = new Map<UserType, (otherAttr: any) => number>([
+  [
+    UserType.Random,
+    (otherAttr: any) => {
+      return 3;
+    },
+  ],
   [
     UserType.Male,
     (otherAttr: any) => {

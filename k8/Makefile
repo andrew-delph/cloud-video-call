@@ -7,7 +7,7 @@ pnginx:
 	
 
 pneo4j:
-	kubectl port-forward svc/neo4j tcp-bolt tcp-http tcp-https
+	kubectl port-forward svc/neo4j 7474:7474 7687:7687
 
 predis:
 	kubectl port-forward svc/redis 6379:6379
