@@ -31,8 +31,8 @@ kind: DomainMapping
 metadata:
   name: ws.solarsim.net
   namespace: default
-  annotations:
-    kourier.knative.dev/disable-http2: 'true' # kubectl annotate domainmapping ws.solarsim.net kourier.knative.dev/disable-http2=true
+  # annotations:
+  #   kourier.knative.dev/disable-http2: 'true' # kubectl annotate domainmapping ws.solarsim.net kourier.knative.dev/disable-http2=true
 spec:
   ref:
     name: websocket
