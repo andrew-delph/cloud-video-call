@@ -16,6 +16,8 @@ spec:
   config:
     network:
       ingress-class: 'kourier.ingress.networking.knative.dev'
+      auto-tls: Enabled
+      # http-protocol: Redirected
   deployments:
     - name: activator
       resources:
@@ -62,3 +64,29 @@ metadata:
   namespace: knative-serving
 data:
   example.com: ''
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-http01-issuer
+spec:
+  acme:
+    privateKeySecretRef:
+      name: letsencrypt-http01-issuer
+    server: https://acme-v02.api.letsencrypt.org/directory
+    solvers:
+      - http01:
+          ingress:
+            class: kourier
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-certmanager
+  namespace: knative-serving
+  labels:
+    networking.knative.dev/certificate-provider: cert-manager
+data:
+  issuerRef: |
+    kind: ClusterIssuer
+    name: letsencrypt-http01-issuer
