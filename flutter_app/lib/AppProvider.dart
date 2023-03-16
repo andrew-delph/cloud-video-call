@@ -130,7 +130,7 @@ class AppProvider extends ChangeNotifier {
         ack: (data) => print("ping ack"));
 
     socket!.onConnectError((details) {
-      print('connectError');
+      print('connectError $details');
       handleSocketStateChange(SocketConnectionState.connectionError, details);
       notifyListeners();
     });
@@ -169,7 +169,11 @@ class AppProvider extends ChangeNotifier {
       notifyListeners();
     });
 
-    socket!.connect();
+    try {
+      socket!.connect();
+    } catch (error) {
+      print("error...$error");
+    }
   }
 
   Future<void> initLocalStream() async {
