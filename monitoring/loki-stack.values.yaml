@@ -4,7 +4,7 @@ test_pod:
   pullPolicy: IfNotPresent
 
 loki:
-  enabled: true
+  enabled: false
   isDefault: false
   url: http://{{(include "loki.serviceName" .)}}:{{ .Values.loki.service.port }}
   readinessProbe:
@@ -27,17 +27,23 @@ promtail:
     logLevel: debug
     serverPort: 3101
     clients:
-      - url: http://{{ .Release.Name }}:3100/loki/api/v1/push
+      - url: https://logs-prod-017.grafana.net/loki/api/v1/push
+        basic_auth:
+          password: eyJrIjoiNDkwYjViNjlmMGQwODA0NmJkYzdmMGE3MTFlNGI0MThlYTQ1ZjgzNCIsIm4iOiJ0ZXN0MTIiLCJpZCI6NzgxOTYzfQ==
+          username: 370596
+        tenant_id: 1
+
     snippets:
       # addScrapeJobLabel: true
-      extraRelabelConfigs:
-        # keep all kubernetes labels
-        - action: labelmap
-          regex: __meta_kubernetes_pod_label_(.+)
-        - source_labels: [serving_knative_dev_service]
-          regex: '(.+)'
-          target_label: 'app'
+      # extraRelabelConfigs:
+      #   # keep all kubernetes labels
+      #   - action: labelmap
+      #     regex: __meta_kubernetes_pod_label_(.+)
+      #   - source_labels: [serving_knative_dev_service]
+      #     regex: '(.+)'
+      #     target_label: 'app'
       pipelineStages:
+        - cri:
         - docker:
         - json:
             expressions:
