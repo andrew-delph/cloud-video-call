@@ -35,7 +35,7 @@ class Factory {
 
   static String getWsHost() {
     return const String.fromEnvironment('WS_HOST',
-        defaultValue: 'ws://ws.solarsim.net');
+        defaultValue: 'ws://ws.solarsim.net:80');
   }
 
   static String getOptionsHost() {

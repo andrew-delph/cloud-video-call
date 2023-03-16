@@ -236,6 +236,7 @@ export const getServer = async (listen: boolean) => {
     })
     .catch((error) => {
       logger.error(`setup error: ${error}`);
+      throw error;
     });
 };
 
