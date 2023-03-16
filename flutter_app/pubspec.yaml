@@ -25,4 +25,4 @@ flutter:
   uses-material-design: true
 name: flutter_app
 publish_to: none
-version: 1.0.27
+version: 1.0.28
