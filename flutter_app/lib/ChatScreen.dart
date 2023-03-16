@@ -75,7 +75,7 @@ class ChatScreenState extends State<ChatScreen> {
     var content = IntrinsicHeight(
       child: Column(
         children: [
-          Text("Socket Address: ${Factory.getHostAddress()}"),
+          Text("Socket Address: ${Factory.getWsHost()}"),
           const Text(""),
           Text(
               style: const TextStyle(
@@ -162,8 +162,7 @@ class ChatScreenState extends State<ChatScreen> {
               max: 10,
               initialValue: 5,
               onSubmit: (score) async {
-                var url = Uri.parse(
-                    '${Factory.getHostSecure() ? 'https' : 'http'}://options.${Factory.getHostAddress()}/options/providefeedback');
+                var url = Uri.parse(Factory.getOptionsHost());
                 final headers = {
                   'Access-Control-Allow-Origin': '*',
                   'Content-Type': 'application/json',

@@ -35,9 +35,9 @@ void main() async {
     }
   }
 
-  Position position = await getLocation();
+  // Position position = await getLocation();
 
-  print("position: $position");
+  // print("position: $position");
 
   //
   // var db = FirebaseFirestore.instance;

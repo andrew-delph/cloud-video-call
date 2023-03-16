@@ -101,8 +101,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> initSocket() async {
-    String socketAddress =
-        "${Factory.getHostSecure() ? 'wss' : 'ws'}://ws.${Factory.getHostAddress()}";
+    String socketAddress = Factory.getWsHost();
 
     print("SOCKET_ADDRESS is $socketAddress");
 

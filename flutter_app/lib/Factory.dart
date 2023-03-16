@@ -33,14 +33,13 @@ class Factory {
     return peerConnection;
   }
 
-  static String getHostAddress() {
-    return const String.fromEnvironment('HOST_ADDRESS',
-        defaultValue: 'localhost:8888');
+  static String getWsHost() {
+    return const String.fromEnvironment('WS_HOST',
+        defaultValue: 'ws://ws.solarsim.net');
   }
 
-  static bool getHostSecure() {
-    String secure =
-        const String.fromEnvironment('HOST_SECURE', defaultValue: "false");
-    return secure.toLowerCase() == 'true';
+  static String getOptionsHost() {
+    return const String.fromEnvironment('OPTIONS_HOST',
+        defaultValue: 'http://options.solarsim.net');
   }
 }
