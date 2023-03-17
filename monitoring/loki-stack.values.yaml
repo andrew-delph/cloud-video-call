@@ -3,8 +3,13 @@ test_pod:
   image: bats/bats:v1.1.0
   pullPolicy: IfNotPresent
 
-loki:
+grafana:
   enabled: false
+  # adminUser: admin
+  # adminPassword: password
+
+loki:
+  enabled: true
   isDefault: false
   url: http://{{(include "loki.serviceName" .)}}:{{ .Values.loki.service.port }}
   readinessProbe:
@@ -27,29 +32,38 @@ promtail:
     logLevel: debug
     serverPort: 3101
     clients:
-      - url: https://logs-prod-017.grafana.net/loki/api/v1/push
-        basic_auth:
-          password: eyJrIjoiNDkwYjViNjlmMGQwODA0NmJkYzdmMGE3MTFlNGI0MThlYTQ1ZjgzNCIsIm4iOiJ0ZXN0MTIiLCJpZCI6NzgxOTYzfQ==
-          username: 370596
-        tenant_id: 1
-
+      - url: http://{{ .Release.Name }}:3100/loki/api/v1/push
     snippets:
       # addScrapeJobLabel: true
-      # extraRelabelConfigs:
-      #   # keep all kubernetes labels
-      #   - action: labelmap
-      #     regex: __meta_kubernetes_pod_label_(.+)
-      #   - source_labels: [serving_knative_dev_service]
-      #     regex: '(.+)'
-      #     target_label: 'app'
+      # extraLimitsConfig:
+      #   readline_rate: 1000
+      #   readline_burst: 2000
+      #   readline_rate_enabled: true
+      extraRelabelConfigs:
+        # keep all kubernetes labels
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - source_labels: [serving_knative_dev_service]
+          regex: '(.+)'
+          target_label: 'app'
       pipelineStages:
         - cri:
-        - docker:
         - json:
             expressions:
               level: level
         - labels:
             level:
+        - output:
+            source: msg
+        - drop:
+            source: 'namespace'
+            expression: '!(default)'
+        # - match:
+        #     selector: '{namespace="default"}'
+        #     stages:
+        #       - regex:
+        #           expression: '.*'
+        #           source: log
 
 # proxy is currently only used by loki test pod
 # Note: If http_proxy/https_proxy are set, then no_proxy should include the
