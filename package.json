@@ -1,8 +1,22 @@
 {
-  "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.51.0",
-    "@typescript-eslint/parser": "^5.51.0",
-    "eslint": "^8.34.0",
-    "eslint-plugin-prettier": "^4.2.1"
-  }
+  "name": "react-video-call",
+  "version": "1.0.0",
+  "description": "This is a distributed random chat service created with flutter and works on all devices supported with Flutter (Web, IOS, Android, etc).",
+  "main": "index.js",
+  "dependencies": {
+    "typescript": "4.9.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sharpie72/react-video-call.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sharpie72/react-video-call/issues"
+  },
+  "homepage": "https://github.com/sharpie72/react-video-call#readme"
 }
