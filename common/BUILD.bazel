@@ -1,15 +1,19 @@
 
-load("@aspect_bazel_lib//lib:testing.bzl", "assert_contains")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
-
-
 ts_project(
     name = "ts",
     srcs = ["test/index.ts"],
     declaration = True,
     declaration_map = True,
-    # declaration = True,
-    out_dir = "dist",
+    out_dir = ".",
     deps = [
     ],
 )
+
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+js_binary(
+    name = "main",
+    entry_point = "test/index.js",
+    data = [":ts"],
+)
+
