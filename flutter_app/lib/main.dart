@@ -21,19 +21,28 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  try {
-    final userCredential = await FirebaseAuth.instance.signInAnonymously();
-    print("Signed in with temporary account. ${userCredential.user?.uid}");
-  } on FirebaseAuthException catch (e) {
-    switch (e.code) {
-      case "operation-not-allowed":
-        print("Anonymous auth hasn't been enabled for this project.");
-        break;
-      default:
-        print("Authentication unknown error: $e");
+  
+  FirebaseAuth.instance.idTokenChanges().listen((User? user) async {
+    if (user == null) {
+      print('User is currently signed out!');
+      try {
+        final userCredential = await FirebaseAuth.instance.signInAnonymously();
+        print("Signed in with temporary account. ${userCredential.user?.uid}");
+      } on FirebaseAuthException catch (e) {
+        switch (e.code) {
+          case "operation-not-allowed":
+            print("Anonymous auth hasn't been enabled for this project.");
+            break;
+          default:
+            print("Authentication unknown error: $e");
+        }
+      }
+    } else {
+      print('User is signed in!');
     }
-  }
+  });
+
+
 
   // Position position = await getLocation();
 
