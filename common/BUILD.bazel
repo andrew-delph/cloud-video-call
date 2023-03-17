@@ -2,7 +2,8 @@
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 ts_project(
     name = "ts",
-    srcs = ["test/index.ts"],
+    # srcs = glob(["src/**/*.ts"]),
+    srcs = (["test/index.ts"]),
     declaration = True,
     declaration_map = True,
     out_dir = ".",
