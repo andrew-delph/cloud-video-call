@@ -65,7 +65,7 @@ class OptionsScreenState extends State<OptionsScreen> {
     setState(() {
       loading = true;
     });
-    FirebaseAuth.instance.currentUser!.getIdToken(true).then((token) {
+    FirebaseAuth.instance.currentUser!.getIdToken().then((token) {
       var url = Uri.parse("${Factory.getOptionsHost()}/preferences");
       final headers = {
         'Access-Control-Allow-Origin': '*',
@@ -115,7 +115,7 @@ class OptionsScreenState extends State<OptionsScreen> {
                   'Access-Control-Allow-Origin': '*',
                   'Content-Type': 'application/json',
                   'authorization':
-                      await FirebaseAuth.instance.currentUser!.getIdToken(true)
+                      await FirebaseAuth.instance.currentUser!.getIdToken()
                 };
                 final body = {
                   'attributes': {'constant': attributesMap.map},

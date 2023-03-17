@@ -168,7 +168,7 @@ class ChatScreenState extends State<ChatScreen> {
                   'Access-Control-Allow-Origin': '*',
                   'Content-Type': 'application/json',
                   'authorization':
-                      await FirebaseAuth.instance.currentUser!.getIdToken(true)
+                      await FirebaseAuth.instance.currentUser!.getIdToken()
                 };
                 final body = {
                   'feedback_id': appProvider.feedbackId!,

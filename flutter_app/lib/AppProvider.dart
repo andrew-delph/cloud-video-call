@@ -111,9 +111,8 @@ class AppProvider extends ChangeNotifier {
         OptionBuilder()
             .setTransports(['websocket'])
             .disableAutoConnect()
-            .setAuth({
-              "auth": await FirebaseAuth.instance.currentUser?.getIdToken(true)
-            })
+            .setAuth(
+                {"auth": await FirebaseAuth.instance.currentUser?.getIdToken()})
             .build());
 
     socket!.emit("message", "I am a client");
