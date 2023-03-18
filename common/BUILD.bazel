@@ -2,6 +2,7 @@ load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 load("@aspect_rules_js//js:defs.bzl", "js_binary")
 load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
 
 
 npm_link_all_packages(
@@ -21,35 +22,15 @@ ts_project(
 )
 
 
-js_binary(
-    name = "main",
-    data = ["//common:ts"],
-    entry_point = "test.js",
-)
-
-load("@aspect_rules_js//js:defs.bzl", "js_library")
-
 js_library(
     name = "lib",
     srcs = [
         "//common:ts","package.json"
     ],
-    # In this package, the npm dependencies needed for consumers as specified
-    # in its 'package.json' file so they don't need to be explicitly set as deps
-    # of this 'js_library' for the linker to link the as depenencies of the 'npm_package'
-    # since it is linked via 'npm_link_all_packages'.
-    # deps = [
-    #     "//examples/npm_package/packages/pkg_a/a:lib",
-    # ],
 )
-
 
 npm_package(
     name = "common",
     srcs = [":lib"],
-    # The package name does not need to be specified in this target since the name
-    # that this package is linked as is set by the pnpm lockfile. If it is
-    # specified here then it won't be load bearing since the value in the pnpm
-    # lockfile will take precendence.
     visibility = ["//visibility:public"],
 )
