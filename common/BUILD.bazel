@@ -8,12 +8,10 @@ load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 
 ts_project(
     name = "ts",
-    # srcs = glob(["src/**/*.ts"]),
-    srcs = ["test/index.ts"],
+    srcs = glob(["src/**/*.ts"]),
     out_dir = ".",
     deps = [
-        ":node_modules/express",
-        ":node_modules/@types/express",
+        ":node_modules",
     ],
 )
 
@@ -22,5 +20,5 @@ load("@aspect_rules_js//js:defs.bzl", "js_binary")
 js_binary(
     name = "main",
     data = [":ts"],
-    entry_point = "test/index.js",
+    entry_point = "src/index.js",
 )
