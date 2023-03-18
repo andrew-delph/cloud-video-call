@@ -4,9 +4,7 @@
   "description": "This is a distributed random chat service created with flutter and works on all devices supported with Flutter (Web, IOS, Android, etc).",
   "main": "index.js",
   "dependencies": {
-    "express": "^4.18.2",
-    "typescript": "4.9.4",
-    "uuid": "^9.0.0"
+    "typescript": "4.9.4"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
