@@ -1,0 +1,27 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+npm_link_all_packages(
+    name = "node_modules",
+)
+
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+
+ts_project(
+    name = "ts",
+    srcs = glob(["test.ts"]),
+    declaration = True,
+    out_dir = ".",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":node_modules",
+        # "//common:common",
+    ],
+)
+
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+
+js_binary(
+    name = "main",
+    data = ["//matcher:ts"],
+    entry_point = "test.js",
+)

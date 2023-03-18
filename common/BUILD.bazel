@@ -1,24 +1,39 @@
 load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+
 
 npm_link_all_packages(
     name = "node_modules",
 )
 
-load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 
 ts_project(
     name = "ts",
-    srcs = glob(["src/**/*.ts"]),
+    srcs = glob(["test.ts","package.json"]),
+    declaration = True,
     out_dir = ".",
+    visibility = ["//visibility:public"],
     deps = [
         ":node_modules",
     ],
 )
 
-load("@aspect_rules_js//js:defs.bzl", "js_binary")
 
 js_binary(
     name = "main",
-    data = [":ts"],
-    entry_point = "src/index.js",
+    data = ["//common:ts"],
+    entry_point = "test.js",
+)
+
+
+npm_package(
+    name = "common",
+    srcs = [":ts"],
+    # The package name does not need to be specified in this target since the name
+    # that this package is linked as is set by the pnpm lockfile. If it is
+    # specified here then it won't be load bearing since the value in the pnpm
+    # lockfile will take precendence.
+    visibility = ["//visibility:public"],
 )
