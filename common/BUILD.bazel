@@ -1,22 +1,26 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+npm_link_all_packages(
+    name = "node_modules",
+)
 
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+
 ts_project(
     name = "ts",
     # srcs = glob(["src/**/*.ts"]),
-    srcs = (["test/index.ts"]),
-    declaration = True,
-    declaration_map = True,
+    srcs = ["test/index.ts"],
     out_dir = ".",
     deps = [
+        ":node_modules/express",
+        ":node_modules/@types/express",
     ],
 )
 
 load("@aspect_rules_js//js:defs.bzl", "js_binary")
+
 js_binary(
     name = "main",
-    entry_point = "test/index.js",
     data = [":ts"],
+    entry_point = "test/index.js",
 )
-
-
-
