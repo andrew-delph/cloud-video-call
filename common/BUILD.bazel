@@ -25,7 +25,7 @@ ts_project(
 js_library(
     name = "lib",
     srcs = [
-        "//common:ts","package.json"
+        ":ts","package.json"
     ],
 )
 

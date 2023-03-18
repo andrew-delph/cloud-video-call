@@ -1,7 +1,7 @@
 packages:
   - 'common'
   - 'neo4j/neo4j-grpc-common'
-  - 'neo4j/neo4j-grpc-server'
+  # - 'neo4j/neo4j-grpc-server'
   - 'websocket'
   - 'matchmaker'
   - 'matcher'
