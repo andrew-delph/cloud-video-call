@@ -2,8 +2,8 @@
   "name": "react-video-call-common",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc-watch --onCompilationStarted \"echo 'watching common'\""

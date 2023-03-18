@@ -11,7 +11,7 @@ npm_link_all_packages(
 
 ts_project(
     name = "ts",
-    srcs = glob(["test.ts","package.json"]),
+    srcs = glob(["src/**/*.ts",]),
     declaration = True,
     out_dir = ".",
     visibility = ["//visibility:public"],
@@ -27,10 +27,26 @@ js_binary(
     entry_point = "test.js",
 )
 
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+
+js_library(
+    name = "lib",
+    srcs = [
+        "//common:ts","package.json"
+    ],
+    # In this package, the npm dependencies needed for consumers as specified
+    # in its 'package.json' file so they don't need to be explicitly set as deps
+    # of this 'js_library' for the linker to link the as depenencies of the 'npm_package'
+    # since it is linked via 'npm_link_all_packages'.
+    # deps = [
+    #     "//examples/npm_package/packages/pkg_a/a:lib",
+    # ],
+)
+
 
 npm_package(
     name = "common",
-    srcs = [":ts"],
+    srcs = [":lib"],
     # The package name does not need to be specified in this target since the name
     # that this package is linked as is set by the pnpm lockfile. If it is
     # specified here then it won't be load bearing since the value in the pnpm
