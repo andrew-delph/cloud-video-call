@@ -1,27 +1,12 @@
 lockfileVersion: 5.4
 
-packageExtensionsChecksum: cf27afb114e4e8655ffccb9eb32a951e
-
 importers:
 
   .:
     specifiers:
-      '@grpc/grpc-js': 1.7.3
-      '@types/long': 5.0.0
-      '@types/node': 18.11.9
-      '@types/protobufjs': 6.0.0
-      long: 5.2.1
-      protobufjs: 6.11.3
       typescript: 4.9.3
     dependencies:
-      '@grpc/grpc-js': 1.7.3
-      long: 5.2.1
-      protobufjs: 6.11.3
       typescript: 4.9.3
-    devDependencies:
-      '@types/long': 5.0.0
-      '@types/node': 18.11.9
-      '@types/protobufjs': 6.0.0
 
   common:
     specifiers:
@@ -134,22 +119,18 @@ importers:
 
   neo4j/neo4j-grpc-common:
     specifiers:
-      '@grpc/grpc-js': 1.7.3
-      '@types/long': 5.0.0
-      '@types/node': 18.11.9
-      '@types/protobufjs': 6.0.0
-      long: 5.2.1
-      protobufjs: 6.11.3
-      typescript: 4.9.3
+      '@grpc/grpc-js': ^1.8.9
+      google-protobuf: ^3.21.2
+      grpc_tools_node_protoc_ts: ^5.0.0
+      nodemon: ^2.0.20
+      typescript: ^4.4.4
     dependencies:
-      '@grpc/grpc-js': 1.7.3
-      long: 5.2.1
-      protobufjs: 6.11.3
-      typescript: 4.9.3
+      '@grpc/grpc-js': 1.8.12
+      google-protobuf: 3.21.2
     devDependencies:
-      '@types/long': 5.0.0
-      '@types/node': 18.11.9
-      '@types/protobufjs': 6.0.0
+      grpc_tools_node_protoc_ts: 5.3.3
+      nodemon: 2.0.21
+      typescript: 4.9.5
 
   options:
     specifiers:
@@ -554,14 +535,6 @@ packages:
       '@types/node': 18.15.3
     optional: true
 
-  /@grpc/grpc-js/1.7.3:
-    resolution: {integrity: sha512-H9l79u4kJ2PVSxUNA08HMYAnUBLj9v6KjYQ7SQ71hOZcEXhShE/y5iQCesP8+6/Ik/7i2O0a10bPquIcYfufog==}
-    engines: {node: ^8.13.0 || >=10.10.0}
-    dependencies:
-      '@grpc/proto-loader': 0.7.5
-      '@types/node': 18.15.3
-    dev: false
-
   /@grpc/grpc-js/1.8.12:
     resolution: {integrity: sha512-MbUMvpVvakeKhdYux6gbSIPJaFMLNSY8jw4PqLI+FFztGrQRrYYAnHlR94+ncBQQewkpXQaW449m3tpH/B/ZnQ==}
     engines: {node: ^8.13.0 || >=10.10.0}
@@ -569,7 +542,6 @@ packages:
       '@grpc/proto-loader': 0.7.5
       '@types/node': 18.15.3
     dev: false
-    optional: true
 
   /@grpc/proto-loader/0.6.13:
     resolution: {integrity: sha512-FjxPYDRTn6Ec3V0arm1FtSpmP6V50wuph2yILpyvTKzjc76oDdoihXqM1DzOW5ubvCC8GivfCnNtfaRE8myJ7g==}
@@ -802,13 +774,6 @@ packages:
   /@types/long/4.0.2:
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
 
-  /@types/long/5.0.0:
-    resolution: {integrity: sha512-eQs9RsucA/LNjnMoJvWG/nXa7Pot/RbBzilF/QRIU/xRl+0ApxrSUFsV5lmf01SvSlqMzJ7Zwxe440wmz2SJGA==}
-    deprecated: This is a stub types definition. long provides its own type definitions, so you do not need this installed.
-    dependencies:
-      long: 5.2.1
-    dev: true
-
   /@types/markdown-it/12.2.3:
     resolution: {integrity: sha512-GKMHFfv3458yYy+v/N8gjufHO6MSZKCOXpZc5GXIWWy8uldwfmPn98vp81gZ5f9SVw8YYBctgfJ22a2d7AOMeQ==}
     dependencies:
@@ -826,19 +791,8 @@ packages:
     dev: false
     optional: true
 
-  /@types/node/18.11.9:
-    resolution: {integrity: sha512-CRpX21/kGdzjOpFsZSkcrXMGIBWMGNIHXXBVFSH+ggkftxg+XYP20TESbh+zFvFj3EQOl5byk0HTRn1IL6hbqg==}
-    dev: true
-
   /@types/node/18.15.3:
     resolution: {integrity: sha512-p6ua9zBxz5otCmbpb5D3U4B5Nanw6Pk3PPyX05xnxbB/fRv71N7CPmORg7uAD5P70T0xmx1pzAx/FUfa5X+3cw==}
-
-  /@types/protobufjs/6.0.0:
-    resolution: {integrity: sha512-A27RDExpAf3rdDjIrHKiJK6x8kqqJ4CmoChwtipfhVAn1p7+wviQFFP7dppn8FslSbHtQeVPvi8wNKkDjSYjHw==}
-    deprecated: This is a stub types definition for protobufjs (https://github.com/dcodeIO/ProtoBuf.js). protobufjs provides its own type definitions, so you don't need @types/protobufjs installed!
-    dependencies:
-      protobufjs: 6.11.3
-    dev: true
 
   /@types/qs/6.9.7:
     resolution: {integrity: sha512-FGa1F62FT09qcrueBA6qYTrJPVDzah9a+493+o2PCXsesWHIn27G98TsSMs3WPNbZIEj4+VJf6saSFpvD+3Zsw==}
@@ -2435,6 +2389,14 @@ packages:
     dev: false
     optional: true
 
+  /google-protobuf/3.15.8:
+    resolution: {integrity: sha512-2jtfdqTaSxk0cuBJBtTTWsot4WtR9RVr2rXg7x7OoqiuOKopPrwXpM1G4dXIkLcUNRh3RKzz76C8IOkksZSeOw==}
+    dev: true
+
+  /google-protobuf/3.21.2:
+    resolution: {integrity: sha512-3MSOYFO5U9mPGikIYCzK0SaThypfGgS6bHqrUGXG3DPHCrb+txNqeEcns1W0lkGfk0rCyNXm7xB9rMxnCiZOoA==}
+    dev: false
+
   /gopd/1.0.1:
     resolution: {integrity: sha512-d65bNlIadxvpb/A2abVdlqKqV563juRnZ1Wtk6s1sIR8uNsXR70xqIzVqxVf1eTqDunwT2MkczEeaezCKTZhwA==}
     dependencies:
@@ -2446,6 +2408,14 @@ packages:
 
   /grapheme-splitter/1.0.4:
     resolution: {integrity: sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==}
+    dev: true
+
+  /grpc_tools_node_protoc_ts/5.3.3:
+    resolution: {integrity: sha512-M/YrklvVXMtuuj9kb42PxeouZhs7Ul+R4e/31XwrankUcKL8cQQP50Q9q+KEHGyHQaPt6VtKKsxMgLaKbCxeww==}
+    hasBin: true
+    dependencies:
+      google-protobuf: 3.15.8
+      handlebars: 4.7.7
     dev: true
 
   /gtoken/5.3.2:
@@ -2472,6 +2442,19 @@ packages:
       - supports-color
     dev: false
     optional: true
+
+  /handlebars/4.7.7:
+    resolution: {integrity: sha512-aAcXm5OAfE/8IXkcZvCepKU3VzW1/39Fb5ZuqMtgI/hT8X2YgoMvBY5dLhq/cpOvw7Lk1nK/UF71aLG/ZnVYRA==}
+    engines: {node: '>=0.4.7'}
+    hasBin: true
+    dependencies:
+      minimist: 1.2.8
+      neo-async: 2.6.2
+      source-map: 0.6.1
+      wordwrap: 1.0.0
+    optionalDependencies:
+      uglify-js: 3.17.4
+    dev: true
 
   /has-bigints/1.0.2:
     resolution: {integrity: sha512-tSvCKtBr9lkF0Ex0aQiP9N+OpV4zi2r/Nee5VkRDbaqv35RLYMzbwQfFSZZH0kR+Rd6302UJZ2p/bJCEoR3VoQ==}
@@ -3215,6 +3198,10 @@ packages:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
 
+  /neo-async/2.6.2:
+    resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
+    dev: true
+
   /neo4j-driver-bolt-connection/5.6.0:
     resolution: {integrity: sha512-QYKoYj0V0V1x8H8UWEWVefA+1Ug0NYVmAO6h4vy2m6dMt6Wxbtuvw/mjYdj+PHQnjonRn+1dno5158Kwxah94g==}
     dependencies:
@@ -3511,6 +3498,7 @@ packages:
       semver: 7.3.8
       tmp: 0.2.1
       uglify-js: 3.17.4
+    optional: true
 
   /protobufjs/7.2.2:
     resolution: {integrity: sha512-++PrQIjrom+bFDPpfmqXfAGSQs40116JRrqqyf53dymUMvvb5d/LMRyicRoF1AUKoXVS1/IgJXlEgcpr4gTF3Q==}
@@ -3898,7 +3886,6 @@ packages:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
     requiresBuild: true
-    optional: true
 
   /split/0.3.3:
     resolution: {integrity: sha512-wD2AeVmxXRBoX44wAycgjVpMhvbwdI2aZjCkvfNcH1YqHQvJVa1duWc73OyVGJUc05fhFaTZeQ/PYsrmyH0JVA==}
@@ -4384,6 +4371,10 @@ packages:
   /word-wrap/1.2.3:
     resolution: {integrity: sha512-Hz/mrNwitNRh/HUAtM/VT/5VH+ygD6DV7mYKZAtHOrbs8U7lvPS6xf7EJKMF0uW1KJCl0H701g3ZGus+muE5vQ==}
     engines: {node: '>=0.10.0'}
+
+  /wordwrap/1.0.0:
+    resolution: {integrity: sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==}
+    dev: true
 
   /wrap-ansi/7.0.0:
     resolution: {integrity: sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==}
