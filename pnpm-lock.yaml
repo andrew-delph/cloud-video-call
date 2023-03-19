@@ -90,11 +90,11 @@ importers:
       '@types/uuid': ^9.0.0
       amqplib: ^0.10.3
       cluster: ^0.7.7
+      common: link:../common
       ioredis: 5.2.5
       lodash: ^4.17.21
       lodash.throttle: ^4.1.1
-      neo4j-grpc-common: ^1.0.0
-      react-video-call-common: ^1.0.0
+      neo4j-grpc-common: link:../neo4j/neo4j-grpc-common
       redlock: ^5.0.0-beta.2
       tsc-watch: ^6.0.0
       typescript: ^4.9.5
@@ -102,11 +102,11 @@ importers:
     dependencies:
       amqplib: 0.10.3
       cluster: 0.7.7
+      common: link:../common
       ioredis: 5.2.5
       lodash: 4.17.21
       lodash.throttle: 4.1.1
       neo4j-grpc-common: link:../neo4j/neo4j-grpc-common
-      react-video-call-common: link:../common
       redlock: 5.0.0-beta.2
       uuid: 9.0.0
     devDependencies:
