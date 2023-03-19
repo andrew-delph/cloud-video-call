@@ -3,7 +3,6 @@ import * as common from 'react-video-call-common';
 import * as neo4j from 'neo4j-driver';
 import { getUid } from 'react-video-call-common';
 import Client from 'ioredis';
-import { Dict } from 'neo4j-driver-core/types/record';
 var cors = require(`cors`);
 const omitDeep = require(`omit-deep-lodash`);
 
@@ -223,9 +222,7 @@ app.get(`/preferences`, async (req, res) => {
     f_custom: any;
   };
 
-  const getMdProps = (
-    results: neo4j.QueryResult<Dict<PropertyKey, any>>,
-  ): MdObject => {
+  const getMdProps = (results: neo4j.QueryResult): MdObject => {
     if (results && results.records && results.records.length) {
       return {
         a_constant: results.records[0].get(`a_constant`)?.properties || {},
