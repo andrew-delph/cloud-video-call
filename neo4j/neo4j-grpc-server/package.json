@@ -15,8 +15,8 @@
   "dependencies": {
     "haversine-distance": "^1.2.1",
     "neo4j-driver": "^5.5.0",
-    "neo4j-grpc-common": "link:../../common",
-    "react-video-call-common": "link:../neo4j-grpc-common",
+    "common": "link:../../common",
+    "neo4j-grpc-common": "link:../neo4j-grpc-common",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
