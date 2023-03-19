@@ -52,12 +52,14 @@ export const cleanSocket = async (
 };
 
 const cleanSocketServer = async (server_hostname: string) => {
+  logger.debug(`cleanSocketServer for ${server_hostname}`);
   const connectedAuths = await mainRedisClient.smembers(server_hostname);
 
   for (const auth of connectedAuths) {
     await cleanSocket(auth, server_hostname);
   }
   await mainRedisClient.del(heartbeatPrefix + server_hostname);
+  logger.debug(`completed cleanSocketServer for ${server_hostname}`);
 };
 
 export const cleanMySocketServer = async () => {
