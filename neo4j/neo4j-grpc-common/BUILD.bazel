@@ -10,12 +10,18 @@ npm_link_all_packages(
 )
 
 
+filegroup(
+    name = "js_files",
+    srcs = glob(["src/**/*.js"]),
+)
+
 ts_project(
     name = "ts",
-    srcs = glob(["src/**/*.ts","src/**/*.js"]),
+    srcs = glob(["src/**/*.ts"]),
     declaration = True,
     out_dir = ".",
     visibility = ["//visibility:public"],
+    data = [":js_files"],
     deps = [
         ":node_modules",
     ],
