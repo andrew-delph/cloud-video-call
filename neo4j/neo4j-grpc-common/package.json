@@ -2,8 +2,7 @@
   "name": "neo4j-grpc-common",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.js",
   "scripts": {
     "build": "npm run build:proto && tsc",
     "build:watch": "nodemon --watch ./protos --watch ./src -e ts,proto --exec 'npm run build'",

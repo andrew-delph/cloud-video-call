@@ -31,7 +31,7 @@ importers:
 
   matcher:
     specifiers:
-      '@socket.io/redis-adapter': ^8.0.0
+      '@socket.io/redis-adapter': 8.0.0
       '@types/amqplib': ^0.10.1
       '@types/node': ^18.11.18
       '@types/uuid': ^9.0.0
@@ -51,7 +51,7 @@ importers:
       neo4j-grpc-common: link:../neo4j/neo4j-grpc-common
       nodemon: ^2.0.20
       redlock: ^5.0.0-beta.2
-      socket.io: ^4.5.4
+      socket.io: 4.6.1
       tsc-watch: ^6.0.0
       typescript: ^4.5.4
       uuid: ^9.0.0
@@ -66,7 +66,7 @@ importers:
       ioredis: 5.2.5
       neo4j-grpc-common: link:../neo4j/neo4j-grpc-common
       redlock: 5.0.0-beta.2
-      socket.io: 4.5.4
+      socket.io: 4.6.1
       uuid: 9.0.0
     devDependencies:
       '@types/amqplib': 0.10.1
@@ -175,7 +175,7 @@ importers:
       lodash.throttle: ^4.1.1
       neo4j-grpc-common: ^1.0.0
       react-video-call-common: ^1.0.0
-      socket.io: 4.5.4
+      socket.io: 4.6.1
       tsc-watch: ^6.0.0
       typescript: ^4.9.4
       uuid: ^9.0.0
@@ -192,7 +192,7 @@ importers:
       lodash.throttle: 4.1.1
       neo4j-grpc-common: link:../neo4j/neo4j-grpc-common
       react-video-call-common: link:../common
-      socket.io: 4.5.4
+      socket.io: 4.6.1
       uuid: 9.0.0
     devDependencies:
       '@types/amqplib': 0.10.1
@@ -1520,8 +1520,8 @@ packages:
     engines: {node: '>=10.0.0'}
     dev: false
 
-  /engine.io/6.2.1:
-    resolution: {integrity: sha512-ECceEFcAaNRybd3lsGQKas3ZlMVjN3cyWwMP25D2i0zWfyiytVbTpRPa34qrr+FHddtpBVOmq4H/DCv1O0lZRA==}
+  /engine.io/6.4.1:
+    resolution: {integrity: sha512-JFYQurD/nbsA5BSPmbaOSLa3tSVj8L6o4srSwXXY3NqE+gGUNmmPTbhn8tjzcCtSqhFgIeqef81ngny8JM25hw==}
     engines: {node: '>=10.0.0'}
     dependencies:
       '@types/cookie': 0.4.1
@@ -1533,7 +1533,7 @@ packages:
       cors: 2.8.5
       debug: 4.3.4
       engine.io-parser: 5.0.6
-      ws: 8.2.3
+      ws: 8.11.0
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -3843,10 +3843,6 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /socket.io-adapter/2.4.0:
-    resolution: {integrity: sha512-W4N+o69rkMEGVuk2D/cvca3uYsvGlMwsySWV447y99gUPghxq42BxqLNMndb+a1mm/5/7NeXVQS7RLa2XyXvYg==}
-    dev: false
-
   /socket.io-adapter/2.5.2:
     resolution: {integrity: sha512-87C3LO/NOMc+eMcpcxUBebGjkpMDkNBS9tf7KJqcDsmL936EChtVva71Dw2q4tQcuVC+hAUy4an2NO/sYXmwRA==}
     dependencies:
@@ -3866,15 +3862,15 @@ packages:
       - supports-color
     dev: false
 
-  /socket.io/4.5.4:
-    resolution: {integrity: sha512-m3GC94iK9MfIEeIBfbhJs5BqFibMtkRk8ZpKwG2QwxV0m/eEhPIV4ara6XCF1LWNAus7z58RodiZlAH71U3EhQ==}
+  /socket.io/4.6.1:
+    resolution: {integrity: sha512-KMcaAi4l/8+xEjkRICl6ak8ySoxsYG+gG6/XfRCPJPQ/haCRIJBTL4wIl8YCsmtaBovcAXGLOShyVWQ/FG8GZA==}
     engines: {node: '>=10.0.0'}
     dependencies:
       accepts: 1.3.8
       base64id: 2.0.0
       debug: 4.3.4
-      engine.io: 6.2.1
-      socket.io-adapter: 2.4.0
+      engine.io: 6.4.1
+      socket.io-adapter: 2.5.2
       socket.io-parser: 4.2.2
     transitivePeerDependencies:
       - bufferutil
@@ -4398,19 +4394,6 @@ packages:
 
   /ws/8.11.0:
     resolution: {integrity: sha512-HPG3wQd9sNQoT9xHyNCXoDUa+Xw/VevmY9FoHyQ+g+rrMn4j6FB4np7Z0OhdTgjx6MgQLK7jwSy1YecU1+4Asg==}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: ^5.0.2
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-    dev: false
-
-  /ws/8.2.3:
-    resolution: {integrity: sha512-wBuoj1BDpC6ZQ1B7DWQBYVLphPWkm8i9Y0/3YdHjHKHiohOJ1ws+3OccDWtH+PoC9DZD5WOTrJvNbWvjS6JWaA==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
