@@ -1,12 +1,15 @@
 #!/bin/bash
 
-# Build
-docker build -t andrewdelph/video-call-nginx:latest ./nginx
-docker build -t andrewdelph/video-call-websocket:latest -f ./websocket/Dockerfile .
-docker build -t andrewdelph/video-call-matcher:latest -f ./matcher/Dockerfile .
-docker build -t andrewdelph/video-call-matchmaker:latest -f ./matchmaker/Dockerfile .
+# Exit the script if any command fails
+set -e
 
-docker push andrewdelph/video-call-nginx:latest 
-docker push andrewdelph/video-call-websocket:latest 
-docker push andrewdelph/video-call-matcher:latest 
-docker push andrewdelph/video-call-matchmaker:latest 
+# Get all image_push targets
+targets=$(bazel query //... | grep image_push)
+
+# Run each image_push target
+while read -r target; do
+  echo "Running ${target}..."
+  bazel run "${target}"
+done <<< "${targets}"
+
+echo "All image_push targets executed successfully."
