@@ -1,7 +1,7 @@
 import express from 'express';
-import * as common from 'react-video-call-common';
+import * as common from 'common';
+import { getUid } from 'common';
 import * as neo4j from 'neo4j-driver';
-import { getUid } from 'react-video-call-common';
 import Client from 'ioredis';
 var cors = require(`cors`);
 const omitDeep = require(`omit-deep-lodash`);
