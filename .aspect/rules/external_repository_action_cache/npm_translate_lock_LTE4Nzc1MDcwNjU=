@@ -1,6 +1,6 @@
 # Input hashes for repository rule npm_translate_lock(name = "npm", pnpm_lock = "//:pnpm-lock.yaml").
 # This file should be checked into version control along with the pnpm-lock.yaml file.
-pnpm-lock.yaml=-1472125264
+pnpm-lock.yaml=-139661846
 pnpm-workspace.yaml=1185930978
 package.json=-1612134819
 common/package.json=-1244864096
@@ -8,4 +8,4 @@ matcher/package.json=516195496
 matchmaker/package.json=-2024862668
 neo4j/neo4j-grpc-common/package.json=798982205
 options/package.json=-123310364
-websocket/package.json=-546254352
+websocket/package.json=-740245027
