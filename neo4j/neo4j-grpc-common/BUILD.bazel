@@ -30,7 +30,7 @@ js_library(
 )
 
 npm_package(
-    name = "common-grpc",
+    name = "neo4j-grpc-common",
     srcs = [":lib"],
     visibility = ["//visibility:public"],
 )
