@@ -2,7 +2,7 @@
 // create priority relationships with score and job id
 // delete all priority rels not using the jobs id
 
-import * as common from 'react-video-call-common';
+import * as common from 'common';
 import Client from 'ioredis';
 import * as neo4j from 'neo4j-driver';
 import { v4 as uuid } from 'uuid';

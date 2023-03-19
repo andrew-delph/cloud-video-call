@@ -1,0 +1,29 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+
+npm_link_all_packages(
+    name = "node_modules",
+)
+
+ts_project(
+    name = "ts",
+    srcs = glob(["src/**/*.ts",]),
+    declaration = True,
+    out_dir = ".",
+    deps = [
+        ":node_modules",
+    ],
+)
+
+js_binary(
+    name = "neo4j-jobs-priority",
+    data = [":ts"],
+    entry_point = "src/priority-score-job.js",
+)
+
+js_binary(
+    name = "neo4j-jobs-similarity",
+    data = [":ts"],
+    entry_point = "src/similarity-score-job.js",
+)
