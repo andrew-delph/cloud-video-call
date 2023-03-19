@@ -24,7 +24,7 @@ js_binary(
 
 
 load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
-load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
 load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
 
 js_image_layer(
@@ -66,4 +66,13 @@ container_image(
         ":app_layer",
         ":node_modules_layer",
     ],
+)
+
+container_push(
+   name = "image_push",
+   image = ":image",
+   format = "Docker",
+   registry = "docker.io",
+   repository = "andrewdelph/video-call-options",
+   tag = "latest",
 )
