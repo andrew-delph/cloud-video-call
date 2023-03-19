@@ -75,3 +75,38 @@ load("@aspect_bazel_lib//lib:repositories.bzl", "register_copy_directory_toolcha
 register_copy_directory_toolchains()
 
 register_copy_to_directory_toolchains()
+
+
+# DOCKER
+http_archive(
+    name = "io_bazel_rules_docker",
+    sha256 = "b1e80761a8a8243d03ebca8845e9cc1ba6c82ce7c5179ce2b295cd36f7e394bf",
+    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.25.0/rules_docker-v0.25.0.tar.gz"],
+)
+
+
+load("@io_bazel_rules_docker//repositories:repositories.bzl", rules_docker_repositories = "repositories")
+
+rules_docker_repositories()
+
+load("@io_bazel_rules_docker//repositories:deps.bzl", rules_docker_deps = "deps")
+
+rules_docker_deps()
+
+load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
+
+container_pull(
+    name = "debian_arm64",
+    architecture = "arm64",
+    digest = "sha256:bd276cb1059f6502e342d3052a4c2767f2b3a0196508f5c2c34ce6da4a15b104",
+    registry = "docker.io",
+    repository = "debian",
+)
+
+container_pull(
+    name = "debian_amd64",
+    architecture = "amd64",
+    digest = "sha256:9a67b70d0ba1d7c7690f917eedd8d24974dd8fd493205368b1e555a90c954208",
+    registry = "docker.io",
+    repository = "debian",
+)
