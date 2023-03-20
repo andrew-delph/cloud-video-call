@@ -10,6 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Authenticate with Kubernetes
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" > kube-config.yaml
+          export KUBECONFIG=$(pwd)/kube-config.yaml
+      - name: Run Kubectl Command
+        run: |
+          kubectl get pods
       - uses: actions-hub/kubectl@master
         with:
           args: config get-contexts
