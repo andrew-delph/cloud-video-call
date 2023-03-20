@@ -15,3 +15,5 @@ jobs:
       - uses: actions-hub/kubectl@master
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      - name: Run deploy.sh
+        run: ./deploy.sh
