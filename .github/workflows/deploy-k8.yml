@@ -1,8 +1,8 @@
 name: Deploy updates to k8
 on:
   push:
-    # branches:
-    #   - master
+    branches:
+      - master
 env:
   KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
 jobs:
