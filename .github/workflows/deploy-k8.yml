@@ -21,6 +21,9 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build
         run: |
+          echo before
+          echo $KUBECONFIG
+          echo after
           kubectl config get-contexts
           kubectl cluster-info dump
           cd k8
