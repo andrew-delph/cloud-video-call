@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/utils.dart';
 import 'package:http/http.dart' as http;
 import 'Factory.dart';
 import 'LoadingWidget.dart';
@@ -74,10 +75,17 @@ class OptionsScreenState extends State<OptionsScreen> {
       };
       return http.get(url, headers: headers);
     }).then((response) {
-      if (response.statusCode == 200) {
+      if (validStatusCode(response.statusCode)) {
         return jsonDecode(response.body);
       } else {
-        throw Exception('Failed to fetch data');
+        const String errorMsg = 'Failed to load preferences data.';
+        const snackBar = SnackBar(
+          content: Text(errorMsg),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        Navigator.of(context).pop();
+        throw Exception(errorMsg);
       }
     }).then((data) {
       if (data["attributes"] is Map && data["attributes"]["constant"] is Map) {
@@ -90,6 +98,7 @@ class OptionsScreenState extends State<OptionsScreen> {
         filtersMap.addEntries(temp.entries.map((e) =>
             MapEntry<String, String>(e.key.toString(), e.value.toString())));
       }
+    }).whenComplete(() {
       setState(() {
         loading = false;
       });
@@ -121,10 +130,21 @@ class OptionsScreenState extends State<OptionsScreen> {
                   'attributes': {'constant': attributesMap.map},
                   'filters': {'constant': filtersMap.map}
                 };
-                var response = await http.put(url,
-                    headers: headers, body: json.encode(body));
-                print('preferences status: ${response.statusCode}');
-                loadAttributes();
+                http
+                    .put(url, headers: headers, body: json.encode(body))
+                    .then((response) {
+                  if (validStatusCode(response.statusCode)) {
+                  } else {
+                    const String errorMsg = 'Failed to update preferences.';
+                    const snackBar = SnackBar(
+                      content: Text(errorMsg),
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    Navigator.of(context).pop();
+                  }
+                  loadAttributes();
+                });
               },
               child: const Text('Submit'),
             ),

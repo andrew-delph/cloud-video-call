@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/state_machines.dart';
+import 'package:flutter_app/utils.dart';
 
 import 'AppProvider.dart';
 import 'Factory.dart';
@@ -46,12 +47,21 @@ class FeedbackScreenState extends State<FeedbackScreen> {
       'feedback_id': widget.appProvider.feedbackId!,
       'score': score
     };
-    var response =
-        await http.post(url, headers: headers, body: json.encode(body));
-    print('Feedback status: ${response.statusCode}');
-    print('Feedback body: ${response.body}');
+    http.post(url, headers: headers, body: json.encode(body)).then((response) {
+      if (validStatusCode(response.statusCode)) {
+      } else {
+        const String errorMsg = 'Failed to provide feedback.';
+        const snackBar = SnackBar(
+          content: Text(errorMsg),
+        );
 
-    widget.appProvider.chatMachine.current = ChatStates.waiting;
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        Navigator.of(context).pop();
+        throw Exception(errorMsg);
+      }
+    }).whenComplete(() {
+      widget.appProvider.chatMachine.current = ChatStates.waiting;
+    });
   }
 
   @override
