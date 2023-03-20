@@ -10,16 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Authenticate with Kubernetes
-        run: |
-          echo "${{ secrets.KUBE_CONFIG }}" > kube-config.yaml
-          export KUBECONFIG=$(pwd)/kube-config.yaml
+      - uses: tale/kubectl-action@v1
+        with:
+          base64-kube-config: ${{ secrets.KUBE_CONFIG }}
       - name: Run Kubectl Command
         run: |
           kubectl config get-contexts
-      # - uses: actions-hub/kubectl@master
-      #   with:
-      #     args: config get-contexts
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -28,9 +24,7 @@ jobs:
       - name: Build
         run: |
           echo before
-          echo $KUBECONFIG
-          echo $KUBE_CONFIG
-          kubectl get pods --kubeconfig=$KUBE_CONFIG
+          kubectl get pods
           echo after
           kubectl config get-contexts
           kubectl cluster-info dump
