@@ -3,6 +3,7 @@
 # Exit the script if any command fails
 set -e
 
+
 kubectl get pods
 
 # Get all image_push targets
