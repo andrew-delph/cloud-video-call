@@ -1,0 +1,42 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+
+
+npm_link_all_packages(
+    name = "node_modules",
+)
+
+
+filegroup(
+    name = "js_files",
+    srcs = glob(["src/**/*.js"]),
+)
+
+ts_project(
+    name = "ts",
+    srcs = glob(["src/**/*.ts"]),
+    declaration = True,
+    out_dir = ".",
+    visibility = ["//visibility:public"],
+    data = [":js_files"],
+    deps = [
+        ":node_modules",
+    ],
+)
+
+
+js_library(
+    name = "lib",
+    srcs = [
+        ":ts","package.json"
+    ],
+)
+
+npm_package(
+    name = "neo4j-grpc-common",
+    srcs = [":lib"],
+    visibility = ["//visibility:public"],
+)

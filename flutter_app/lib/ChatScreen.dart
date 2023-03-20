@@ -10,7 +10,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import 'AppProvider.dart';
-import 'Feedback.dart';
+import 'FeedbackScreen.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -157,7 +157,7 @@ class ChatScreenState extends State<ChatScreen> {
 
         if (appProvider.chatMachine.current?.identifier ==
             ChatStates.feedback) {
-          return FeedbackWidget(
+          return FeedbackScreen(
               min: 0,
               max: 10,
               initialValue: 5,

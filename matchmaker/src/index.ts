@@ -1,8 +1,8 @@
 import { startReadyConsumer } from './ready-worker';
 import cluster from 'cluster';
 import { cpus } from 'os';
-import { listenGlobalExceptions } from 'react-video-call-common';
-import * as common from 'react-video-call-common';
+import { listenGlobalExceptions } from 'common';
+import * as common from 'common';
 
 listenGlobalExceptions();
 

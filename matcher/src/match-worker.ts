@@ -2,7 +2,7 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import * as dotenv from 'dotenv';
-import * as common from 'react-video-call-common';
+import * as common from 'common';
 import Client from 'ioredis';
 
 import { v4 as uuid } from 'uuid';
@@ -25,7 +25,7 @@ const neo4jRpcClient = createNeo4jClient();
 const serverID = uuid();
 
 import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
-import { MatchMessage, ReadyMessage } from 'react-video-call-common';
+import { MatchMessage, ReadyMessage } from 'common';
 
 dotenv.config();
 

@@ -1,6 +1,6 @@
 {
   "cSpell.words": ["predeploy", "pubspec"],
-  "search.useIgnoreFiles": false,
+  "search.useIgnoreFiles": true,
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {

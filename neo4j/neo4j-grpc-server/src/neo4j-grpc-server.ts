@@ -17,9 +17,8 @@ import {
 import haversine from 'haversine-distance';
 
 import * as neo4j from 'neo4j-driver';
-import * as common from 'react-video-call-common';
+import * as common from 'common';
 import { v4 } from 'uuid';
-import { Dict } from 'neo4j-driver-core/types/record';
 
 var server = new grpc.Server();
 
@@ -342,9 +341,7 @@ const checkUserFilters = async (
     f_custom: any;
   };
 
-  const getMdProps = (
-    results: neo4j.QueryResult<Dict<PropertyKey, any>>,
-  ): MdObject => {
+  const getMdProps = (results: neo4j.QueryResult): MdObject => {
     if (results && results.records && results.records.length) {
       return {
         a_constant: results.records[0].get(`a_constant`)?.properties || {},

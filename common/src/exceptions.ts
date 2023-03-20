@@ -14,7 +14,7 @@ export const listenGlobalExceptions = (clean_up?: () => Promise<void>) => {
 
         process.exit(0);
       } catch (e) {
-        logger.error(e);
+        logger.error(`clean_up error: ${e}`);
         process.exit(1);
       }
     });
@@ -25,6 +25,8 @@ export const listenGlobalExceptions = (clean_up?: () => Promise<void>) => {
       try {
         logger.warn(`signalTraps ${type} args: ${JSON.stringify(args)}`);
         if (clean_up != null) await clean_up();
+      } catch (e) {
+        logger.error(`clean_up error: ${e}`);
       } finally {
         process.kill(process.pid, type);
       }

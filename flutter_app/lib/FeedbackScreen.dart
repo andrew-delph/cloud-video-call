@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class FeedbackWidget extends StatefulWidget {
+class FeedbackScreen extends StatefulWidget {
   final String label;
   final int min;
   final int max;
   final int initialValue;
   final void Function(int) onSubmit;
 
-  const FeedbackWidget({
+  const FeedbackScreen({
     super.key,
     required this.label,
     required this.min,
@@ -17,10 +17,10 @@ class FeedbackWidget extends StatefulWidget {
   });
 
   @override
-  FeedbackWidgetState createState() => FeedbackWidgetState();
+  FeedbackScreenState createState() => FeedbackScreenState();
 }
 
-class FeedbackWidgetState extends State<FeedbackWidget> {
+class FeedbackScreenState extends State<FeedbackScreen> {
   late int _value;
 
   @override

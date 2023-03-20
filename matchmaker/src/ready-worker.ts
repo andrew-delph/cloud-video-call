@@ -1,5 +1,5 @@
 import { connect, ConsumeMessage } from 'amqplib';
-import * as common from 'react-video-call-common';
+import * as common from 'common';
 import Client from 'ioredis';
 import Redlock, { ResourceLockedError, ExecutionError } from 'redlock';
 import amqp from 'amqplib';
@@ -23,7 +23,7 @@ import {
   listenGlobalExceptions,
   MatchMessage,
   ReadyMessage,
-} from 'react-video-call-common';
+} from 'common';
 
 const logger = common.getLogger();
 

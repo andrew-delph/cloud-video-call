@@ -5,6 +5,7 @@ metadata:
 spec:
   concurrencyPolicy: Forbid
   schedule: '1 * * * 1'
+  suspend: true
   jobTemplate:
     spec:
       template:
@@ -13,7 +14,4 @@ spec:
             - name: neo4j-jobs
               image: andrewdelph/video-call-neo4j-jobs:latest
               imagePullPolicy: Always
-              command:
-                - node
-                - ./dist/priority-score-job.js
           restartPolicy: Never
