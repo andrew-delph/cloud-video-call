@@ -130,10 +130,10 @@ class ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     var child = Consumer<AppProvider>(
       builder: (consumerContext, appProvider, child) {
-        appProvider.init();
-        // appProvider.init(
-        //     onSocketStateChange: handleSocketStateChange,
-        //     onPeerConnectionStateChange: handlePeerConnectionStateChange);
+        // appProvider.init();
+        appProvider.init(
+            onSocketStateChange: handleSocketStateChange,
+            onPeerConnectionStateChange: handlePeerConnectionStateChange);
 
         // if connected to peerconnection. show end chat
         // if not connected to peerconnection
