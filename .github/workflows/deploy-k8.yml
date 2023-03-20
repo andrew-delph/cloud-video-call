@@ -23,7 +23,7 @@ jobs:
           echo before
           echo $KUBECONFIG
           echo $KUBE_CONFIG
-          kubectl --kubeconfig=$KUBE_CONFIG get pods
+          kubectl get pods --kubeconfig=$KUBE_CONFIG
           echo after
           kubectl config get-contexts
           kubectl cluster-info dump
