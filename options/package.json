@@ -18,6 +18,7 @@
     "neo4j-driver": "^5.5.0",
     "omit-deep-lodash": "^1.1.7",
     "neo4j-grpc-common": "link:../neo4j/neo4j-grpc-common",
+    "firebase-admin": "^11.4.1",
     "common": "link:../common"
   },
   "devDependencies": {

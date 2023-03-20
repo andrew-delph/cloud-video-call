@@ -3,12 +3,15 @@ import * as common from 'common';
 import { getUid } from 'common';
 import * as neo4j from 'neo4j-driver';
 import Client from 'ioredis';
+import { initializeApp } from 'firebase-admin/app';
 var cors = require(`cors`);
 const omitDeep = require(`omit-deep-lodash`);
 
 common.listenGlobalExceptions();
 
 const logger = common.getLogger();
+
+const firebaseApp = initializeApp();
 
 const durationWarn = 2;
 

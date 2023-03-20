@@ -178,6 +178,7 @@ importers:
       common: link:../common
       cors: ^2.8.5
       express: ^4.18.2
+      firebase-admin: ^11.4.1
       ioredis: 5.2.5
       neo4j-driver: ^5.5.0
       neo4j-grpc-common: link:../neo4j/neo4j-grpc-common
@@ -188,6 +189,7 @@ importers:
       common: link:../common
       cors: 2.8.5
       express: 4.18.2
+      firebase-admin: 11.5.0
       ioredis: 5.2.5
       neo4j-driver: 5.6.0
       neo4j-grpc-common: link:../neo4j/neo4j-grpc-common
