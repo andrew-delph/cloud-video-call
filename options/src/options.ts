@@ -29,7 +29,7 @@ const driver = neo4j.driver(
 
 app.get(`/health`, (req, res) => {
   logger.debug(`got health check`);
-  res.send(`Health is good.`);
+  res.send(`Health is good. diff`);
 });
 
 app.post(`/providefeedback`, async (req, res) => {
