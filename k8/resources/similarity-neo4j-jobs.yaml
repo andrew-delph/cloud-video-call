@@ -13,7 +13,4 @@ spec:
             - name: neo4j-jobs
               image: andrewdelph/video-call-neo4j-jobs:latest
               imagePullPolicy: Always
-              command:
-                - node
-                - ./dist/similarity-score-job.js
           restartPolicy: Never
