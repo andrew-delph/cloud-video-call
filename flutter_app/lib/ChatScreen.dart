@@ -12,8 +12,6 @@ import 'package:provider/provider.dart';
 import 'AppProvider.dart';
 import 'FeedbackScreen.dart';
 
-import 'package:http/http.dart' as http;
-
 import 'LoadingWidget.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -158,30 +156,7 @@ class ChatScreenState extends State<ChatScreen> {
         if (appProvider.chatMachine.current?.identifier ==
             ChatStates.feedback) {
           return FeedbackScreen(
-              min: 0,
-              max: 10,
-              initialValue: 5,
-              onSubmit: (score) async {
-                var url =
-                    Uri.parse("${Factory.getOptionsHost()}/providefeedback");
-                final headers = {
-                  'Access-Control-Allow-Origin': '*',
-                  'Content-Type': 'application/json',
-                  'authorization':
-                      await FirebaseAuth.instance.currentUser!.getIdToken()
-                };
-                final body = {
-                  'feedback_id': appProvider.feedbackId!,
-                  'score': score
-                };
-                var response = await http.post(url,
-                    headers: headers, body: json.encode(body));
-                print('Feedback status: ${response.statusCode}');
-                print('Feedback body: ${response.body}');
-
-                appProvider.chatMachine.current = ChatStates.waiting;
-              },
-              label: 'Submit Feedback');
+              label: 'Submit Feedback', appProvider: appProvider);
         }
 
         Widget chatButton = TextButton(
