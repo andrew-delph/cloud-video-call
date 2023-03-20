@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Install CLI tools from OpenShift Mirror (knative)
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          kn: 'latest'
       - uses: tale/kubectl-action@v1
         with:
           base64-kube-config: ${{ secrets.KUBE_CONFIG }}
