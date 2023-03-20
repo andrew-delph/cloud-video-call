@@ -16,7 +16,7 @@ jobs:
           export KUBECONFIG=$(pwd)/kube-config.yaml
       - name: Run Kubectl Command
         run: |
-          kubectl get pods
+          kubectl config get-contexts
       - uses: actions-hub/kubectl@master
         with:
           args: config get-contexts
