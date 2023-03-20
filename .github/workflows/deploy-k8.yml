@@ -1,0 +1,17 @@
+name: Deploy updates to k8
+on:
+  push:
+    # branches:
+    #   - master
+jobs:
+  build_and_deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: flutter_app/ios
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
