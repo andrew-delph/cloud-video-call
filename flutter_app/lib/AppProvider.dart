@@ -162,9 +162,9 @@ class AppProvider extends ChangeNotifier {
       handleSocketStateChange(SocketConnectionState.disconnected, details);
       notifyListeners();
     });
-    socket!.onError((details) {
-      handleSocketStateChange(SocketConnectionState.error, details);
-
+    socket!.on('error', (data) {
+      print("error $data");
+      handleSocketStateChange(SocketConnectionState.error, data);
       notifyListeners();
     });
 
