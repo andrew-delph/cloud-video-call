@@ -145,13 +145,13 @@ class ChatScreenState extends State<ChatScreen> {
               ChatStates.connected;
         }
 
-        // display loading if socket is not established
-        isDisplayLoading() {
-          return appProvider.socketMachine.current?.identifier !=
-              SocketStates.established;
-        }
+        // if socket is connecting
+        if (appProvider.socketMachine.current?.identifier ==
+            SocketStates.connecting) return connectingWidget;
 
-        if (isDisplayLoading()) return loadingWidget;
+        // if socket is waiting for established
+        if (appProvider.socketMachine.current?.identifier !=
+            SocketStates.established) return loadingWidget;
 
         if (appProvider.chatMachine.current?.identifier ==
             ChatStates.feedback) {

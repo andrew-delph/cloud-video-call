@@ -107,7 +107,7 @@ class OptionsScreenState extends State<OptionsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget body = loadingWidget;
+    Widget body = connectingWidget;
     if (!loading) {
       body = Column(
         crossAxisAlignment: CrossAxisAlignment.center,
