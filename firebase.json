@@ -1,50 +1,6 @@
 {
   "hosting": {
     "public": "flutter_app/build/web",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [
-      {
-        "source": "**",
-        "run": {
-          "serviceId": "react-video-call",
-          "region": "us-central1"
-        }
-      }
-    ]
-  },
-  "functions": [
-    {
-      "source": "functions",
-      "codebase": "default",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log"
-      ],
-      "predeploy": [
-        "cd common && npm install && npm run build",
-        "cd functions && npm install --only=dev",
-        "cd functions && npm run copy-common",
-        "cd functions && npm install",
-        "cd functions && npm run build"
-      ]
-    }
-  ],
-  "emulators": {
-    // "singleProjectMode": false, // do not warn on detection of multiple project IDs
-    // "firestore": {
-    //   "port": "8080"
-    // },
-    "ui": {
-      "enabled": true,
-      "port": 5001
-    }
-    // "auth": {
-    //   "port": "9099"
-    // },
-    // "pubsub": {
-    //   "port": "8085"
-    // }
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
   }
 }
