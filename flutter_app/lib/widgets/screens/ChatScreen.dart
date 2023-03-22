@@ -219,7 +219,7 @@ class ChatScreenState extends State<ChatScreen> {
                           icon: Icon(Icons.videocam_off),
                           onPressed: () {},
                         ),
-                        settingsButton,
+                        SettingsButton(appProvider),
                       ],
                     ),
                   ),
@@ -237,28 +237,78 @@ class ChatScreenState extends State<ChatScreen> {
 
 enum SampleItem { itemOne, itemTwo, itemThree }
 
-var settingsButton = PopupMenuButton<SampleItem>(
-  initialValue: SampleItem.itemOne,
-  // Callback that sets the selected popup menu item.
-  onSelected: (SampleItem item) {
-    // setState(() {
-    //   selectedMenu = item;
-    // });
-  },
-  icon: const Icon(Icons.settings),
-  position: PopupMenuPosition.over,
-  itemBuilder: (BuildContext context) => <PopupMenuEntry<SampleItem>>[
-    const PopupMenuItem<SampleItem>(
-      value: SampleItem.itemOne,
-      child: Text('Item 1'),
-    ),
-    const PopupMenuItem<SampleItem>(
-      value: SampleItem.itemTwo,
-      child: Text('Item 2'),
-    ),
-    const PopupMenuItem<SampleItem>(
-      value: SampleItem.itemThree,
-      child: Text('Item 3'),
-    ),
-  ],
-);
+class SettingsButton extends StatelessWidget {
+  SettingsButton(AppProvider appProvider, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<MediaDeviceInfo>>(
+      future: navigator.mediaDevices.enumerateDevices(),
+      builder: (context, snapshot) {
+        List<PopupMenuEntry<MediaDeviceInfo>> videoInputList = [
+          const PopupMenuItem<MediaDeviceInfo>(
+            enabled: false,
+            child: Text("Camera"),
+          )
+        ];
+        List<PopupMenuEntry<MediaDeviceInfo>> audioInputList = [
+          const PopupMenuItem<MediaDeviceInfo>(
+            enabled: false,
+            child: Text("Microphone"),
+          )
+        ];
+        List<PopupMenuEntry<MediaDeviceInfo>> audioOutputList = [
+          const PopupMenuItem<MediaDeviceInfo>(
+            enabled: false,
+            child: Text("Speaker"),
+          )
+        ];
+        if (snapshot.hasData) {
+          for (MediaDeviceInfo mediaDeviceInfo in snapshot.data!) {
+            switch (mediaDeviceInfo.kind) {
+              case "videoinput":
+                videoInputList.add(PopupMenuItem<MediaDeviceInfo>(
+                  value: mediaDeviceInfo,
+                  child: Text(mediaDeviceInfo.label),
+                ));
+                break; // The switch statement must be told to exit, or it will execute every case.
+              case "audioinput":
+                audioInputList.add(PopupMenuItem<MediaDeviceInfo>(
+                  value: mediaDeviceInfo,
+                  child: Text(mediaDeviceInfo.label),
+                ));
+                break;
+              case "audiooutput":
+                audioOutputList.add(PopupMenuItem<MediaDeviceInfo>(
+                  value: mediaDeviceInfo,
+                  child: Text(mediaDeviceInfo.label),
+                ));
+                break;
+            }
+          }
+        }
+
+        List<PopupMenuEntry<MediaDeviceInfo>> mediaList =
+            videoInputList + audioInputList + audioOutputList;
+        final RenderBox renderBox = context.findRenderObject() as RenderBox;
+        //*get the global position, from the widget local position
+        final offset = renderBox.localToGlobal(Offset.zero);
+
+        //*calculate the start point in this case, below the button
+        final left = offset.dx;
+        final top = offset.dy + renderBox.size.height;
+        //*The right does not indicates the width
+        final right = left + renderBox.size.width;
+        return IconButton(
+          icon: const Icon(Icons.settings),
+          onPressed: () {
+            showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(left, top, right, 0.0),
+                items: mediaList);
+          },
+        );
+      },
+    );
+  }
+}
