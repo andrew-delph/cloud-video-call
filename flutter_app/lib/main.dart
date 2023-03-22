@@ -13,45 +13,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 void main() async {
   print("Start main...");
 
-  final Map<String, dynamic> mediaConstraints = {'audio': true, 'video': true};
-
-  MediaStream stream =
-      await navigator.mediaDevices.getUserMedia(mediaConstraints);
-
-  List<MediaDeviceInfo> cameras =
-      await navigator.mediaDevices.enumerateDevices();
-
-  print("mediaDevices:");
-  for (var device in cameras) {
-    print(">> ${device.label} ${device.kind}");
-    print(".${device.groupId}");
-    print(".${device.deviceId}");
-  }
-  print("");
-
-  // final Map<String, dynamic> mediaConstraints = {'audio': true, 'video': true};
-
-  // MediaStream stream =
-  // await navigator.mediaDevices.getUserMedia(mediaConstraints);
-  //
-  // await navigator.mediaDevices.enumerateDevices();
-  //
-  // // navigator.mediaDevices.selectAudioOutput();
-  // List<MediaDeviceInfo> devices =
-  // await navigator.mediaDevices.enumerateDevices();
-  // print("devices:");
-  // for (var device in devices) {
-  //   print(">> ${device.label} ${device.kind}");
-  //   print(".${device.groupId}");
-  //   print(".${device.deviceId}");
-  // }
-  // print("");
-  //
-  //
-  // MediaTrackSupportedConstraints supportedConstraints =
-  // navigator.mediaDevices.getSupportedConstraints();
-  // print("supportedConstraints $supportedConstraints");
-
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(
