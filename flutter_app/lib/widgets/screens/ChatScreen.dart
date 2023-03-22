@@ -266,7 +266,7 @@ class SettingsButton extends StatelessWidget {
               case "videoinput":
                 videoInputList.add(PopupMenuItem<MediaDeviceInfo>(
                   onTap: () {
-                    print("click");
+                    print("click video");
                     appProvider.changeCamera(mediaDeviceInfo);
                     // Helper.switchCamera(track)
                   },
@@ -278,6 +278,11 @@ class SettingsButton extends StatelessWidget {
                 audioInputList.add(PopupMenuItem<MediaDeviceInfo>(
                   value: mediaDeviceInfo,
                   child: Text(mediaDeviceInfo.label),
+                  onTap: () {
+                    print("click audio input");
+                    appProvider.changeAudioInput(mediaDeviceInfo);
+                    // Helper.switchCamera(track)
+                  },
                 ));
                 break;
               case "audiooutput":

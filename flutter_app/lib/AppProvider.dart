@@ -373,6 +373,7 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> changeCamera(MediaDeviceInfo mediaDeviceInfo) async {
     MediaStreamTrack videoTrack = localMediaStream!.getVideoTracks()[0];
+
     await Helper.switchCamera(
         videoTrack, mediaDeviceInfo.deviceId, localMediaStream);
 
@@ -392,6 +393,29 @@ class AppProvider extends ChangeNotifier {
       localVideoRenderer.srcObject = _localMediaStream;
       notifyListeners();
     });
+  }
+
+  Future<void> changeAudioOutput(MediaDeviceInfo mediaDeviceInfo) async {
+    await Helper.selectAudioInput(mediaDeviceInfo.deviceId);
+    // await navigator.mediaDevices.selectAudioOutput();
+  }
+
+  Future<void> changeAudioInput(MediaDeviceInfo mediaDeviceInfo) async {
+    MediaStream audioStream = await navigator.mediaDevices.getUserMedia({
+      'audio': {
+        'deviceId': mediaDeviceInfo.deviceId,
+      },
+    });
+    print("got audio stream .. ${audioStream.getAudioTracks()[0]}");
+
+    if (chatMachine.current?.identifier == ChatStates.connected) {
+      (await peerConnection?.senders)?.forEach((element) {
+        if (element.track?.kind == 'audio') {
+          print("replacing audio...");
+          element.replaceTrack(audioStream.getAudioTracks()[0]);
+        }
+      });
+    }
   }
 
   set localMediaStream(MediaStream? value) {
