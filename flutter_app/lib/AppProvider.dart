@@ -224,7 +224,7 @@ class AppProvider extends ChangeNotifier {
 
     // START add localMediaStream to peerConnection
     localMediaStream!.getTracks().forEach((track) async {
-          await peerConnection!.addTrack(track, localMediaStream!);
+      await peerConnection!.addTrack(track, localMediaStream!);
     });
 
     // START add localMediaStream to peerConnection
@@ -378,13 +378,16 @@ class AppProvider extends ChangeNotifier {
 
     MediaStreamTrack newVideoTrack = localMediaStream!.getVideoTracks()[0];
 
-    (await peerConnection?.senders)?.forEach((element) {
-      print("element.track.kind ${element.track?.kind}");
-      if (element.track?.kind == 'video') {
-        print("replacing video...");
-        element.replaceTrack(newVideoTrack);
-      }
-    });
+    if (chatMachine.current?.identifier == ChatStates.connected) {
+      (await peerConnection?.senders)?.forEach((element) {
+        print("element.track.kind ${element.track?.kind}");
+        if (element.track?.kind == 'video') {
+          print("replacing video...");
+          element.replaceTrack(newVideoTrack);
+        }
+      });
+    }
+
     localVideoRenderer.initialize().then((value) {
       localVideoRenderer.srcObject = _localMediaStream;
       notifyListeners();
