@@ -1,27 +1,72 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/OptionsScreen.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter_app/widgets/MainScreen.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
+
 import 'package:provider/provider.dart';
 
 import 'AppProvider.dart';
-import 'ChatScreen.dart';
-import 'MainScreen.dart';
 import 'firebase_options.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'location.dart';
-
 void main() async {
   print("Start main...");
+
+  final Map<String, dynamic> mediaConstraints = {'audio': true, 'video': true};
+
+  MediaStream stream =
+      await navigator.mediaDevices.getUserMedia(mediaConstraints);
+
+  List<MediaDeviceInfo> cameras = await Helper.cameras;
+
+  print("cameras:");
+  for (var device in cameras) {
+    print(">> ${device.label} ${device.kind}");
+    print(".${device.groupId}");
+    print(".${device.deviceId}");
+  }
+  print("");
+
+  List<MediaDeviceInfo> audiooutputs = await Helper.audiooutputs;
+
+  print("audiooutputs:");
+  for (var device in audiooutputs) {
+    print(">> ${device.label} ${device.kind}");
+    print(".${device.groupId}");
+    print(".${device.deviceId}");
+  }
+  print("");
+
+  // final Map<String, dynamic> mediaConstraints = {'audio': true, 'video': true};
+
+  // MediaStream stream =
+  // await navigator.mediaDevices.getUserMedia(mediaConstraints);
+  //
+  // await navigator.mediaDevices.enumerateDevices();
+  //
+  // // navigator.mediaDevices.selectAudioOutput();
+  // List<MediaDeviceInfo> devices =
+  // await navigator.mediaDevices.enumerateDevices();
+  // print("devices:");
+  // for (var device in devices) {
+  //   print(">> ${device.label} ${device.kind}");
+  //   print(".${device.groupId}");
+  //   print(".${device.deviceId}");
+  // }
+  // print("");
+  //
+  //
+  // MediaTrackSupportedConstraints supportedConstraints =
+  // navigator.mediaDevices.getSupportedConstraints();
+  // print("supportedConstraints $supportedConstraints");
+
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
+
   FirebaseAuth.instance.idTokenChanges().listen((User? user) async {
     if (user == null) {
       print('User is currently signed out!');
@@ -41,8 +86,6 @@ void main() async {
       print('User is signed in!');
     }
   });
-
-
 
   // Position position = await getLocation();
 

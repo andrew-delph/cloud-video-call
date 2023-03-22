@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/state_machines.dart';
 import 'package:flutter_app/utils.dart';
 
-import 'AppProvider.dart';
-import 'Factory.dart';
+import '../AppProvider.dart';
+import '../Factory.dart';
 
 import 'package:http/http.dart' as http;
 

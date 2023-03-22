@@ -9,10 +9,10 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
-import 'AppProvider.dart';
-import 'FeedbackScreen.dart';
+import '../AppProvider.dart';
 
-import 'LoadingWidget.dart';
+import '../LoadingWidget.dart';
+import 'FeedbackScreen.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
