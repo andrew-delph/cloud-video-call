@@ -288,6 +288,11 @@ class SettingsButton extends StatelessWidget {
               case "audiooutput":
                 audioOutputList.add(PopupMenuItem<MediaDeviceInfo>(
                   value: mediaDeviceInfo,
+                  onTap: () {
+                    print("click audio input");
+                    appProvider.changeAudioOutput(mediaDeviceInfo);
+                    // Helper.switchCamera(track)
+                  },
                   child: Text(mediaDeviceInfo.label),
                 ));
                 break;
@@ -296,7 +301,7 @@ class SettingsButton extends StatelessWidget {
         }
 
         List<PopupMenuEntry<MediaDeviceInfo>> mediaList =
-            videoInputList + audioInputList + audioOutputList;
+            videoInputList + audioInputList; // + audioOutputList;
         final RenderBox renderBox = context.findRenderObject() as RenderBox;
         //*get the global position, from the widget local position
         final offset = renderBox.localToGlobal(Offset.zero);

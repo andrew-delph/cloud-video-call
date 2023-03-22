@@ -396,8 +396,17 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> changeAudioOutput(MediaDeviceInfo mediaDeviceInfo) async {
-    await Helper.selectAudioInput(mediaDeviceInfo.deviceId);
+    throw "not implemented";
+    print("changeAudioOutput...");
+    await Helper.selectAudioOutput(mediaDeviceInfo.deviceId);
+    // var worked = await localVideoRenderer.audioOutput(mediaDeviceInfo.deviceId);
+    print("changeAudioOutput... worked ");
+    // await Helper.selectAudioOutput(mediaDeviceInfo.deviceId);
     // await navigator.mediaDevices.selectAudioOutput();
+    localVideoRenderer.initialize().then((value) {
+      localVideoRenderer.srcObject = _localMediaStream;
+      notifyListeners();
+    });
   }
 
   Future<void> changeAudioInput(MediaDeviceInfo mediaDeviceInfo) async {
