@@ -204,7 +204,13 @@ class ChatScreenState extends State<ChatScreen> {
                       children: [
                         IconButton(
                           icon: Icon(Icons.call_end),
-                          onPressed: () {},
+                          color: isInChat() ? Colors.red : Colors.grey,
+                          onPressed: () {
+                            if (isInChat()) {
+                              appProvider.chatMachine.current =
+                                  ChatStates.ended;
+                            }
+                          },
                         ),
                         IconButton(
                           icon: Icon(Icons.mic_off),
