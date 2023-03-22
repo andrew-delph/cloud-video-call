@@ -1,15 +1,12 @@
-import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/state_machines.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:socket_io_client/socket_io_client.dart';
+import 'package:statemachine/statemachine.dart';
 
 import 'Factory.dart';
-import 'dart:math';
-import 'package:statemachine/statemachine.dart';
 
 enum SocketConnectionState { connected, connectionError, error, disconnected }
 
@@ -375,9 +372,13 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> changeCamera(MediaDeviceInfo mediaDeviceInfo) async {
-    print("changeCamera");
     MediaStreamTrack videoTrack = localMediaStream!.getVideoTracks()[0];
-    Helper.switchCamera(videoTrack, mediaDeviceInfo.deviceId, localMediaStream);
+    await Helper.switchCamera(
+        videoTrack, mediaDeviceInfo.deviceId, localMediaStream);
+    localVideoRenderer.initialize().then((value) {
+      localVideoRenderer.srcObject = _localMediaStream;
+      notifyListeners();
+    });
   }
 
   set localMediaStream(MediaStream? value) {
