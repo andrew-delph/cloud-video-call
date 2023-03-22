@@ -173,29 +173,64 @@ class ChatScreenState extends State<ChatScreen> {
             },
             child: Text((isInChat() == false) ? 'New chat' : 'End chat'));
 
-        return SizedBox(
-            width: double.infinity,
-            child: Row(children: [
-              Container(
-                  width: 100,
-                  height: double.infinity,
-                  color: Colors.white,
-                  child: chatButton),
-              Flexible(
-                child: Container(
-                    key: const Key('local'),
-                    // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                    decoration: const BoxDecoration(color: Colors.black),
-                    child: RTCVideoView(appProvider.localVideoRenderer)),
+        return Flex(
+          direction: Axis.horizontal,
+          children: [
+            Container(
+              width: 100,
+              color: Colors.white,
+              child: chatButton,
+            ),
+            Expanded(
+              child: Stack(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          color: Colors.black,
+                          child: RTCVideoView(appProvider.localVideoRenderer),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          color: Colors.black,
+                          child: RTCVideoView(appProvider.remoteVideoRenderer),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.chat),
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.mic_off),
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.videocam_off),
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.fullscreen),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              Flexible(
-                child: Container(
-                    key: const Key('local'),
-                    // margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                    decoration: const BoxDecoration(color: Colors.black),
-                    child: RTCVideoView(appProvider.remoteVideoRenderer)),
-              ),
-            ]));
+            ),
+          ],
+        );
       },
     );
 
