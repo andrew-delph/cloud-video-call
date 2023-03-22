@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/utils.dart';
 import 'package:http/http.dart' as http;
-import '../Factory.dart';
+import '../../Factory.dart';
 import '../LoadingWidget.dart';
 
 class MapNotifier extends ChangeNotifier {
