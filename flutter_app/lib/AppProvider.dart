@@ -229,6 +229,7 @@ class AppProvider extends ChangeNotifier {
     localMediaStream!.getTracks().forEach((track) async {
       await peerConnection!.addTrack(track, localMediaStream!);
     });
+
     // START add localMediaStream to peerConnection
 
     // START collect the streams/tracks from remote
@@ -371,6 +372,12 @@ class AppProvider extends ChangeNotifier {
   Future<void> resetRemoteMediaStream() async {
     remoteMediaStream = await createLocalMediaStream("remote");
     notifyListeners();
+  }
+
+  Future<void> changeCamera(MediaDeviceInfo mediaDeviceInfo) async {
+    print("changeCamera");
+    MediaStreamTrack videoTrack = localMediaStream!.getVideoTracks()[0];
+    Helper.switchCamera(videoTrack, mediaDeviceInfo.deviceId, localMediaStream);
   }
 
   set localMediaStream(MediaStream? value) {

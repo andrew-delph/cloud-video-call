@@ -18,20 +18,11 @@ void main() async {
   MediaStream stream =
       await navigator.mediaDevices.getUserMedia(mediaConstraints);
 
-  List<MediaDeviceInfo> cameras = await Helper.cameras;
+  List<MediaDeviceInfo> cameras =
+      await navigator.mediaDevices.enumerateDevices();
 
-  print("cameras:");
+  print("mediaDevices:");
   for (var device in cameras) {
-    print(">> ${device.label} ${device.kind}");
-    print(".${device.groupId}");
-    print(".${device.deviceId}");
-  }
-  print("");
-
-  List<MediaDeviceInfo> audiooutputs = await Helper.audiooutputs;
-
-  print("audiooutputs:");
-  for (var device in audiooutputs) {
     print(">> ${device.label} ${device.kind}");
     print(".${device.groupId}");
     print(".${device.deviceId}");
