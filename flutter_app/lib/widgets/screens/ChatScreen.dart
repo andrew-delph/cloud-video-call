@@ -203,12 +203,12 @@ class ChatScreenState extends State<ChatScreen> {
                   Positioned(
                     left: 0,
                     right: 0,
-                    bottom: 0,
+                    bottom: 20,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.chat),
+                          icon: Icon(Icons.call_end),
                           onPressed: () {},
                         ),
                         IconButton(
@@ -219,10 +219,7 @@ class ChatScreenState extends State<ChatScreen> {
                           icon: Icon(Icons.videocam_off),
                           onPressed: () {},
                         ),
-                        IconButton(
-                          icon: Icon(Icons.fullscreen),
-                          onPressed: () {},
-                        ),
+                        settingsButton,
                       ],
                     ),
                   ),
@@ -237,3 +234,31 @@ class ChatScreenState extends State<ChatScreen> {
     return child;
   }
 }
+
+enum SampleItem { itemOne, itemTwo, itemThree }
+
+var settingsButton = PopupMenuButton<SampleItem>(
+  initialValue: SampleItem.itemOne,
+  // Callback that sets the selected popup menu item.
+  onSelected: (SampleItem item) {
+    // setState(() {
+    //   selectedMenu = item;
+    // });
+  },
+  icon: const Icon(Icons.settings),
+  position: PopupMenuPosition.over,
+  itemBuilder: (BuildContext context) => <PopupMenuEntry<SampleItem>>[
+    const PopupMenuItem<SampleItem>(
+      value: SampleItem.itemOne,
+      child: Text('Item 1'),
+    ),
+    const PopupMenuItem<SampleItem>(
+      value: SampleItem.itemTwo,
+      child: Text('Item 2'),
+    ),
+    const PopupMenuItem<SampleItem>(
+      value: SampleItem.itemThree,
+      child: Text('Item 3'),
+    ),
+  ],
+);
