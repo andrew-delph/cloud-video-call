@@ -318,7 +318,7 @@ class SettingsButton extends StatelessWidget {
         //*The right does not indicates the width
         final right = left + renderBox.size.width;
         return IconButton(
-          icon: const Icon(Icons.settings),
+          icon: const Icon(Icons.settings_phone),
           onPressed: () {
             showMenu(
                 context: context,
