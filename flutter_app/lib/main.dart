@@ -19,25 +19,30 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  FirebaseAuth.instance.idTokenChanges().listen((User? user) async {
-    if (user == null) {
-      print('User is currently signed out!');
-      try {
-        final userCredential = await FirebaseAuth.instance.signInAnonymously();
-        print("Signed in with temporary account. ${userCredential.user?.uid}");
-      } on FirebaseAuthException catch (e) {
-        switch (e.code) {
-          case "operation-not-allowed":
-            print("Anonymous auth hasn't been enabled for this project.");
-            break;
-          default:
-            print("Authentication unknown error: $e");
-        }
-      }
-    } else {
-      print('User is signed in!');
-    }
-  });
+  // FirebaseAuth.instance.idTokenChanges().listen((User? user) async {
+  //   if (user == null) {
+  //     print('User is currently signed out!');
+  //     try {
+  //       final userCredential = await FirebaseAuth.instance.signInAnonymously();
+  //       print("Signed in with temporary account. ${userCredential.user?.uid}");
+  //     } on FirebaseAuthException catch (e) {
+  //       switch (e.code) {
+  //         case "operation-not-allowed":
+  //           print("Anonymous auth hasn't been enabled for this project.");
+  //           break;
+  //         default:
+  //           print("Authentication unknown error: $e");
+  //       }
+  //     }
+  //   } else {
+  //     print('User is signed in!');
+  //   }
+  // });
+
+  if (FirebaseAuth.instance.currentUser == null) {
+    final userCredential = await FirebaseAuth.instance.signInAnonymously();
+    print("Signed in with temporary account. ${userCredential.user?.uid}");
+  }
 
   // Position position = await getLocation();
 
