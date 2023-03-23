@@ -441,6 +441,9 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> changeCamera(MediaDeviceInfo mediaDeviceInfo) async {
+    (await getPrefs()).setString('videoDeviceLabel', mediaDeviceInfo.label);
+    if (localMediaStream == null) return;
+
     MediaStreamTrack videoTrack = localMediaStream!.getVideoTracks()[0];
 
     await Helper.switchCamera(
@@ -458,8 +461,6 @@ class AppProvider extends ChangeNotifier {
       });
     }
 
-    (await getPrefs()).setString('videoDeviceLabel', mediaDeviceInfo.label);
-
     localVideoRenderer.initialize().then((value) {
       localVideoRenderer.srcObject = _localMediaStream;
       notifyListeners();
@@ -467,6 +468,8 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> changeAudioInput(MediaDeviceInfo mediaDeviceInfo) async {
+    (await getPrefs()).setString('audioDeviceLabel', mediaDeviceInfo.label);
+
     MediaStream audioStream = await navigator.mediaDevices.getUserMedia({
       'audio': {
         'deviceId': mediaDeviceInfo.deviceId,
@@ -482,7 +485,6 @@ class AppProvider extends ChangeNotifier {
         }
       });
     }
-    (await getPrefs()).setString('audioDeviceLabel', mediaDeviceInfo.label);
   }
 
   Future<void> changeAudioOutput(MediaDeviceInfo mediaDeviceInfo) async {

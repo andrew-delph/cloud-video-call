@@ -272,9 +272,11 @@ class SettingsButton extends StatelessWidget {
             await appProvider.getUserMedia();
 
             String audioDeviceId =
-                (await appProvider.getPrefs()).getString('audioDeviceId') ?? '';
+                (await appProvider.getPrefs()).getString('audioDeviceId') ??
+                    'default';
             String videoDeviceId =
-                (await appProvider.getPrefs()).getString('videoDeviceId') ?? '';
+                (await appProvider.getPrefs()).getString('videoDeviceId') ??
+                    'default';
 
             List<PopupMenuEntry<MediaDeviceInfo>> videoInputList = [
               const PopupMenuItem<MediaDeviceInfo>(
