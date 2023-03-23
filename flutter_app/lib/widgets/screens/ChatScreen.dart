@@ -271,13 +271,6 @@ class SettingsButton extends StatelessWidget {
           onPressed: () async {
             await appProvider.getUserMedia();
 
-            String audioDeviceId =
-                (await appProvider.getPrefs()).getString('audioDeviceId') ??
-                    'Default';
-            String videoDeviceId =
-                (await appProvider.getPrefs()).getString('videoDeviceId') ??
-                    'Default';
-
             List<PopupMenuEntry<MediaDeviceInfo>> videoInputList = [
               const PopupMenuItem<MediaDeviceInfo>(
                 enabled: false,
@@ -302,13 +295,14 @@ class SettingsButton extends StatelessWidget {
                 switch (mediaDeviceInfo.kind) {
                   case "videoinput":
                     videoInputList.add(PopupMenuItem<MediaDeviceInfo>(
-                      textStyle: prefs.getString("videoDeviceLabel") ==
-                              mediaDeviceInfo.label
-                          ? const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
-                            )
-                          : null,
+                      textStyle:
+                          (prefs.getString("videoDeviceLabel") ?? 'Default') ==
+                                  mediaDeviceInfo.label
+                              ? const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                )
+                              : null,
                       onTap: () {
                         print("click video");
                         appProvider.changeCamera(mediaDeviceInfo);
@@ -321,13 +315,14 @@ class SettingsButton extends StatelessWidget {
                   case "audioinput":
                     audioInputList.add(PopupMenuItem<MediaDeviceInfo>(
                       value: mediaDeviceInfo,
-                      textStyle: prefs.getString("audioDeviceLabel") ==
-                              mediaDeviceInfo.label
-                          ? const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
-                            )
-                          : null,
+                      textStyle:
+                          (prefs.getString("audioDeviceLabel") ?? 'Default') ==
+                                  mediaDeviceInfo.label
+                              ? const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                )
+                              : null,
                       child: Text(mediaDeviceInfo.label),
                       onTap: () {
                         print("click audio input");

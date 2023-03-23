@@ -359,7 +359,7 @@ class AppProvider extends ChangeNotifier {
       // TODO open pr or issue on https://github.com/flutter-webrtc/flutter-webrtc
       // you cannot create a MediaStream
       if (WebRTC.platformIsWeb) {
-        _remoteVideoRenderer!.muted = false;
+        _remoteVideoRenderer.muted = false;
         print(" (WebRTC.platformIsWeb_remoteVideoRenderer!.muted = false;");
       }
 
