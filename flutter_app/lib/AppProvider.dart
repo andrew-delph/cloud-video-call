@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/state_machines.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:statemachine/statemachine.dart';
@@ -35,6 +36,10 @@ class AppProvider extends ChangeNotifier {
 
   Machine<SocketStates> socketMachine = getSocketMachine();
   Machine<ChatStates> chatMachine = getChatMachine();
+
+  Future<SharedPreferences> getPrefs() async {
+    return await SharedPreferences.getInstance();
+  }
 
   AppProvider() {
     socketMachine[SocketStates.established].addNested(chatMachine);
@@ -162,12 +167,14 @@ class AppProvider extends ChangeNotifier {
     socket!.on('error', (data) {
       print("error $data");
       handleSocketStateChange(SocketConnectionState.error, data);
+      // TODO change socket state to error. have it wait 5 seconds before connecting again.
       notifyListeners();
     });
 
     try {
       socket!.connect();
     } catch (error) {
+      // TODO change socket state to error. have it wait 5 seconds before connecting again.
       print("error...$error");
     }
   }
@@ -179,13 +186,7 @@ class AppProvider extends ChangeNotifier {
     _localVideoRenderer = RTCVideoRenderer();
     _remoteVideoRenderer = RTCVideoRenderer();
 
-    final Map<String, dynamic> mediaConstraints = {
-      'audio': true,
-      'video': true
-    };
-
-    MediaStream stream =
-        await navigator.mediaDevices.getUserMedia(mediaConstraints);
+    MediaStream stream = await getUserMedia();
 
     localMediaStream = stream;
     notifyListeners();
@@ -371,6 +372,74 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  set localMediaStream(MediaStream? value) {
+    _localMediaStream = value;
+    localVideoRenderer.initialize().then((value) {
+      localVideoRenderer.srcObject = _localMediaStream;
+      notifyListeners();
+    });
+  }
+
+  set remoteMediaStream(MediaStream? value) {
+    _remoteMediaStream = value;
+    remoteVideoRenderer.initialize().then((value) {
+      remoteVideoRenderer.srcObject = _remoteMediaStream;
+      notifyListeners();
+    });
+  }
+
+  set peerConnection(RTCPeerConnection? value) {
+    _peerConnection = value;
+    notifyListeners();
+  }
+
+  Future<MediaStream> getUserMedia() async {
+    final Map<String, dynamic> mediaConstraints = {
+      'audio': true,
+      'video': true,
+    };
+
+    MediaStream mediaStream =
+        await navigator.mediaDevices.getUserMedia(mediaConstraints);
+
+    String? audioDeviceLabel = (await getPrefs()).getString('audioDeviceLabel');
+    String? videoDeviceLabel = (await getPrefs()).getString('videoDeviceLabel');
+
+    if (audioDeviceLabel != null || videoDeviceLabel != null) {
+      String? videoDeviceId;
+      String? audioDeviceId;
+      List<MediaDeviceInfo> devices =
+          await navigator.mediaDevices.enumerateDevices();
+
+      for (MediaDeviceInfo mediaDeviceInfo in devices) {
+        switch (mediaDeviceInfo.kind) {
+          case "videoinput":
+            if (mediaDeviceInfo.label == videoDeviceLabel) {
+              videoDeviceId = mediaDeviceInfo.deviceId;
+            }
+            break;
+          case "audioinput":
+            if (mediaDeviceInfo.label == videoDeviceLabel) {
+              audioDeviceId = mediaDeviceInfo.deviceId;
+            }
+            break;
+        }
+      }
+
+      if (videoDeviceId != null || audioDeviceId != null) {
+        final Map<String, dynamic> mediaConstraints = {
+          'audio': {'deviceId': audioDeviceId ?? ''},
+          'video': {'deviceId': videoDeviceId ?? ''},
+        };
+
+        mediaStream =
+            await navigator.mediaDevices.getUserMedia(mediaConstraints);
+      }
+    }
+
+    return mediaStream;
+  }
+
   Future<void> changeCamera(MediaDeviceInfo mediaDeviceInfo) async {
     MediaStreamTrack videoTrack = localMediaStream!.getVideoTracks()[0];
 
@@ -389,20 +458,8 @@ class AppProvider extends ChangeNotifier {
       });
     }
 
-    localVideoRenderer.initialize().then((value) {
-      localVideoRenderer.srcObject = _localMediaStream;
-      notifyListeners();
-    });
-  }
+    (await getPrefs()).setString('videoDeviceLabel', mediaDeviceInfo.label);
 
-  Future<void> changeAudioOutput(MediaDeviceInfo mediaDeviceInfo) async {
-    throw "not implemented";
-    print("changeAudioOutput...");
-    await Helper.selectAudioOutput(mediaDeviceInfo.deviceId);
-    // var worked = await localVideoRenderer.audioOutput(mediaDeviceInfo.deviceId);
-    print("changeAudioOutput... worked ");
-    // await Helper.selectAudioOutput(mediaDeviceInfo.deviceId);
-    // await navigator.mediaDevices.selectAudioOutput();
     localVideoRenderer.initialize().then((value) {
       localVideoRenderer.srcObject = _localMediaStream;
       notifyListeners();
@@ -425,26 +482,20 @@ class AppProvider extends ChangeNotifier {
         }
       });
     }
+    (await getPrefs()).setString('audioDeviceLabel', mediaDeviceInfo.label);
   }
 
-  set localMediaStream(MediaStream? value) {
-    _localMediaStream = value;
+  Future<void> changeAudioOutput(MediaDeviceInfo mediaDeviceInfo) async {
+    throw "not implemented";
+    print("changeAudioOutput...");
+    await Helper.selectAudioOutput(mediaDeviceInfo.deviceId);
+    // var worked = await localVideoRenderer.audioOutput(mediaDeviceInfo.deviceId);
+    print("changeAudioOutput... worked ");
+    // await Helper.selectAudioOutput(mediaDeviceInfo.deviceId);
+    // await navigator.mediaDevices.selectAudioOutput();
     localVideoRenderer.initialize().then((value) {
       localVideoRenderer.srcObject = _localMediaStream;
       notifyListeners();
     });
-  }
-
-  set remoteMediaStream(MediaStream? value) {
-    _remoteMediaStream = value;
-    remoteVideoRenderer.initialize().then((value) {
-      remoteVideoRenderer.srcObject = _remoteMediaStream;
-      notifyListeners();
-    });
-  }
-
-  set peerConnection(RTCPeerConnection? value) {
-    _peerConnection = value;
-    notifyListeners();
   }
 }

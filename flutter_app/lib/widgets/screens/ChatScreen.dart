@@ -4,6 +4,7 @@ import 'package:flutter_app/Factory.dart';
 import 'package:flutter_app/state_machines.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../AppProvider.dart';
 import '../LoadingWidget.dart';
@@ -36,6 +37,10 @@ class ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    navigator.mediaDevices.ondevicechange = (event) async {
+      print('++++++ ondevicechange ++++++');
+      setState(() {});
+    };
   }
 
   void showDialogAlert(int lockID, Widget title, Widget content) {
@@ -245,69 +250,13 @@ class SettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<MediaDeviceInfo>>(
-      future: navigator.mediaDevices.enumerateDevices(),
-      builder: (context, snapshot) {
-        List<PopupMenuEntry<MediaDeviceInfo>> videoInputList = [
-          const PopupMenuItem<MediaDeviceInfo>(
-            enabled: false,
-            child: Text("Camera"),
-          )
-        ];
-        List<PopupMenuEntry<MediaDeviceInfo>> audioInputList = [
-          const PopupMenuItem<MediaDeviceInfo>(
-            enabled: false,
-            child: Text("Microphone"),
-          )
-        ];
-        List<PopupMenuEntry<MediaDeviceInfo>> audioOutputList = [
-          const PopupMenuItem<MediaDeviceInfo>(
-            enabled: false,
-            child: Text("Speaker"),
-          )
-        ];
-        if (snapshot.hasData) {
-          for (MediaDeviceInfo mediaDeviceInfo in snapshot.data!) {
-            switch (mediaDeviceInfo.kind) {
-              case "videoinput":
-                videoInputList.add(PopupMenuItem<MediaDeviceInfo>(
-                  onTap: () {
-                    print("click video");
-                    appProvider.changeCamera(mediaDeviceInfo);
-                    // Helper.switchCamera(track)
-                  },
-                  value: mediaDeviceInfo,
-                  child: Text(mediaDeviceInfo.label),
-                ));
-                break; // The switch statement must be told to exit, or it will execute every case.
-              case "audioinput":
-                audioInputList.add(PopupMenuItem<MediaDeviceInfo>(
-                  value: mediaDeviceInfo,
-                  child: Text(mediaDeviceInfo.label),
-                  onTap: () {
-                    print("click audio input");
-                    appProvider.changeAudioInput(mediaDeviceInfo);
-                    // Helper.switchCamera(track)
-                  },
-                ));
-                break;
-              case "audiooutput":
-                audioOutputList.add(PopupMenuItem<MediaDeviceInfo>(
-                  value: mediaDeviceInfo,
-                  onTap: () {
-                    print("click audio input");
-                    appProvider.changeAudioOutput(mediaDeviceInfo);
-                    // Helper.switchCamera(track)
-                  },
-                  child: Text(mediaDeviceInfo.label),
-                ));
-                break;
-            }
-          }
-        }
+    Future<List<MediaDeviceInfo>> enumerateDevices() async {
+      return navigator.mediaDevices.enumerateDevices();
+    }
 
-        List<PopupMenuEntry<MediaDeviceInfo>> mediaList =
-            videoInputList + audioInputList; // + audioOutputList;
+    return FutureBuilder<List<MediaDeviceInfo>>(
+      future: enumerateDevices(),
+      builder: (context, snapshot) {
         final RenderBox renderBox = context.findRenderObject() as RenderBox;
         //*get the global position, from the widget local position
         final offset = renderBox.localToGlobal(Offset.zero);
@@ -319,7 +268,89 @@ class SettingsButton extends StatelessWidget {
         final right = left + renderBox.size.width;
         return IconButton(
           icon: const Icon(Icons.settings_phone),
-          onPressed: () {
+          onPressed: () async {
+            await appProvider.getUserMedia();
+
+            String audioDeviceId =
+                (await appProvider.getPrefs()).getString('audioDeviceId') ?? '';
+            String videoDeviceId =
+                (await appProvider.getPrefs()).getString('videoDeviceId') ?? '';
+
+            List<PopupMenuEntry<MediaDeviceInfo>> videoInputList = [
+              const PopupMenuItem<MediaDeviceInfo>(
+                enabled: false,
+                child: Text("Camera"),
+              )
+            ];
+            List<PopupMenuEntry<MediaDeviceInfo>> audioInputList = [
+              const PopupMenuItem<MediaDeviceInfo>(
+                enabled: false,
+                child: Text("Microphone"),
+              )
+            ];
+            List<PopupMenuEntry<MediaDeviceInfo>> audioOutputList = [
+              const PopupMenuItem<MediaDeviceInfo>(
+                enabled: false,
+                child: Text("Speaker"),
+              )
+            ];
+            SharedPreferences prefs = await appProvider.getPrefs();
+            if (snapshot.hasData) {
+              for (MediaDeviceInfo mediaDeviceInfo in snapshot.data!) {
+                switch (mediaDeviceInfo.kind) {
+                  case "videoinput":
+                    videoInputList.add(PopupMenuItem<MediaDeviceInfo>(
+                      textStyle: prefs.getString("videoDeviceLabel") ==
+                              mediaDeviceInfo.label
+                          ? const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            )
+                          : null,
+                      onTap: () {
+                        print("click video");
+                        appProvider.changeCamera(mediaDeviceInfo);
+                        // Helper.switchCamera(track)
+                      },
+                      value: mediaDeviceInfo,
+                      child: Text(mediaDeviceInfo.label),
+                    ));
+                    break; // The switch statement must be told to exit, or it will execute every case.
+                  case "audioinput":
+                    audioInputList.add(PopupMenuItem<MediaDeviceInfo>(
+                      value: mediaDeviceInfo,
+                      textStyle: prefs.getString("audioDeviceLabel") ==
+                              mediaDeviceInfo.label
+                          ? const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            )
+                          : null,
+                      child: Text(mediaDeviceInfo.label),
+                      onTap: () {
+                        print("click audio input");
+                        appProvider.changeAudioInput(mediaDeviceInfo);
+                        // Helper.switchCamera(track)
+                      },
+                    ));
+                    break;
+                  case "audiooutput":
+                    audioOutputList.add(PopupMenuItem<MediaDeviceInfo>(
+                      value: mediaDeviceInfo,
+                      onTap: () {
+                        print("click audio input");
+                        appProvider.changeAudioOutput(mediaDeviceInfo);
+                        // Helper.switchCamera(track)
+                      },
+                      child: Text(mediaDeviceInfo.label),
+                    ));
+                    break;
+                }
+              }
+            }
+
+            List<PopupMenuEntry<MediaDeviceInfo>> mediaList =
+                videoInputList + audioInputList; // + audioOutputList;
             showMenu(
                 context: context,
                 position: RelativeRect.fromLTRB(left, top, right, 0.0),
