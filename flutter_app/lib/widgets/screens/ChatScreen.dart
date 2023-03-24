@@ -119,6 +119,9 @@ class ChatScreenState extends State<ChatScreen> {
               label: 'Submit Feedback', appProvider: appProvider);
         }
 
+        double width = MediaQuery.of(context).size.width;
+        double height = MediaQuery.of(context).size.height;
+
         Widget chatButton = TextButton(
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(
@@ -131,12 +134,11 @@ class ChatScreenState extends State<ChatScreen> {
                 await appProvider.ready();
               }
             },
-            child: Text((isInChat() == false) ? 'New chat' : 'End chat'));
+            child: Text((isInChat() == false)
+                ? 'New chat $width $height' // remove debug
+                : 'End chat'));
 
         Widget videoRenderLayout;
-
-        double width = MediaQuery.of(context).size.width;
-        double height = MediaQuery.of(context).size.height;
 
         appProvider.remoteVideoRenderer.onResize = () {
           print(
