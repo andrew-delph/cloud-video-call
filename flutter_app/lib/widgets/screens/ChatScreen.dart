@@ -138,6 +138,12 @@ class ChatScreenState extends State<ChatScreen> {
         double width = MediaQuery.of(context).size.width;
         double height = MediaQuery.of(context).size.height;
 
+        appProvider.remoteVideoRenderer.onResize = () {
+          print(
+              "resize.... ${appProvider.remoteVideoRenderer.videoWidth} ${appProvider.remoteVideoRenderer.videoHeight}");
+          setState(() {});
+        };
+
         appProvider.localVideoRenderer.onResize = () {
           print(
               "resize.... ${appProvider.localVideoRenderer.videoWidth} ${appProvider.localVideoRenderer.videoHeight}");
