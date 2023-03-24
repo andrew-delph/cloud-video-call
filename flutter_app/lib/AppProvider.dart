@@ -110,6 +110,7 @@ class AppProvider extends ChangeNotifier {
         OptionBuilder()
             .setTransports(['websocket'])
             .disableAutoConnect()
+            .disableReconnection()
             .setAuth(
                 {"auth": await FirebaseAuth.instance.currentUser?.getIdToken()})
             .build());
@@ -157,25 +158,25 @@ class AppProvider extends ChangeNotifier {
       handleError(ErrorDetails("Socket", "disconnected"));
     });
 
-    socket!.onConnectError((details) {
-      print('connectError $details');
+    socket!.onConnectError((error) {
+      print('connectError $error');
 
-      handleError(ErrorDetails("Socket", "connectError"));
+      handleError(ErrorDetails("Socket", error.toString()));
       socketMachine.current = SocketStates.error;
     });
 
-    socket!.on('error', (data) {
-      print("error $data");
-      handleError(ErrorDetails("Socket", "error"));
+    socket!.on('error', (error) {
+      print("error $error");
+      handleError(ErrorDetails("Socket", error.toString()));
       socketMachine.current = SocketStates.error;
     });
 
     try {
       socket!.connect();
     } catch (error) {
-      socketMachine.current = SocketStates.error;
       print("error...$error");
-      handleError(ErrorDetails("Socket", "error"));
+      handleError(ErrorDetails("Socket", error.toString()));
+      socketMachine.current = SocketStates.error;
     }
   }
 
