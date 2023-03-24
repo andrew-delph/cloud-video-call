@@ -135,7 +135,7 @@ class ChatScreenState extends State<ChatScreen> {
               }
             },
             child: Text((isInChat() == false)
-                ? 'New chat $width $height' // remove debug
+                ? 'New chat ${width.toInt()} ${height.toInt()}' // remove debug
                 : 'End chat'));
 
         Widget videoRenderLayout;
@@ -143,13 +143,17 @@ class ChatScreenState extends State<ChatScreen> {
         appProvider.remoteVideoRenderer.onResize = () {
           print(
               "resize.... ${appProvider.remoteVideoRenderer.videoWidth} ${appProvider.remoteVideoRenderer.videoHeight}");
-          setState(() {});
+          Future.delayed(const Duration(seconds: 3), () {
+            setState(() {});
+          });
         };
 
         appProvider.localVideoRenderer.onResize = () {
           print(
               "resize.... ${appProvider.localVideoRenderer.videoWidth} ${appProvider.localVideoRenderer.videoHeight}");
-          setState(() {});
+          Future.delayed(const Duration(seconds: 3), () {
+            setState(() {});
+          });
         };
 
         if (width < height) {
