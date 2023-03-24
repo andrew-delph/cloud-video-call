@@ -134,23 +134,9 @@ class ChatScreenState extends State<ChatScreen> {
                 await appProvider.ready();
               }
             },
-            child: Text((isInChat() == false)
-                ? 'New chat ${width.toInt()} ${height.toInt()}' // remove debug
-                : 'End chat'));
+            child: Text((isInChat() == false) ? 'New chat' : 'End chat'));
 
         Widget videoRenderLayout;
-
-        appProvider.remoteVideoRenderer.onResize = () {
-          print(
-              "resize.... ${appProvider.remoteVideoRenderer.videoWidth} ${appProvider.remoteVideoRenderer.videoHeight}");
-          setState(() {});
-        };
-
-        appProvider.localVideoRenderer.onResize = () {
-          print(
-              "resize.... ${appProvider.localVideoRenderer.videoWidth} ${appProvider.localVideoRenderer.videoHeight}");
-          setState(() {});
-        };
 
         if (width < height) {
           videoRenderLayout = Stack(
@@ -167,11 +153,9 @@ class ChatScreenState extends State<ChatScreen> {
                 right: 0,
                 child: Container(
                   alignment: Alignment.bottomRight,
-                  width: appProvider.localVideoRenderer.videoWidth.toDouble(),
-                  height: appProvider.localVideoRenderer.videoHeight.toDouble(),
                   constraints: BoxConstraints(
                     maxWidth: width / 2,
-                    maxHeight: height / 3,
+                    maxHeight: height / 4,
                   ),
                   child: RTCVideoView(
                     appProvider.localVideoRenderer,
@@ -202,11 +186,13 @@ class ChatScreenState extends State<ChatScreen> {
         return Flex(
           direction: Axis.horizontal,
           children: [
-            Container(
-              width: 100,
-              color: Colors.white,
-              child: chatButton,
-            ),
+            isInChat() == false
+                ? Container(
+                    width: 100,
+                    color: Colors.white,
+                    child: chatButton,
+                  )
+                : Container(),
             Expanded(
               child: Stack(
                 children: [
