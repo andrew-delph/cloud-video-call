@@ -133,6 +133,66 @@ class ChatScreenState extends State<ChatScreen> {
             },
             child: Text((isInChat() == false) ? 'New chat' : 'End chat'));
 
+        Widget videoRenderLayout;
+
+        double width = MediaQuery.of(context).size.width;
+        double height = MediaQuery.of(context).size.height;
+
+        appProvider.localVideoRenderer.onResize = () {
+          print(
+              "resize.... ${appProvider.localVideoRenderer.videoWidth} ${appProvider.localVideoRenderer.videoHeight}");
+          setState(() {});
+        };
+
+        if (width < height) {
+          videoRenderLayout = Stack(
+            children: [
+              Expanded(
+                child: Container(
+                  color: Colors.black,
+                  child: RTCVideoView(
+                    appProvider.remoteVideoRenderer,
+                    objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 20, // get the size of the row buttons..?
+                right: 0,
+                child: Container(
+                  alignment: Alignment.bottomRight,
+                  width: appProvider.localVideoRenderer.videoWidth.toDouble(),
+                  height: appProvider.localVideoRenderer.videoHeight.toDouble(),
+                  constraints: BoxConstraints(
+                    maxWidth: width / 2,
+                    maxHeight: height / 3,
+                  ),
+                  child: RTCVideoView(
+                    appProvider.localVideoRenderer,
+                  ),
+                ),
+              ),
+            ],
+          );
+        } else {
+          videoRenderLayout = Row(
+            children: [
+              Expanded(
+                child: Container(
+                  color: Colors.black,
+                  child: RTCVideoView(appProvider.remoteVideoRenderer),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  color: Colors.black,
+                  child: RTCVideoView(appProvider.localVideoRenderer),
+                ),
+              ),
+            ],
+          );
+        }
+
         return Flex(
           direction: Axis.horizontal,
           children: [
@@ -144,22 +204,7 @@ class ChatScreenState extends State<ChatScreen> {
             Expanded(
               child: Stack(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          color: Colors.black,
-                          child: RTCVideoView(appProvider.localVideoRenderer),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          color: Colors.black,
-                          child: RTCVideoView(appProvider.remoteVideoRenderer),
-                        ),
-                      ),
-                    ],
-                  ),
+                  videoRenderLayout,
                   appProvider.localMediaStream == null
                       ? Container()
                       : Positioned(
