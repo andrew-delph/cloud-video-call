@@ -34,9 +34,6 @@ class MapNotifier extends ChangeNotifier {
 }
 
 class OptionsScreen extends StatefulWidget {
-  final MapNotifier attributes = MapNotifier();
-  final MapNotifier filters = MapNotifier();
-
   OptionsScreen({super.key});
 
   @override
@@ -44,18 +41,21 @@ class OptionsScreen extends StatefulWidget {
 }
 
 class OptionsScreenState extends State<OptionsScreen> {
-  final MapNotifier attributesMap = MapNotifier();
-  final MapNotifier filtersMap = MapNotifier();
+  final MapNotifier constantAttributes = MapNotifier();
+  final MapNotifier constantFilters = MapNotifier();
+
+  final MapNotifier customAttributes = MapNotifier();
+  final MapNotifier customFilters = MapNotifier();
 
   bool loading = true;
 
   @override
   void initState() {
     super.initState();
-    attributesMap.addListener(() {
+    constantAttributes.addListener(() {
       setState(() {});
     });
-    filtersMap.addListener(() {
+    constantFilters.addListener(() {
       setState(() {});
     });
     loadAttributes();
@@ -89,12 +89,23 @@ class OptionsScreenState extends State<OptionsScreen> {
     }).then((data) {
       if (data["attributes"] is Map && data["attributes"]["constant"] is Map) {
         var temp = data["attributes"]["constant"] as Map;
-        attributesMap.addEntries(temp.entries.map((e) =>
+        constantAttributes.addEntries(temp.entries.map((e) =>
             MapEntry<String, String>(e.key.toString(), e.value.toString())));
       }
       if (data["filters"] is Map && data["filters"]["constant"] is Map) {
         var temp = data["filters"]["constant"] as Map;
-        filtersMap.addEntries(temp.entries.map((e) =>
+        constantFilters.addEntries(temp.entries.map((e) =>
+            MapEntry<String, String>(e.key.toString(), e.value.toString())));
+      }
+
+      if (data["attributes"] is Map && data["attributes"]["custom"] is Map) {
+        var temp = data["attributes"]["custom"] as Map;
+        customAttributes.addEntries(temp.entries.map((e) =>
+            MapEntry<String, String>(e.key.toString(), e.value.toString())));
+      }
+      if (data["filters"] is Map && data["filters"]["custom"] is Map) {
+        var temp = data["filters"]["custom"] as Map;
+        customFilters.addEntries(temp.entries.map((e) =>
             MapEntry<String, String>(e.key.toString(), e.value.toString())));
       }
     }).whenComplete(() {
@@ -121,8 +132,9 @@ class OptionsScreenState extends State<OptionsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              KeyValueListWidget(title: "Attributes", model: attributesMap),
-              KeyValueListWidget(title: "Filters", model: filtersMap),
+              KeyValueListWidget(
+                  title: "Attributes", model: constantAttributes),
+              KeyValueListWidget(title: "Filters", model: constantFilters),
               SizedBox(
                 height: 50,
                 width: double.infinity,
@@ -137,8 +149,8 @@ class OptionsScreenState extends State<OptionsScreen> {
                           await FirebaseAuth.instance.currentUser!.getIdToken()
                     };
                     final body = {
-                      'attributes': {'constant': attributesMap.map},
-                      'filters': {'constant': filtersMap.map}
+                      'attributes': {'constant': constantAttributes.map},
+                      'filters': {'constant': constantFilters.map}
                     };
                     http
                         .put(url, headers: headers, body: json.encode(body))
