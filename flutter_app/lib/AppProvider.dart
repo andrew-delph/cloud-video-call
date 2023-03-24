@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/state_machines.dart';
+import 'package:flutter_app/widgets/screens/ChatScreen.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -76,6 +77,14 @@ class AppProvider extends ChangeNotifier {
   Function(SocketConnectionState, dynamic)? onSocketStateChange;
   Function(RTCPeerConnectionState)? onPeerConnectionStateChange;
 
+  void handleError(ErrorDetails errorDetails) {
+    if (handleErrorCallback != null) {
+      handleErrorCallback!(errorDetails);
+    }
+  }
+
+  Function(ErrorDetails errorDetails)? handleErrorCallback;
+
   int activeCount = 0;
 
   @override
@@ -88,8 +97,10 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> init(
-      {Function(SocketConnectionState, dynamic)? onSocketStateChange,
+      {Function(ErrorDetails details)? handleErrorCallback,
+      Function(SocketConnectionState, dynamic)? onSocketStateChange,
       Function(RTCPeerConnectionState)? onPeerConnectionStateChange}) async {
+    this.handleErrorCallback = handleErrorCallback;
     this.onSocketStateChange = onSocketStateChange;
     this.onPeerConnectionStateChange = onPeerConnectionStateChange;
   }
@@ -161,17 +172,26 @@ class AppProvider extends ChangeNotifier {
       established = false;
       handleSocketStateChange(SocketConnectionState.disconnected, details);
       socketMachine.current = SocketStates.error;
+      // if (handleError != null) {
+      //   handleError!(ErrorDetails("Socket", "disconnected"));
+      // }
+      handleError(ErrorDetails("Socket", "disconnected"));
     });
 
     socket!.onConnectError((details) {
       print('connectError $details');
       handleSocketStateChange(SocketConnectionState.connectionError, details);
+      // if (handleError != null) {
+      //   handleError!(ErrorDetails("Socket", "connectError"));
+      // }
+      handleError(ErrorDetails("Socket", "connectError"));
       socketMachine.current = SocketStates.error;
     });
 
     socket!.on('error', (data) {
       print("error $data");
       handleSocketStateChange(SocketConnectionState.error, data);
+      handleError(ErrorDetails("Socket", "error"));
       socketMachine.current = SocketStates.error;
     });
 
