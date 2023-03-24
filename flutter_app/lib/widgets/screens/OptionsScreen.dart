@@ -108,55 +108,66 @@ class OptionsScreenState extends State<OptionsScreen> {
   Widget build(BuildContext context) {
     Widget body = connectingWidget;
     if (!loading) {
-      body = Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          KeyValueListWidget(title: "Attributes", model: attributesMap),
-          KeyValueListWidget(title: "Filters", model: filtersMap),
-          SizedBox(
-            height: 50,
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () async {
-                var url = Uri.parse("${Factory.getOptionsHost()}/preferences");
-                final headers = {
-                  'Access-Control-Allow-Origin': '*',
-                  'Content-Type': 'application/json',
-                  'authorization':
-                      await FirebaseAuth.instance.currentUser!.getIdToken()
-                };
-                final body = {
-                  'attributes': {'constant': attributesMap.map},
-                  'filters': {'constant': filtersMap.map}
-                };
-                http
-                    .put(url, headers: headers, body: json.encode(body))
-                    .then((response) {
-                  if (validStatusCode(response.statusCode)) {
-                  } else {
-                    const String errorMsg = 'Failed to update preferences.';
-                    const snackBar = SnackBar(
-                      content: Text(errorMsg),
-                    );
+      body = Container(
+          alignment: Alignment.topCenter,
+          decoration: BoxDecoration(
+            color: Colors.blue,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.all(20),
+          constraints: const BoxConstraints(
+            maxWidth: 1000,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              KeyValueListWidget(title: "Attributes", model: attributesMap),
+              KeyValueListWidget(title: "Filters", model: filtersMap),
+              SizedBox(
+                height: 50,
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    var url =
+                        Uri.parse("${Factory.getOptionsHost()}/preferences");
+                    final headers = {
+                      'Access-Control-Allow-Origin': '*',
+                      'Content-Type': 'application/json',
+                      'authorization':
+                          await FirebaseAuth.instance.currentUser!.getIdToken()
+                    };
+                    final body = {
+                      'attributes': {'constant': attributesMap.map},
+                      'filters': {'constant': filtersMap.map}
+                    };
+                    http
+                        .put(url, headers: headers, body: json.encode(body))
+                        .then((response) {
+                      if (validStatusCode(response.statusCode)) {
+                      } else {
+                        const String errorMsg = 'Failed to update preferences.';
+                        const snackBar = SnackBar(
+                          content: Text(errorMsg),
+                        );
 
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    Navigator.of(context).pop();
-                  }
-                  loadAttributes();
-                });
-              },
-              child: const Text('Submit'),
-            ),
-          )
-        ],
-      );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        Navigator.of(context).pop();
+                      }
+                      loadAttributes();
+                    });
+                  },
+                  child: const Text('Submit'),
+                ),
+              )
+            ],
+          ));
     }
 
     return Scaffold(
         appBar: AppBar(
           title: const Text('Options screen'),
         ),
-        body: body);
+        body: Center(child: body));
   }
 }
 
@@ -178,7 +189,7 @@ class KeyValueListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: Colors.blue,
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
