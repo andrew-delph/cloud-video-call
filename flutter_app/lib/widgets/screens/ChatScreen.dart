@@ -149,6 +149,12 @@ class ChatScreenState extends State<ChatScreen> {
         if (appProvider.socketMachine.current?.identifier ==
             SocketStates.connecting) return connectingWidget;
 
+        // if socket is error
+        if (appProvider.socketMachine.current?.identifier ==
+            SocketStates.error) {
+          return errorWidget;
+        }
+
         // if socket is waiting for established
         if (appProvider.socketMachine.current?.identifier !=
             SocketStates.established) return loadingWidget;

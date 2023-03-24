@@ -54,6 +54,10 @@ class AppProvider extends ChangeNotifier {
       await initSocket();
     });
 
+    chatMachine[ChatStates.error].onTimeout(const Duration(seconds: 1), () {
+      socketMachine.current = SocketStates.connecting;
+    });
+
     chatMachine[ChatStates.matched].onTimeout(const Duration(seconds: 10), () {
       chatMachine.current = ChatStates.connectionError;
     });
@@ -130,12 +134,6 @@ class AppProvider extends ChangeNotifier {
     socket!.emitWithAck("myping", "I am a client",
         ack: (data) => print("ping ack"));
 
-    socket!.onConnectError((details) {
-      print('connectError $details');
-      handleSocketStateChange(SocketConnectionState.connectionError, details);
-      notifyListeners();
-    });
-
     socket!.on('activeCount', (data) {
       activeCount = int.tryParse(data.toString()) ?? -1;
       notifyListeners();
@@ -162,20 +160,27 @@ class AppProvider extends ChangeNotifier {
       socketMachine.current = SocketStates.connecting;
       established = false;
       handleSocketStateChange(SocketConnectionState.disconnected, details);
-      notifyListeners();
+      socketMachine.current = SocketStates.error;
     });
+
+    socket!.onConnectError((details) {
+      print('connectError $details');
+      handleSocketStateChange(SocketConnectionState.connectionError, details);
+      socketMachine.current = SocketStates.error;
+    });
+
     socket!.on('error', (data) {
       print("error $data");
       handleSocketStateChange(SocketConnectionState.error, data);
-      // TODO change socket state to error. have it wait 5 seconds before connecting again.
-      notifyListeners();
+      socketMachine.current = SocketStates.error;
     });
 
     try {
       socket!.connect();
     } catch (error) {
-      // TODO change socket state to error. have it wait 5 seconds before connecting again.
+      socketMachine.current = SocketStates.error;
       print("error...$error");
+      handleSocketStateChange(SocketConnectionState.error, error);
     }
   }
 

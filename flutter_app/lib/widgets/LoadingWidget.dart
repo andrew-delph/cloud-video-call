@@ -6,7 +6,7 @@ Widget connectingWidget = Scaffold(
     body: Center(
   child: LoadingAnimationWidget.staggeredDotsWave(
     color: Colors.blue,
-    size: 200,
+    size: 400,
   ),
 ));
 
@@ -14,6 +14,14 @@ Widget loadingWidget = Scaffold(
     body: Center(
   child: LoadingAnimationWidget.staggeredDotsWave(
     color: Colors.green,
+    size: 400,
+  ),
+));
+
+Widget errorWidget = Scaffold(
+    body: Center(
+  child: LoadingAnimationWidget.staggeredDotsWave(
+    color: Colors.red,
     size: 400,
   ),
 ));

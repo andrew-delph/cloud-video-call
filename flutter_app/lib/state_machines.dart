@@ -1,6 +1,6 @@
 import 'package:statemachine/statemachine.dart';
 
-enum SocketStates { connecting, connected, established }
+enum SocketStates { connecting, connected, established, error }
 
 enum ChatStates {
   waiting,
