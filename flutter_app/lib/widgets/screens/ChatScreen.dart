@@ -176,7 +176,7 @@ class ChatScreenState extends State<ChatScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               IconButton(
-                                icon: Icon(Icons.call_end),
+                                icon: const Icon(Icons.call_end),
                                 color: isInChat() ? Colors.red : Colors.grey,
                                 onPressed: () {
                                   if (isInChat()) {
@@ -186,11 +186,11 @@ class ChatScreenState extends State<ChatScreen> {
                                 },
                               ),
                               IconButton(
-                                icon: Icon(Icons.mic_off),
+                                icon: const Icon(Icons.mic_off),
                                 onPressed: () {},
                               ),
                               IconButton(
-                                icon: Icon(Icons.videocam_off),
+                                icon: const Icon(Icons.videocam_off),
                                 onPressed: () {},
                               ),
                               SettingsButton(appProvider),
@@ -212,9 +212,9 @@ class ChatScreenState extends State<ChatScreen> {
 enum SampleItem { itemOne, itemTwo, itemThree }
 
 class SettingsButton extends StatelessWidget {
-  AppProvider appProvider;
+  final AppProvider appProvider;
 
-  SettingsButton(this.appProvider, {super.key});
+  const SettingsButton(this.appProvider, {super.key});
 
   @override
   Widget build(BuildContext context) {
