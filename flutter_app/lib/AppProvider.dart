@@ -211,10 +211,13 @@ class AppProvider extends ChangeNotifier {
     _localVideoRenderer = RTCVideoRenderer();
     _remoteVideoRenderer = RTCVideoRenderer();
 
-    MediaStream stream = await getUserMedia();
-
-    localMediaStream = stream;
-    notifyListeners();
+    try {
+      MediaStream stream = await getUserMedia();
+      localMediaStream = stream;
+      notifyListeners();
+    } catch (error) {
+      handleError(ErrorDetails("initLocalStream", error.toString()));
+    }
   }
 
   Future<void> tryResetRemote() async {
