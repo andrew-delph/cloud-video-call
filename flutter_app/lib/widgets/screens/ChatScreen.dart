@@ -206,35 +206,37 @@ class ChatScreenState extends State<ChatScreen> {
                       ),
                     ],
                   ),
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 20,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.call_end),
-                          color: isInChat() ? Colors.red : Colors.grey,
-                          onPressed: () {
-                            if (isInChat()) {
-                              appProvider.chatMachine.current =
-                                  ChatStates.ended;
-                            }
-                          },
+                  appProvider.localMediaStream == null
+                      ? Container()
+                      : Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 20,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.call_end),
+                                color: isInChat() ? Colors.red : Colors.grey,
+                                onPressed: () {
+                                  if (isInChat()) {
+                                    appProvider.chatMachine.current =
+                                        ChatStates.ended;
+                                  }
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.mic_off),
+                                onPressed: () {},
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.videocam_off),
+                                onPressed: () {},
+                              ),
+                              SettingsButton(appProvider),
+                            ],
+                          ),
                         ),
-                        IconButton(
-                          icon: Icon(Icons.mic_off),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.videocam_off),
-                          onPressed: () {},
-                        ),
-                        SettingsButton(appProvider),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -275,8 +277,6 @@ class SettingsButton extends StatelessWidget {
         return IconButton(
           icon: const Icon(Icons.settings_phone),
           onPressed: () async {
-            await appProvider.getUserMedia();
-
             List<PopupMenuEntry<MediaDeviceInfo>> videoInputList = [
               const PopupMenuItem<MediaDeviceInfo>(
                 enabled: false,
