@@ -74,9 +74,6 @@ class AppProvider extends ChangeNotifier {
     socketMachine.start();
   }
 
-  Function(SocketConnectionState, dynamic)? onSocketStateChange;
-  Function(RTCPeerConnectionState)? onPeerConnectionStateChange;
-
   void handleError(ErrorDetails errorDetails) {
     if (handleErrorCallback != null) {
       handleErrorCallback!(errorDetails);
@@ -97,24 +94,8 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> init(
-      {Function(ErrorDetails details)? handleErrorCallback,
-      Function(SocketConnectionState, dynamic)? onSocketStateChange,
-      Function(RTCPeerConnectionState)? onPeerConnectionStateChange}) async {
+      {Function(ErrorDetails details)? handleErrorCallback}) async {
     this.handleErrorCallback = handleErrorCallback;
-    this.onSocketStateChange = onSocketStateChange;
-    this.onPeerConnectionStateChange = onPeerConnectionStateChange;
-  }
-
-  void handleSocketStateChange(
-      SocketConnectionState socketState, dynamic details) {
-    if (onSocketStateChange != null) onSocketStateChange!(socketState, details);
-  }
-
-  void handlePeerConnectionStateChange(
-      RTCPeerConnectionState peerConnectionState) {
-    if (onPeerConnectionStateChange != null) {
-      onPeerConnectionStateChange!(peerConnectionState);
-    }
   }
 
   Future<void> initSocket() async {
@@ -170,27 +151,20 @@ class AppProvider extends ChangeNotifier {
     socket!.onDisconnect((details) {
       socketMachine.current = SocketStates.connecting;
       established = false;
-      handleSocketStateChange(SocketConnectionState.disconnected, details);
       socketMachine.current = SocketStates.error;
-      // if (handleError != null) {
-      //   handleError!(ErrorDetails("Socket", "disconnected"));
-      // }
+
       handleError(ErrorDetails("Socket", "disconnected"));
     });
 
     socket!.onConnectError((details) {
       print('connectError $details');
-      handleSocketStateChange(SocketConnectionState.connectionError, details);
-      // if (handleError != null) {
-      //   handleError!(ErrorDetails("Socket", "connectError"));
-      // }
+
       handleError(ErrorDetails("Socket", "connectError"));
       socketMachine.current = SocketStates.error;
     });
 
     socket!.on('error', (data) {
       print("error $data");
-      handleSocketStateChange(SocketConnectionState.error, data);
       handleError(ErrorDetails("Socket", "error"));
       socketMachine.current = SocketStates.error;
     });
@@ -200,7 +174,7 @@ class AppProvider extends ChangeNotifier {
     } catch (error) {
       socketMachine.current = SocketStates.error;
       print("error...$error");
-      handleSocketStateChange(SocketConnectionState.error, error);
+      handleError(ErrorDetails("Socket", "error"));
     }
   }
 
@@ -245,8 +219,6 @@ class AppProvider extends ChangeNotifier {
           state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
         chatMachine.current = ChatStates.ended;
       }
-      // print("peerConnection changed state: $state");
-      handlePeerConnectionStateChange(state);
       notifyListeners();
     };
     // END SETUP PEER CONNECTION

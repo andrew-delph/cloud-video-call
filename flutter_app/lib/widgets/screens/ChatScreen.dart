@@ -92,74 +92,12 @@ class ChatScreenState extends State<ChatScreen> {
     showDialogAlert(-1, const Text("Socket Error"), content);
   }
 
-  //
-  // void handleSocketStateChange(
-  //     SocketConnectionState socketState, dynamic details) {
-  //   var content = IntrinsicHeight(
-  //     child: Column(
-  //       children: [
-  //         Text("Socket Address: ${Factory.getWsHost()}"),
-  //         const Text(""),
-  //         Text(
-  //             style: const TextStyle(
-  //               color: Colors.red,
-  //             ),
-  //             details.toString()),
-  //       ],
-  //     ),
-  //   );
-  //
-  //   switch (socketState) {
-  //     case SocketConnectionState.disconnected:
-  //       {
-  //         showDialogAlert(1, const Text("Socket Disconnect"), content);
-  //       }
-  //       break;
-  //     case SocketConnectionState.connected:
-  //       // TODO: Handle this case.
-  //       break;
-  //     case SocketConnectionState.error:
-  //       showDialogAlert(2, const Text("Socket Error"), content);
-  //       break;
-  //     case SocketConnectionState.connectionError:
-  //       showDialogAlert(3, const Text("Socket Connection Error"), content);
-  //       break;
-  //   }
-  // }
-  //
-  // void handlePeerConnectionStateChange(
-  //     RTCPeerConnectionState peerConnectionState) {
-  //   switch (peerConnectionState) {
-  //     case RTCPeerConnectionState.RTCPeerConnectionStateDisconnected:
-  //       // TODO: Handle this case.
-  //       break;
-  //     case RTCPeerConnectionState.RTCPeerConnectionStateClosed:
-  //       // TODO: Handle this case.
-  //       break;
-  //     case RTCPeerConnectionState.RTCPeerConnectionStateFailed:
-  //       // TODO: Handle this case.
-  //       break;
-  //     case RTCPeerConnectionState.RTCPeerConnectionStateNew:
-  //       // TODO: Handle this case.
-  //       break;
-  //     case RTCPeerConnectionState.RTCPeerConnectionStateConnecting:
-  //       // TODO: Handle this case.
-  //       break;
-  //     case RTCPeerConnectionState.RTCPeerConnectionStateConnected:
-  //       // TODO: Handle this case.
-  //       break;
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     var child = Consumer<AppProvider>(
       builder: (consumerContext, appProvider, child) {
-        // appProvider.init();
         appProvider.init(
           handleErrorCallback: handleError,
-          // onSocketStateChange: handleSocketStateChange,
-          // onPeerConnectionStateChange: handlePeerConnectionStateChange
         );
 
         // if connected to peerconnection. show end chat
