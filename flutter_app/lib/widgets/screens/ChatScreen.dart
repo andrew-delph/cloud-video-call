@@ -164,7 +164,7 @@ class ChatScreenState extends State<ChatScreen> {
                   color: Colors.black,
                   child: RTCVideoView(
                     appProvider.remoteVideoRenderer,
-                    objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                    // objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
                   ),
                 ),
               ),
