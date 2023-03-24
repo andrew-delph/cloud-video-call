@@ -100,11 +100,6 @@ class ChatScreenState extends State<ChatScreen> {
           handleErrorCallback: handleError,
         );
 
-        // if connected to peerconnection. show end chat
-        // if not connected to peerconnection
-        //      if not connected to socket. show new chat
-        //      if not connected to socket. show error
-
         isInChat() {
           return appProvider.chatMachine.current?.identifier ==
               ChatStates.connected;
