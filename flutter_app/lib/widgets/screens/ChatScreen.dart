@@ -143,29 +143,23 @@ class ChatScreenState extends State<ChatScreen> {
         appProvider.remoteVideoRenderer.onResize = () {
           print(
               "resize.... ${appProvider.remoteVideoRenderer.videoWidth} ${appProvider.remoteVideoRenderer.videoHeight}");
-          Future.delayed(const Duration(seconds: 3), () {
-            setState(() {});
-          });
+          setState(() {});
         };
 
         appProvider.localVideoRenderer.onResize = () {
           print(
               "resize.... ${appProvider.localVideoRenderer.videoWidth} ${appProvider.localVideoRenderer.videoHeight}");
-          Future.delayed(const Duration(seconds: 3), () {
-            setState(() {});
-          });
+          setState(() {});
         };
 
         if (width < height) {
           videoRenderLayout = Stack(
             children: [
-              Expanded(
-                child: Container(
-                  color: Colors.black,
-                  child: RTCVideoView(
-                    appProvider.remoteVideoRenderer,
-                    // objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-                  ),
+              Container(
+                color: Colors.black,
+                child: RTCVideoView(
+                  appProvider.remoteVideoRenderer,
+                  // objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
                 ),
               ),
               Positioned(
