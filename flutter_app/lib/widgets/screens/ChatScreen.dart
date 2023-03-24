@@ -7,15 +7,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../AppProvider.dart';
+import '../../utils.dart';
 import '../LoadingWidget.dart';
 import 'FeedbackScreen.dart';
-
-class ErrorDetails {
-  String title;
-  String message;
-
-  ErrorDetails(this.title, this.message);
-}
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -209,8 +203,6 @@ class ChatScreenState extends State<ChatScreen> {
   }
 }
 
-enum SampleItem { itemOne, itemTwo, itemThree }
-
 class SettingsButton extends StatelessWidget {
   final AppProvider appProvider;
 
@@ -218,107 +210,99 @@ class SettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future<List<MediaDeviceInfo>> enumerateDevices() async {
-      return navigator.mediaDevices.enumerateDevices();
+    Future<Pair<List<MediaDeviceInfo>, SharedPreferences>>
+        enumerateDevices() async {
+      return Pair<List<MediaDeviceInfo>, SharedPreferences>(
+          await navigator.mediaDevices.enumerateDevices(),
+          await appProvider.getPrefs());
     }
 
-    return FutureBuilder<List<MediaDeviceInfo>>(
+    return FutureBuilder<Pair<List<MediaDeviceInfo>, SharedPreferences>>(
       future: enumerateDevices(),
       builder: (context, snapshot) {
-        final RenderBox renderBox = context.findRenderObject() as RenderBox;
-        //*get the global position, from the widget local position
-        final offset = renderBox.localToGlobal(Offset.zero);
-
-        //*calculate the start point in this case, below the button
-        final left = offset.dx;
-        final top = offset.dy + renderBox.size.height;
-        //*The right does not indicates the width
-        final right = left + renderBox.size.width;
-        return IconButton(
-          icon: const Icon(Icons.settings_phone),
-          onPressed: () async {
-            List<PopupMenuEntry<MediaDeviceInfo>> videoInputList = [
-              const PopupMenuItem<MediaDeviceInfo>(
-                enabled: false,
-                child: Text("Camera"),
-              )
-            ];
-            List<PopupMenuEntry<MediaDeviceInfo>> audioInputList = [
-              const PopupMenuItem<MediaDeviceInfo>(
-                enabled: false,
-                child: Text("Microphone"),
-              )
-            ];
-            List<PopupMenuEntry<MediaDeviceInfo>> audioOutputList = [
-              const PopupMenuItem<MediaDeviceInfo>(
-                enabled: false,
-                child: Text("Speaker"),
-              )
-            ];
-            SharedPreferences prefs = await appProvider.getPrefs();
-            if (snapshot.hasData) {
-              for (MediaDeviceInfo mediaDeviceInfo in snapshot.data!) {
-                switch (mediaDeviceInfo.kind) {
-                  case "videoinput":
-                    videoInputList.add(PopupMenuItem<MediaDeviceInfo>(
-                      textStyle:
-                          (prefs.getString("videoDeviceLabel") ?? 'Default') ==
-                                  mediaDeviceInfo.label
-                              ? const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
-                                )
-                              : null,
-                      onTap: () {
-                        print("click video");
-                        appProvider.changeCamera(mediaDeviceInfo);
-                        // Helper.switchCamera(track)
-                      },
-                      value: mediaDeviceInfo,
-                      child: Text(mediaDeviceInfo.label),
-                    ));
-                    break; // The switch statement must be told to exit, or it will execute every case.
-                  case "audioinput":
-                    audioInputList.add(PopupMenuItem<MediaDeviceInfo>(
-                      value: mediaDeviceInfo,
-                      textStyle:
-                          (prefs.getString("audioDeviceLabel") ?? 'Default') ==
-                                  mediaDeviceInfo.label
-                              ? const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
-                                )
-                              : null,
-                      child: Text(mediaDeviceInfo.label),
-                      onTap: () {
-                        print("click audio input");
-                        appProvider.changeAudioInput(mediaDeviceInfo);
-                        // Helper.switchCamera(track)
-                      },
-                    ));
-                    break;
-                  case "audiooutput":
-                    audioOutputList.add(PopupMenuItem<MediaDeviceInfo>(
-                      value: mediaDeviceInfo,
-                      onTap: () {
-                        print("click audio input");
-                        appProvider.changeAudioOutput(mediaDeviceInfo);
-                        // Helper.switchCamera(track)
-                      },
-                      child: Text(mediaDeviceInfo.label),
-                    ));
-                    break;
-                }
-              }
+        List<PopupMenuEntry<MediaDeviceInfo>> videoInputList = [
+          const PopupMenuItem<MediaDeviceInfo>(
+            enabled: false,
+            child: Text("Camera"),
+          )
+        ];
+        List<PopupMenuEntry<MediaDeviceInfo>> audioInputList = [
+          const PopupMenuItem<MediaDeviceInfo>(
+            enabled: false,
+            child: Text("Microphone"),
+          )
+        ];
+        List<PopupMenuEntry<MediaDeviceInfo>> audioOutputList = [
+          const PopupMenuItem<MediaDeviceInfo>(
+            enabled: false,
+            child: Text("Speaker"),
+          )
+        ];
+        if (snapshot.hasData) {
+          List<MediaDeviceInfo> mediaDevices = snapshot.data!.first;
+          SharedPreferences prefs = snapshot.data!.second;
+          for (MediaDeviceInfo mediaDeviceInfo in mediaDevices) {
+            switch (mediaDeviceInfo.kind) {
+              case "videoinput":
+                videoInputList.add(PopupMenuItem<MediaDeviceInfo>(
+                  textStyle:
+                      (prefs.getString("videoDeviceLabel") ?? 'Default') ==
+                              mediaDeviceInfo.label
+                          ? const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            )
+                          : null,
+                  onTap: () {
+                    print("click video");
+                    appProvider.changeCamera(mediaDeviceInfo);
+                    // Helper.switchCamera(track)
+                  },
+                  value: mediaDeviceInfo,
+                  child: Text(mediaDeviceInfo.label),
+                ));
+                break; // The switch statement must be told to exit, or it will execute every case.
+              case "audioinput":
+                audioInputList.add(PopupMenuItem<MediaDeviceInfo>(
+                  value: mediaDeviceInfo,
+                  textStyle:
+                      (prefs.getString("audioDeviceLabel") ?? 'Default') ==
+                              mediaDeviceInfo.label
+                          ? const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            )
+                          : null,
+                  child: Text(mediaDeviceInfo.label),
+                  onTap: () {
+                    print("click audio input");
+                    appProvider.changeAudioInput(mediaDeviceInfo);
+                    // Helper.switchCamera(track)
+                  },
+                ));
+                break;
+              case "audiooutput":
+                audioOutputList.add(PopupMenuItem<MediaDeviceInfo>(
+                  value: mediaDeviceInfo,
+                  onTap: () {
+                    print("click audio input");
+                    appProvider.changeAudioOutput(mediaDeviceInfo);
+                    // Helper.switchCamera(track)
+                  },
+                  child: Text(mediaDeviceInfo.label),
+                ));
+                break;
             }
+          }
+        }
 
-            List<PopupMenuEntry<MediaDeviceInfo>> mediaList =
-                videoInputList + audioInputList; // + audioOutputList;
-            showMenu(
-                context: context,
-                position: RelativeRect.fromLTRB(left, top, right, 0.0),
-                items: mediaList);
-          },
+        List<PopupMenuEntry<MediaDeviceInfo>> mediaList =
+            videoInputList + audioInputList; // + audioOutputList;
+
+        return PopupMenuButton<MediaDeviceInfo>(
+          // initialValue: 'selectedMenu',
+          // Callback that sets the selected popup menu item.
+          itemBuilder: (BuildContext context) => mediaList,
         );
       },
     );
