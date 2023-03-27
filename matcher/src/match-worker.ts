@@ -22,8 +22,6 @@ const logger = common.getLogger();
 
 const neo4jRpcClient = createNeo4jClient();
 
-const serverID = uuid();
-
 import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
 import { MatchMessage, ReadyMessage } from 'common';
 
