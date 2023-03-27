@@ -99,6 +99,11 @@ class ChatScreenState extends State<ChatScreen> {
               ChatStates.connected;
         }
 
+        inReadyQueue() {
+          return appProvider.chatMachine.current?.identifier ==
+              ChatStates.ready;
+        }
+
         // if socket is connecting
         if (appProvider.socketMachine.current?.identifier ==
             SocketStates.connecting) return connectingWidget;
@@ -128,13 +133,11 @@ class ChatScreenState extends State<ChatScreen> {
                   Colors.yellow.shade100), // Change the color here
             ),
             onPressed: () async {
-              if (isInChat()) {
-                appProvider.chatMachine.current = ChatStates.ended;
-              } else {
+              if (!inReadyQueue()) {
                 await appProvider.ready();
               }
             },
-            child: Text((isInChat() == false) ? 'New chat' : 'End chat'));
+            child: Text((inReadyQueue() == false) ? 'Ready' : 'Cancel Ready'));
 
         Widget videoRenderLayout;
 
