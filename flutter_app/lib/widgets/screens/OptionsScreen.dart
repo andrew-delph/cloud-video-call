@@ -2,9 +2,12 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_app/utils.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import '../../Factory.dart';
+import '../../location.dart';
 import '../LoadingWidget.dart';
 
 class MapNotifier extends ChangeNotifier {
@@ -12,9 +15,13 @@ class MapNotifier extends ChangeNotifier {
 
   Map<String, String> get map => _map;
 
-  void addToMap(String key, String value) {
+  void add(String key, String value) {
     _map[key] = value;
     notifyListeners();
+  }
+
+  String? get(String key) {
+    return _map[key];
   }
 
   void addAll(Map<String, String> toAdd) {
@@ -34,7 +41,7 @@ class MapNotifier extends ChangeNotifier {
 }
 
 class OptionsScreen extends StatefulWidget {
-  OptionsScreen({super.key});
+  const OptionsScreen({super.key});
 
   @override
   OptionsScreenState createState() => OptionsScreenState();
@@ -56,6 +63,13 @@ class OptionsScreenState extends State<OptionsScreen> {
       setState(() {});
     });
     constantFilters.addListener(() {
+      setState(() {});
+    });
+
+    customAttributes.addListener(() {
+      setState(() {});
+    });
+    customFilters.addListener(() {
       setState(() {});
     });
     loadAttributes();
@@ -126,6 +140,7 @@ class OptionsScreenState extends State<OptionsScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
           padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.all(20),
           constraints: const BoxConstraints(
             maxWidth: 1000,
           ),
@@ -135,6 +150,10 @@ class OptionsScreenState extends State<OptionsScreen> {
               KeyValueListWidget(
                   title: "Attributes", model: constantAttributes),
               KeyValueListWidget(title: "Filters", model: constantFilters),
+              LocationOptionsWidget(
+                  customAttributes: customAttributes,
+                  customFilters: customFilters,
+                  title: "Location settings"),
               SizedBox(
                 height: 50,
                 width: double.infinity,
@@ -149,8 +168,14 @@ class OptionsScreenState extends State<OptionsScreen> {
                           await FirebaseAuth.instance.currentUser!.getIdToken()
                     };
                     final body = {
-                      'attributes': {'constant': constantAttributes.map},
-                      'filters': {'constant': constantFilters.map}
+                      'attributes': {
+                        'constant': constantAttributes.map,
+                        'custom': customAttributes.map
+                      },
+                      'filters': {
+                        'constant': constantFilters.map,
+                        'custom': customFilters.map,
+                      }
                     };
                     http
                         .put(url, headers: headers, body: json.encode(body))
@@ -195,7 +220,7 @@ class KeyValueListWidget extends StatelessWidget {
   KeyValueListWidget({super.key, required this.model, required this.title});
 
   void _addKeyValue() {
-    model.addToMap(keyController.text, valueController.text);
+    model.add(keyController.text, valueController.text);
   }
 
   @override
@@ -289,5 +314,84 @@ class OptionTile extends StatelessWidget {
         child: const Text('Delete'),
       )
     ]);
+  }
+}
+
+class LocationOptionsWidget extends StatelessWidget {
+  final String title;
+  Position? pos;
+
+  final MapNotifier customAttributes;
+  final MapNotifier customFilters;
+
+  final valueController =
+      TextEditingController(); // Controller for the value text field
+
+  isValid() {
+    return customAttributes.get("long") != null &&
+        customAttributes.get("lat") != null;
+  }
+
+  updateLocation() async {
+    pos = await getLocation();
+    customAttributes.add("long", pos!.latitude.toString());
+    customAttributes.add("lat", pos!.longitude.toString());
+    print("pos $pos ${pos!.latitude} ${pos!.longitude}");
+  }
+
+  LocationOptionsWidget(
+      {super.key,
+      required this.customAttributes,
+      required this.customFilters,
+      required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    valueController.text = customFilters.get('dist') ?? '';
+    return Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const Divider(),
+            Row(children: [
+              ElevatedButton(
+                onPressed: updateLocation,
+                child: const Text('Update Location'),
+              ),
+              Expanded(
+                  child: Text(
+                      ' Long: ${customAttributes.get("long") ?? 'None'} - Lat: ${customAttributes.get("lat") ?? 'None'} ')),
+              Expanded(
+                  child: TextField(
+                enabled: isValid(),
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly
+                ],
+                controller: valueController,
+                onTapOutside: (PointerDownEvent event) {
+                  print("setting dist: ${valueController.text}");
+                  customFilters.add('dist', valueController.text);
+                },
+                maxLines: 1,
+                decoration: InputDecoration(
+                  labelText: isValid()
+                      ? 'Max Distance Km'
+                      : 'Max Distance (Enabled with \'Update Location\')',
+                ),
+              )),
+            ]),
+          ],
+        ));
   }
 }
