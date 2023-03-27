@@ -11,8 +11,6 @@ import 'package:statemachine/statemachine.dart';
 
 import 'Factory.dart';
 
-enum SocketConnectionState { connected, connectionError, error, disconnected }
-
 class AppProvider extends ChangeNotifier {
   MediaStream? _localMediaStream;
   MediaStream? _remoteMediaStream;
@@ -56,7 +54,7 @@ class AppProvider extends ChangeNotifier {
       await initSocket();
     });
 
-    chatMachine[ChatStates.error].onTimeout(const Duration(seconds: 1), () {
+    socketMachine[SocketStates.error].onTimeout(const Duration(seconds: 3), () {
       socketMachine.current = SocketStates.connecting;
     });
 
