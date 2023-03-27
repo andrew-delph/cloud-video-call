@@ -153,7 +153,7 @@ class OptionsScreenState extends State<OptionsScreen> {
               LocationOptionsWidget(
                   customAttributes: customAttributes,
                   customFilters: customFilters,
-                  title: "Location settings"),
+                  title: "Location Settings"),
               SizedBox(
                 height: 50,
                 width: double.infinity,
