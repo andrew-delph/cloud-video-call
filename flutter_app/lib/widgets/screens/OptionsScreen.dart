@@ -15,9 +15,11 @@ class MapNotifier extends ChangeNotifier {
 
   Map<String, String> get map => _map;
 
-  void add(String key, String value) {
+  void add(String key, String value, {bool notify = true}) {
     _map[key] = value;
-    notifyListeners();
+    if (notify) {
+      notifyListeners();
+    }
   }
 
   String? get(String key) {
@@ -379,9 +381,8 @@ class LocationOptionsWidget extends StatelessWidget {
                   FilteringTextInputFormatter.digitsOnly
                 ],
                 controller: valueController,
-                onTapOutside: (PointerDownEvent event) {
-                  print("setting dist: ${valueController.text}");
-                  customFilters.add('dist', valueController.text);
+                onChanged: (value) {
+                  customFilters.add('dist', value, notify: false);
                 },
                 maxLines: 1,
                 decoration: InputDecoration(
