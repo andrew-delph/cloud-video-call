@@ -1,8 +1,10 @@
 name: Deploy updates to k8
-on:
+'on':
   push:
     branches:
       - master
+    paths-ignore:
+      - 'flutter_app/**'
 env:
   KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
 jobs:
