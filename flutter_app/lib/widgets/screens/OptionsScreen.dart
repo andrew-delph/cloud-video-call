@@ -1,11 +1,14 @@
 import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/utils.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../AppProvider.dart';
 import '../../Factory.dart';
 import '../../location.dart';
 import '../LoadingWidget.dart';
@@ -133,12 +136,13 @@ class OptionsScreenState extends State<OptionsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget body = connectingWidget;
+    AppProvider appProvider = Provider.of<AppProvider>(context);
+    Widget preferences = connectingWidget;
     if (!loading) {
-      body = Container(
+      preferences = Container(
           alignment: Alignment.topCenter,
           decoration: BoxDecoration(
-            color: Colors.blue,
+            color: Colors.teal,
             borderRadius: BorderRadius.circular(12),
           ),
           padding: const EdgeInsets.all(20),
@@ -202,11 +206,52 @@ class OptionsScreenState extends State<OptionsScreen> {
           ));
     }
 
+    enumerateDevices() async {
+      return Pair<List<MediaDeviceInfo>, SharedPreferences>(
+          await navigator.mediaDevices.enumerateDevices(),
+          await appProvider.getPrefs());
+    }
+
+    FutureBuilder devices =
+        FutureBuilder<Pair<List<MediaDeviceInfo>, SharedPreferences>>(
+      future: enumerateDevices(),
+      builder: (context, snapshot) {
+        List<Widget> mediaList = [const Text("Devices")];
+
+        if (snapshot.hasData) {
+          List<MediaDeviceInfo> mediaDevices = snapshot.data!.first;
+          SharedPreferences prefs = snapshot.data!.second;
+
+          mediaList =
+              mediaList + appProvider.getDeviceEntries(mediaDevices, prefs);
+        }
+
+        return Container(
+            alignment: Alignment.topCenter,
+            decoration: BoxDecoration(
+              color: Colors.teal,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.all(20),
+            margin: const EdgeInsets.all(20),
+            constraints: const BoxConstraints(
+              maxWidth: 1000,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: mediaList,
+            ));
+      },
+    );
+
     return Scaffold(
         appBar: AppBar(
           title: const Text('Options screen'),
         ),
-        body: Center(child: body));
+        body: Center(
+            child: Column(
+          children: [preferences, devices],
+        )));
   }
 }
 
@@ -321,7 +366,6 @@ class OptionTile extends StatelessWidget {
 
 class LocationOptionsWidget extends StatelessWidget {
   final String title;
-  Position? pos;
 
   final MapNotifier customAttributes;
   final MapNotifier customFilters;
@@ -335,10 +379,10 @@ class LocationOptionsWidget extends StatelessWidget {
   }
 
   updateLocation() async {
-    pos = await getLocation();
-    customAttributes.add("long", pos!.latitude.toString());
-    customAttributes.add("lat", pos!.longitude.toString());
-    print("pos $pos ${pos!.latitude} ${pos!.longitude}");
+    Position pos = await getLocation();
+    customAttributes.add("long", pos.latitude.toString());
+    customAttributes.add("lat", pos.longitude.toString());
+    print("pos $pos ${pos.latitude} ${pos.longitude}");
   }
 
   LocationOptionsWidget(

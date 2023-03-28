@@ -24,7 +24,8 @@ class MainScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => OptionsScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const OptionsScreen()),
                 );
               },
             ),
