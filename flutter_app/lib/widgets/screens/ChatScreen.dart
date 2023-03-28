@@ -22,6 +22,7 @@ class ChatScreen extends StatefulWidget {
 
 class ChatScreenState extends State<ChatScreen> {
   Set<int> dialogLock = {};
+  double _positionX = 0;
 
   @override
   void dispose() {
@@ -185,6 +186,34 @@ class ChatScreenState extends State<ChatScreen> {
             ],
           );
         }
+
+        videoRenderLayout = GestureDetector(
+          onHorizontalDragUpdate: (details) {
+            setState(() {
+              _positionX += details.delta.dx;
+            });
+          },
+          onHorizontalDragEnd: (details) {
+            print("onHorizontalDragEnd _positionX $_positionX");
+            // if (_positionX.abs() > 50) {
+            //   setState(() {
+            //     _positionX = _positionX > 0 ? 100 : -100;
+            //   });
+            // } else {
+            //   setState(() {
+            //     _positionX = 0;
+            //   });
+            // }
+            setState(() {
+              _positionX = 0;
+            });
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            transform: Matrix4.translationValues(_positionX, 0, 0),
+            child: videoRenderLayout,
+          ),
+        );
 
         return Flex(
           direction: Axis.horizontal,
