@@ -26,6 +26,7 @@ import {
   cleanMySocketServer,
   registerServerHeartbeat,
   registerSocketReady,
+  unregisterSocketReady,
 } from './management';
 
 const logger = common.getLogger();
@@ -103,21 +104,27 @@ io.on(`connection`, async (socket) => {
     console.log(`message:`, msg);
   });
 
-  socket.on(`ready`, async (data, callback) => {
-    await registerSocketReady(socket);
+  socket.on(`ready`, async (data: { ready: boolean | undefined }, callback) => {
+    const ready = data.ready == undefined ? true : false;
 
-    const readyMesage: ReadyMessage = { userId: socket.data.auth };
+    if (ready) {
+      await registerSocketReady(socket);
 
-    await rabbitChannel.sendToQueue(
-      common.readyQueueName,
-      Buffer.from(JSON.stringify(readyMesage)),
-      {
-        priority: priority * 10,
-      },
-    );
+      const readyMesage: ReadyMessage = { userId: socket.data.auth };
+
+      await rabbitChannel.sendToQueue(
+        common.readyQueueName,
+        Buffer.from(JSON.stringify(readyMesage)),
+        {
+          priority: priority * 10,
+        },
+      );
+    } else {
+      await unregisterSocketReady(socket);
+    }
 
     if (callback != undefined) {
-      callback(`ready ack`);
+      callback(data);
     }
   });
 

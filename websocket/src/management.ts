@@ -31,6 +31,9 @@ export const registerSocket = async (socket: Socket) => {
 export const registerSocketReady = async (socket: Socket) => {
   await mainRedisClient.sadd(common.readySetName, socket.data.auth);
 };
+export const unregisterSocketReady = async (socket: Socket) => {
+  await mainRedisClient.srem(common.readySetName, socket.data.auth);
+};
 
 export const cleanSocket = async (
   auth: string,

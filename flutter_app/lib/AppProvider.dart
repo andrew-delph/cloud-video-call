@@ -302,7 +302,7 @@ class AppProvider extends ChangeNotifier {
     });
     // END HANDLE ICE CANDIDATES
 
-    socket!.emitWithAck("ready", {}, ack: (data) {
+    socket!.emitWithAck("ready", {ready: true}, ack: (data) {
       print("ready ack");
     });
   }
