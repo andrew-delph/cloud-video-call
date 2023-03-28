@@ -48,8 +48,7 @@ class ChatScreenState extends State<ChatScreen> {
   void showDialogAlert(int lockID, Widget title, Widget content) {
     if (dialogLock.contains(lockID) == true) return;
     if (lockID > 0) dialogLock.add(lockID);
-    func() =>
-        showDialog(
+    func() => showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
@@ -126,14 +125,8 @@ class ChatScreenState extends State<ChatScreen> {
               label: 'Submit Feedback', appProvider: appProvider);
         }
 
-        double width = MediaQuery
-            .of(context)
-            .size
-            .width;
-        double height = MediaQuery
-            .of(context)
-            .size
-            .height;
+        double width = MediaQuery.of(context).size.width;
+        double height = MediaQuery.of(context).size.height;
 
         Widget chatButton = TextButton(
             style: ButtonStyle(
@@ -143,6 +136,8 @@ class ChatScreenState extends State<ChatScreen> {
             onPressed: () async {
               if (!inReadyQueue()) {
                 await appProvider.ready();
+              } else {
+                await appProvider.unReady();
               }
             },
             child: Text((inReadyQueue() == false) ? 'Ready' : 'Cancel Ready'));
@@ -239,10 +234,10 @@ class ChatScreenState extends State<ChatScreen> {
           children: [
             isInChat() == false
                 ? Container(
-              width: 100,
-              color: Colors.white,
-              child: chatButton,
-            )
+                    width: 100,
+                    color: Colors.white,
+                    child: chatButton,
+                  )
                 : Container(),
             Expanded(
               child: Stack(
@@ -251,34 +246,34 @@ class ChatScreenState extends State<ChatScreen> {
                   appProvider.localMediaStream == null
                       ? Container()
                       : Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 20,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.call_end),
-                          color: isInChat() ? Colors.red : Colors.grey,
-                          onPressed: () {
-                            if (isInChat()) {
-                              appProvider.chatMachine.current =
-                                  ChatStates.ended;
-                            }
-                          },
+                          left: 0,
+                          right: 0,
+                          bottom: 20,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.call_end),
+                                color: isInChat() ? Colors.red : Colors.grey,
+                                onPressed: () {
+                                  if (isInChat()) {
+                                    appProvider.chatMachine.current =
+                                        ChatStates.ended;
+                                  }
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.mic_off),
+                                onPressed: () {},
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.videocam_off),
+                                onPressed: () {},
+                              ),
+                              SettingsButton(appProvider),
+                            ],
+                          ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.mic_off),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.videocam_off),
-                          onPressed: () {},
-                        ),
-                        SettingsButton(appProvider),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -299,8 +294,7 @@ class SettingsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future<Pair<List<MediaDeviceInfo>, SharedPreferences>>
-
-    enumerateDevices() async {
+        enumerateDevices() async {
       return Pair<List<MediaDeviceInfo>, SharedPreferences>(
           await navigator.mediaDevices.enumerateDevices(),
           await appProvider.getPrefs());

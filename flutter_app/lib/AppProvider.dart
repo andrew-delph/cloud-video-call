@@ -206,7 +206,6 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> ready() async {
-    chatMachine.current = ChatStates.ready;
     await tryResetRemote();
     await initLocalStream();
     socket!.off("client_host");
@@ -302,8 +301,16 @@ class AppProvider extends ChangeNotifier {
     });
     // END HANDLE ICE CANDIDATES
 
-    socket!.emitWithAck("ready", {ready: true}, ack: (data) {
-      print("ready ack");
+    socket!.emitWithAck("ready", {'ready': true}, ack: (data) {
+      print("ready ack $data");
+      chatMachine.current = ChatStates.ready;
+    });
+  }
+
+  Future<void> unReady() async {
+    socket!.emitWithAck("ready", {'ready': false}, ack: (data) {
+      print("ready ack $data");
+      chatMachine.current = ChatStates.waiting;
     });
   }
 
