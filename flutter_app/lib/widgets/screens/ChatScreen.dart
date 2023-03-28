@@ -195,15 +195,27 @@ class ChatScreenState extends State<ChatScreen> {
           },
           onHorizontalDragEnd: (details) {
             print("onHorizontalDragEnd _positionX $_positionX");
-            // if (_positionX.abs() > 50) {
-            //   setState(() {
-            //     _positionX = _positionX > 0 ? 100 : -100;
-            //   });
-            // } else {
-            //   setState(() {
-            //     _positionX = 0;
-            //   });
-            // }
+            if (_positionX.abs() > 50 && isInChat()) {
+              double score = 0;
+              if (_positionX > 0) {
+                score = 5;
+              }
+              appProvider.chatMachine.current =
+                  ChatStates.ended; // will show feedback screen not good.
+              appProvider
+                  .sendChatScore(score)
+                  .then((value) {})
+                  .catchError((error) {
+                SnackBar snackBar = SnackBar(
+                  content: Text(error.toString()),
+                );
+
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                Navigator.of(context).pop();
+              }).whenComplete(() {
+                appProvider.chatMachine.current = ChatStates.waiting;
+              });
+            }
             setState(() {
               _positionX = 0;
             });

@@ -36,34 +36,6 @@ class FeedbackScreenState extends State<FeedbackScreen> {
     _value = widget.initialValue;
   }
 
-  sendScore(score) async {
-    var url = Uri.parse("${Factory.getOptionsHost()}/providefeedback");
-    final headers = {
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'application/json',
-      'authorization': await FirebaseAuth.instance.currentUser!.getIdToken()
-    };
-    final body = {
-      'feedback_id': widget.appProvider.feedbackId!,
-      'score': score
-    };
-    http.post(url, headers: headers, body: json.encode(body)).then((response) {
-      if (validStatusCode(response.statusCode)) {
-      } else {
-        const String errorMsg = 'Failed to provide feedback.';
-        const snackBar = SnackBar(
-          content: Text(errorMsg),
-        );
-
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        Navigator.of(context).pop();
-        throw Exception(errorMsg);
-      }
-    }).whenComplete(() {
-      widget.appProvider.chatMachine.current = ChatStates.waiting;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -81,7 +53,19 @@ class FeedbackScreenState extends State<FeedbackScreen> {
         ),
         ElevatedButton(
           onPressed: () {
-            sendScore(_value);
+            widget.appProvider
+                .sendChatScore(_value.toDouble())
+                .then((value) {})
+                .catchError((error) {
+              SnackBar snackBar = SnackBar(
+                content: Text(error.toString()),
+              );
+
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              Navigator.of(context).pop();
+            }).whenComplete(() {
+              widget.appProvider.chatMachine.current = ChatStates.waiting;
+            });
           },
           child: const Text('Submit'),
         ),

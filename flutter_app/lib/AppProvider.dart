@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_app/state_machines.dart';
 import 'package:flutter_app/utils.dart';
 import 'package:flutter_app/widgets/screens/ChatScreen.dart';
@@ -8,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:statemachine/statemachine.dart';
+import 'package:http/http.dart' as http;
 
 import 'Factory.dart';
 
@@ -500,6 +504,26 @@ class AppProvider extends ChangeNotifier {
     localVideoRenderer.initialize().then((value) {
       localVideoRenderer.srcObject = _localMediaStream;
       notifyListeners();
+    });
+  }
+
+  Future<void> sendChatScore(double score) async {
+    var url = Uri.parse("${Factory.getOptionsHost()}/providefeedback");
+    final headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json',
+      'authorization': await FirebaseAuth.instance.currentUser!.getIdToken()
+    };
+    final body = {'feedback_id': feedbackId!, 'score': score};
+    return http
+        .post(url, headers: headers, body: json.encode(body))
+        .then((response) {
+      if (validStatusCode(response.statusCode)) {
+        return;
+      } else {
+        const String errorMsg = 'Failed to provide feedback.';
+        throw Exception(errorMsg);
+      }
     });
   }
 }
