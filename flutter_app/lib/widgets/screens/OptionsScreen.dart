@@ -153,6 +153,14 @@ class OptionsScreenState extends State<OptionsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const Text(
+                "Preferences",
+                style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
               KeyValueListWidget(
                   title: "Attributes", model: constantAttributes),
               KeyValueListWidget(title: "Filters", model: constantFilters),
@@ -216,7 +224,16 @@ class OptionsScreenState extends State<OptionsScreen> {
         FutureBuilder<Pair<List<MediaDeviceInfo>, SharedPreferences>>(
       future: enumerateDevices(),
       builder: (context, snapshot) {
-        List<Widget> mediaList = [const Text("Devices")];
+        List<Widget> mediaList = [
+          const Text(
+            "Devices",
+            style: TextStyle(
+              fontSize: 24.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          )
+        ];
 
         if (snapshot.hasData) {
           List<MediaDeviceInfo> mediaDevices = snapshot.data!.first;
