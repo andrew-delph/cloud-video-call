@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/Factory.dart';
 import 'package:flutter_app/state_machines.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:provider/provider.dart';
@@ -27,22 +25,26 @@ class ChatScreenState extends State<ChatScreen> {
   @override
   void dispose() {
     super.dispose();
-    print("AppWidgetState dispose");
+    print("ChatScreenState dispose");
   }
 
   @override
   void deactivate() {
     super.deactivate();
-    print("AppWidgetState deactivate");
+    print("ChatScreenState deactivate");
   }
 
   @override
   void initState() {
     super.initState();
-    navigator.mediaDevices.ondevicechange = (event) async {
-      print('++++++ ondevicechange ++++++');
-      setState(() {});
-    };
+    AppProvider appProvider = context.read<AppProvider>();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      appProvider.socketMachine.current = SocketStates.connecting;
+      appProvider.init(handleErrorCallback: handleError);
+    });
+
+    print("ChatScreenState initState");
   }
 
   void showDialogAlert(int lockID, Widget title, Widget content) {
@@ -91,10 +93,6 @@ class ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     var child = Consumer<AppProvider>(
       builder: (consumerContext, appProvider, child) {
-        appProvider.init(
-          handleErrorCallback: handleError,
-        );
-
         isInChat() {
           return appProvider.chatMachine.current?.identifier ==
               ChatStates.connected;
@@ -196,7 +194,6 @@ class ChatScreenState extends State<ChatScreen> {
             });
           },
           onHorizontalDragEnd: (details) {
-            print("onHorizontalDragEnd _positionX $_positionX");
             if (_positionX.abs() > 50 && isInChat()) {
               double score = 0;
               if (_positionX > 0) {

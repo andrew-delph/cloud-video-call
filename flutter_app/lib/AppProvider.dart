@@ -73,8 +73,6 @@ class AppProvider extends ChangeNotifier {
       await tryResetRemote();
       chatMachine.current = ChatStates.feedback;
     });
-
-    socketMachine.start();
   }
 
   void handleError(ErrorDetails errorDetails) {
@@ -99,14 +97,19 @@ class AppProvider extends ChangeNotifier {
   Future<void> init(
       {Function(ErrorDetails details)? handleErrorCallback}) async {
     this.handleErrorCallback = handleErrorCallback;
+    socketMachine.start();
   }
 
   Future<void> initSocket() async {
+    established = false;
     String socketAddress = Factory.getWsHost();
 
-    print("SOCKET_ADDRESS is $socketAddress");
+    print("SOCKET_ADDRESS is $socketAddress ");
 
     // only websocket works on windows
+    if (socket != null) {
+      socket?.disconnect();
+    }
     socket = io.io(
         socketAddress,
         OptionBuilder()
@@ -154,10 +157,6 @@ class AppProvider extends ChangeNotifier {
     });
     socket!.onDisconnect((details) {
       socketMachine.current = SocketStates.connecting;
-      established = false;
-      socketMachine.current = SocketStates.error;
-
-      handleError(ErrorDetails("Socket", "disconnected"));
     });
 
     socket!.onConnectError((error) {
