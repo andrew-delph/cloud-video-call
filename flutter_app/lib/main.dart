@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     var child =
         Consumer<AppProvider>(builder: (consumerContext, appProvider, child) {
-      String title = 'Random video chat (${appProvider.activeCount})';
+      String title = 'Random video chat';
       return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: title,
