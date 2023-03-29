@@ -179,6 +179,10 @@ io.on(`connection`, async (socket) => {
           logger.info(`created user.... ${socket.data.auth}`);
           socket.emit(`established`, `Connection established.`);
         } else {
+          socket.emit(
+            `message`,
+            `Connection NOT established. ${JSON.stringify(error)}`,
+          );
           logger.error(`createUser error: ${error.message}`);
           logger.error(`createUser error: ${JSON.stringify(error)}`);
           socket.disconnect();
