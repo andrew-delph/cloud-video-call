@@ -16,27 +16,42 @@ spec:
   config:
     network:
       ingress-class: 'kourier.ingress.networking.knative.dev'
-      auto-tls: Enabled
+      # auto-tls: Enabled
       # http-protocol: Redirected
   deployments:
     - name: activator
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: 'true'
       resources:
         - container: activator
           requests:
             cpu: 25m
             memory: 100Mi
     - name: net-kourier-controller
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: 'true'
       resources:
         - container: controller
           requests:
             cpu: 25m
             memory: 100Mi
     - name: 3scale-kourier-gateway
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: 'true'
       resources:
         - container: kourier-gateway
           requests:
             cpu: 25m
             memory: 100Mi
+    - name: autoscaler
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: 'true'
+    - name: domainmapping-webhook
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: 'true'
+    - name: webhook
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: 'true'
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -48,6 +63,27 @@ data:
   max-non-active-revisions: '0'
   retain-since-create-time: 'disabled'
   retain-since-last-active-time: 'disabled'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-deployment
+  namespace: knative-serving
+data:
+  queue-sidecar-cpu-request: '25m'
+  queue-sidecar-cpu-limit: '25m'
+  queue-sidecar-memory-request: '200Mi'
+  queue-sidecar-memory-limit: '200Mi'
+  queue-sidecar-ephemeral-storage-request: '200Mi'
+  queue-sidecar-ephemeral-storage-limit: '200Mi'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-features
+  namespace: knative-serving
+data:
+  kubernetes.podspec-nodeselector: 'enabled'
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -65,37 +101,37 @@ metadata:
 data:
   enable-scale-to-zero: 'true'
   allow-zero-initial-scale: 'true'
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: config-domain
-  namespace: knative-serving
-data:
-  example.com: ''
----
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: letsencrypt-http01-issuer
-spec:
-  acme:
-    privateKeySecretRef:
-      name: letsencrypt-http01-issuer
-    server: https://acme-v02.api.letsencrypt.org/directory
-    solvers:
-      - http01:
-          ingress:
-            class: kourier
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: config-certmanager
-  namespace: knative-serving
-  labels:
-    networking.knative.dev/certificate-provider: cert-manager
-data:
-  issuerRef: |
-    kind: ClusterIssuer
-    name: letsencrypt-http01-issuer
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: config-domain
+#   namespace: knative-serving
+# data:
+#   example.com: ''
+# ---
+# apiVersion: cert-manager.io/v1
+# kind: ClusterIssuer
+# metadata:
+#   name: letsencrypt-http01-issuer
+# spec:
+#   acme:
+#     privateKeySecretRef:
+#       name: letsencrypt-http01-issuer
+#     server: https://acme-v02.api.letsencrypt.org/directory
+#     solvers:
+#       - http01:
+#           ingress:
+#             class: kourier
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: config-certmanager
+#   namespace: knative-serving
+#   labels:
+#     networking.knative.dev/certificate-provider: cert-manager
+# data:
+#   issuerRef: |
+#     kind: ClusterIssuer
+#     name: letsencrypt-http01-issuer

@@ -17,6 +17,8 @@ spec:
       labels:
         app: rabbitmq
     spec:
+      nodeSelector:
+        cloud.google.com/gke-spot: 'true'
       containers:
         - args:
             - rabbitmq-server

@@ -17,6 +17,8 @@ spec:
       labels:
         app: matcher
     spec:
+      nodeSelector:
+        cloud.google.com/gke-spot: 'true'
       containers:
         - env:
             - name: FIREBASE_CONFIG
@@ -34,7 +36,7 @@ spec:
               cpu: '25m'
               memory: '250Mi'
             limits:
-              cpu: '512m'
+              cpu: '250m'
               memory: '250Mi'
       restartPolicy: Always
 status: {}

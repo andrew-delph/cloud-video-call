@@ -17,6 +17,8 @@ spec:
       labels:
         app: matchmaker
     spec:
+      nodeSelector:
+        cloud.google.com/gke-spot: 'true'
       containers:
         - env:
             - name: FIREBASE_CONFIG

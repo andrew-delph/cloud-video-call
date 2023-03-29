@@ -11,6 +11,8 @@ spec:
         autoscaling.knative.dev/initial-scale: '1'
         autoscaling.knative.dev/class: 'kpa.autoscaling.knative.dev'
     spec:
+      nodeSelector:
+        cloud.google.com/gke-spot: 'true'
       containers:
         - image: rediscommander/redis-commander:latest
           env:
@@ -19,6 +21,13 @@ spec:
           ports:
             - containerPort: 8081
               protocol: TCP
+          resources:
+            requests:
+              cpu: '25m'
+              memory: '250Mi'
+            limits:
+              memory: '250Mi'
+              cpu: '512m'
 ---
 apiVersion: v1
 kind: Service

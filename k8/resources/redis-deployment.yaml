@@ -17,6 +17,8 @@ spec:
       labels:
         app: redis
     spec:
+      nodeSelector:
+        cloud.google.com/gke-spot: 'true'
       containers:
         - image: redis:latest
           name: redis
@@ -24,11 +26,11 @@ spec:
             - containerPort: 6379
           resources:
             requests:
-              cpu: '100m'
-              memory: '100Mi'
-            limits:
-              cpu: '512m'
+              cpu: '25m'
               memory: '250Mi'
+            limits:
+              memory: '250Mi'
+              cpu: '512m'
       restartPolicy: Always
 status: {}
 ---

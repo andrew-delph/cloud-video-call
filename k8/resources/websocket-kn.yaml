@@ -11,6 +11,8 @@ spec:
         autoscaling.knative.dev/initial-scale: '1'
         autoscaling.knative.dev/class: 'kpa.autoscaling.knative.dev'
     spec:
+      nodeSelector:
+        cloud.google.com/gke-spot: 'true'
       timeoutSeconds: 3600
       containers:
         - image: andrewdelph/video-call-websocket:latest
@@ -19,6 +21,13 @@ spec:
                 name: secrets
           ports:
             - containerPort: 80
+          resources:
+            requests:
+              cpu: '25m'
+              memory: '250Mi'
+            limits:
+              cpu: '250m'
+              memory: '250Mi'
 ---
 apiVersion: networking.internal.knative.dev/v1alpha1
 kind: ClusterDomainClaim
