@@ -29,13 +29,12 @@ loki:
 promtail:
   enabled: true
   config:
-    logLevel: debug
     serverPort: 3101
     clients:
       - url: http://{{ .Release.Name }}:3100/loki/api/v1/push
     snippets:
       # addScrapeJobLabel: true
-      # extraLimitsConfig:
+      # extraLimitsConfig: |
       #   readline_rate: 1000
       #   readline_burst: 2000
       #   readline_rate_enabled: true
@@ -47,6 +46,12 @@ promtail:
           regex: '(.+)'
           target_label: 'app'
       pipelineStages:
+        - drop:
+            source: 'namespace'
+            expression: '(kube-public|kube-system)'
+        - drop:
+            older_than: 1h
+            drop_counter_reason: 'line_too_old'
         - cri:
         - json:
             expressions:
@@ -55,15 +60,6 @@ promtail:
             level:
         - output:
             source: msg
-        - drop:
-            source: 'namespace'
-            expression: '!(default)'
-        # - match:
-        #     selector: '{namespace="default"}'
-        #     stages:
-        #       - regex:
-        #           expression: '.*'
-        #           source: log
 
 # proxy is currently only used by loki test pod
 # Note: If http_proxy/https_proxy are set, then no_proxy should include the
