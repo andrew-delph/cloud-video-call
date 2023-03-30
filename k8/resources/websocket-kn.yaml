@@ -19,6 +19,12 @@ spec:
                 name: secrets
           ports:
             - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
 ---
 apiVersion: networking.internal.knative.dev/v1alpha1
 kind: ClusterDomainClaim
