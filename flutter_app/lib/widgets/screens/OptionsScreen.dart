@@ -66,22 +66,31 @@ class OptionsScreenState extends State<OptionsScreen> {
   final MapNotifier customFilters = MapNotifier();
 
   bool loading = true;
+  bool unsavedChanges = false;
 
   @override
   void initState() {
     super.initState();
     constantAttributes.addListener(() {
-      setState(() {});
+      setState(() {
+        unsavedChanges = true;
+      });
     });
     constantFilters.addListener(() {
-      setState(() {});
+      setState(() {
+        unsavedChanges = true;
+      });
     });
 
     customAttributes.addListener(() {
-      setState(() {});
+      setState(() {
+        unsavedChanges = true;
+      });
     });
     customFilters.addListener(() {
-      setState(() {});
+      setState(() {
+        unsavedChanges = true;
+      });
     });
     loadAttributes();
   }
@@ -135,6 +144,7 @@ class OptionsScreenState extends State<OptionsScreen> {
       }
     }).whenComplete(() {
       setState(() {
+        unsavedChanges = false;
         loading = false;
       });
     });
@@ -246,41 +256,47 @@ class OptionsScreenState extends State<OptionsScreen> {
                 height: 50,
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () async {
-                    var url =
-                        Uri.parse("${Factory.getOptionsHost()}/preferences");
-                    final headers = {
-                      'Access-Control-Allow-Origin': '*',
-                      'Content-Type': 'application/json',
-                      'authorization':
-                          await FirebaseAuth.instance.currentUser!.getIdToken()
-                    };
-                    final body = {
-                      'attributes': {
-                        'constant': constantAttributes.map,
-                        'custom': customAttributes.map
-                      },
-                      'filters': {
-                        'constant': constantFilters.map,
-                        'custom': customFilters.map,
-                      }
-                    };
-                    http
-                        .put(url, headers: headers, body: json.encode(body))
-                        .then((response) {
-                      if (validStatusCode(response.statusCode)) {
-                      } else {
-                        const String errorMsg = 'Failed to update preferences.';
-                        const snackBar = SnackBar(
-                          content: Text(errorMsg),
-                        );
+                  onPressed: !unsavedChanges
+                      ? null
+                      : () async {
+                          var url = Uri.parse(
+                              "${Factory.getOptionsHost()}/preferences");
+                          final headers = {
+                            'Access-Control-Allow-Origin': '*',
+                            'Content-Type': 'application/json',
+                            'authorization': await FirebaseAuth
+                                .instance.currentUser!
+                                .getIdToken()
+                          };
+                          final body = {
+                            'attributes': {
+                              'constant': constantAttributes.map,
+                              'custom': customAttributes.map
+                            },
+                            'filters': {
+                              'constant': constantFilters.map,
+                              'custom': customFilters.map,
+                            }
+                          };
+                          http
+                              .put(url,
+                                  headers: headers, body: json.encode(body))
+                              .then((response) {
+                            if (validStatusCode(response.statusCode)) {
+                            } else {
+                              const String errorMsg =
+                                  'Failed to update preferences.';
+                              const snackBar = SnackBar(
+                                content: Text(errorMsg),
+                              );
 
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        Navigator.of(context).pop();
-                      }
-                      loadAttributes();
-                    });
-                  },
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                              Navigator.of(context).pop();
+                            }
+                            loadAttributes();
+                          });
+                        },
                   child: const Text('Submit'),
                 ),
               )
@@ -335,15 +351,29 @@ class OptionsScreenState extends State<OptionsScreen> {
       },
     );
 
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Options screen'),
-        ),
-        body: Center(
-            child: SingleChildScrollView(
-                child: Column(
-          children: [preferences, devices],
-        ))));
+    return WillPopScope(
+        onWillPop: () async {
+          if (unsavedChanges) {
+            // Show a dialog or a snackbar to inform the user that there are unsaved changes
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('There are unsaved changes')),
+            );
+            // Return false to prevent the user from navigating back
+            return false;
+          } else {
+            // Return true to allow the user to navigate back
+            return true;
+          }
+        },
+        child: Scaffold(
+            appBar: AppBar(
+              title: const Text('Options screen'),
+            ),
+            body: Center(
+                child: SingleChildScrollView(
+                    child: Column(
+              children: [preferences, devices],
+            )))));
   }
 }
 
