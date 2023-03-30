@@ -266,9 +266,10 @@ class OptionsScreenState extends State<OptionsScreen> {
           title: const Text('Options screen'),
         ),
         body: Center(
-            child: Column(
+            child: SingleChildScrollView(
+                child: Column(
           children: [preferences, devices],
-        )));
+        ))));
   }
 }
 
