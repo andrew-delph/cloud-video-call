@@ -250,6 +250,7 @@ class ChatScreenState extends State<ChatScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               IconButton(
+                                tooltip: "End call",
                                 icon: const Icon(Icons.call_end),
                                 color: isInChat() ? Colors.red : Colors.grey,
                                 onPressed: () {
@@ -260,10 +261,14 @@ class ChatScreenState extends State<ChatScreen> {
                                 },
                               ),
                               IconButton(
+                                tooltip: "Mute mic",
+                                color: Colors.grey,
                                 icon: const Icon(Icons.mic_off),
                                 onPressed: () {},
                               ),
                               IconButton(
+                                tooltip: "Camera off",
+                                color: Colors.grey,
                                 icon: const Icon(Icons.videocam_off),
                                 onPressed: () {},
                               ),
@@ -310,6 +315,7 @@ class SettingsButton extends StatelessWidget {
         }
 
         return PopupMenuButton<MediaDeviceInfo>(
+          color: Colors.grey,
           // initialValue: 'selectedMenu',
           // Callback that sets the selected popup menu item.
           itemBuilder: (BuildContext context) => mediaList,
