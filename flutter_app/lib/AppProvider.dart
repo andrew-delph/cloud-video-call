@@ -32,6 +32,27 @@ class AppProvider extends ChangeNotifier {
 
   RTCVideoRenderer get localVideoRenderer => _localVideoRenderer;
 
+  set localMediaStream(MediaStream? value) {
+    _localMediaStream = value;
+    localVideoRenderer.initialize().then((value) {
+      localVideoRenderer.srcObject = _localMediaStream;
+      notifyListeners();
+    });
+  }
+
+  set remoteMediaStream(MediaStream? value) {
+    _remoteMediaStream = value;
+    remoteVideoRenderer.initialize().then((value) {
+      remoteVideoRenderer.srcObject = _remoteMediaStream;
+      notifyListeners();
+    });
+  }
+
+  set peerConnection(RTCPeerConnection? value) {
+    _peerConnection = value;
+    notifyListeners();
+  }
+
   io.Socket? socket;
   String? feedbackId;
   bool established = false;
@@ -189,8 +210,7 @@ class AppProvider extends ChangeNotifier {
     _remoteVideoRenderer = RTCVideoRenderer();
 
     try {
-      MediaStream stream = await getUserMedia();
-      localMediaStream = stream;
+      await setLocalMediaStream();
       notifyListeners();
     } catch (error) {
       handleError(ErrorDetails("initLocalStream", error.toString()));
@@ -384,28 +404,7 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  set localMediaStream(MediaStream? value) {
-    _localMediaStream = value;
-    localVideoRenderer.initialize().then((value) {
-      localVideoRenderer.srcObject = _localMediaStream;
-      notifyListeners();
-    });
-  }
-
-  set remoteMediaStream(MediaStream? value) {
-    _remoteMediaStream = value;
-    remoteVideoRenderer.initialize().then((value) {
-      remoteVideoRenderer.srcObject = _remoteMediaStream;
-      notifyListeners();
-    });
-  }
-
-  set peerConnection(RTCPeerConnection? value) {
-    _peerConnection = value;
-    notifyListeners();
-  }
-
-  Future<MediaStream> getUserMedia() async {
+  Future<void> setLocalMediaStream() async {
     final Map<String, dynamic> mediaConstraints = {
       'audio': true,
       'video': true,
@@ -440,26 +439,22 @@ class AppProvider extends ChangeNotifier {
 
       if (videoDeviceId != null || audioDeviceId != null) {
         final Map<String, dynamic> mediaConstraints = {
-          'audio': {'deviceId': audioDeviceId ?? ''},
-          'video': {'deviceId': videoDeviceId ?? ''},
+          'audio': audioDeviceId != null ? {'deviceId': audioDeviceId} : true,
+          'video': videoDeviceId != null ? {'deviceId': videoDeviceId} : true,
         };
 
         mediaStream =
             await navigator.mediaDevices.getUserMedia(mediaConstraints);
       }
     }
-
-    return mediaStream;
+    localMediaStream = mediaStream;
   }
 
   Future<void> changeCamera(MediaDeviceInfo mediaDeviceInfo) async {
-    (await getPrefs()).setString('videoDeviceLabel', mediaDeviceInfo.label);
-    if (localMediaStream == null) return;
+    await (await getPrefs())
+        .setString('videoDeviceLabel', mediaDeviceInfo.label);
 
-    MediaStreamTrack videoTrack = localMediaStream!.getVideoTracks()[0];
-
-    await Helper.switchCamera(
-        videoTrack, mediaDeviceInfo.deviceId, localMediaStream);
+    await setLocalMediaStream();
 
     MediaStreamTrack newVideoTrack = localMediaStream!.getVideoTracks()[0];
 
@@ -472,28 +467,20 @@ class AppProvider extends ChangeNotifier {
         }
       });
     }
-
-    localVideoRenderer.initialize().then((value) {
-      localVideoRenderer.srcObject = _localMediaStream;
-      notifyListeners();
-    });
   }
 
   Future<void> changeAudioInput(MediaDeviceInfo mediaDeviceInfo) async {
-    (await getPrefs()).setString('audioDeviceLabel', mediaDeviceInfo.label);
+    await (await getPrefs())
+        .setString('audioDeviceLabel', mediaDeviceInfo.label);
 
-    MediaStream audioStream = await navigator.mediaDevices.getUserMedia({
-      'audio': {
-        'deviceId': mediaDeviceInfo.deviceId,
-      },
-    });
-    print("got audio stream .. ${audioStream.getAudioTracks()[0]}");
+    await setLocalMediaStream();
+    print("got audio stream .. ${localMediaStream?.getAudioTracks()[0]}");
 
     if (chatMachine.current?.identifier == ChatStates.connected) {
       (await peerConnection?.senders)?.forEach((element) {
         if (element.track?.kind == 'audio') {
           print("replacing audio...");
-          element.replaceTrack(audioStream.getAudioTracks()[0]);
+          element.replaceTrack(localMediaStream?.getAudioTracks()[0]);
         }
       });
     }
@@ -547,7 +534,7 @@ class AppProvider extends ChangeNotifier {
             child: const Text("Enable Media"),
             onTap: () async {
               print("Enable Media");
-              await getUserMedia();
+              await setLocalMediaStream();
             })
       ];
     }
