@@ -105,7 +105,7 @@ io.on(`connection`, async (socket) => {
   });
 
   socket.on(`ready`, async (data: { ready: boolean | undefined }, callback) => {
-    const ready = data.ready == undefined ? true : false;
+    const ready = data.ready == undefined ? true : data.ready;
 
     if (ready) {
       await registerSocketReady(socket);
@@ -124,7 +124,7 @@ io.on(`connection`, async (socket) => {
     }
 
     if (callback != undefined) {
-      callback(data);
+      callback({ ready: ready });
     }
   });
 
