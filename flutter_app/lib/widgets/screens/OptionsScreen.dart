@@ -13,13 +13,19 @@ import '../../Factory.dart';
 import '../../location.dart';
 import '../LoadingWidget.dart';
 
+const String naValue = "Skip";
+
 class MapNotifier extends ChangeNotifier {
   final Map<String, String> _map = {};
 
   Map<String, String> get map => _map;
 
   void add(String key, String value, {bool notify = true}) {
-    _map[key] = value;
+    if (value == naValue || value == "") {
+      _map.remove(key);
+    } else {
+      _map[key] = value;
+    }
     if (notify) {
       notifyListeners();
     }
@@ -156,18 +162,86 @@ class OptionsScreenState extends State<OptionsScreen> {
               const Text(
                 "Preferences",
                 style: TextStyle(
-                  fontSize: 24.0,
+                  fontSize: 35.0,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
               ),
-              KeyValueListWidget(
-                  title: "Attributes", model: constantAttributes),
-              KeyValueListWidget(title: "Filters", model: constantFilters),
-              LocationOptionsWidget(
-                  customAttributes: customAttributes,
-                  customFilters: customFilters,
-                  title: "Location Settings"),
+              const Divider(),
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Attributes',
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    DropDownPreference(
+                      label: 'Gender',
+                      options: const [naValue, "Male", "Female", "Other"],
+                      preferenceMap: constantAttributes,
+                      mapKey: 'gender',
+                    ),
+                    DropDownPreference(
+                      label: 'Language',
+                      options: const [naValue, "English", "French", "Other"],
+                      preferenceMap: constantAttributes,
+                      mapKey: 'language',
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(),
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Filters',
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    DropDownPreference(
+                      label: 'Gender',
+                      options: const [naValue, "Male", "Female", "Other"],
+                      preferenceMap: constantFilters,
+                      mapKey: 'gender',
+                    ),
+                    DropDownPreference(
+                      label: 'Language',
+                      options: const [naValue, "English", "French", "Other"],
+                      preferenceMap: constantFilters,
+                      mapKey: 'language',
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(),
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Location Settings',
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    LocationOptionsWidget(
+                        customAttributes: customAttributes,
+                        customFilters: customFilters),
+                  ],
+                ),
+              ),
               SizedBox(
                 height: 50,
                 width: double.infinity,
@@ -274,15 +348,13 @@ class OptionsScreenState extends State<OptionsScreen> {
 }
 
 class KeyValueListWidget extends StatelessWidget {
-  final String title;
-
   final MapNotifier model; // Define a Map to store key-value pairs
   final keyController =
       TextEditingController(); // Controller for the key text field
   final valueController =
       TextEditingController(); // Controller for the value text field
 
-  KeyValueListWidget({super.key, required this.model, required this.title});
+  KeyValueListWidget({super.key, required this.model});
 
   void _addKeyValue() {
     model.add(keyController.text, valueController.text);
@@ -290,67 +362,57 @@ class KeyValueListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            ListView.separated(
-              shrinkWrap: true,
-              itemCount: model.map.length,
-              separatorBuilder: (_, __) => const Divider(),
-              itemBuilder: (context, int index) {
-                final key = model.map.keys.elementAt(index);
-                final value = model.map[key];
-                if (value == null) return SizedBox();
-                return OptionTile(
-                  k: key,
-                  v: value,
-                  onDelete: () {
-                    model.deleteKey(key);
-                  },
-                );
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListView.separated(
+          shrinkWrap: true,
+          itemCount: model.map.length,
+          separatorBuilder: (_, __) => const Divider(),
+          itemBuilder: (context, int index) {
+            final key = model.map.keys.elementAt(index);
+            final value = model.map[key];
+            if (value == null) return SizedBox();
+            return OptionTile(
+              k: key,
+              v: value,
+              onDelete: () {
+                model.deleteKey(key);
               },
-            ),
-            const Divider(),
-            Row(
-                // mainAxisSize: MainAxisSize.max,
-                // mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: keyController,
-                      maxLines: 1,
-                      decoration: const InputDecoration(
-                        labelText: 'Key',
-                      ),
-                    ),
+            );
+          },
+        ),
+        const Divider(),
+        Row(
+            // mainAxisSize: MainAxisSize.max,
+            // mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: keyController,
+                  maxLines: 1,
+                  decoration: const InputDecoration(
+                    labelText: 'Key',
                   ),
-                  Expanded(
-                    child: TextField(
-                      controller: valueController,
-                      maxLines: 1,
-                      decoration: const InputDecoration(
-                        labelText: 'Value',
-                      ),
-                    ),
+                ),
+              ),
+              Expanded(
+                child: TextField(
+                  controller: valueController,
+                  maxLines: 1,
+                  decoration: const InputDecoration(
+                    labelText: 'Value',
                   ),
-                  ElevatedButton(
-                    onPressed: _addKeyValue,
-                    child: const Text('Add'),
-                  )
-                ]),
-          ],
-        ));
+                ),
+              ),
+              ElevatedButton(
+                onPressed: _addKeyValue,
+                child: const Text('Add'),
+              )
+            ]),
+      ],
+    );
   }
 }
 
@@ -383,8 +445,6 @@ class OptionTile extends StatelessWidget {
 }
 
 class LocationOptionsWidget extends StatelessWidget {
-  final String title;
-
   final MapNotifier customAttributes;
   final MapNotifier customFilters;
 
@@ -404,56 +464,93 @@ class LocationOptionsWidget extends StatelessWidget {
   }
 
   LocationOptionsWidget(
-      {super.key,
-      required this.customAttributes,
-      required this.customFilters,
-      required this.title});
+      {super.key, required this.customAttributes, required this.customFilters});
 
   @override
   Widget build(BuildContext context) {
     valueController.text = customFilters.get('dist') ?? '';
-    return Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+    return Column(
+      children: [
+        Row(children: [
+          ElevatedButton(
+            onPressed: updateLocation,
+            child: const Text('Update Location'),
+          ),
+          Expanded(
+              child: Text(
+                  ' Long: ${customAttributes.get("long") ?? 'None'} - Lat: ${customAttributes.get("lat") ?? 'None'} ')),
+          Expanded(
+              child: TextField(
+            style: const TextStyle(color: Colors.purple),
+            enabled: isValid(),
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.digitsOnly
+            ],
+            controller: valueController,
+            onChanged: (value) {
+              customFilters.add('dist', value, notify: false);
+            },
+            maxLines: 1,
+            decoration: InputDecoration(
+              labelText: isValid()
+                  ? 'Max Distance Km'
+                  : 'Max Distance (Enabled with \'Update Location\')',
             ),
-            const Divider(),
-            Row(children: [
-              ElevatedButton(
-                onPressed: updateLocation,
-                child: const Text('Update Location'),
+          )),
+        ]),
+      ],
+    );
+  }
+}
+
+class DropDownPreference extends StatelessWidget {
+  final String label;
+  final String mapKey;
+  final List<String> options;
+  final MapNotifier preferenceMap;
+
+  const DropDownPreference(
+      {super.key,
+      required this.label,
+      required this.options,
+      required this.preferenceMap,
+      required this.mapKey});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+        width: 400,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("$label:"),
+            SizedBox(
+                child: DropdownButton<String>(
+              value: preferenceMap.get(mapKey) ?? naValue,
+              icon: const Icon(Icons.arrow_drop_down),
+              elevation: 16,
+              style: const TextStyle(color: Colors.purple),
+              underline: Container(
+                height: 2,
+                color: Colors.purpleAccent,
               ),
-              Expanded(
-                  child: Text(
-                      ' Long: ${customAttributes.get("long") ?? 'None'} - Lat: ${customAttributes.get("lat") ?? 'None'} ')),
-              Expanded(
-                  child: TextField(
-                enabled: isValid(),
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly
-                ],
-                controller: valueController,
-                onChanged: (value) {
-                  customFilters.add('dist', value, notify: false);
-                },
-                maxLines: 1,
-                decoration: InputDecoration(
-                  labelText: isValid()
-                      ? 'Max Distance Km'
-                      : 'Max Distance (Enabled with \'Update Location\')',
-                ),
-              )),
-            ]),
+              onChanged: (String? value) {
+                preferenceMap.add(mapKey, value!);
+              },
+              items: options.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                    value: value,
+                    child: SizedBox(
+                      width: 70,
+                      child: Text(
+                        value,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ));
+              }).toList(),
+            ))
           ],
         ));
   }
