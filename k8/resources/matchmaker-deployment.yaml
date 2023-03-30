@@ -18,13 +18,9 @@ spec:
         app: matchmaker
     spec:
       containers:
-        - env:
-            - name: FIREBASE_CONFIG
-              value: '{"projectId":"react-video-call-thing72","storageBucket":"react-video-call-thing72.appspot.com","locationId":"us-central"}'
-            - name: REDIS_HOST
-              value: redis
-            - name: REDIS_PORT
-              value: '6379'
+        - envFrom:
+            - configMapRef:
+                name: secrets
           image: andrewdelph/video-call-matchmaker:latest
           name: matchmaker
           ports:
