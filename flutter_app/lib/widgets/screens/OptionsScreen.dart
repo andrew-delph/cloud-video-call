@@ -154,7 +154,7 @@ class OptionsScreenState extends State<OptionsScreen> {
   Widget build(BuildContext context) {
     AppProvider appProvider = Provider.of<AppProvider>(context);
     Widget preferences = connectingWidget;
-    if (!loading) {
+    if (true) {
       preferences = Container(
           alignment: Alignment.topCenter,
           decoration: BoxDecoration(
@@ -166,142 +166,155 @@ class OptionsScreenState extends State<OptionsScreen> {
           constraints: const BoxConstraints(
             maxWidth: 1000,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text(
-                "Preferences",
-                style: TextStyle(
-                  fontSize: 35.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              const Divider(),
-              Container(
-                padding: const EdgeInsets.all(20),
-                child: Column(
+          child: loading
+              ? connectingWidget
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
-                      'Attributes',
+                      "Preferences",
                       style: TextStyle(
-                        fontSize: 24.0,
+                        fontSize: 35.0,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
-                    DropDownPreference(
-                      label: 'Gender',
-                      options: const [naValue, "Male", "Female", "Other"],
-                      preferenceMap: constantAttributes,
-                      mapKey: 'gender',
-                    ),
-                    DropDownPreference(
-                      label: 'Language',
-                      options: const [naValue, "English", "French", "Other"],
-                      preferenceMap: constantAttributes,
-                      mapKey: 'language',
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(),
-              Container(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    const Text(
-                      'Filters',
-                      style: TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                    const Divider(),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Attributes',
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          DropDownPreference(
+                            label: 'Gender',
+                            options: const [naValue, "Male", "Female", "Other"],
+                            preferenceMap: constantAttributes,
+                            mapKey: 'gender',
+                          ),
+                          DropDownPreference(
+                            label: 'Language',
+                            options: const [
+                              naValue,
+                              "English",
+                              "French",
+                              "Other"
+                            ],
+                            preferenceMap: constantAttributes,
+                            mapKey: 'language',
+                          ),
+                        ],
                       ),
                     ),
-                    DropDownPreference(
-                      label: 'Gender',
-                      options: const [naValue, "Male", "Female", "Other"],
-                      preferenceMap: constantFilters,
-                      mapKey: 'gender',
-                    ),
-                    DropDownPreference(
-                      label: 'Language',
-                      options: const [naValue, "English", "French", "Other"],
-                      preferenceMap: constantFilters,
-                      mapKey: 'language',
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(),
-              Container(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    const Text(
-                      'Location Settings',
-                      style: TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                    const Divider(),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Filters',
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          DropDownPreference(
+                            label: 'Gender',
+                            options: const [naValue, "Male", "Female", "Other"],
+                            preferenceMap: constantFilters,
+                            mapKey: 'gender',
+                          ),
+                          DropDownPreference(
+                            label: 'Language',
+                            options: const [
+                              naValue,
+                              "English",
+                              "French",
+                              "Other"
+                            ],
+                            preferenceMap: constantFilters,
+                            mapKey: 'language',
+                          ),
+                        ],
                       ),
                     ),
-                    LocationOptionsWidget(
-                        customAttributes: customAttributes,
-                        customFilters: customFilters),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 50,
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: !unsavedChanges
-                      ? null
-                      : () async {
-                          var url = Uri.parse(
-                              "${Factory.getOptionsHost()}/preferences");
-                          final headers = {
-                            'Access-Control-Allow-Origin': '*',
-                            'Content-Type': 'application/json',
-                            'authorization': await FirebaseAuth
-                                .instance.currentUser!
-                                .getIdToken()
-                          };
-                          final body = {
-                            'attributes': {
-                              'constant': constantAttributes.map,
-                              'custom': customAttributes.map
-                            },
-                            'filters': {
-                              'constant': constantFilters.map,
-                              'custom': customFilters.map,
-                            }
-                          };
-                          http
-                              .put(url,
-                                  headers: headers, body: json.encode(body))
-                              .then((response) {
-                            if (validStatusCode(response.statusCode)) {
-                            } else {
-                              const String errorMsg =
-                                  'Failed to update preferences.';
-                              const snackBar = SnackBar(
-                                content: Text(errorMsg),
-                              );
+                    const Divider(),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Location Settings',
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          LocationOptionsWidget(
+                              customAttributes: customAttributes,
+                              customFilters: customFilters),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: !unsavedChanges
+                            ? null
+                            : () async {
+                                var url = Uri.parse(
+                                    "${Factory.getOptionsHost()}/preferences");
+                                final headers = {
+                                  'Access-Control-Allow-Origin': '*',
+                                  'Content-Type': 'application/json',
+                                  'authorization': await FirebaseAuth
+                                      .instance.currentUser!
+                                      .getIdToken()
+                                };
+                                final body = {
+                                  'attributes': {
+                                    'constant': constantAttributes.map,
+                                    'custom': customAttributes.map
+                                  },
+                                  'filters': {
+                                    'constant': constantFilters.map,
+                                    'custom': customFilters.map,
+                                  }
+                                };
+                                http
+                                    .put(url,
+                                        headers: headers,
+                                        body: json.encode(body))
+                                    .then((response) {
+                                  if (validStatusCode(response.statusCode)) {
+                                  } else {
+                                    const String errorMsg =
+                                        'Failed to update preferences.';
+                                    const snackBar = SnackBar(
+                                      content: Text(errorMsg),
+                                    );
 
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
-                              Navigator.of(context).pop();
-                            }
-                            loadAttributes();
-                          });
-                        },
-                  child: const Text('Submit'),
-                ),
-              )
-            ],
-          ));
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                    Navigator.of(context).pop();
+                                  }
+                                  loadAttributes();
+                                });
+                              },
+                        child: const Text('Submit'),
+                      ),
+                    )
+                  ],
+                ));
     }
 
     enumerateDevices() async {
