@@ -534,8 +534,24 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<List<PopupMenuEntry<MediaDeviceInfo>>> getDeviceEntries() async {
+    List<MediaDeviceInfo> mediaDevices =
+        await navigator.mediaDevices.enumerateDevices();
 
-    List<MediaDeviceInfo> mediaDevices = await navigator.mediaDevices.enumerateDevices();
+    int deviceCount =
+        mediaDevices.where((obj) => obj.deviceId.isNotEmpty).length;
+
+    if (deviceCount == 0) {
+      return [
+        PopupMenuItem<MediaDeviceInfo>(
+            enabled: true,
+            child: const Text("Enable Media"),
+            onTap: () async {
+              print("Enable Media");
+              await getUserMedia();
+            })
+      ];
+    }
+
     SharedPreferences prefs = await getPrefs();
 
     List<PopupMenuEntry<MediaDeviceInfo>> videoInputList = [
