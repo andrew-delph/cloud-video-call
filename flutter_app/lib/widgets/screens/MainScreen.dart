@@ -1,9 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../../AppProvider.dart';
 import 'ChatScreen.dart';
 import 'LoginScreen.dart';
 import 'OptionsScreen.dart';

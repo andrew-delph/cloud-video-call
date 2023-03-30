@@ -48,27 +48,31 @@ class FeedbackScreenState extends State<FeedbackScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget page = Column(
-      children: [
-        Text(widget.label),
-        Slider(
-          value: _value.toDouble(),
-          min: widget.min.toDouble(),
-          max: widget.max.toDouble(),
-          onChanged: (newValue) {
-            setState(() {
-              _value = newValue.round();
-            });
-          },
-        ),
-        ElevatedButton(
-          onPressed: () {
-            sendScore(_value.toDouble());
-          },
-          child: const Text('Submit'),
-        ),
-      ],
-    );
+    Widget page = Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: Colors.blue,
+        child: Column(
+          children: [
+            Text(widget.label),
+            Slider(
+              value: _value.toDouble(),
+              min: widget.min.toDouble(),
+              max: widget.max.toDouble(),
+              onChanged: (newValue) {
+                setState(() {
+                  _value = newValue.round();
+                });
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {
+                sendScore(_value.toDouble());
+              },
+              child: const Text('Submit'),
+            ),
+          ],
+        ));
 
     page = GestureDetector(
       onHorizontalDragUpdate: (details) {
