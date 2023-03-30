@@ -302,16 +302,13 @@ class SettingsButton extends StatelessWidget {
           await appProvider.getPrefs());
     }
 
-    return FutureBuilder<Pair<List<MediaDeviceInfo>, SharedPreferences>>(
-      future: enumerateDevices(),
+    return FutureBuilder<List<PopupMenuEntry<MediaDeviceInfo>>>(
+      future: appProvider.getDeviceEntries(),
       builder: (context, snapshot) {
         List<PopupMenuEntry<MediaDeviceInfo>> mediaList = [];
 
         if (snapshot.hasData) {
-          List<MediaDeviceInfo> mediaDevices = snapshot.data!.first;
-          SharedPreferences prefs = snapshot.data!.second;
-
-          mediaList = appProvider.getDeviceEntries(mediaDevices, prefs);
+          mediaList = snapshot.data ?? [];
         }
 
         return PopupMenuButton<MediaDeviceInfo>(

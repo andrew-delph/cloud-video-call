@@ -324,8 +324,8 @@ class OptionsScreenState extends State<OptionsScreen> {
     }
 
     FutureBuilder devices =
-        FutureBuilder<Pair<List<MediaDeviceInfo>, SharedPreferences>>(
-      future: enumerateDevices(),
+        FutureBuilder<List<PopupMenuEntry<MediaDeviceInfo>>>(
+      future: appProvider.getDeviceEntries(),
       builder: (context, snapshot) {
         List<Widget> mediaList = [
           const Text(
@@ -339,11 +339,7 @@ class OptionsScreenState extends State<OptionsScreen> {
         ];
 
         if (snapshot.hasData) {
-          List<MediaDeviceInfo> mediaDevices = snapshot.data!.first;
-          SharedPreferences prefs = snapshot.data!.second;
-
-          mediaList =
-              mediaList + appProvider.getDeviceEntries(mediaDevices, prefs);
+          mediaList = mediaList + (snapshot.data ?? []);
         }
 
         return Container(

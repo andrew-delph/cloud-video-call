@@ -533,8 +533,11 @@ class AppProvider extends ChangeNotifier {
     });
   }
 
-  List<PopupMenuEntry<MediaDeviceInfo>> getDeviceEntries(
-      List<MediaDeviceInfo> mediaDevices, SharedPreferences prefs) {
+  Future<List<PopupMenuEntry<MediaDeviceInfo>>> getDeviceEntries() async {
+
+    List<MediaDeviceInfo> mediaDevices = await navigator.mediaDevices.enumerateDevices();
+    SharedPreferences prefs = await getPrefs();
+
     List<PopupMenuEntry<MediaDeviceInfo>> videoInputList = [
       const PopupMenuItem<MediaDeviceInfo>(
         enabled: false,
