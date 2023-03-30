@@ -271,6 +271,9 @@ class OptionsScreenState extends State<OptionsScreen> {
                         onPressed: !unsavedChanges
                             ? null
                             : () async {
+                                setState(() {
+                                  loading = true;
+                                });
                                 var url = Uri.parse(
                                     "${Factory.getOptionsHost()}/preferences");
                                 final headers = {
