@@ -10,10 +10,11 @@ env:
   MATCH_GIT_BASIC_AUTHORIZATION: '${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}'
   MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
 on:
-  workflow_run:
-    workflows: ['Version Flutter']
-    types:
-      - completed
+  workflow_dispatch:
+  # workflow_run:
+  #   workflows: ['Version Flutter']
+  #   types:
+  #     - completed
 jobs:
   build_and_deploy:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
