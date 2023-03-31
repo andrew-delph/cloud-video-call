@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/state_machines.dart';
 import 'package:flutter_app/utils.dart';
-import 'package:flutter_app/widgets/screens/ChatScreen.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -90,16 +89,20 @@ class AppProvider extends ChangeNotifier {
       socketMachine.current = SocketStates.connecting;
     });
 
-    chatMachine[ChatStates.matched].onTimeout(const Duration(seconds: 10), () {
-      chatMachine.current = ChatStates.connectionError;
-    });
-
     chatMachine[ChatStates.ended].onEntry(() async {
       if (socket != null && socket?.connected == true) {
         socket!.emit("endchat", "endchat");
       }
       await tryResetRemote();
       chatMachine.current = ChatStates.feedback;
+    });
+
+    chatMachine[ChatStates.matched].onTimeout(const Duration(seconds: 10), () {
+      chatMachine.current = ChatStates.connectionError;
+    });
+
+    chatMachine[ChatStates.connectionError].onEntry(() async {
+      chatMachine.current = ChatStates.waiting;
     });
   }
 
@@ -181,7 +184,9 @@ class AppProvider extends ChangeNotifier {
     socket!.on('message', (data) => print(data));
     socket!.on('endchat', (data) async {
       print("got endchat event");
-      chatMachine.current = ChatStates.ended;
+      if (chatMachine.current?.identifier == ChatStates.connected) {
+        chatMachine.current = ChatStates.ended;
+      }
     });
     socket!.onDisconnect((details) {
       socketMachine.current = SocketStates.connecting;
@@ -246,7 +251,7 @@ class AppProvider extends ChangeNotifier {
         chatMachine.current = ChatStates.connected;
       } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
           state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
-        chatMachine.current = ChatStates.ended;
+        chatMachine.current = ChatStates.connectionError;
       }
       notifyListeners();
     };
