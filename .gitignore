@@ -35,3 +35,4 @@ ui-debug.log*
 .env
 
 bazel-*
+flutter_app/android/fastlane/report.xml
