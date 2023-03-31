@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/state_machines.dart';
 
 import '../../AppProvider.dart';
+import '../SwipeDetector.dart';
 
 class FeedbackScreen extends StatefulWidget {
   final String label;
@@ -74,31 +75,11 @@ class FeedbackScreenState extends State<FeedbackScreen> {
           ],
         ));
 
-    page = GestureDetector(
-      onHorizontalDragUpdate: (details) {
-        setState(() {
-          _positionX += details.delta.dx;
-        });
-      },
-      onHorizontalDragEnd: (details) {
-        print("onHorizontalDragEnd _positionX $_positionX");
-        if (_positionX.abs() > 50) {
-          double score = 0;
-          if (_positionX > 0) {
-            score = 5;
-          }
+    page = SwipeDetector(
+        onHorizontalDragEnd: (double score) {
           sendScore(score);
-        }
-        setState(() {
-          _positionX = 0;
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        transform: Matrix4.translationValues(_positionX, 0, 0),
-        child: page,
-      ),
-    );
+        },
+        child: page);
 
     return page;
   }

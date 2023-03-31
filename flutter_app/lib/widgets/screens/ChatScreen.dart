@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../AppProvider.dart';
 import '../../utils.dart';
 import '../LoadingWidget.dart';
+import '../SwipeDetector.dart';
 import 'FeedbackScreen.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -188,18 +189,11 @@ class ChatScreenState extends State<ChatScreen> {
           );
         }
 
-        videoRenderLayout = GestureDetector(
-          onHorizontalDragUpdate: (details) {
-            setState(() {
-              _positionX += details.delta.dx;
-            });
-          },
-          onHorizontalDragEnd: (details) {
-            if (_positionX.abs() > 50 && isInChat()) {
-              double score = 0;
-              if (_positionX > 0) {
-                score = 5;
-              }
+        videoRenderLayout = SwipeDetector(
+            isDragUpdate: () {
+              return isInChat();
+            },
+            onHorizontalDragEnd: (double score) {
               appProvider.chatMachine.current =
                   ChatStates.ended; // will show feedback screen not good.
               appProvider
@@ -215,17 +209,8 @@ class ChatScreenState extends State<ChatScreen> {
               }).whenComplete(() {
                 appProvider.chatMachine.current = ChatStates.waiting;
               });
-            }
-            setState(() {
-              _positionX = 0;
-            });
-          },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            transform: Matrix4.translationValues(_positionX, 0, 0),
-            child: videoRenderLayout,
-          ),
-        );
+            },
+            child: videoRenderLayout);
 
         return Flex(
           direction: Axis.horizontal,

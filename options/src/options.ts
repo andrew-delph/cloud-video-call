@@ -45,7 +45,7 @@ app.post(`/providefeedback`, async (req, res) => {
     logger.debug(`Missing Authorization`);
     res.status(401).json({ error: `Missing Authorization` });
     return;
-  } else if (!feedback_id || score == null || score < 0) {
+  } else if (!feedback_id || (typeof score === `number` && !isNaN(score))) {
     logger.debug(
       `!feedback_id || !score) feedback_id: ${feedback_id} score: ${score}`,
     );
