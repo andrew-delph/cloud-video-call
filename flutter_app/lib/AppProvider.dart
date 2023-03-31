@@ -607,7 +607,7 @@ class AppProvider extends ChangeNotifier {
                     fontWeight: FontWeight.bold,
                     color: Colors.blue,
                   )
-                : null,
+                : const TextStyle(),
             child: Text(mediaDeviceInfo.label),
             onTap: () {
               print("click audio input");
