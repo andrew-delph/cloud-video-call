@@ -221,6 +221,11 @@ class AppProvider extends ChangeNotifier {
     _localVideoRenderer = RTCVideoRenderer();
     _remoteVideoRenderer = RTCVideoRenderer();
 
+    _localVideoRenderer.onResize = () {
+      notifyListeners();
+      print("_localVideoRenderer.onResize!!!!!!!!!!!!!!!!!!!!!!!!!");
+    };
+
     try {
       await setLocalMediaStream();
       notifyListeners();

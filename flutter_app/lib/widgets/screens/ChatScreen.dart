@@ -143,6 +143,14 @@ class ChatScreenState extends State<ChatScreen> {
 
         Widget videoRenderLayout;
 
+        double ratioHW = 0;
+
+        if (appProvider.localVideoRenderer.videoHeight != 0 &&
+            appProvider.localVideoRenderer.videoWidth != 0) {
+          ratioHW = appProvider.localVideoRenderer.videoHeight /
+              appProvider.localVideoRenderer.videoWidth;
+        }
+
         if (width < height) {
           videoRenderLayout = Stack(
             children: [
@@ -158,10 +166,8 @@ class ChatScreenState extends State<ChatScreen> {
                 right: 0,
                 child: Container(
                   alignment: Alignment.bottomRight,
-                  constraints: BoxConstraints(
-                    maxWidth: width / 2,
-                    maxHeight: height / 4,
-                  ),
+                  width: width / 2,
+                  height: (width / 2) * ratioHW,
                   child: RTCVideoView(
                     appProvider.localVideoRenderer,
                   ),
