@@ -86,7 +86,8 @@ class ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
-    showDialogAlert(-1, const Text("Socket Error"), content);
+    showDialogAlert(
+        details.message.hashCode, const Text("Socket Error"), content);
   }
 
   @override
