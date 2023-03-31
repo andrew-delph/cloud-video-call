@@ -246,15 +246,27 @@ class ChatScreenState extends State<ChatScreen> {
                               ),
                               IconButton(
                                 tooltip: "Mute mic",
-                                color: Colors.grey,
-                                icon: const Icon(Icons.mic_off),
-                                onPressed: () {},
+                                color: appProvider.isMuteMic()
+                                    ? Colors.red
+                                    : Colors.grey,
+                                icon: appProvider.isMuteMic()
+                                    ? const Icon(Icons.mic_off)
+                                    : const Icon(Icons.mic),
+                                onPressed: () {
+                                  appProvider.toggleMuteMic();
+                                },
                               ),
                               IconButton(
                                 tooltip: "Camera off",
-                                color: Colors.grey,
-                                icon: const Icon(Icons.videocam_off),
-                                onPressed: () {},
+                                color: appProvider.isHideCam()
+                                    ? Colors.red
+                                    : Colors.grey,
+                                icon: appProvider.isHideCam()
+                                    ? const Icon(Icons.videocam_off)
+                                    : const Icon(Icons.videocam),
+                                onPressed: () {
+                                  appProvider.toggleHideCam();
+                                },
                               ),
                               SettingsButton(appProvider),
                             ],

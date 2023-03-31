@@ -32,8 +32,15 @@ class AppProvider extends ChangeNotifier {
 
   RTCVideoRenderer get localVideoRenderer => _localVideoRenderer;
 
+  MediaStreamTrack? localVideoTrack;
+  MediaStreamTrack? localAudioTrack;
+
   set localMediaStream(MediaStream? value) {
     _localMediaStream = value;
+
+    localVideoTrack = _localMediaStream?.getVideoTracks()[0];
+    localAudioTrack = _localMediaStream?.getAudioTracks()[0];
+
     localVideoRenderer.initialize().then((value) {
       localVideoRenderer.srcObject = _localMediaStream;
       notifyListeners();
@@ -614,5 +621,37 @@ class AppProvider extends ChangeNotifier {
     }
 
     return videoInputList + audioInputList; // + audioOutputList;
+  }
+
+  bool isHideCam() {
+    final finalLocalVideoTrack = localVideoTrack;
+    if (finalLocalVideoTrack != null) {
+      return !finalLocalVideoTrack.enabled;
+    }
+    return true;
+  }
+
+  Future<void> toggleHideCam() async {
+    final finalLocalVideoTrack = localVideoTrack;
+    if (finalLocalVideoTrack != null) {
+      finalLocalVideoTrack.enabled = (isHideCam());
+      notifyListeners();
+    }
+  }
+
+  bool isMuteMic() {
+    final finalLocalAudioTrack = localAudioTrack;
+    if (finalLocalAudioTrack != null) {
+      return !finalLocalAudioTrack.enabled;
+    }
+    return true;
+  }
+
+  Future<void> toggleMuteMic() async {
+    final finalLocalAudioTrack = localAudioTrack;
+    if (finalLocalAudioTrack != null) {
+      Helper.setMicrophoneMute(!(isMuteMic()), finalLocalAudioTrack);
+      notifyListeners();
+    }
   }
 }
