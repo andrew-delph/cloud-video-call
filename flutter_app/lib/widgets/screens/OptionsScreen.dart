@@ -108,11 +108,12 @@ class OptionsScreenState extends State<OptionsScreen> {
       };
       return http.get(url, headers: headers);
     }).then((response) {
+      dynamic data = jsonDecode(response.body);
       if (validStatusCode(response.statusCode)) {
-        return jsonDecode(response.body);
       } else {
-        const String errorMsg = 'Failed to load preferences data.';
-        const snackBar = SnackBar(
+        String errorMsg =
+            (data['message'] ?? 'Failed to load preferences data.').toString();
+        SnackBar snackBar = SnackBar(
           content: Text(errorMsg),
         );
 
@@ -120,6 +121,7 @@ class OptionsScreenState extends State<OptionsScreen> {
         Navigator.of(context).pop();
         throw Exception(errorMsg);
       }
+      return data;
     }).then((data) {
       if (data["attributes"] is Map && data["attributes"]["constant"] is Map) {
         var temp = data["attributes"]["constant"] as Map;
