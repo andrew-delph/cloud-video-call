@@ -320,12 +320,6 @@ class OptionsScreenState extends State<OptionsScreen> {
                 ));
     }
 
-    enumerateDevices() async {
-      return Pair<List<MediaDeviceInfo>, SharedPreferences>(
-          await navigator.mediaDevices.enumerateDevices(),
-          await appProvider.getPrefs());
-    }
-
     FutureBuilder devices =
         FutureBuilder<List<PopupMenuEntry<MediaDeviceInfo>>>(
       future: appProvider.getDeviceEntries(),

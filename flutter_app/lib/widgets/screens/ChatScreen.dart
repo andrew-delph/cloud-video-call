@@ -295,13 +295,6 @@ class SettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future<Pair<List<MediaDeviceInfo>, SharedPreferences>>
-        enumerateDevices() async {
-      return Pair<List<MediaDeviceInfo>, SharedPreferences>(
-          await navigator.mediaDevices.enumerateDevices(),
-          await appProvider.getPrefs());
-    }
-
     return FutureBuilder<List<PopupMenuEntry<MediaDeviceInfo>>>(
       future: appProvider.getDeviceEntries(),
       builder: (context, snapshot) {
