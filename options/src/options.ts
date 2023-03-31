@@ -239,7 +239,7 @@ app.get(`/preferences`, async (req, res) => {
   };
 
   const queryMetadata = `
-  MATCH (p1:Person {userId: $userId})
+  MERGE (p1:Person {userId: $userId})
   OPTIONAL MATCH (p1)-[r1:USER_ATTRIBUTES_CONSTANT]->(a_constant:MetaData)
   OPTIONAL MATCH (p1)-[r2:USER_FILTERS_CONSTANT]->(f_constant:MetaData)
   OPTIONAL MATCH (p1)-[r3:USER_ATTRIBUTES_CUSTOM]->(a_custom:MetaData)
