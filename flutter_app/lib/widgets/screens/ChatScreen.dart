@@ -21,7 +21,6 @@ class ChatScreen extends StatefulWidget {
 
 class ChatScreenState extends State<ChatScreen> {
   Set<int> dialogLock = {};
-  double _positionX = 0;
 
   @override
   void dispose() {
@@ -205,7 +204,6 @@ class ChatScreenState extends State<ChatScreen> {
                 );
 
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                Navigator.of(context).pop();
               }).whenComplete(() {
                 appProvider.chatMachine.current = ChatStates.waiting;
               });

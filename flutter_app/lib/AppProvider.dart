@@ -501,6 +501,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> sendChatScore(double score) async {
+    print("sending score $score");
     var url = Uri.parse("${Factory.getOptionsHost()}/providefeedback");
     final headers = {
       'Access-Control-Allow-Origin': '*',

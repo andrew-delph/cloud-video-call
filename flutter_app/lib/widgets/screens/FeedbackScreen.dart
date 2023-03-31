@@ -23,7 +23,6 @@ class FeedbackScreen extends StatefulWidget {
 
 class FeedbackScreenState extends State<FeedbackScreen> {
   late int _value;
-  double _positionX = 0;
 
   @override
   void initState() {
@@ -41,7 +40,6 @@ class FeedbackScreenState extends State<FeedbackScreen> {
       );
 
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      Navigator.of(context).pop();
     }).whenComplete(() {
       widget.appProvider.chatMachine.current = ChatStates.waiting;
     });

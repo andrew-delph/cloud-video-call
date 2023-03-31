@@ -43,7 +43,9 @@ class SwipeDetectorState extends State<SwipeDetector> {
           score = max(score, -10);
           score = min(score, 10);
 
-          widget.onHorizontalDragEnd(score);
+          if (score < -1 || score > 1) {
+            widget.onHorizontalDragEnd(score);
+          }
         }
         setState(() {
           _positionX = 0;
