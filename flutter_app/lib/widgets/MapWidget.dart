@@ -46,15 +46,15 @@ class MapWidget extends StatelessWidget {
 
     // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(htmlId, (int viewId) {
-      final mapOptions = maps.MapOptions()
-        ..zoom = 10
-        ..center = center;
+      final mapOptions = maps.MapOptions();
+      mapOptions.zoom = 5;
+      mapOptions.center = center;
 
-      final elem = html.DivElement()
-        ..id = htmlId
-        ..style.width = "100%"
-        ..style.height = "100%"
-        ..style.border = 'none';
+      final elem = html.DivElement();
+      elem.id = htmlId;
+      elem.style.width = "100%";
+      elem.style.height = "100%";
+      elem.style.border = 'none';
 
       final map = maps.GMap(elem, mapOptions);
 
