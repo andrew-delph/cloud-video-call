@@ -69,7 +69,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '619217777312',
     projectId: 'react-video-call-thing72',
     storageBucket: 'react-video-call-thing72.appspot.com',
-    iosClientId: '619217777312-tp9gb6q5cl100ujj19nga53bj72cqa3i.apps.googleusercontent.com',
+    iosClientId:
+        '619217777312-tp9gb6q5cl100ujj19nga53bj72cqa3i.apps.googleusercontent.com',
     iosBundleId: 'com.thing72.random-video-call',
   );
 }

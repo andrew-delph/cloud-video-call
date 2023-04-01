@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/state_machines.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../AppProvider.dart';
 import '../../utils.dart';

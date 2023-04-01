@@ -1,16 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/Factory.dart';
-import 'package:flutter_app/state_machines.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../AppProvider.dart';
-import '../../utils.dart';
-import '../LoadingWidget.dart';
-import 'FeedbackScreen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

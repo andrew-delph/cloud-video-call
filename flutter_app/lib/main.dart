@@ -1,14 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/widgets/screens/MainScreen.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
-
 import 'package:provider/provider.dart';
 
 import 'AppProvider.dart';
 import 'firebase_options.dart';
-
-import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   print("Start main...");
