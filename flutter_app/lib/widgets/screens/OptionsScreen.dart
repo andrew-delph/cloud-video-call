@@ -563,11 +563,6 @@ class LocationOptionsWidget extends StatelessWidget {
                 child: MapWidget(),
               )
             : Container(),
-        SizedBox(
-          width: 300,
-          height: 300,
-          child: MapWidget(),
-        )
       ],
     );
   }
