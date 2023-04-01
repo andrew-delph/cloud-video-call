@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/utils.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps/google_maps.dart' as maps;
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +13,7 @@ import '../../AppProvider.dart';
 import '../../Factory.dart';
 import '../../location.dart';
 import '../LoadingWidget.dart';
+import '../MapWidget.dart';
 
 const String naValue = "Skip";
 
@@ -156,6 +158,7 @@ class OptionsScreenState extends State<OptionsScreen> {
   Widget build(BuildContext context) {
     AppProvider appProvider = Provider.of<AppProvider>(context);
     Widget preferences = connectingWidget;
+
     if (true) {
       preferences = Container(
           alignment: Alignment.topCenter,
@@ -537,6 +540,14 @@ class LocationOptionsWidget extends StatelessWidget {
             ),
           )),
         ]),
+        SizedBox(
+          width: 300,
+          height: 300,
+          child: MapWidget(
+            center: maps.LatLng(41.85, -87.65),
+            radius: 5,
+          ),
+        ),
       ],
     );
   }
