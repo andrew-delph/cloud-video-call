@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/utils.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps/google_maps.dart' as maps;
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -510,6 +509,20 @@ class LocationOptionsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Pair<double, double>? posPair;
+
+    String? lat = customAttributes.get("lat");
+    String? long = customAttributes.get("long");
+
+    if (long != null && lat != null) {
+      try {
+        posPair = Pair(double.parse(long), double.parse(lat));
+      } catch (e) {
+        print('Error: Invalid format for conversion');
+        posPair = null;
+      }
+    }
+
     valueController.text = customFilters.get('dist') ?? '';
     return Column(
       children: [
@@ -518,9 +531,11 @@ class LocationOptionsWidget extends StatelessWidget {
             onPressed: updateLocation,
             child: const Text('Update Location'),
           ),
-          Expanded(
-              child: Text(
-                  ' Long: ${customAttributes.get("long") ?? 'None'} - Lat: ${customAttributes.get("lat") ?? 'None'} ')),
+          posPair != null
+              ? Expanded(
+                  child:
+                      Text(' Long: ${posPair.first} - Lat: ${posPair.second} '))
+              : Container(),
           Expanded(
               child: TextField(
             style: const TextStyle(color: Colors.purple),
@@ -541,14 +556,16 @@ class LocationOptionsWidget extends StatelessWidget {
             ),
           )),
         ]),
-        SizedBox(
-          width: 300,
-          height: 300,
-          child: MapWidget(
-            center: maps.LatLng(41.85, -87.65),
-            radius: 5,
-          ),
-        ),
+        posPair != null
+            ? SizedBox(
+                width: 300,
+                height: 300,
+                child: MapWidget(
+                  posPair: posPair,
+                  radius: 5,
+                ),
+              )
+            : Container(),
       ],
     );
   }

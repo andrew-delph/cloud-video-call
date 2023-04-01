@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 // import 'package:google_maps_flutter/google_maps_flutter.dart' as mobile;
 import 'package:google_maps/google_maps.dart' as maps;
 
+import '../utils.dart';
+
 class MapWidget extends StatelessWidget {
-  final maps.LatLng center;
+  final Pair<double, double> posPair;
   final double radius;
 
-  const MapWidget({Key? key, required this.center, required this.radius})
+  const MapWidget({Key? key, required this.posPair, required this.radius})
       : super(key: key);
 
   @override
@@ -38,12 +40,12 @@ class MapWidget extends StatelessWidget {
   // }
 
   Widget _buildWebMap() {
-    String htmlId = "7";
+    String htmlId = "map";
+
+    final center = maps.LatLng(posPair.first, posPair.second);
 
     // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(htmlId, (int viewId) {
-      final myLatlng = maps.LatLng(1.3521, 103.8198);
-
       final mapOptions = maps.MapOptions()
         ..zoom = 10
         ..center = center;
@@ -57,7 +59,7 @@ class MapWidget extends StatelessWidget {
       final map = maps.GMap(elem, mapOptions);
 
       maps.Marker(maps.MarkerOptions()
-        ..position = myLatlng
+        ..position = center
         ..map = map
         ..title = 'Hello World!');
 
