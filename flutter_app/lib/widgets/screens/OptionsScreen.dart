@@ -13,7 +13,7 @@ import '../../AppProvider.dart';
 import '../../Factory.dart';
 import '../../location.dart';
 import '../LoadingWidget.dart';
-import '../MapWidget.dart';
+import '../map/map_widget.dart';
 
 const String naValue = "Skip";
 
@@ -560,12 +560,14 @@ class LocationOptionsWidget extends StatelessWidget {
             ? SizedBox(
                 width: 300,
                 height: 300,
-                child: MapWidget(
-                  posPair: posPair,
-                  radius: 5,
-                ),
+                child: MapWidget(),
               )
             : Container(),
+        SizedBox(
+          width: 300,
+          height: 300,
+          child: MapWidget(),
+        )
       ],
     );
   }

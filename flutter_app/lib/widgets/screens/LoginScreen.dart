@@ -32,6 +32,7 @@ class LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        const Text("Login..."),
         ElevatedButton(
           child: const Text("Login Anonymous"),
           onPressed: () async {
