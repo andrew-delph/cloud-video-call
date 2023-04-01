@@ -8,7 +8,7 @@ import 'map_widget.dart';
 MapWidget getMapWidget() => MobileMap();
 
 class MobileMap extends StatefulWidget implements MapWidget {
-  MobileMap({Key? key}) : super(key: key);
+  const MobileMap({Key? key}) : super(key: key);
 
   @override
   State<MobileMap> createState() => MobileMapState();

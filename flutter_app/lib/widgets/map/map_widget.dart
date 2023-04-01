@@ -6,5 +6,6 @@ import 'map_widget_stub.dart'
     if (dart.library.io) 'mobile_map_widget.dart';
 
 abstract class MapWidget extends StatefulWidget {
-  factory MapWidget(Pair<double, double> posPair) => getMapWidget(posPair);
+  factory MapWidget(Pair<double, double> posPair, double dist) =>
+      getMapWidget(posPair, dist);
 }

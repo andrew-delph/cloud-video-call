@@ -523,7 +523,18 @@ class LocationOptionsWidget extends StatelessWidget {
       }
     }
 
+    double dist = 0;
     valueController.text = customFilters.get('dist') ?? '';
+
+    if (customFilters.get('dist') != null) {
+      try {
+        dist = double.parse(customFilters.get('dist')!);
+      } catch (e) {
+        print('Error: Invalid format for conversion');
+        posPair = null;
+      }
+    }
+
     return Column(
       children: [
         Row(children: [
@@ -546,7 +557,7 @@ class LocationOptionsWidget extends StatelessWidget {
             ],
             controller: valueController,
             onChanged: (value) {
-              customFilters.add('dist', value, notify: false);
+              customFilters.add('dist', value);
             },
             maxLines: 1,
             decoration: InputDecoration(
@@ -560,7 +571,7 @@ class LocationOptionsWidget extends StatelessWidget {
             ? SizedBox(
                 width: 300,
                 height: 300,
-                child: MapWidget(posPair),
+                child: MapWidget(posPair, dist),
               )
             : Container(),
       ],
