@@ -3,18 +3,32 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:google_maps/google_maps.dart';
+import 'package:google_maps/google_maps_geometry.dart';
 
 import '../../utils.dart';
 import 'map_widget.dart';
 
-MapWidget getMapWidget(Pair<double, double> posPair, double dist) =>
-    WebMap(posPair: posPair, dist: dist);
+MapWidget getMapWidget(Pair<double, double> posPair, double dist,
+        bool enableDist, Function(double dist) changeDist) =>
+    WebMap(
+      posPair: posPair,
+      dist: dist,
+      enableDist: enableDist,
+      changeDist: changeDist,
+    );
 
 class WebMap extends StatefulWidget implements MapWidget {
   final Pair<double, double> posPair;
   final double dist;
+  final Function(double dist) changeDist;
+  final bool enableDist;
 
-  const WebMap({Key? key, required this.posPair, required this.dist})
+  const WebMap(
+      {Key? key,
+      required this.posPair,
+      required this.dist,
+      required this.enableDist,
+      required this.changeDist})
       : super(key: key);
 
   @override
@@ -24,36 +38,19 @@ class WebMap extends StatefulWidget implements MapWidget {
 class WebMapState extends State<WebMap> {
   double dist;
   Circle? circle;
-  GMap? map;
 
   WebMapState(this.dist);
 
   @override
   void didUpdateWidget(WebMap oldWidget) {
     super.didUpdateWidget(oldWidget);
-    updateDist();
-  }
-
-  void updateDist() {
-    if (map == null) {
-      return;
-    }
-    if (widget.dist > 0) {
-      if (circle == null) {
-        circle = Circle(CircleLiteral()
-          ..center = map!.center
-          ..radius = widget.dist * 1000
-          ..map = map);
-      } else {
-        circle?.radius = widget.dist * 1000;
-      }
-      circle!.visible = true;
-
-      circle?.map?.fitBounds(circle?.bounds);
-    } else {
-      if (circle != null) {
-        circle!.visible = false;
-      }
+    if (circle != null) {
+      final center = LatLng(widget.posPair.first, widget.posPair.second);
+      circle!.map!.center = center;
+      circle!.center = center;
+      circle!.radius = widget.dist * 500;
+      circle!.visible = widget.enableDist;
+      // circle!.map!.fitBounds(circle!.bounds);
     }
   }
 
@@ -74,17 +71,49 @@ class WebMapState extends State<WebMap> {
         ..center = center;
 
       final elem = DivElement()..id = htmlId;
-      map = GMap(elem, mapOptions);
+      GMap map = GMap(elem, mapOptions);
 
-      map?.onCenterChanged.listen((event) {});
-      map?.onDragstart.listen((event) {});
-      map?.onDragend.listen((event) {});
+      map.onCenterChanged.listen((event) {});
+      map.onDragstart.listen((event) {});
+      map.onDragend.listen((event) {});
 
-      Marker(MarkerOptions()
-        ..position = map?.center
+      print(
+          "rendered widget.dist * 1000 ${widget.dist * 1000} ${widget.dist * 500}");
+
+      circle = Circle(CircleLiteral()
+        ..center = map.center
+        ..radius = widget.dist * 500
+        ..visible = widget.enableDist
         ..map = map);
 
-      updateDist();
+      map.onTilesloaded.listen((event) {
+        if (widget.dist == 0) {
+          print("dist was 0000000000000000000000000000000");
+          var radius = (Spherical.computeDistanceBetween(
+              map.bounds?.southWest, map.bounds?.center));
+          radius = (radius! * 0.6) / 1000;
+          radius = radius.toInt();
+          circle!.radius = (radius * 500);
+          widget.changeDist(radius.toDouble());
+          map.center = center;
+        }
+      });
+
+      map.fitBounds(circle!.bounds);
+
+      map.onZoomChanged.listen((event) {
+        var radius = (Spherical.computeDistanceBetween(
+            map.bounds?.southWest, map.bounds?.center));
+        radius = (radius! * 0.6) / 1000;
+        radius = radius.toInt();
+        circle!.radius = (radius * 500);
+        widget.changeDist(radius.toDouble());
+        map.center = center;
+      });
+
+      Marker(MarkerOptions()
+        ..position = map.center
+        ..map = map);
 
       return elem;
     });
