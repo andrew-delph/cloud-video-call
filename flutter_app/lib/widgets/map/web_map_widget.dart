@@ -103,7 +103,6 @@ class WebMapState extends State<WebMap> {
       var radius = (Spherical.computeDistanceBetween(
           map.bounds?.southWest, map.bounds?.center));
       radius = (radius! * 1) / 1000;
-      radius = radius.toInt();
       widget.changeDist(radius.toDouble());
       updateCircle(circle, radius.toDouble());
     });
