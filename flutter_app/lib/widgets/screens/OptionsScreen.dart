@@ -577,7 +577,7 @@ class LocationOptionsWidget extends StatelessWidget {
                 height: 300,
                 child: MapWidget(posPair, dist, true, (double eventDist) {
                   print("updating dist value $eventDist");
-                  customFilters.add('dist', eventDist.toString());
+                  customFilters.add('dist', eventDist.toString(), notify: true);
                 }),
               )
             : Container(),
