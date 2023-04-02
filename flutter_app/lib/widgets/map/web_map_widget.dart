@@ -18,10 +18,45 @@ class WebMap extends StatefulWidget implements MapWidget {
       : super(key: key);
 
   @override
-  State<WebMap> createState() => WebMapState();
+  State<WebMap> createState() => WebMapState(dist);
 }
 
 class WebMapState extends State<WebMap> {
+  double dist;
+  Circle? circle;
+  GMap? map;
+
+  WebMapState(this.dist);
+
+  @override
+  void didUpdateWidget(WebMap oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    updateDist();
+  }
+
+  void updateDist() {
+    if (map == null) {
+      return;
+    }
+    if (widget.dist > 0) {
+      if (circle == null) {
+        circle = Circle(CircleLiteral()
+          ..center = map!.center
+          ..radius = widget.dist * 1000
+          ..map = map);
+      } else {
+        circle?.radius = widget.dist * 1000;
+      }
+      circle!.visible = true;
+
+      circle?.map?.fitBounds(circle?.bounds);
+    } else {
+      if (circle != null) {
+        circle!.visible = false;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     const String htmlId = "map";
@@ -39,27 +74,18 @@ class WebMapState extends State<WebMap> {
         ..center = center;
 
       final elem = DivElement()..id = htmlId;
-      final map = GMap(elem, mapOptions);
+      map = GMap(elem, mapOptions);
 
-      map.onCenterChanged.listen((event) {});
-      map.onDragstart.listen((event) {});
-      map.onDragend.listen((event) {});
+      map?.onCenterChanged.listen((event) {});
+      map?.onDragstart.listen((event) {});
+      map?.onDragend.listen((event) {});
 
       Marker(MarkerOptions()
-        ..position = map.center
+        ..position = map?.center
         ..map = map);
 
-      if (widget.dist > 0) {
-        print("render dist!!!!!!!!");
-        Circle circle = Circle(CircleLiteral()
-          ..center = map.center
-          ..radius = widget.dist * 1000
-          ..map = map);
+      updateDist();
 
-        map.fitBounds(circle.bounds);
-      } else {
-        print("no render dist");
-      }
       return elem;
     });
     return const HtmlElementView(viewType: htmlId);
