@@ -143,6 +143,7 @@ class OptionsScreenState extends State<OptionsScreen> {
       }
       if (data["filters"] is Map && data["filters"]["custom"] is Map) {
         var temp = data["filters"]["custom"] as Map;
+        print("loaded temp... ${temp.toString()}");
         customFilters.addEntries(temp.entries.map((e) =>
             MapEntry<String, String>(e.key.toString(), e.value.toString())));
       }
@@ -523,16 +524,19 @@ class LocationOptionsWidget extends StatelessWidget {
       }
     }
 
-    double dist = 0;
+    double dist = -1;
     valueController.text = customFilters.get('dist') ?? '';
 
     if (customFilters.get('dist') != null) {
+      print("customFilters.get('dist') is ${customFilters.get('dist')}");
       try {
         dist = double.parse(customFilters.get('dist')!);
       } catch (e) {
         print('Error: Invalid format for conversion');
         posPair = null;
       }
+    } else {
+      print("customFilters.get('dist') == null");
     }
 
     return Column(
@@ -572,7 +576,7 @@ class LocationOptionsWidget extends StatelessWidget {
                 width: 300,
                 height: 300,
                 child: MapWidget(posPair, dist, true, (double eventDist) {
-                  print(" change dist$eventDist");
+                  print("updating dist value $eventDist");
                   customFilters.add('dist', eventDist.toString());
                 }),
               )
