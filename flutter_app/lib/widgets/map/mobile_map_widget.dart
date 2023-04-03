@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart' ;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../utils.dart';
 import 'map_widget.dart';
@@ -34,6 +34,7 @@ class MobileMap extends StatefulWidget implements MapWidget {
   @override
   State<MobileMap> createState() => MobileMapState();
 }
+
 class MobileMapState extends State<MobileMap> {
   final Completer<GoogleMapController> controller = Completer();
 
@@ -50,29 +51,16 @@ class MobileMapState extends State<MobileMap> {
     (await getController()).animateCamera(update);
   }
 
-  LatLngBounds getBounds(LatLng center, double radius) {
-    final double latRadian = radius / 111000; // Approximate conversion of meters to degrees
-    final double lngRadian = radius / (111000 * cos(pi * center.latitude / 180)); // Approximate conversion of meters to degrees
-
-    final double minLat = center.latitude - latRadian;
-    final double maxLat = center.latitude + latRadian;
-    final double minLng = center.longitude - lngRadian;
-    final double maxLng = center.longitude + lngRadian;
-
-    return LatLngBounds(
-      southwest: LatLng(minLat, minLng),
-      northeast: LatLng(maxLat, maxLng),
-    );
-  }
+  double s = 500;
+  LatLngBounds? bounds;
 
   double getZoomLevel(Circle circle) {
     double zoomLevel;
-    double radius = circle.radius + circle.radius / 2;
-    double scale = radius / 500;
+    double radius = circle.radius + circle.radius;
+    double scale = radius / s / 0.5;
     zoomLevel = (16 - log(scale) / log(2));
     return zoomLevel;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -80,10 +68,12 @@ class MobileMapState extends State<MobileMap> {
 
     double radius;
 
+    print("build radius ${widget.dist}");
+
     if (widget.dist < 0) {
-      radius = 10 * 500;
+      radius = 10 * s;
     } else {
-      radius = widget.dist * 500;
+      radius = widget.dist * s;
     }
 
     Marker marker = Marker(
@@ -101,31 +91,52 @@ class MobileMapState extends State<MobileMap> {
       strokeColor: Colors.red,
     );
 
-    return GoogleMap(
-      scrollGesturesEnabled: false,
-      // cameraTargetBounds: CameraTargetBounds(getBounds(center, radius)),
+    bool firstRender = true;
 
-      mapType: MapType.hybrid,
+    CameraTargetBounds cameraTargetBounds = CameraTargetBounds.unbounded;
+    if (bounds != null) {
+      print("--------------------------------------------1");
+      print("--------------------------------------------2");
+      print("--------------------------------------------3");
+      cameraTargetBounds = CameraTargetBounds(bounds);
+    }
+
+    return GoogleMap(
+      cameraTargetBounds: cameraTargetBounds,
+      scrollGesturesEnabled: false,
       onCameraMove: (position) async {
-        print("onCameraMove $position");
+        firstRender = false;
+        print(
+            "camera move!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       },
       onCameraIdle: () async {
-        print("onCameraIdle...");
+        print("2onCameraIdle... firstRender $firstRender");
+        if (firstRender) {
+          firstRender = false;
+          return;
+        }
+        print("another");
+        final localBounds = await (await getController()).getVisibleRegion();
+        bounds = localBounds;
+        print("another222");
 
-        final bounds = await (await getController()).getVisibleRegion();
+        var newRadius = Geolocator.distanceBetween(
+            localBounds.northeast.latitude,
+            localBounds.northeast.longitude,
+            center.latitude,
+            center.longitude);
 
-        var radius = Geolocator.distanceBetween(bounds.northeast.latitude, bounds.northeast.longitude, center.latitude, center.longitude);
+        newRadius = (newRadius * 0.6) / s;
 
-        radius = (radius * 1) / 1000;
-
-        widget.changeDist(radius);
+        print(
+            "update radius $radius newRadius $newRadius widget.dist ${widget.dist}");
+        widget.changeDist(newRadius);
       },
       markers: {marker},
-      circles: {
-        circle
-      },
-      initialCameraPosition: CameraPosition(target: center, zoom: getZoomLevel(circle)),
-      onMapCreated: (GoogleMapController controller) {
+      circles: {circle},
+      initialCameraPosition:
+          CameraPosition(target: center, zoom: getZoomLevel(circle)),
+      onMapCreated: (GoogleMapController controller) async {
         this.controller.complete(controller);
       },
     );
