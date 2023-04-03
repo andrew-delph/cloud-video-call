@@ -540,7 +540,7 @@ class LocationOptionsWidget extends StatelessWidget {
     }
 
     return Column(children: [
-      Row(
+      Column(
         children: [
           ElevatedButton(
             onPressed: updateLocation,
