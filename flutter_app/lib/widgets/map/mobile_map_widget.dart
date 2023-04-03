@@ -42,11 +42,6 @@ class MobileMapState extends State<MobileMap> {
     return await controller.future;
   }
 
-  // moveCenter() async {
-  //   final center = LatLng(widget.posPair.first, widget.posPair.second);
-  //   await updateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: center)));
-  // }
-
   updateCamera(CameraUpdate update) async {
     (await getController()).animateCamera(update);
   }
@@ -68,8 +63,6 @@ class MobileMapState extends State<MobileMap> {
 
     double radius;
 
-    print("build radius ${widget.dist}");
-
     if (widget.dist < 0) {
       radius = 10 * s;
     } else {
@@ -85,7 +78,6 @@ class MobileMapState extends State<MobileMap> {
       circleId: const CircleId('dist'),
       center: center,
       radius: radius,
-      // Radius in meters
       fillColor: Colors.red.withOpacity(0.3),
       strokeWidth: 3,
       strokeColor: Colors.red,
@@ -95,9 +87,6 @@ class MobileMapState extends State<MobileMap> {
 
     CameraTargetBounds cameraTargetBounds = CameraTargetBounds.unbounded;
     if (bounds != null) {
-      print("--------------------------------------------1");
-      print("--------------------------------------------2");
-      print("--------------------------------------------3");
       cameraTargetBounds = CameraTargetBounds(bounds);
     }
 
@@ -106,19 +95,14 @@ class MobileMapState extends State<MobileMap> {
       scrollGesturesEnabled: false,
       onCameraMove: (position) async {
         firstRender = false;
-        print(
-            "camera move!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       },
       onCameraIdle: () async {
-        print("2onCameraIdle... firstRender $firstRender");
         if (firstRender) {
           firstRender = false;
           return;
         }
-        print("another");
         final localBounds = await (await getController()).getVisibleRegion();
         bounds = localBounds;
-        print("another222");
 
         var newRadius = Geolocator.distanceBetween(
             localBounds.northeast.latitude,
@@ -128,8 +112,6 @@ class MobileMapState extends State<MobileMap> {
 
         newRadius = (newRadius * 0.6) / s;
 
-        print(
-            "update radius $radius newRadius $newRadius widget.dist ${widget.dist}");
         widget.changeDist(newRadius);
       },
       markers: {marker},
