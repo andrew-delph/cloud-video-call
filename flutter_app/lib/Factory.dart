@@ -3,12 +3,12 @@ import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
 final Map<String, dynamic> rtcConfiguration = {
   "sdpSemantics": "plan-b",
   "iceServers": [
-    {
-      "urls": [
-        "stun:stun1.l.google.com:19302",
-        "stun:stun2.l.google.com:19302"
-      ],
-    },
+    // {
+    //   "urls": [
+    //     "stun:stun1.l.google.com:19302",
+    //     "stun:stun2.l.google.com:19302"
+    //   ],
+    // },
     {
       "urls": ["turn:relay.metered.ca:80"],
       "username": "db5611baf2f55446ccb6a207",
