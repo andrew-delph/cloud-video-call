@@ -56,9 +56,7 @@ class LoginScreenState extends State<LoginScreen> {
             await FirebaseAuth.instance
                 .signInWithPopup(googleProvider)
                 .then((value) {
-              FirebaseAuth.instance.signInAnonymously().then((value) {
-                Navigator.pop(context);
-              });
+              Navigator.pop(context);
             });
           },
         )

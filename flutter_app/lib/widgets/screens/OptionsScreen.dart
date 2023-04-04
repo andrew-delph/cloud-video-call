@@ -670,31 +670,30 @@ class UserProfileWidget extends StatelessWidget {
     String? displayName = user.displayName;
     String? email = user.email;
 
-    for (var element in user.providerData) {
-      if (element.displayName != null) {
-        displayName = (displayName ?? "") + element.displayName!;
-      }
-      if (element.email != null) {
-        email = (email ?? "") + element.email!;
-      }
-    }
-    return Column(
-      children: [
-        user.isAnonymous
-            ? Row(
-                children: const [Text("This user is Anonymous.")],
+    // for (var element in user.providerData) {
+    //   if (element.displayName != null) {
+    //     displayName = (displayName ?? "") + element.displayName!;
+    //   }
+    //   if (element.email != null) {
+    //     email = (email ?? "") + element.email!;
+    //   }
+    // }
+    return user.isAnonymous
+        ? Row(
+            children: const [Text("This user is Anonymous.")],
+          )
+        : Column(
+            children: [
+              Row(
+                children: [
+                  const Text("Display name:"),
+                  Text(displayName ?? "No display name")
+                ],
+              ),
+              Row(
+                children: [const Text("Email:"), Text(email ?? "No email")],
               )
-            : Container(),
-        Row(
-          children: [
-            const Text("Display name:"),
-            Text(displayName ?? "No display name")
-          ],
-        ),
-        Row(
-          children: [const Text("Email:"), Text(email ?? "No email")],
-        )
-      ],
-    );
+            ],
+          );
   }
 }
