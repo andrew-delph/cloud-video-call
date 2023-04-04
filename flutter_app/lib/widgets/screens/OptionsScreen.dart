@@ -77,22 +77,26 @@ class OptionsScreenState extends State<OptionsScreen> {
   void initState() {
     super.initState();
     constantAttributes.addListener(() {
+      if (!mounted) return;
       setState(() {
         unsavedChanges = true;
       });
     });
     constantFilters.addListener(() {
+      if (!mounted) return;
       setState(() {
         unsavedChanges = true;
       });
     });
 
     customAttributes.addListener(() {
+      if (!mounted) return;
       setState(() {
         unsavedChanges = true;
       });
     });
     customFilters.addListener(() {
+      if (!mounted) return;
       setState(() {
         unsavedChanges = true;
       });
@@ -368,17 +372,38 @@ class OptionsScreenState extends State<OptionsScreen> {
 
     return WillPopScope(
         onWillPop: () async {
-          if (unsavedChanges) {
-            // Show a dialog or a snackbar to inform the user that there are unsaved changes
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('There are unsaved changes')),
-            );
-            // Return false to prevent the user from navigating back
-            return false;
-          } else {
-            // Return true to allow the user to navigate back
-            return true;
-          }
+          if (!unsavedChanges) return true;
+          bool confirm = await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('You have unsaved changes.'),
+                content: const Text('Do you want to discard your changes?'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const Text('Discard'),
+                  ),
+                ],
+              );
+            },
+          );
+          return confirm ?? false;
+          // if (unsavedChanges) {
+          //   // Show a dialog or a snackbar to inform the user that there are unsaved changes
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     const SnackBar(content: Text('There are unsaved changes')),
+          //   );
+          //   // Return false to prevent the user from navigating back
+          //   return false;
+          // } else {
+          //   // Return true to allow the user to navigate back
+          //   return true;
+          // }
         },
         child: Scaffold(
             appBar: AppBar(
