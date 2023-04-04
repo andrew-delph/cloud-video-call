@@ -497,6 +497,18 @@ class LocationOptionsWidget extends StatelessWidget {
         customAttributes.get("lat") != null;
   }
 
+  canReset() {
+    return customAttributes.get("long") != null ||
+        customAttributes.get("lat") != null ||
+        customFilters.get("dist") != null;
+  }
+
+  reset() {
+    customAttributes.deleteKey('long');
+    customAttributes.deleteKey('lat');
+    customFilters.deleteKey('dist');
+  }
+
   updateLocation() async {
     Position pos = await getLocation();
     customAttributes.add("long", pos.latitude.toString());
@@ -554,7 +566,11 @@ class LocationOptionsWidget extends StatelessWidget {
           Expanded(
               child: Text(isValid()
                   ? 'Max Distance Km: ${dist < 0 ? 'None' : dist.toInt()}'
-                  : 'Max Distance (Enabled with \'Update Location\')'))
+                  : 'Max Distance (Enabled with \'Update Location\')')),
+          ElevatedButton(
+            onPressed: canReset() ? reset : null,
+            child: const Text('Clear'),
+          )
         ],
       ),
       posPair != null
