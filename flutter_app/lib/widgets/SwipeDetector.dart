@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SwipeDetector extends StatefulWidget {
   final Widget child;
@@ -42,44 +44,98 @@ class SwipeDetectorState extends State<SwipeDetector> {
     double score = calcScore();
     bool validScore = isValidScore(score);
 
-    return GestureDetector(
-        onHorizontalDragUpdate: (details) {
-          if (widget.isDragUpdate == null || widget.isDragUpdate!()) {
-            setState(() {
-              _positionX += details.delta.dx;
-            });
-          }
-        },
-        onHorizontalDragEnd: (details) {
-          if (widget.isDragUpdate == null || widget.isDragUpdate!()) {
-            if (validScore) {
-              widget.onHorizontalDragEnd(score);
-            }
-          }
-          setState(() {
-            _positionX = 0;
-          });
-        },
-        child: Stack(
-          children: [
-            AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                transform: Matrix4.translationValues(_positionX, 0, 0),
-                child: widget.child),
-            Positioned.fill(
-                child: Align(
-              alignment: Alignment.center,
-              child: validScore
-                  ? Text(
-                      "Feedback=${score.toInt()}",
-                      style: TextStyle(
-                        color: score > 0 ? Colors.green : Colors.red,
-                        fontSize: 70,
-                      ),
-                    )
-                  : Container(),
-            ))
-          ],
-        ));
+    return FutureBuilder<SharedPreferences>(
+      future: getPrefs(),
+      builder:
+          (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
+        if (snapshot.hasData) {
+          final bool confirmFeedback =
+              snapshot.data?.getString('confirm_feedback_popup') != null
+                  ? true
+                  : false;
+          return GestureDetector(
+              onHorizontalDragUpdate: (details) {
+                if (widget.isDragUpdate == null || widget.isDragUpdate!()) {
+                  setState(() {
+                    _positionX += details.delta.dx;
+                  });
+                }
+              },
+              onHorizontalDragEnd: (details) async {
+                if (widget.isDragUpdate == null || widget.isDragUpdate!()) {
+                  if (validScore) {
+                    bool confirm = !confirmFeedback
+                        ? await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Send Feedback'),
+                                content: Text(
+                                    'Do you want to end the call with feedback ${score.toInt()}?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      snapshot.data
+                                          ?.setString(
+                                              "confirm_feedback_popup", "true")
+                                          .then((value) {
+                                        Navigator.of(context).pop(true);
+                                      });
+                                    },
+                                    child: const Text(
+                                        'Send and Disable Confirmation Popup'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    child: const Text('Send'),
+                                  ),
+                                ],
+                              );
+                            },
+                          )
+                        : true;
+                    if (confirm) {
+                      widget.onHorizontalDragEnd(score);
+                    }
+                  }
+                }
+                setState(() {
+                  _positionX = 0;
+                });
+              },
+              child: Stack(
+                children: [
+                  AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      transform: Matrix4.translationValues(_positionX, 0, 0),
+                      child: widget.child),
+                  Positioned.fill(
+                      child: Align(
+                    alignment: Alignment.center,
+                    child: validScore
+                        ? Text(
+                            "Feedback=${score.toInt()}",
+                            style: TextStyle(
+                              color: score > 0 ? Colors.green : Colors.red,
+                              fontSize: 70,
+                            ),
+                          )
+                        : Container(),
+                  ))
+                ],
+              ));
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
   }
 }

@@ -1,3 +1,5 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
 bool validStatusCode(int statusCode) {
   return statusCode >= 200 && statusCode < 300;
 }
@@ -14,4 +16,8 @@ class ErrorDetails {
   String message;
 
   ErrorDetails(this.title, this.message);
+}
+
+Future<SharedPreferences> getPrefs() async {
+  return await SharedPreferences.getInstance();
 }

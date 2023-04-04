@@ -67,10 +67,6 @@ class AppProvider extends ChangeNotifier {
   Machine<SocketStates> socketMachine = getSocketMachine();
   Machine<ChatStates> chatMachine = getChatMachine();
 
-  Future<SharedPreferences> getPrefs() async {
-    return await SharedPreferences.getInstance();
-  }
-
   AppProvider() {
     socketMachine[SocketStates.established].addNested(chatMachine);
     stateChangeOnEntry(socketMachine, () {
