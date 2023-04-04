@@ -92,7 +92,7 @@ class AppProvider extends ChangeNotifier {
       chatMachine.current = ChatStates.feedback;
     });
 
-    chatMachine[ChatStates.matched].onTimeout(const Duration(seconds: 10), () {
+    chatMachine[ChatStates.matched].onTimeout(const Duration(seconds: 45), () {
       chatMachine.current = ChatStates.connectionError;
     });
 
