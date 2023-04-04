@@ -50,7 +50,7 @@ class SwipeDetectorState extends State<SwipeDetector> {
           (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
         if (snapshot.hasData) {
           final bool confirmFeedback =
-              snapshot.data?.getString('confirm_feedback_popup') != null
+              snapshot.data?.getString('confirm_feedback_popup') == 'true'
                   ? true
                   : false;
           return GestureDetector(
@@ -64,8 +64,8 @@ class SwipeDetectorState extends State<SwipeDetector> {
               onHorizontalDragEnd: (details) async {
                 if (widget.isDragUpdate == null || widget.isDragUpdate!()) {
                   if (validScore) {
-                    bool confirm = !confirmFeedback
-                        ? await showDialog(
+                    bool? confirm = confirmFeedback
+                        ? await showDialog<bool>(
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
@@ -77,13 +77,19 @@ class SwipeDetectorState extends State<SwipeDetector> {
                                     onPressed: () {
                                       snapshot.data
                                           ?.setString(
-                                              "confirm_feedback_popup", "true")
+                                              "confirm_feedback_popup", "false")
                                           .then((value) {
+                                        SnackBar snackBar = const SnackBar(
+                                          content: Text(
+                                              "Confirm feedback popup disabled."),
+                                        );
+
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
                                         Navigator.of(context).pop(true);
                                       });
                                     },
-                                    child: const Text(
-                                        'Send and Disable Confirmation Popup'),
+                                    child: const Text('Disable future popup'),
                                   ),
                                   TextButton(
                                     onPressed: () =>
@@ -100,7 +106,7 @@ class SwipeDetectorState extends State<SwipeDetector> {
                             },
                           )
                         : true;
-                    if (confirm) {
+                    if (confirm ?? false) {
                       widget.onHorizontalDragEnd(score);
                     }
                   }

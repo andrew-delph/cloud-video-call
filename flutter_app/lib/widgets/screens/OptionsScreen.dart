@@ -7,6 +7,7 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../AppProvider.dart';
 import '../../Factory.dart';
@@ -165,174 +166,170 @@ class OptionsScreenState extends State<OptionsScreen> {
   @override
   Widget build(BuildContext context) {
     AppProvider appProvider = Provider.of<AppProvider>(context);
-    Widget preferences = connectingWidget;
-    if (true) {
-      preferences = Container(
-          alignment: Alignment.topCenter,
-          decoration: BoxDecoration(
-            color: Colors.teal,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: const EdgeInsets.all(20),
-          margin: const EdgeInsets.all(20),
-          constraints: const BoxConstraints(
-            maxWidth: 1000,
-          ),
-          child: loading
-              ? connectingWidget
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Profile",
-                      style: TextStyle(
-                        fontSize: 35.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+    Widget profile = Container(
+        alignment: Alignment.topCenter,
+        decoration: BoxDecoration(
+          color: Colors.teal,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.all(20),
+        constraints: const BoxConstraints(
+          maxWidth: 1000,
+        ),
+        child: loading
+            ? connectingWidget
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Profile",
+                    style: TextStyle(
+                      fontSize: 35.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
-                    const Divider(),
-                    const UserProfileWidget(),
-                    const Divider(),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'Attributes',
-                            style: TextStyle(
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
+                  ),
+                  const Divider(),
+                  const UserProfileWidget(),
+                  const Divider(),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'Attributes',
+                          style: TextStyle(
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
-                          DropDownPreference(
-                            label: 'Gender',
-                            options: const [naValue, "Male", "Female", "Other"],
-                            preferenceMap: constantAttributes,
-                            mapKey: 'gender',
-                          ),
-                          DropDownPreference(
-                            label: 'Language',
-                            options: const [
-                              naValue,
-                              "English",
-                              "French",
-                              "Other"
-                            ],
-                            preferenceMap: constantAttributes,
-                            mapKey: 'language',
-                          ),
-                        ],
-                      ),
+                        ),
+                        DropDownPreference(
+                          label: 'Gender',
+                          options: const [naValue, "Male", "Female", "Other"],
+                          preferenceMap: constantAttributes,
+                          mapKey: 'gender',
+                        ),
+                        DropDownPreference(
+                          label: 'Language',
+                          options: const [
+                            naValue,
+                            "English",
+                            "French",
+                            "Other"
+                          ],
+                          preferenceMap: constantAttributes,
+                          mapKey: 'language',
+                        ),
+                      ],
                     ),
-                    const Divider(),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'Filters',
-                            style: TextStyle(
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
+                  ),
+                  const Divider(),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'Filters',
+                          style: TextStyle(
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
-                          DropDownPreference(
-                            label: 'Gender',
-                            options: const [naValue, "Male", "Female", "Other"],
-                            preferenceMap: constantFilters,
-                            mapKey: 'gender',
-                          ),
-                          DropDownPreference(
-                            label: 'Language',
-                            options: const [
-                              naValue,
-                              "English",
-                              "French",
-                              "Other"
-                            ],
-                            preferenceMap: constantFilters,
-                            mapKey: 'language',
-                          ),
-                        ],
-                      ),
+                        ),
+                        DropDownPreference(
+                          label: 'Gender',
+                          options: const [naValue, "Male", "Female", "Other"],
+                          preferenceMap: constantFilters,
+                          mapKey: 'gender',
+                        ),
+                        DropDownPreference(
+                          label: 'Language',
+                          options: const [
+                            naValue,
+                            "English",
+                            "French",
+                            "Other"
+                          ],
+                          preferenceMap: constantFilters,
+                          mapKey: 'language',
+                        ),
+                      ],
                     ),
-                    const Divider(),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'Location Settings',
-                            style: TextStyle(
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
+                  ),
+                  const Divider(),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'Location Settings',
+                          style: TextStyle(
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
-                          LocationOptionsWidget(
-                              customAttributes: customAttributes,
-                              customFilters: customFilters),
-                        ],
-                      ),
+                        ),
+                        LocationOptionsWidget(
+                            customAttributes: customAttributes,
+                            customFilters: customFilters),
+                      ],
                     ),
-                    SizedBox(
-                      height: 50,
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: !unsavedChanges
-                            ? null
-                            : () async {
-                                setState(() {
-                                  loading = true;
-                                });
-                                var url = Uri.parse(
-                                    "${Factory.getOptionsHost()}/preferences");
-                                final headers = {
-                                  'Access-Control-Allow-Origin': '*',
-                                  'Content-Type': 'application/json',
-                                  'authorization': await FirebaseAuth
-                                      .instance.currentUser!
-                                      .getIdToken()
-                                };
-                                final body = {
-                                  'attributes': {
-                                    'constant': constantAttributes.map,
-                                    'custom': customAttributes.map
-                                  },
-                                  'filters': {
-                                    'constant': constantFilters.map,
-                                    'custom': customFilters.map,
-                                  }
-                                };
-                                http
-                                    .put(url,
-                                        headers: headers,
-                                        body: json.encode(body))
-                                    .then((response) {
-                                  if (validStatusCode(response.statusCode)) {
-                                  } else {
-                                    const String errorMsg =
-                                        'Failed to update preferences.';
-                                    const snackBar = SnackBar(
-                                      content: Text(errorMsg),
-                                    );
+                  ),
+                  SizedBox(
+                    height: 50,
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: !unsavedChanges
+                          ? null
+                          : () async {
+                              setState(() {
+                                loading = true;
+                              });
+                              var url = Uri.parse(
+                                  "${Factory.getOptionsHost()}/preferences");
+                              final headers = {
+                                'Access-Control-Allow-Origin': '*',
+                                'Content-Type': 'application/json',
+                                'authorization': await FirebaseAuth
+                                    .instance.currentUser!
+                                    .getIdToken()
+                              };
+                              final body = {
+                                'attributes': {
+                                  'constant': constantAttributes.map,
+                                  'custom': customAttributes.map
+                                },
+                                'filters': {
+                                  'constant': constantFilters.map,
+                                  'custom': customFilters.map,
+                                }
+                              };
+                              http
+                                  .put(url,
+                                      headers: headers, body: json.encode(body))
+                                  .then((response) {
+                                if (validStatusCode(response.statusCode)) {
+                                } else {
+                                  const String errorMsg =
+                                      'Failed to update preferences.';
+                                  const snackBar = SnackBar(
+                                    content: Text(errorMsg),
+                                  );
 
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
-                                    Navigator.of(context).pop();
-                                  }
-                                  loadAttributes();
-                                });
-                              },
-                        child: const Text('Submit'),
-                      ),
-                    )
-                  ],
-                ));
-    }
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                  Navigator.of(context).pop();
+                                }
+                                loadAttributes();
+                              });
+                            },
+                      child: const Text('Submit'),
+                    ),
+                  )
+                ],
+              ));
 
     FutureBuilder devices =
         FutureBuilder<List<PopupMenuEntry<MediaDeviceInfo>>>(
@@ -371,6 +368,73 @@ class OptionsScreenState extends State<OptionsScreen> {
       },
     );
 
+    Widget preferences = FutureBuilder<SharedPreferences>(
+      future: getPrefs(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          bool confirmFeedbackPopup =
+              snapshot.data?.getString('confirm_feedback_popup') != 'true'
+                  ? false
+                  : true;
+          return Column(children: [
+            Row(
+              children: [
+                const Text("Swipe feedback popup:"),
+                Switch(
+                  value: confirmFeedbackPopup,
+                  onChanged: (bool newValue) async {
+                    if (newValue) {
+                      await snapshot.data
+                          ?.setString('confirm_feedback_popup', 'true');
+                    } else {
+                      await snapshot.data
+                          ?.setString('confirm_feedback_popup', 'false');
+                    }
+                    setState(() {});
+                  },
+                )
+              ],
+            )
+          ]);
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+
+    Widget settings = Container(
+        alignment: Alignment.topCenter,
+        decoration: BoxDecoration(
+          color: Colors.teal,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.all(20),
+        constraints: const BoxConstraints(
+          maxWidth: 1000,
+        ),
+        child: loading
+            ? connectingWidget
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Settings",
+                    style: TextStyle(
+                      fontSize: 35.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const Divider(),
+                  preferences,
+                  const Divider(),
+                  devices
+                ],
+              ));
+
     return WillPopScope(
         onWillPop: () async {
           if (!unsavedChanges) return true;
@@ -402,7 +466,7 @@ class OptionsScreenState extends State<OptionsScreen> {
             body: Center(
                 child: SingleChildScrollView(
                     child: Column(
-              children: [preferences, devices],
+              children: [profile, settings],
             )))));
   }
 }
@@ -433,7 +497,7 @@ class KeyValueListWidget extends StatelessWidget {
           itemBuilder: (context, int index) {
             final key = model.map.keys.elementAt(index);
             final value = model.map[key];
-            if (value == null) return SizedBox();
+            if (value == null) return const SizedBox();
             return OptionTile(
               k: key,
               v: value,
