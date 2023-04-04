@@ -166,7 +166,6 @@ class OptionsScreenState extends State<OptionsScreen> {
   Widget build(BuildContext context) {
     AppProvider appProvider = Provider.of<AppProvider>(context);
     Widget preferences = connectingWidget;
-
     if (true) {
       preferences = Container(
           alignment: Alignment.topCenter,
@@ -185,13 +184,15 @@ class OptionsScreenState extends State<OptionsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
-                      "Preferences",
+                      "Profile",
                       style: TextStyle(
                         fontSize: 35.0,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
+                    const Divider(),
+                    const UserProfileWidget(),
                     const Divider(),
                     Container(
                       padding: const EdgeInsets.all(20),
@@ -392,18 +393,7 @@ class OptionsScreenState extends State<OptionsScreen> {
               );
             },
           );
-          return confirm ?? false;
-          // if (unsavedChanges) {
-          //   // Show a dialog or a snackbar to inform the user that there are unsaved changes
-          //   ScaffoldMessenger.of(context).showSnackBar(
-          //     const SnackBar(content: Text('There are unsaved changes')),
-          //   );
-          //   // Return false to prevent the user from navigating back
-          //   return false;
-          // } else {
-          //   // Return true to allow the user to navigate back
-          //   return true;
-          // }
+          return confirm;
         },
         child: Scaffold(
             appBar: AppBar(
@@ -665,5 +655,46 @@ class DropDownPreference extends StatelessWidget {
             ))
           ],
         ));
+  }
+}
+
+class UserProfileWidget extends StatelessWidget {
+  const UserProfileWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return const Text("Failed to load user.");
+
+    String? displayName = user.displayName;
+    String? email = user.email;
+
+    for (var element in user.providerData) {
+      if (element.displayName != null) {
+        displayName = (displayName ?? "") + element.displayName!;
+      }
+      if (element.email != null) {
+        email = (email ?? "") + element.email!;
+      }
+    }
+    return Column(
+      children: [
+        user.isAnonymous
+            ? Row(
+                children: const [Text("This user is Anonymous.")],
+              )
+            : Container(),
+        Row(
+          children: [
+            const Text("Display name:"),
+            Text(displayName ?? "No display name")
+          ],
+        ),
+        Row(
+          children: [const Text("Email:"), Text(email ?? "No email")],
+        )
+      ],
+    );
   }
 }
