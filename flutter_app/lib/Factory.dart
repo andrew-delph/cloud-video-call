@@ -1,5 +1,8 @@
 import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
 
+/*
+It seems there are issues using plan-b and vpns for mobile.
+ */
 final Map<String, dynamic> rtcConfiguration = {
   "sdpSemantics": "unified-plan", //"plan-b",
   "iceServers": [
