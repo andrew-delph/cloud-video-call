@@ -1,7 +1,7 @@
 import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
 
 final Map<String, dynamic> rtcConfiguration = {
-  "sdpSemantics": "unified-plan", //"plan-b",
+  "sdpSemantics": "plan-b", //"unified-plan",
   "iceServers": [
     // {
     //   "urls": [
