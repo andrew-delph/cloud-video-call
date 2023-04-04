@@ -10,7 +10,20 @@ final Map<String, dynamic> rtcConfiguration = {
     //   ],
     // },
     {
-      "urls": ["turn:relay.metered.ca:80"],
+      "urls": "stun:relay.metered.ca:80",
+    },
+    {
+      "urls": "turn:relay.metered.ca:80",
+      "username": "db5611baf2f55446ccb6a207",
+      "credential": "95Cmq0CBYp6WiHDA",
+    },
+    {
+      "urls": "turn:relay.metered.ca:443",
+      "username": "db5611baf2f55446ccb6a207",
+      "credential": "95Cmq0CBYp6WiHDA",
+    },
+    {
+      "urls": "turn:relay.metered.ca:443?transport=tcp",
       "username": "db5611baf2f55446ccb6a207",
       "credential": "95Cmq0CBYp6WiHDA",
     },
