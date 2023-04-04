@@ -540,7 +540,7 @@ class LocationOptionsWidget extends StatelessWidget {
     }
 
     return Column(children: [
-      Column(
+      Row(
         children: [
           ElevatedButton(
             onPressed: updateLocation,
@@ -554,20 +554,19 @@ class LocationOptionsWidget extends StatelessWidget {
           Expanded(
               child: Text(isValid()
                   ? 'Max Distance Km: ${dist < 0 ? 'None' : dist.toInt()}'
-                  : 'Max Distance (Enabled with \'Update Location\')')),
-          posPair != null
-              ? SizedBox(
-                  width: 300,
-                  height: 300,
-                  child: MapWidget(posPair, dist, true, (double eventDist) {
-                    print("updating dist value $eventDist");
-                    customFilters.add('dist', eventDist.toString(),
-                        notify: true);
-                  }),
-                )
-              : Container(),
+                  : 'Max Distance (Enabled with \'Update Location\')'))
         ],
-      )
+      ),
+      posPair != null
+          ? SizedBox(
+              width: 300,
+              height: 300,
+              child: MapWidget(posPair, dist, true, (double eventDist) {
+                print("updating dist value $eventDist");
+                customFilters.add('dist', eventDist.toString(), notify: true);
+              }),
+            )
+          : Container(),
     ]);
   }
 }
