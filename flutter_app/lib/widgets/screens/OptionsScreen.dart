@@ -22,12 +22,13 @@ class MapNotifier extends ChangeNotifier {
   Map<String, String> get map => _map;
 
   void add(String key, String value, {bool notify = true}) {
+    String? preValue = _map[key];
     if (value == naValue || value == "") {
       _map.remove(key);
     } else {
       _map[key] = value;
     }
-    if (notify) {
+    if (notify && preValue != value) {
       notifyListeners();
     }
   }
@@ -46,9 +47,12 @@ class MapNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteKey(String key) {
+  void deleteKey(String key, {bool notify = true}) {
+    String? preValue = _map[key];
     _map.remove(key);
-    notifyListeners();
+    if (notify && preValue != null) {
+      notifyListeners();
+    }
   }
 }
 
@@ -273,7 +277,7 @@ class OptionsScreenState extends State<OptionsScreen> {
                       height: 50,
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: false //!unsavedChanges
+                        onPressed: !unsavedChanges
                             ? null
                             : () async {
                                 setState(() {
