@@ -686,12 +686,12 @@ class UserProfileWidget extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Text("Display name:"),
+                  const Text("Display Name: "),
                   Text(displayName ?? "No display name")
                 ],
               ),
               Row(
-                children: [const Text("Email:"), Text(email ?? "No email")],
+                children: [const Text("Email: "), Text(email ?? "No email")],
               )
             ],
           );
