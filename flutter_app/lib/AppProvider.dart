@@ -391,8 +391,6 @@ class AppProvider extends ChangeNotifier {
     });
 
     socket!.on("client_host", (data) {
-      socket!.off("client_host");
-      socket!.off("client_guest");
       try {
         if (data['answer'] != null) {
           // print("got answer");
@@ -414,8 +412,6 @@ class AppProvider extends ChangeNotifier {
     final completer = Completer<void>();
 
     socket!.on("client_guest", (data) async {
-      socket!.off("client_host");
-      socket!.off("client_guest");
       try {
         if (data["offer"] != null) {
           // print("got offer");
