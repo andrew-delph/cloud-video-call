@@ -255,6 +255,9 @@ class AppProvider extends ChangeNotifier {
   Future<void> ready() async {
     await tryResetRemote();
     await initLocalStream();
+    socket!.off("client_host");
+    socket!.off("client_guest");
+    socket!.off("match");
     socket!.off("icecandidate");
 
     // START SETUP PEER CONNECTION
@@ -293,6 +296,7 @@ class AppProvider extends ChangeNotifier {
     // END collect the streams/tracks from remote
 
     socket!.on("match", (request) async {
+      socket!.off("match");
       chatMachine.current = ChatStates.matched;
       List data = request as List;
       dynamic value = data[0] as dynamic;
@@ -308,7 +312,7 @@ class AppProvider extends ChangeNotifier {
         case "host":
           {
             setClientHost()
-                .timeout(const Duration(seconds: 50))
+                .timeout(const Duration(seconds: 10))
                 .catchError((error) {
               print("setClientHost error! $error");
               handleError(ErrorDetails("Match Error", error.toString()));
@@ -320,7 +324,7 @@ class AppProvider extends ChangeNotifier {
         case "guest":
           {
             setClientGuest()
-                .timeout(const Duration(seconds: 50))
+                .timeout(const Duration(seconds: 10))
                 .catchError((error) {
               print("setClientGuest error! $error");
               handleError(ErrorDetails("Match Error", error.toString()));
@@ -387,6 +391,8 @@ class AppProvider extends ChangeNotifier {
     });
 
     socket!.on("client_host", (data) {
+      socket!.off("client_host");
+      socket!.off("client_guest");
       try {
         if (data['answer'] != null) {
           // print("got answer");
@@ -408,6 +414,8 @@ class AppProvider extends ChangeNotifier {
     final completer = Completer<void>();
 
     socket!.on("client_guest", (data) async {
+      socket!.off("client_host");
+      socket!.off("client_guest");
       try {
         if (data["offer"] != null) {
           // print("got offer");
