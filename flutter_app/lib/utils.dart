@@ -18,6 +18,44 @@ class ErrorDetails {
   ErrorDetails(this.title, this.message);
 }
 
-Future<SharedPreferences> getPrefs() async {
-  return await SharedPreferences.getInstance();
+class Options {
+  SharedPreferences prefs;
+
+  Options(this.prefs);
+
+  static Future<Options> getOptions() async {
+    return Options(await SharedPreferences.getInstance());
+  }
+
+  String? getString(String key) {
+    return prefs.getString(key);
+  }
+
+  Future<bool> setString(String key, String value) {
+    return prefs.setString(key, value);
+  }
+
+  Future<bool> setAudioDevice(String device) {
+    return setString('audioDeviceLabel', device);
+  }
+
+  String? getAudioDevice() {
+    return getString('audioDeviceLabel');
+  }
+
+  Future<bool> setVideoDevice(String device) {
+    return setString('videoDeviceLabel', device);
+  }
+
+  String? getVideoDevice() {
+    return getString('videoDeviceLabel');
+  }
+
+  Future<bool> setConfirmFeedbackPopup(bool flag) {
+    return setString('videoDeviceLabel', flag ? 'true' : 'false');
+  }
+
+  bool getConfirmFeedbackPopup() {
+    return getString('videoDeviceLabel') != 'false';
+  }
 }

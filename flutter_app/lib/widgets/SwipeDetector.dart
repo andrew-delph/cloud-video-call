@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/utils.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SwipeDetector extends StatefulWidget {
   final Widget child;
@@ -44,15 +43,12 @@ class SwipeDetectorState extends State<SwipeDetector> {
     double score = calcScore();
     bool validScore = isValidScore(score);
 
-    return FutureBuilder<SharedPreferences>(
-      future: getPrefs(),
-      builder:
-          (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
+    return FutureBuilder<Options>(
+      future: Options.getOptions(),
+      builder: (BuildContext context, AsyncSnapshot<Options> snapshot) {
         if (snapshot.hasData) {
           final bool confirmFeedback =
-              snapshot.data?.getString('confirm_feedback_popup') == 'true'
-                  ? true
-                  : false;
+              snapshot.data?.getConfirmFeedbackPopup() ?? true;
           return GestureDetector(
               onHorizontalDragUpdate: (details) {
                 if (widget.isDragUpdate == null || widget.isDragUpdate!()) {
@@ -76,8 +72,7 @@ class SwipeDetectorState extends State<SwipeDetector> {
                                   TextButton(
                                     onPressed: () {
                                       snapshot.data
-                                          ?.setString(
-                                              "confirm_feedback_popup", "false")
+                                          ?.setConfirmFeedbackPopup(false)
                                           .then((value) {
                                         SnackBar snackBar = const SnackBar(
                                           content: Text(

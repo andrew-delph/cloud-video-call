@@ -6,7 +6,6 @@ import 'package:flutter_app/state_machines.dart';
 import 'package:flutter_app/utils.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:statemachine/statemachine.dart';
@@ -424,9 +423,10 @@ class AppProvider extends ChangeNotifier {
 
     MediaStream mediaStream =
         await navigator.mediaDevices.getUserMedia(mediaConstraints);
+    Options options = await Options.getOptions();
 
-    String? audioDeviceLabel = (await getPrefs()).getString('audioDeviceLabel');
-    String? videoDeviceLabel = (await getPrefs()).getString('videoDeviceLabel');
+    String? audioDeviceLabel = options.getAudioDevice();
+    String? videoDeviceLabel = options.getVideoDevice();
 
     if (audioDeviceLabel != null || videoDeviceLabel != null) {
       String? videoDeviceId;
@@ -463,8 +463,8 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> changeCamera(MediaDeviceInfo mediaDeviceInfo) async {
-    await (await getPrefs())
-        .setString('videoDeviceLabel', mediaDeviceInfo.label);
+    Options options = await Options.getOptions();
+    options.setVideoDevice(mediaDeviceInfo.label);
 
     await setLocalMediaStream();
 
@@ -482,8 +482,8 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> changeAudioInput(MediaDeviceInfo mediaDeviceInfo) async {
-    await (await getPrefs())
-        .setString('audioDeviceLabel', mediaDeviceInfo.label);
+    Options options = await Options.getOptions();
+    options.setAudioDevice(mediaDeviceInfo.label);
 
     await setLocalMediaStream();
     print("got audio stream .. ${localMediaStream?.getAudioTracks()[0]}");
@@ -552,7 +552,7 @@ class AppProvider extends ChangeNotifier {
       ];
     }
 
-    SharedPreferences prefs = await getPrefs();
+    Options options = await Options.getOptions();
 
     List<PopupMenuEntry<MediaDeviceInfo>> videoInputList = [
       const PopupMenuItem<MediaDeviceInfo>(
@@ -577,13 +577,13 @@ class AppProvider extends ChangeNotifier {
       switch (mediaDeviceInfo.kind) {
         case "videoinput":
           videoInputList.add(PopupMenuItem<MediaDeviceInfo>(
-            textStyle: (prefs.getString("videoDeviceLabel") ?? 'Default') ==
-                    mediaDeviceInfo.label
-                ? const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
-                  )
-                : null,
+            textStyle:
+                (options.getVideoDevice() ?? 'Default') == mediaDeviceInfo.label
+                    ? const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      )
+                    : null,
             onTap: () {
               print("click video");
               changeCamera(mediaDeviceInfo);
@@ -596,13 +596,13 @@ class AppProvider extends ChangeNotifier {
         case "audioinput":
           audioInputList.add(PopupMenuItem<MediaDeviceInfo>(
             value: mediaDeviceInfo,
-            textStyle: (prefs.getString("audioDeviceLabel") ?? 'Default') ==
-                    mediaDeviceInfo.label
-                ? const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
-                  )
-                : const TextStyle(),
+            textStyle:
+                (options.getAudioDevice() ?? 'Default') == mediaDeviceInfo.label
+                    ? const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      )
+                    : const TextStyle(),
             child: Text(mediaDeviceInfo.label),
             onTap: () {
               print("click audio input");

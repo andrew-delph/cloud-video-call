@@ -7,7 +7,6 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../AppProvider.dart';
 import '../../Factory.dart';
@@ -368,14 +367,12 @@ class OptionsScreenState extends State<OptionsScreen> {
       },
     );
 
-    Widget preferences = FutureBuilder<SharedPreferences>(
-      future: getPrefs(),
+    Widget preferences = FutureBuilder<Options>(
+      future: Options.getOptions(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           bool confirmFeedbackPopup =
-              snapshot.data?.getString('confirm_feedback_popup') != 'true'
-                  ? false
-                  : true;
+              snapshot.data?.getConfirmFeedbackPopup() ?? true;
           return Column(children: [
             Row(
               children: [
@@ -383,13 +380,7 @@ class OptionsScreenState extends State<OptionsScreen> {
                 Switch(
                   value: confirmFeedbackPopup,
                   onChanged: (bool newValue) async {
-                    if (newValue) {
-                      await snapshot.data
-                          ?.setString('confirm_feedback_popup', 'true');
-                    } else {
-                      await snapshot.data
-                          ?.setString('confirm_feedback_popup', 'false');
-                    }
+                    await snapshot.data?.setConfirmFeedbackPopup(newValue);
                     setState(() {});
                   },
                 )
