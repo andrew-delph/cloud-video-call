@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -100,7 +101,7 @@ class AppProvider extends ChangeNotifier {
       }
     });
 
-    chatMachine[ChatStates.matched].onTimeout(const Duration(seconds: 45), () {
+    chatMachine[ChatStates.matched].onTimeout(const Duration(seconds: 20), () {
       chatMachine.current = ChatStates.connectionError;
     });
 
@@ -254,9 +255,6 @@ class AppProvider extends ChangeNotifier {
   Future<void> ready() async {
     await tryResetRemote();
     await initLocalStream();
-    socket!.off("client_host");
-    socket!.off("client_guest");
-    socket!.off("match");
     socket!.off("icecandidate");
 
     // START SETUP PEER CONNECTION
@@ -309,12 +307,27 @@ class AppProvider extends ChangeNotifier {
       switch (role) {
         case "host":
           {
-            await setClientHost();
+            setClientHost()
+                .timeout(const Duration(seconds: 50))
+                .catchError((error) {
+              print("setClientHost error! $error");
+              handleError(ErrorDetails("Match Error", error.toString()));
+            }).then((value) {
+              print("completed setClientHost");
+            });
           }
           break;
         case "guest":
           {
-            await setClientGuest();
+            setClientGuest()
+                .timeout(const Duration(seconds: 50))
+                .catchError((error) {
+              print("setClientGuest error! $error");
+              handleError(ErrorDetails("Match Error", error.toString()));
+            }).then((value) {
+              print("completed setClientGuest");
+            });
+            ;
           }
           break;
         default:
@@ -359,6 +372,7 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> setClientHost() async {
     print("you are the host");
+    final completer = Completer<void>();
 
     RTCSessionDescription offerDescription =
         await peerConnection!.createOffer();
@@ -373,38 +387,53 @@ class AppProvider extends ChangeNotifier {
     });
 
     socket!.on("client_host", (data) {
-      if (data['answer'] != null) {
-        // print("got answer");
-        RTCSessionDescription answerDescription = RTCSessionDescription(
-            data['answer']["sdp"], data['answer']["type"]);
-        peerConnection!.setRemoteDescription(answerDescription);
+      try {
+        if (data['answer'] != null) {
+          // print("got answer");
+          RTCSessionDescription answerDescription = RTCSessionDescription(
+              data['answer']["sdp"], data['answer']["type"]);
+          peerConnection!.setRemoteDescription(answerDescription);
+          completer.complete();
+        }
+      } catch (error) {
+        completer.completeError(error);
       }
     });
+
+    return completer.future;
   }
 
   Future<void> setClientGuest() async {
     print("you are the guest");
+    final completer = Completer<void>();
 
     socket!.on("client_guest", (data) async {
-      if (data["offer"] != null) {
-        // print("got offer");
-        await peerConnection!.setRemoteDescription(
-            RTCSessionDescription(data["offer"]["sdp"], data["offer"]["type"]));
+      try {
+        if (data["offer"] != null) {
+          // print("got offer");
+          await peerConnection!.setRemoteDescription(RTCSessionDescription(
+              data["offer"]["sdp"], data["offer"]["type"]));
 
-        RTCSessionDescription answerDescription =
-            await peerConnection!.createAnswer();
+          RTCSessionDescription answerDescription =
+              await peerConnection!.createAnswer();
 
-        await peerConnection!.setLocalDescription(answerDescription);
+          await peerConnection!.setLocalDescription(answerDescription);
 
-        // send the offer
-        socket!.emit("client_guest", {
-          "answer": {
-            "type": answerDescription.type,
-            "sdp": answerDescription.sdp,
-          },
-        });
+          // send the offer
+          socket!.emit("client_guest", {
+            "answer": {
+              "type": answerDescription.type,
+              "sdp": answerDescription.sdp,
+            },
+          });
+
+          completer.complete();
+        }
+      } catch (error) {
+        completer.completeError(error);
       }
     });
+    return completer.future;
   }
 
   Future<void> addRemoteTrack(MediaStreamTrack track) async {
