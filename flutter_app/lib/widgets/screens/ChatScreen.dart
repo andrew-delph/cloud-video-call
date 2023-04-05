@@ -98,9 +98,10 @@ class ChatScreenState extends State<ChatScreen> {
               ChatStates.connected;
         }
 
-        inReadyQueue() {
+        isInReadyQueue() {
           return appProvider.chatMachine.current?.identifier ==
-              ChatStates.ready;
+                  ChatStates.ready ||
+              appProvider.chatMachine.current?.identifier == ChatStates.matched;
         }
 
         // if socket is connecting
@@ -132,13 +133,14 @@ class ChatScreenState extends State<ChatScreen> {
                   Colors.yellow.shade100), // Change the color here
             ),
             onPressed: () async {
-              if (!inReadyQueue()) {
+              if (!isInReadyQueue()) {
                 await appProvider.ready();
               } else {
                 await appProvider.unReady();
               }
             },
-            child: Text((inReadyQueue() == false) ? 'Ready' : 'Cancel Ready'));
+            child:
+                Text((isInReadyQueue() == false) ? 'Ready' : 'Cancel Ready'));
 
         Widget videoRenderLayout;
 
@@ -210,7 +212,7 @@ class ChatScreenState extends State<ChatScreen> {
 
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }).whenComplete(() {
-                appProvider.chatMachine.current = ChatStates.waiting;
+                appProvider.chatMachine.current = ChatStates.end;
               });
             },
             child: videoRenderLayout);

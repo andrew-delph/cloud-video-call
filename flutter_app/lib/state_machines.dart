@@ -11,6 +11,7 @@ enum ChatStates {
   connected,
   ended,
   feedback,
+  end,
   error
 }
 

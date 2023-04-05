@@ -41,7 +41,7 @@ class FeedbackScreenState extends State<FeedbackScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }).whenComplete(() {
-      widget.appProvider.chatMachine.current = ChatStates.waiting;
+      widget.appProvider.chatMachine.current = ChatStates.end;
     });
   }
 

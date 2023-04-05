@@ -58,4 +58,12 @@ class Options {
   bool getConfirmFeedbackPopup() {
     return getString('videoDeviceLabel') != 'false';
   }
+
+  Future<bool> setAutoQueue(bool flag) {
+    return setString('autoQueue', flag ? 'true' : 'false');
+  }
+
+  bool getAutoQueue() {
+    return getString('autoQueue') == 'true';
+  }
 }

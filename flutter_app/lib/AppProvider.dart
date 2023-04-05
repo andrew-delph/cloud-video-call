@@ -91,12 +91,28 @@ class AppProvider extends ChangeNotifier {
       chatMachine.current = ChatStates.feedback;
     });
 
+    chatMachine[ChatStates.end].onEntry(() async {
+      Options options = await Options.getOptions();
+      if (options.getAutoQueue()) {
+        chatMachine.current = ChatStates.ready;
+      } else {
+        chatMachine.current = ChatStates.waiting;
+      }
+    });
+
     chatMachine[ChatStates.matched].onTimeout(const Duration(seconds: 45), () {
       chatMachine.current = ChatStates.connectionError;
     });
 
     chatMachine[ChatStates.connectionError].onEntry(() async {
-      chatMachine.current = ChatStates.waiting;
+      chatMachine.current = ChatStates.end;
+    });
+
+    chatMachine[ChatStates.ready].onEntry(() async {
+      //TODO handle errors with ack and error
+      socket!.emitWithAck("ready", {'ready': true}, ack: (data) {
+        print("ready ack $data");
+      });
     });
   }
 
@@ -331,10 +347,7 @@ class AppProvider extends ChangeNotifier {
     });
     // END HANDLE ICE CANDIDATES
 
-    socket!.emitWithAck("ready", {'ready': true}, ack: (data) {
-      print("ready ack $data");
-      chatMachine.current = ChatStates.ready;
-    });
+    chatMachine.current = ChatStates.ready;
   }
 
   Future<void> unReady() async {

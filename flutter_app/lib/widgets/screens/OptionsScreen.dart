@@ -373,6 +373,7 @@ class OptionsScreenState extends State<OptionsScreen> {
         if (snapshot.hasData) {
           bool confirmFeedbackPopup =
               snapshot.data?.getConfirmFeedbackPopup() ?? true;
+          bool autoQueue = snapshot.data?.getAutoQueue() ?? false;
           return Column(children: [
             Row(
               children: [
@@ -381,6 +382,18 @@ class OptionsScreenState extends State<OptionsScreen> {
                   value: confirmFeedbackPopup,
                   onChanged: (bool newValue) async {
                     await snapshot.data?.setConfirmFeedbackPopup(newValue);
+                    setState(() {});
+                  },
+                )
+              ],
+            ),
+            Row(
+              children: [
+                const Text("Auto queue:"),
+                Switch(
+                  value: autoQueue,
+                  onChanged: (bool newValue) async {
+                    await snapshot.data?.setAutoQueue(newValue);
                     setState(() {});
                   },
                 )
