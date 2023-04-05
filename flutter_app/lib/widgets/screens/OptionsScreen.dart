@@ -470,7 +470,7 @@ class OptionsScreenState extends State<OptionsScreen> {
             body: Center(
                 child: SingleChildScrollView(
                     child: Column(
-              children: [profile, settings],
+              children: [profile, settings, const AppDetailsWidget()],
             )))));
   }
 }
@@ -763,5 +763,14 @@ class UserProfileWidget extends StatelessWidget {
               )
             ],
           );
+  }
+}
+
+class AppDetailsWidget extends StatelessWidget {
+  const AppDetailsWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text("Version : version");
   }
 }
