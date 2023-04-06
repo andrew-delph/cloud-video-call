@@ -101,7 +101,7 @@ class AppProvider extends ChangeNotifier {
       }
     });
 
-    chatMachine[ChatStates.matched].onTimeout(const Duration(seconds: 20), () {
+    chatMachine[ChatStates.matched].onTimeout(const Duration(seconds: 10), () {
       chatMachine.current = ChatStates.connectionError;
     });
 
@@ -311,9 +311,7 @@ class AppProvider extends ChangeNotifier {
       switch (role) {
         case "host":
           {
-            setClientHost()
-                .timeout(const Duration(seconds: 10))
-                .catchError((error) {
+            setClientHost().catchError((error) {
               print("setClientHost error! $error");
               handleError(ErrorDetails("Match Error", error.toString()));
             }).then((value) {
@@ -323,9 +321,7 @@ class AppProvider extends ChangeNotifier {
           break;
         case "guest":
           {
-            setClientGuest()
-                .timeout(const Duration(seconds: 10))
-                .catchError((error) {
+            setClientGuest().catchError((error) {
               print("setClientGuest error! $error");
               handleError(ErrorDetails("Match Error", error.toString()));
             }).then((value) {
