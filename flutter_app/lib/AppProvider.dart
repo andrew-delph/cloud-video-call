@@ -106,7 +106,7 @@ class AppProvider extends ChangeNotifier {
     });
 
     chatMachine[ChatStates.connectionError].onEntry(() async {
-      chatMachine.current = ChatStates.end;
+      chatMachine.current = ChatStates.ready;
     });
 
     chatMachine[ChatStates.ready].onEntry(() async {
