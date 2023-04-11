@@ -605,6 +605,7 @@ class LocationOptionsWidget extends StatelessWidget {
       );
 
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      throw onError;
     });
     customAttributes.add("long", pos.latitude.toString());
     customAttributes.add("lat", pos.longitude.toString());
