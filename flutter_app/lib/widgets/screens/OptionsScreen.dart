@@ -610,7 +610,7 @@ class LocationOptionsWidget extends StatelessWidget {
     customAttributes.add("lat", pos.longitude.toString());
     print("pos $pos ${pos.latitude} ${pos.longitude}");
 
-    String msg = "latitude: ${pos.latitude} longitude: ${pos.longitude}";
+    String msg = "Latitude: ${pos.latitude} Longitude: ${pos.longitude}";
     SnackBar snackBar = SnackBar(
       content: Text(msg),
     );
