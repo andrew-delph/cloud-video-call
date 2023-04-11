@@ -243,7 +243,7 @@ class ChatScreenState extends State<ChatScreen> {
                               IconButton(
                                 tooltip: "End call",
                                 icon: const Icon(Icons.call_end),
-                                color: isInChat() ? Colors.red : Colors.grey,
+                                color: isInChat() ? Colors.red : Colors.white,
                                 onPressed: () {
                                   if (isInChat()) {
                                     appProvider.chatMachine.current =
@@ -255,7 +255,7 @@ class ChatScreenState extends State<ChatScreen> {
                                 tooltip: "Mute mic",
                                 color: appProvider.isMuteMic()
                                     ? Colors.red
-                                    : Colors.grey,
+                                    : Colors.white,
                                 icon: appProvider.isMuteMic()
                                     ? const Icon(Icons.mic_off)
                                     : const Icon(Icons.mic),
@@ -267,7 +267,7 @@ class ChatScreenState extends State<ChatScreen> {
                                 tooltip: "Camera off",
                                 color: appProvider.isHideCam()
                                     ? Colors.red
-                                    : Colors.grey,
+                                    : Colors.white,
                                 icon: appProvider.isHideCam()
                                     ? const Icon(Icons.videocam_off)
                                     : const Icon(Icons.videocam),
@@ -308,7 +308,7 @@ class SettingsButton extends StatelessWidget {
         }
 
         return PopupMenuButton<MediaDeviceInfo>(
-          color: Colors.grey,
+          color: Colors.white,
           // initialValue: 'selectedMenu',
           // Callback that sets the selected popup menu item.
           itemBuilder: (BuildContext context) => mediaList,
