@@ -6,6 +6,7 @@ import 'package:flutter_app/utils.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import '../../AppProvider.dart';
@@ -771,6 +772,15 @@ class AppDetailsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text("Version : version");
+    return FutureBuilder(
+        future: PackageInfo.fromPlatform(),
+        builder: (context, snapshot) {
+          String version = "None";
+
+          if (snapshot.hasData && snapshot.data?.version != null) {
+            version = snapshot.data?.version ?? "None";
+          }
+          return Text("Version: $version");
+        });
   }
 }
