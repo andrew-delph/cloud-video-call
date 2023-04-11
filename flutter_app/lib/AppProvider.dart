@@ -131,6 +131,9 @@ class AppProvider extends ChangeNotifier {
   @mustCallSuper
   Future<void> dispose() async {
     super.dispose();
+    socket?.destroy();
+    chatMachine.stop();
+    socketMachine.stop();
     await _localMediaStream?.dispose();
     await _remoteMediaStream?.dispose();
     await _peerConnection?.close();
@@ -146,25 +149,31 @@ class AppProvider extends ChangeNotifier {
     established = false;
     String socketAddress = Factory.getWsHost();
 
-    print("SOCKET_ADDRESS is $socketAddress ");
+    print(
+        "SOCKET_ADDRESS is $socketAddress $established .... ${socket == null}");
 
     // only websocket works on windows
-    if (socket != null) {
-      socket?.disconnect();
-    }
-    socket = io.io(
+
+    String? token = await FirebaseAuth.instance.currentUser?.getIdToken();
+
+    var mySocket = io.io(
         socketAddress,
         OptionBuilder()
             .setTransports(['websocket'])
             .disableAutoConnect()
             .disableReconnection()
-            .setAuth(
-                {"auth": await FirebaseAuth.instance.currentUser?.getIdToken()})
             .build());
 
-    socket!.emit("message", "I am a client");
+    if (mySocket.connected) {
+      mySocket.dispose();
+    }
 
-    socket!.on("myping", (request) async {
+    // force set the auth
+    mySocket.auth = {"auth": token};
+
+    mySocket.emit("message", "I am a client");
+
+    mySocket.on("myping", (request) async {
       List data = request as List;
       String value = data[0] as String;
       Function callback = data[1] as Function;
@@ -172,57 +181,61 @@ class AppProvider extends ChangeNotifier {
       callback("flutter responded");
     });
 
-    socket!.emitWithAck("myping", "I am a client",
+    mySocket.emitWithAck("myping", "I am a client",
         ack: (data) => print("ping ack"));
 
-    socket!.on('activeCount', (data) {
+    mySocket.on('activeCount', (data) {
       activeCount = int.tryParse(data.toString()) ?? -1;
       notifyListeners();
     });
 
-    socket!.on('established', (data) {
+    mySocket.on('established', (data) {
       established = true;
       socketMachine.current = SocketStates.established;
       notifyListeners();
     });
 
-    socket!.onConnect((_) {
+    mySocket.onConnect((_) {
       socketMachine.current = SocketStates.connected;
-      socket!.emit('message', 'from flutter app connected');
+      mySocket.emit('message', 'from flutter app connected');
       notifyListeners();
     });
 
-    socket!.on('message', (data) => print(data));
-    socket!.on('endchat', (data) async {
+    mySocket.on('message', (data) => print(data));
+    mySocket.on('endchat', (data) async {
       print("got endchat event");
       if (chatMachine.current?.identifier == ChatStates.connected) {
         chatMachine.current = ChatStates.ended;
       }
     });
-    socket!.onDisconnect((details) {
-      socketMachine.current = SocketStates.connecting;
+    mySocket.onDisconnect((details) {
+      if (socketMachine.current != null) {
+        socketMachine.current = SocketStates.connecting;
+      }
     });
 
-    socket!.onConnectError((error) {
+    mySocket.onConnectError((error) {
       print('connectError $error');
 
       handleError(ErrorDetails("Socket", error.toString()));
       socketMachine.current = SocketStates.error;
     });
 
-    socket!.on('error', (error) {
+    mySocket.on('error', (error) {
       print("error $error");
       handleError(ErrorDetails("Socket", error.toString()));
       socketMachine.current = SocketStates.error;
     });
 
     try {
-      socket!.connect();
+      mySocket.connect();
     } catch (error) {
-      print("error...$error");
+      print("socket connect error...$error");
       handleError(ErrorDetails("Socket", error.toString()));
       socketMachine.current = SocketStates.error;
     }
+
+    socket = mySocket;
   }
 
   Future<void> initLocalStream() async {

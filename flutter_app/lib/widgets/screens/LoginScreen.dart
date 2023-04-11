@@ -36,8 +36,8 @@ class LoginScreenState extends State<LoginScreen> {
         ElevatedButton(
           child: const Text("Login Anonymous"),
           onPressed: () async {
-            FirebaseAuth.instance.signInAnonymously().then((value) {
-              Navigator.pop(context);
+            await FirebaseAuth.instance.signInAnonymously().then((value) {
+              // Navigator.pop(context);
             });
           },
         ),
@@ -56,7 +56,7 @@ class LoginScreenState extends State<LoginScreen> {
             await FirebaseAuth.instance
                 .signInWithPopup(googleProvider)
                 .then((value) {
-              Navigator.pop(context);
+              // Navigator.pop(context);
             });
           },
         )
