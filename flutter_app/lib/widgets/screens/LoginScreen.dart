@@ -38,6 +38,13 @@ class LoginScreenState extends State<LoginScreen> {
           onPressed: () async {
             await FirebaseAuth.instance.signInAnonymously().then((value) {
               // Navigator.pop(context);
+            }).catchError((onError) {
+              String msg = onError.toString();
+              SnackBar snackBar = SnackBar(
+                content: Text(msg),
+              );
+
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
             });
           },
         ),
@@ -57,6 +64,13 @@ class LoginScreenState extends State<LoginScreen> {
                 .signInWithPopup(googleProvider)
                 .then((value) {
               // Navigator.pop(context);
+            }).catchError((onError) {
+              String msg = onError.toString();
+              SnackBar snackBar = SnackBar(
+                content: Text(msg),
+              );
+
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
             });
           },
         )
