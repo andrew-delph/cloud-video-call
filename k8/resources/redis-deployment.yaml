@@ -17,6 +17,7 @@ spec:
       labels:
         app: redis
     spec:
+      priorityClassName: 'high-priority'
       containers:
         - image: redis:latest
           name: redis
