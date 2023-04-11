@@ -29,17 +29,17 @@ spec:
 apiVersion: networking.internal.knative.dev/v1alpha1
 kind: ClusterDomainClaim
 metadata:
-  name: ws.solarsim.net
+  name: ws.andrewdelph.com
 spec:
   namespace: default
 ---
 apiVersion: serving.knative.dev/v1alpha1
 kind: DomainMapping
 metadata:
-  name: ws.solarsim.net
+  name: ws.andrewdelph.com
   namespace: default
   # annotations:
-  #   kourier.knative.dev/disable-http2: 'true' # kubectl annotate domainmapping ws.solarsim.net kourier.knative.dev/disable-http2=true
+  #   kourier.knative.dev/disable-http2: 'true' # kubectl annotate domainmapping ws.andrewdelph.com kourier.knative.dev/disable-http2=true
 spec:
   ref:
     name: websocket

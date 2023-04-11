@@ -28,14 +28,14 @@ spec:
 apiVersion: networking.internal.knative.dev/v1alpha1
 kind: ClusterDomainClaim
 metadata:
-  name: options.solarsim.net
+  name: options.andrewdelph.com
 spec:
   namespace: default
 ---
 apiVersion: serving.knative.dev/v1alpha1
 kind: DomainMapping
 metadata:
-  name: options.solarsim.net
+  name: options.andrewdelph.com
   namespace: default
 spec:
   ref:

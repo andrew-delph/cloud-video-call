@@ -51,11 +51,11 @@ class Factory {
 
   static String getWsHost() {
     return const String.fromEnvironment('WS_HOST',
-        defaultValue: 'https://ws.solarsim.net');
+        defaultValue: 'https://ws.andrewdelph.com');
   }
 
   static String getOptionsHost() {
     return const String.fromEnvironment('OPTIONS_HOST',
-        defaultValue: 'https://options.solarsim.net');
+        defaultValue: 'https://options.andrewdelph.com');
   }
 }

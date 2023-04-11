@@ -19,7 +19,7 @@
 # # apiVersion: serving.knative.dev/v1alpha1
 # # kind: DomainMapping
 # # metadata:
-# #   name: solarsim.net
+# #   name: andrewdelph.com
 # # spec:
 # #   ref:
 # #     name: nginx
@@ -51,14 +51,14 @@
 # apiVersion: networking.internal.knative.dev/v1alpha1
 # kind: ClusterDomainClaim
 # metadata:
-#   name: nginx.solarsim.net
+#   name: nginx.andrewdelph.com
 # spec:
 #   namespace: default
 # ---
 # apiVersion: serving.knative.dev/v1alpha1
 # kind: DomainMapping
 # metadata:
-#   name: nginx.solarsim.net
+#   name: nginx.andrewdelph.com
 #   namespace: default
 # spec:
 #   ref:

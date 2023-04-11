@@ -19,7 +19,7 @@ apply:
 	kubectl apply -f https://github.com/knative/net-certmanager/releases/download/knative-v1.7.0/release.yaml --wait
 	kubectl apply -f ./knative.yaml --wait
 	kubectl apply -f ./resources/. --wait
-	kubectl annotate domainmapping ws.solarsim.net kourier.knative.dev/disable-http2=true
+	kubectl annotate domainmapping ws.andrewdelph.com kourier.knative.dev/disable-http2=true
 
 delete:
 	kubectl delete -f ./resources/.
