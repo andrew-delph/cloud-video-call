@@ -377,6 +377,10 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> unReady() async {
+    socket!.off("client_host");
+    socket!.off("client_guest");
+    socket!.off("match");
+    socket!.off("icecandidate");
     socket!.emitWithAck("ready", {'ready': false}, ack: (data) {
       print("ready ack $data");
       chatMachine.current = ChatStates.waiting;
