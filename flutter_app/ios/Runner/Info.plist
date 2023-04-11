@@ -31,9 +31,9 @@
 		<key>NSMicrophoneUsageDescription</key>
 		<string>$(PRODUCT_NAME) Microphone Usage!</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
+		<true/>
 		<key>NSLocationWhenInUseUsageDescription</key>
         <string>This app needs access to location when open.</string>
-		<true/>
 		<key>UILaunchStoryboardName</key>
 		<string>LaunchScreen</string>
 		<key>UIMainStoryboardFile</key>
