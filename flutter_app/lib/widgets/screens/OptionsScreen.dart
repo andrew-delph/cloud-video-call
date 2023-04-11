@@ -780,7 +780,9 @@ class AppDetailsWidget extends StatelessWidget {
           if (snapshot.hasData && snapshot.data?.version != null) {
             version = snapshot.data?.version ?? "None";
           }
-          return Text("Version: $version");
+
+          return ListTile(
+              title: const Text("Version"), subtitle: Text(version));
         });
   }
 }
