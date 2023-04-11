@@ -597,11 +597,25 @@ class LocationOptionsWidget extends StatelessWidget {
     customFilters.deleteKey('dist');
   }
 
-  updateLocation() async {
-    Position pos = await getLocation();
+  updateLocation(context) async {
+    Position pos = await getLocation().catchError((onError) {
+      String errorMsg = onError.toString();
+      SnackBar snackBar = SnackBar(
+        content: Text(errorMsg),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
     customAttributes.add("long", pos.latitude.toString());
     customAttributes.add("lat", pos.longitude.toString());
     print("pos $pos ${pos.latitude} ${pos.longitude}");
+
+    String msg = "latitude: ${pos.latitude} longitude: ${pos.longitude}";
+    SnackBar snackBar = SnackBar(
+      content: Text(msg),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   LocationOptionsWidget(
@@ -643,7 +657,9 @@ class LocationOptionsWidget extends StatelessWidget {
       Row(
         children: [
           ElevatedButton(
-            onPressed: updateLocation,
+            onPressed: () {
+              updateLocation(context);
+            },
             child: const Text('Update Location'),
           ),
           posPair != null
