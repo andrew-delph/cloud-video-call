@@ -19,8 +19,6 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
-    print(
-        "MainScreen initState!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     super.initState();
     appProvider = AppProvider();
   }
