@@ -94,6 +94,7 @@ class MobileMapState extends State<MobileMap> {
       cameraTargetBounds: cameraTargetBounds,
       scrollGesturesEnabled: false,
       zoomControlsEnabled: true,
+      padding: EdgeInsets.all(10),
       onCameraMove: (position) async {
         firstRender = false;
       },
