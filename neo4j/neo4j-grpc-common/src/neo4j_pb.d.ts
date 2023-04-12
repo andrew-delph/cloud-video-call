@@ -431,3 +431,73 @@ export namespace GetUserPerferencesResponse {
         filtersCustomMap: Array<[string, string]>,
     }
 }
+
+export class PutUserPerferencesRequest extends jspb.Message { 
+    getUserId(): string;
+    setUserId(value: string): PutUserPerferencesRequest;
+
+
+    getAttributesConstantMap(): jspb.Map<string, string>;
+    clearAttributesConstantMap(): void;
+
+
+    getFiltersConstantMap(): jspb.Map<string, string>;
+    clearFiltersConstantMap(): void;
+
+
+    getAttributesCustomMap(): jspb.Map<string, string>;
+    clearAttributesCustomMap(): void;
+
+
+    getFiltersCustomMap(): jspb.Map<string, string>;
+    clearFiltersCustomMap(): void;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): PutUserPerferencesRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: PutUserPerferencesRequest): PutUserPerferencesRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: PutUserPerferencesRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): PutUserPerferencesRequest;
+    static deserializeBinaryFromReader(message: PutUserPerferencesRequest, reader: jspb.BinaryReader): PutUserPerferencesRequest;
+}
+
+export namespace PutUserPerferencesRequest {
+    export type AsObject = {
+        userId: string,
+
+        attributesConstantMap: Array<[string, string]>,
+
+        filtersConstantMap: Array<[string, string]>,
+
+        attributesCustomMap: Array<[string, string]>,
+
+        filtersCustomMap: Array<[string, string]>,
+    }
+}
+
+export class PutUserPerferencesResponse extends jspb.Message { 
+    getError(): boolean;
+    setError(value: boolean): PutUserPerferencesResponse;
+
+    getMessage(): string;
+    setMessage(value: string): PutUserPerferencesResponse;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): PutUserPerferencesResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: PutUserPerferencesResponse): PutUserPerferencesResponse.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: PutUserPerferencesResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): PutUserPerferencesResponse;
+    static deserializeBinaryFromReader(message: PutUserPerferencesResponse, reader: jspb.BinaryReader): PutUserPerferencesResponse;
+}
+
+export namespace PutUserPerferencesResponse {
+    export type AsObject = {
+        error: boolean,
+        message: string,
+    }
+}

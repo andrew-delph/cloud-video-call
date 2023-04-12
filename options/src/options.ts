@@ -126,6 +126,11 @@ app.post(`/providefeedback`, async (req, res) => {
 app.put(`/preferences`, async (req, res) => {
   const { attributes = {}, filters = {} } = req.body;
 
+  const a_custom: { [key: string]: string } = attributes.custom || {};
+  const a_constant: { [key: string]: string } = attributes.constant || {};
+  const f_custom: { [key: string]: string } = filters.custom || {};
+  const f_constant: { [key: string]: string } = filters.constant || {};
+
   const auth = req.headers.authorization;
 
   if (!auth) {
@@ -140,72 +145,48 @@ app.put(`/preferences`, async (req, res) => {
     return;
   });
 
-  const session = driver.session();
+  const putUserFiltersRequest = new neo4j_common.PutUserPerferencesRequest();
+  putUserFiltersRequest.setUserId(uid);
 
-  let results;
-
-  results = await session.run(
-    `
-    MERGE (p:Person{userId: $uid})
-    MERGE (p)-[r:USER_ATTRIBUTES_CONSTANT]->(md:MetaData{type:"USER_ATTRIBUTES_CONSTANT"})
-    SET md = $constant
-    SET md.type = "USER_ATTRIBUTES_CONSTANT"
-    RETURN p, md
-    `,
-    { uid, constant: attributes.constant || {} },
-  );
-  const attributes_constant_md = results.records[0].get(`md`);
-
-  results = await session.run(
-    `
-    MERGE (p:Person{userId: $uid})
-    MERGE (p)-[r:USER_ATTRIBUTES_CUSTOM]->(md:MetaData{type:"USER_ATTRIBUTES_CUSTOM"})
-    SET md = $custom
-    SET md.type = "USER_ATTRIBUTES_CUSTOM"
-    RETURN p, md
-    `,
-    { uid, custom: attributes.custom || {} },
-  );
-
-  const attributes_custom_md = results.records[0].get(`md`);
-
-  results = await session.run(
-    `
-    MERGE (p:Person{userId: $uid})
-    MERGE (p)-[r:USER_FILTERS_CONSTANT]->(md:MetaData{type:"USER_FILTERS_CONSTANT"})
-    SET md = $constant
-    SET md.type = "USER_FILTERS_CONSTANT"
-    RETURN p, md
-    `,
-    { uid, constant: filters.constant || {} },
-  );
-  const filters_constant_md = results.records[0].get(`md`);
-
-  results = await session.run(
-    `
-    MERGE (p:Person{userId: $uid})
-    MERGE (p)-[r:USER_FILTERS_CUSTOM]->(md:MetaData{type:"USER_FILTERS_CUSTOM"})
-    SET md = $custom
-    SET md.type = "USER_FILTERS_CUSTOM"
-    RETURN p, md
-    `,
-    { uid, custom: filters.custom || {} },
-  );
-
-  const filters_custom_md = results.records[0].get(`md`);
-
-  await session.close();
-
-  res.status(201).send({
-    attributes: {
-      custom: attributes_constant_md.properties,
-      constant: attributes_custom_md.properties,
-    },
-    filters: {
-      custom: filters_custom_md.properties,
-      constant: filters_constant_md.properties,
-    },
+  Object.entries(a_constant).forEach(([key, value]) => {
+    putUserFiltersRequest
+      .getAttributesConstantMap()
+      .set(String(key), String(value));
   });
+  Object.entries(a_custom).forEach(([key, value]) => {
+    putUserFiltersRequest
+      .getAttributesCustomMap()
+      .set(String(key), String(value));
+  });
+  Object.entries(f_constant).forEach(([key, value]) => {
+    putUserFiltersRequest
+      .getFiltersConstantMap()
+      .set(String(key), String(value));
+  });
+  Object.entries(f_custom).forEach(([key, value]) => {
+    putUserFiltersRequest.getFiltersCustomMap().set(String(key), String(value));
+  });
+
+  try {
+    await neo4jRpcClient.putUserPerferences(
+      putUserFiltersRequest,
+      (error: any, response: neo4j_common.PutUserPerferencesResponse) => {
+        if (error) {
+          res.status(401).json({
+            error: JSON.stringify(error),
+            message: `Failed checkUserFiltersRequest`,
+          });
+        } else {
+          res.status(201).send(`preferences updated`);
+        }
+      },
+    );
+  } catch (error) {
+    res.status(401).json({
+      error: JSON.stringify(error),
+      message: `failed checkUserFiltersRequest`,
+    });
+  }
 });
 
 app.get(`/preferences`, async (req, res) => {

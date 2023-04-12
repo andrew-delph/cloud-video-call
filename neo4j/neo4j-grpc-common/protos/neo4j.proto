@@ -17,7 +17,9 @@ service Neo4j {
 
   rpc UpdatePerferences(UpdatePerferencesRequest) returns (StandardResponse) {}
 
-  rpc GetPerferences(GetPerferencesRequest) returns (GetPerferencesResponse) {}
+  rpc GetUserPerferences(GetUserPerferencesRequest) returns (GetUserPerferencesResponse) {}
+
+  rpc PutUserPerferences(PutUserPerferencesRequest) returns (PutUserPerferencesResponse) {}
 }
 
 message CreateUserRequest {
@@ -95,11 +97,11 @@ message UpdatePerferencesRequest {
   map<string, string> filters_custom = 5;
 }
 
-message GetPerferencesRequest {
+message GetUserPerferencesRequest {
   string user_id = 1;
 }
 
-message GetPerferencesResponse {
+message GetUserPerferencesResponse {
   bool error = 1;
   string message = 2;
   string user_id = 3;
@@ -107,4 +109,18 @@ message GetPerferencesResponse {
   map<string, string> filters_constant = 5;
   map<string, string> attributes_custom = 6;
   map<string, string> filters_custom = 7;
+}
+
+
+message PutUserPerferencesRequest {
+  string user_id = 1;
+  map<string, string> attributes_constant = 2;
+  map<string, string> filters_constant = 3;
+  map<string, string> attributes_custom = 4;
+  map<string, string> filters_custom = 5;
+}
+
+message PutUserPerferencesResponse {
+  bool error = 1;
+  string message = 2;
 }
