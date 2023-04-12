@@ -170,6 +170,9 @@ importers:
         specifier: ^3.21.2
         version: 3.21.2
     devDependencies:
+      '@types/google-protobuf':
+        specifier: ^3.15.6
+        version: 3.15.6
       grpc_tools_node_protoc_ts:
         specifier: ^5.0.0
         version: 5.0.0
@@ -798,6 +801,10 @@ packages:
       '@types/node': 18.15.3
     dev: false
     optional: true
+
+  /@types/google-protobuf@3.15.6:
+    resolution: {integrity: sha512-pYVNNJ+winC4aek+lZp93sIKxnXt5qMkuKmaqS3WGuTq0Bw1ZDYNBgzG5kkdtwcv+GmYJGo3yEg6z2cKKAiEdw==}
+    dev: true
 
   /@types/json-schema@7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}

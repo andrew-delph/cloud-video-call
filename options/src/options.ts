@@ -5,6 +5,8 @@ import * as neo4j from 'neo4j-driver';
 import Client from 'ioredis';
 import { initializeApp } from 'firebase-admin/app';
 
+import * as neo4j_common from 'neo4j-grpc-common';
+
 var cors = require(`cors`);
 const omitDeep = require(`omit-deep-lodash`);
 
@@ -13,6 +15,8 @@ common.listenGlobalExceptions();
 const logger = common.getLogger();
 
 const firebaseApp = initializeApp();
+
+const neo4jRpcClient = neo4j_common.createNeo4jClient();
 
 const durationWarn = 2;
 
@@ -219,66 +223,53 @@ app.get(`/preferences`, async (req, res) => {
     return;
   });
 
-  type MdObject = {
-    a_constant: any;
-    f_constant: any;
-    a_custom: any;
-    f_custom: any;
-  };
-
-  const getMdProps = (results: neo4j.QueryResult): MdObject => {
-    if (results && results.records && results.records.length) {
-      return {
-        a_constant: results.records[0].get(`a_constant`)?.properties || {},
-        f_constant: results.records[0].get(`f_constant`)?.properties || {},
-        a_custom: results.records[0].get(`a_custom`)?.properties || {},
-        f_custom: results.records[0].get(`f_custom`)?.properties || {},
-      };
-    }
-    return { a_constant: {}, f_constant: {}, a_custom: {}, f_custom: {} };
-  };
-
-  const queryMetadata = `
-  MATCH (p1:Person {userId: $userId})
-  OPTIONAL MATCH (p1)-[r1:USER_ATTRIBUTES_CONSTANT]->(a_constant:MetaData)
-  OPTIONAL MATCH (p1)-[r2:USER_FILTERS_CONSTANT]->(f_constant:MetaData)
-  OPTIONAL MATCH (p1)-[r3:USER_ATTRIBUTES_CUSTOM]->(a_custom:MetaData)
-  OPTIONAL MATCH (p1)-[r4:USER_FILTERS_CUSTOM]->(f_custom:MetaData)
-  RETURN p1, a_constant, f_constant, a_custom, f_custom`;
-
-  const session = driver.session();
+  const checkUserFiltersRequest = new neo4j_common.GetUserPerferencesRequest();
+  checkUserFiltersRequest.setUserId(uid);
 
   try {
-    const user1Data = await session
-      .run(queryMetadata, { userId: uid })
-      .then((results) => {
-        if (results.records.length == 0) {
-          throw Error(`No results`);
+    await neo4jRpcClient.getUserPerferences(
+      checkUserFiltersRequest,
+      (error: any, response: neo4j_common.GetUserPerferencesResponse) => {
+        if (error) {
+          res.status(401).json({
+            error: JSON.stringify(error),
+            message: `Failed checkUserFiltersRequest`,
+          });
+        } else {
+          res.status(200).json(
+            omitDeep(
+              {
+                attributes: {
+                  custom: Object.fromEntries(
+                    response.getAttributesCustomMap().entries(),
+                  ),
+                  constant: Object.fromEntries(
+                    response.getAttributesConstantMap().entries(),
+                  ),
+                },
+                filters: {
+                  custom: Object.fromEntries(
+                    response.getFiltersCustomMap().entries(),
+                  ),
+                  constant: Object.fromEntries(
+                    response.getFiltersConstantMap().entries(),
+                  ),
+                },
+              },
+              `type`,
+            ),
+          );
         }
-        return getMdProps(results);
-      });
-    res.status(200).json(
-      omitDeep(
-        {
-          attributes: {
-            custom: user1Data.a_custom,
-            constant: user1Data.a_constant,
-          },
-          filters: {
-            custom: user1Data.f_custom,
-            constant: user1Data.f_constant,
-          },
-        },
-        `type`,
-      ),
+      },
     );
-  } catch (e) {
-    logger.debug(`User not found. ${e}`);
-    res.status(404).send({ message: `User not found.` });
-    return;
-  } finally {
-    await session.close();
+  } catch (error) {
+    res.status(401).json({
+      error: JSON.stringify(error),
+      message: `failed checkUserFiltersRequest`,
+    });
   }
+
+  return;
 });
 
 app.post(`/nukedata`, async (req, res) => {

@@ -12,6 +12,8 @@ import {
   HealthService,
   CheckUserFiltersResponse,
   CheckUserFiltersRequest,
+  GetUserPerferencesRequest,
+  GetUserPerferencesResponse,
 } from 'neo4j-grpc-common';
 
 import haversine from 'haversine-distance';
@@ -427,12 +429,81 @@ const checkUserFilters = async (
   callback(null, reply);
 };
 
+const getUserPerferences = async (
+  call: grpc.ServerUnaryCall<
+    GetUserPerferencesRequest,
+    GetUserPerferencesResponse
+  >,
+  callback: grpc.sendUnaryData<GetUserPerferencesResponse>,
+): Promise<void> => {
+  const uid = call.request.getUserId();
+  const reply = new GetUserPerferencesResponse();
+
+  type MdObject = {
+    a_constant: any;
+    f_constant: any;
+    a_custom: any;
+    f_custom: any;
+  };
+
+  const getMdProps = (results: neo4j.QueryResult): MdObject => {
+    if (results && results.records && results.records.length) {
+      return {
+        a_constant: results.records[0].get(`a_constant`)?.properties || {},
+        f_constant: results.records[0].get(`f_constant`)?.properties || {},
+        a_custom: results.records[0].get(`a_custom`)?.properties || {},
+        f_custom: results.records[0].get(`f_custom`)?.properties || {},
+      };
+    }
+    return { a_constant: {}, f_constant: {}, a_custom: {}, f_custom: {} };
+  };
+
+  const queryMetadata = `
+  MATCH (p1:Person {userId: $userId})
+  OPTIONAL MATCH (p1)-[r1:USER_ATTRIBUTES_CONSTANT]->(a_constant:MetaData)
+  OPTIONAL MATCH (p1)-[r2:USER_FILTERS_CONSTANT]->(f_constant:MetaData)
+  OPTIONAL MATCH (p1)-[r3:USER_ATTRIBUTES_CUSTOM]->(a_custom:MetaData)
+  OPTIONAL MATCH (p1)-[r4:USER_FILTERS_CUSTOM]->(f_custom:MetaData)
+  RETURN p1, a_constant, f_constant, a_custom, f_custom`;
+
+  const session = driver.session();
+
+  const user1Data = await session
+    .run(queryMetadata, { userId: uid })
+    .then((results) => {
+      if (results.records.length == 0) {
+        throw Error(`No results`);
+      }
+      return getMdProps(results);
+    });
+
+  try {
+    Object.entries(user1Data.a_constant).forEach(([key, value]) => {
+      reply.getAttributesConstantMap().set(String(key), String(value));
+    });
+    Object.entries(user1Data.a_custom).forEach(([key, value]) => {
+      reply.getAttributesCustomMap().set(String(key), String(value));
+    });
+    Object.entries(user1Data.f_constant).forEach(([key, value]) => {
+      reply.getFiltersConstantMap().set(String(key), String(value));
+    });
+    Object.entries(user1Data.f_custom).forEach(([key, value]) => {
+      reply.getAttributesCustomMap().set(String(key), String(value));
+    });
+  } catch (e) {
+    reply.setMessage(String(e));
+  }
+
+  callback(null, reply);
+};
+
 server.addService(Neo4jService, {
   createUser,
   createMatch,
   updateMatch,
   getRelationshipScores: getRelationshipScores,
   checkUserFilters,
+  getUserPerferences,
 });
 
 server.addService(HealthService, {
