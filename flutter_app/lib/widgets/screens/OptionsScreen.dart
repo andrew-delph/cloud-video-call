@@ -655,7 +655,7 @@ class LocationOptionsWidget extends StatelessWidget {
     }
 
     return Column(children: [
-      Row(
+      Wrap(
         children: [
           ElevatedButton(
             onPressed: () {
@@ -663,19 +663,13 @@ class LocationOptionsWidget extends StatelessWidget {
             },
             child: const Text('Update Location'),
           ),
-          posPair != null
-              ? Expanded(
-                  child:
-                      Text(' Long: ${posPair.first} - Lat: ${posPair.second} '))
-              : Container(),
-          Expanded(
-              child: Text(isValid()
-                  ? 'Max Distance Km: ${dist < 0 ? 'None' : dist.toInt()}'
-                  : 'Max Distance (Enabled with \'Update Location\')')),
           ElevatedButton(
             onPressed: canReset() ? reset : null,
             child: const Text('Clear'),
-          )
+          ),
+          isValid()
+              ? Text('Max Distance Km: ${dist < 0 ? 'None' : dist.toInt()}')
+              : Container()
         ],
       ),
       posPair != null
