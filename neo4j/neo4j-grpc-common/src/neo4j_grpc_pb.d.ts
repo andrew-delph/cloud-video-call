@@ -13,6 +13,7 @@ interface INeo4jService extends grpc.ServiceDefinition<grpc.UntypedServiceImplem
     updateMatch: INeo4jService_IUpdateMatch;
     getRelationshipScores: INeo4jService_IGetRelationshipScores;
     checkUserFilters: INeo4jService_ICheckUserFilters;
+    updatePerferences: INeo4jService_IUpdatePerferences;
 }
 
 interface INeo4jService_ICreateUser extends grpc.MethodDefinition<neo4j_pb.CreateUserRequest, neo4j_pb.CreateUserResponse> {
@@ -60,6 +61,15 @@ interface INeo4jService_ICheckUserFilters extends grpc.MethodDefinition<neo4j_pb
     responseSerialize: grpc.serialize<neo4j_pb.CheckUserFiltersResponse>;
     responseDeserialize: grpc.deserialize<neo4j_pb.CheckUserFiltersResponse>;
 }
+interface INeo4jService_IUpdatePerferences extends grpc.MethodDefinition<neo4j_pb.UpdatePerferencesRequest, neo4j_pb.StandardResponse> {
+    path: "/neo4j.Neo4j/UpdatePerferences";
+    requestStream: false;
+    responseStream: false;
+    requestSerialize: grpc.serialize<neo4j_pb.UpdatePerferencesRequest>;
+    requestDeserialize: grpc.deserialize<neo4j_pb.UpdatePerferencesRequest>;
+    responseSerialize: grpc.serialize<neo4j_pb.StandardResponse>;
+    responseDeserialize: grpc.deserialize<neo4j_pb.StandardResponse>;
+}
 
 export const Neo4jService: INeo4jService;
 
@@ -69,6 +79,7 @@ export interface INeo4jServer extends grpc.UntypedServiceImplementation {
     updateMatch: grpc.handleUnaryCall<neo4j_pb.UpdateMatchRequest, neo4j_pb.UpdateMatchResponse>;
     getRelationshipScores: grpc.handleUnaryCall<neo4j_pb.GetRelationshipScoresRequest, neo4j_pb.GetRelationshipScoresResponse>;
     checkUserFilters: grpc.handleUnaryCall<neo4j_pb.CheckUserFiltersRequest, neo4j_pb.CheckUserFiltersResponse>;
+    updatePerferences: grpc.handleUnaryCall<neo4j_pb.UpdatePerferencesRequest, neo4j_pb.StandardResponse>;
 }
 
 export interface INeo4jClient {
@@ -87,6 +98,9 @@ export interface INeo4jClient {
     checkUserFilters(request: neo4j_pb.CheckUserFiltersRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.CheckUserFiltersResponse) => void): grpc.ClientUnaryCall;
     checkUserFilters(request: neo4j_pb.CheckUserFiltersRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.CheckUserFiltersResponse) => void): grpc.ClientUnaryCall;
     checkUserFilters(request: neo4j_pb.CheckUserFiltersRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.CheckUserFiltersResponse) => void): grpc.ClientUnaryCall;
+    updatePerferences(request: neo4j_pb.UpdatePerferencesRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    updatePerferences(request: neo4j_pb.UpdatePerferencesRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    updatePerferences(request: neo4j_pb.UpdatePerferencesRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
 }
 
 export class Neo4jClient extends grpc.Client implements INeo4jClient {
@@ -106,4 +120,7 @@ export class Neo4jClient extends grpc.Client implements INeo4jClient {
     public checkUserFilters(request: neo4j_pb.CheckUserFiltersRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.CheckUserFiltersResponse) => void): grpc.ClientUnaryCall;
     public checkUserFilters(request: neo4j_pb.CheckUserFiltersRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.CheckUserFiltersResponse) => void): grpc.ClientUnaryCall;
     public checkUserFilters(request: neo4j_pb.CheckUserFiltersRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.CheckUserFiltersResponse) => void): grpc.ClientUnaryCall;
+    public updatePerferences(request: neo4j_pb.UpdatePerferencesRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    public updatePerferences(request: neo4j_pb.UpdatePerferencesRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    public updatePerferences(request: neo4j_pb.UpdatePerferencesRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
 }

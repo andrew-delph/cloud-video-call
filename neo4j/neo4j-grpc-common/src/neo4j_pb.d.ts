@@ -260,3 +260,66 @@ export namespace CheckUserFiltersResponse {
         passed: boolean,
     }
 }
+
+export class UpdatePerferencesRequest extends jspb.Message { 
+    getUserId(): string;
+    setUserId(value: string): UpdatePerferencesRequest;
+
+    getAttributesConstantMap(): jspb.Map<string, string>;
+    clearAttributesConstantMap(): void;
+
+    getFiltersConstantMap(): jspb.Map<string, string>;
+    clearFiltersConstantMap(): void;
+
+    getAttributesCustomMap(): jspb.Map<string, string>;
+    clearAttributesCustomMap(): void;
+
+    getFiltersCustomMap(): jspb.Map<string, string>;
+    clearFiltersCustomMap(): void;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): UpdatePerferencesRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: UpdatePerferencesRequest): UpdatePerferencesRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: UpdatePerferencesRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): UpdatePerferencesRequest;
+    static deserializeBinaryFromReader(message: UpdatePerferencesRequest, reader: jspb.BinaryReader): UpdatePerferencesRequest;
+}
+
+export namespace UpdatePerferencesRequest {
+    export type AsObject = {
+        userId: string,
+
+        attributesConstantMap: Array<[string, string]>,
+
+        filtersConstantMap: Array<[string, string]>,
+
+        attributesCustomMap: Array<[string, string]>,
+
+        filtersCustomMap: Array<[string, string]>,
+    }
+}
+
+export class StandardResponse extends jspb.Message { 
+    getError(): boolean;
+    setError(value: boolean): StandardResponse;
+    getMessage(): string;
+    setMessage(value: string): StandardResponse;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): StandardResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: StandardResponse): StandardResponse.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: StandardResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): StandardResponse;
+    static deserializeBinaryFromReader(message: StandardResponse, reader: jspb.BinaryReader): StandardResponse;
+}
+
+export namespace StandardResponse {
+    export type AsObject = {
+        error: boolean,
+        message: string,
+    }
+}

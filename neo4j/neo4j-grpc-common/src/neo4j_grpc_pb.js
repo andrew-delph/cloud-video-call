@@ -92,6 +92,17 @@ function deserialize_neo4j_GetRelationshipScoresResponse(buffer_arg) {
   return neo4j_pb.GetRelationshipScoresResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_neo4j_StandardResponse(arg) {
+  if (!(arg instanceof neo4j_pb.StandardResponse)) {
+    throw new Error('Expected argument of type neo4j.StandardResponse');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_neo4j_StandardResponse(buffer_arg) {
+  return neo4j_pb.StandardResponse.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_neo4j_UpdateMatchRequest(arg) {
   if (!(arg instanceof neo4j_pb.UpdateMatchRequest)) {
     throw new Error('Expected argument of type neo4j.UpdateMatchRequest');
@@ -112,6 +123,17 @@ function serialize_neo4j_UpdateMatchResponse(arg) {
 
 function deserialize_neo4j_UpdateMatchResponse(buffer_arg) {
   return neo4j_pb.UpdateMatchResponse.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_neo4j_UpdatePerferencesRequest(arg) {
+  if (!(arg instanceof neo4j_pb.UpdatePerferencesRequest)) {
+    throw new Error('Expected argument of type neo4j.UpdatePerferencesRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_neo4j_UpdatePerferencesRequest(buffer_arg) {
+  return neo4j_pb.UpdatePerferencesRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 
@@ -172,6 +194,17 @@ createUser: {
     requestDeserialize: deserialize_neo4j_CheckUserFiltersRequest,
     responseSerialize: serialize_neo4j_CheckUserFiltersResponse,
     responseDeserialize: deserialize_neo4j_CheckUserFiltersResponse,
+  },
+  updatePerferences: {
+    path: '/neo4j.Neo4j/UpdatePerferences',
+    requestStream: false,
+    responseStream: false,
+    requestType: neo4j_pb.UpdatePerferencesRequest,
+    responseType: neo4j_pb.StandardResponse,
+    requestSerialize: serialize_neo4j_UpdatePerferencesRequest,
+    requestDeserialize: deserialize_neo4j_UpdatePerferencesRequest,
+    responseSerialize: serialize_neo4j_StandardResponse,
+    responseDeserialize: deserialize_neo4j_StandardResponse,
   },
 };
 
