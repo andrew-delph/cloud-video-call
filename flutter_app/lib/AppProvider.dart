@@ -126,7 +126,7 @@ class AppProvider extends ChangeNotifier {
 
   Function(ErrorDetails errorDetails)? handleErrorCallback;
 
-  int activeCount = 0;
+  int activeCount = 1;
 
   @override
   @mustCallSuper

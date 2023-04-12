@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/widgets/screens/ChatScreen.dart';
+import 'package:provider/provider.dart';
 
+import '../../AppProvider.dart';
 import 'OptionsScreen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -16,7 +18,9 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
-    String title = 'Random video chat';
+    AppProvider appProvider = Provider.of<AppProvider>(context);
+    String title =
+        'Random video chat (Active users ${appProvider.activeCount})';
 
     return Scaffold(
       appBar: AppBar(
