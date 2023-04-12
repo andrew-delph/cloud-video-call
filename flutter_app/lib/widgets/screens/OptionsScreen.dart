@@ -798,8 +798,15 @@ class AppDetailsWidget extends StatelessWidget {
             version = snapshot.data?.version ?? "None";
           }
 
-          return ListTile(
-              title: const Text("Version"), subtitle: Text(version));
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              ListTile(
+                title: const Text("Version", textAlign: TextAlign.center),
+                subtitle: Text(version, textAlign: TextAlign.center),
+              ),
+            ],
+          );
         });
   }
 }

@@ -309,7 +309,6 @@ class AppProvider extends ChangeNotifier {
     // END collect the streams/tracks from remote
 
     socket!.on("match", (request) async {
-      socket!.off("match");
       chatMachine.current = ChatStates.matched;
       List data = request as List;
       dynamic value = data[0] as dynamic;
