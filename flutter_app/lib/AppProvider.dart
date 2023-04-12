@@ -111,9 +111,7 @@ class AppProvider extends ChangeNotifier {
 
     chatMachine[ChatStates.ready].onEntry(() async {
       //TODO handle errors with ack and error
-      socket!.emitWithAck("ready", {'ready': true}, ack: (data) {
-        print("ready ack $data");
-      });
+      await ready();
     });
   }
 
@@ -266,6 +264,10 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> ready() async {
+    await readyQueue();
+  }
+
+  Future<void> readyQueue() async {
     await tryResetRemote();
     await initLocalStream();
     socket!.off("client_host");
@@ -339,7 +341,6 @@ class AppProvider extends ChangeNotifier {
             }).then((value) {
               print("completed setClientGuest");
             });
-            ;
           }
           break;
         default:
@@ -372,7 +373,10 @@ class AppProvider extends ChangeNotifier {
     });
     // END HANDLE ICE CANDIDATES
 
-    chatMachine.current = ChatStates.ready;
+    socket!.emitWithAck("ready", {'ready': true}, ack: (data) {
+      // TODO if ack timeout then do something
+      print("ready ack $data");
+    });
   }
 
   Future<void> unReady() async {
