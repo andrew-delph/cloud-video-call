@@ -19,8 +19,7 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     AppProvider appProvider = Provider.of<AppProvider>(context);
-    String title =
-        'Random video chat (Active users ${appProvider.activeCount})';
+    String title = '(Active users ${appProvider.activeCount})';
 
     return Scaffold(
       appBar: AppBar(

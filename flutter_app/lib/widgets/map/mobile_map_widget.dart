@@ -93,6 +93,7 @@ class MobileMapState extends State<MobileMap> {
     return GoogleMap(
       cameraTargetBounds: cameraTargetBounds,
       scrollGesturesEnabled: false,
+      zoomControlsEnabled: true,
       onCameraMove: (position) async {
         firstRender = false;
       },
