@@ -111,7 +111,10 @@ class AppProvider extends ChangeNotifier {
 
     chatMachine[ChatStates.ready].onEntry(() async {
       //TODO handle errors with ack and error
-      await readyQueue();
+      await readyQueue().catchError((error) async {
+        handleError(ErrorDetails("Ready", error.toString()));
+        await unReady();
+      });
     });
   }
 
