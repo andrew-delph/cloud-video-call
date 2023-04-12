@@ -10,7 +10,7 @@
     "prod": "node ./dist/ready-worker.js",
     "dev": "nodemon --delay 1000ms --ignore dist --watch ./src  --ext ts --exec 'npm run k8-restart'",
     "dev2": "tsc-watch --onSuccess \"npm run k8-restart\" --onCompilationStarted \"echo 'watching matchmaker'\"",
-    "docker": "docker build -f Dockerfile -t andrewdelph/video-call-matchmaker:latest ../ && docker push andrewdelph/video-call-matchmaker:latest",
+    "docker": "bazel run image_push",
     "k8-restart": "npm run docker && kubectl rollout restart deployment/matchmaker && kubectl rollout status deployment/matchmaker --watch=true --timeout=60s && date"
   },
   "keywords": [],
