@@ -171,7 +171,7 @@ io.on(`connection`, async (socket) => {
   const createUserRequest = new CreateUserRequest();
   createUserRequest.setUserId(socket.data.auth);
   try {
-    await neo4jRpcClient.createUser(
+    neo4jRpcClient.createUser(
       createUserRequest,
       (error: any, response: CreateUserResponse) => {
         if (!error) {

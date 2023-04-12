@@ -5,6 +5,7 @@
 /* eslint-disable */
 
 import * as grpc from "@grpc/grpc-js";
+import {handleClientStreamingCall} from "@grpc/grpc-js/build/src/server-call";
 import * as neo4j_pb from "./neo4j_pb";
 
 interface INeo4jService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
@@ -14,7 +15,7 @@ interface INeo4jService extends grpc.ServiceDefinition<grpc.UntypedServiceImplem
     getRelationshipScores: INeo4jService_IGetRelationshipScores;
     checkUserFilters: INeo4jService_ICheckUserFilters;
     updatePerferences: INeo4jService_IUpdatePerferences;
-    getPerferences: INeo4jService_IGetPerferences;
+    getUserPerferences: INeo4jService_IGetUserPerferences;
 }
 
 interface INeo4jService_ICreateUser extends grpc.MethodDefinition<neo4j_pb.CreateUserRequest, neo4j_pb.CreateUserResponse> {
@@ -71,26 +72,26 @@ interface INeo4jService_IUpdatePerferences extends grpc.MethodDefinition<neo4j_p
     responseSerialize: grpc.serialize<neo4j_pb.StandardResponse>;
     responseDeserialize: grpc.deserialize<neo4j_pb.StandardResponse>;
 }
-interface INeo4jService_IGetPerferences extends grpc.MethodDefinition<neo4j_pb.GetPerferencesRequest, neo4j_pb.GetPerferencesResponse> {
-    path: "/neo4j.Neo4j/GetPerferences";
+interface INeo4jService_IGetUserPerferences extends grpc.MethodDefinition<neo4j_pb.GetUserPerferencesRequest, neo4j_pb.GetUserPerferencesResponse> {
+    path: "/neo4j.Neo4j/GetUserPerferences";
     requestStream: false;
     responseStream: false;
-    requestSerialize: grpc.serialize<neo4j_pb.GetPerferencesRequest>;
-    requestDeserialize: grpc.deserialize<neo4j_pb.GetPerferencesRequest>;
-    responseSerialize: grpc.serialize<neo4j_pb.GetPerferencesResponse>;
-    responseDeserialize: grpc.deserialize<neo4j_pb.GetPerferencesResponse>;
+    requestSerialize: grpc.serialize<neo4j_pb.GetUserPerferencesRequest>;
+    requestDeserialize: grpc.deserialize<neo4j_pb.GetUserPerferencesRequest>;
+    responseSerialize: grpc.serialize<neo4j_pb.GetUserPerferencesResponse>;
+    responseDeserialize: grpc.deserialize<neo4j_pb.GetUserPerferencesResponse>;
 }
 
 export const Neo4jService: INeo4jService;
 
-export interface INeo4jServer extends grpc.UntypedServiceImplementation {
+export interface INeo4jServer {
     createUser: grpc.handleUnaryCall<neo4j_pb.CreateUserRequest, neo4j_pb.CreateUserResponse>;
     createMatch: grpc.handleUnaryCall<neo4j_pb.CreateMatchRequest, neo4j_pb.CreateMatchResponse>;
     updateMatch: grpc.handleUnaryCall<neo4j_pb.UpdateMatchRequest, neo4j_pb.UpdateMatchResponse>;
     getRelationshipScores: grpc.handleUnaryCall<neo4j_pb.GetRelationshipScoresRequest, neo4j_pb.GetRelationshipScoresResponse>;
     checkUserFilters: grpc.handleUnaryCall<neo4j_pb.CheckUserFiltersRequest, neo4j_pb.CheckUserFiltersResponse>;
     updatePerferences: grpc.handleUnaryCall<neo4j_pb.UpdatePerferencesRequest, neo4j_pb.StandardResponse>;
-    getPerferences: grpc.handleUnaryCall<neo4j_pb.GetPerferencesRequest, neo4j_pb.GetPerferencesResponse>;
+    getUserPerferences: grpc.handleUnaryCall<neo4j_pb.GetUserPerferencesRequest, neo4j_pb.GetUserPerferencesResponse>;
 }
 
 export interface INeo4jClient {
@@ -112,9 +113,9 @@ export interface INeo4jClient {
     updatePerferences(request: neo4j_pb.UpdatePerferencesRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
     updatePerferences(request: neo4j_pb.UpdatePerferencesRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
     updatePerferences(request: neo4j_pb.UpdatePerferencesRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
-    getPerferences(request: neo4j_pb.GetPerferencesRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetPerferencesResponse) => void): grpc.ClientUnaryCall;
-    getPerferences(request: neo4j_pb.GetPerferencesRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetPerferencesResponse) => void): grpc.ClientUnaryCall;
-    getPerferences(request: neo4j_pb.GetPerferencesRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetPerferencesResponse) => void): grpc.ClientUnaryCall;
+    getUserPerferences(request: neo4j_pb.GetUserPerferencesRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetUserPerferencesResponse) => void): grpc.ClientUnaryCall;
+    getUserPerferences(request: neo4j_pb.GetUserPerferencesRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetUserPerferencesResponse) => void): grpc.ClientUnaryCall;
+    getUserPerferences(request: neo4j_pb.GetUserPerferencesRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetUserPerferencesResponse) => void): grpc.ClientUnaryCall;
 }
 
 export class Neo4jClient extends grpc.Client implements INeo4jClient {
@@ -137,7 +138,7 @@ export class Neo4jClient extends grpc.Client implements INeo4jClient {
     public updatePerferences(request: neo4j_pb.UpdatePerferencesRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
     public updatePerferences(request: neo4j_pb.UpdatePerferencesRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
     public updatePerferences(request: neo4j_pb.UpdatePerferencesRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
-    public getPerferences(request: neo4j_pb.GetPerferencesRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetPerferencesResponse) => void): grpc.ClientUnaryCall;
-    public getPerferences(request: neo4j_pb.GetPerferencesRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetPerferencesResponse) => void): grpc.ClientUnaryCall;
-    public getPerferences(request: neo4j_pb.GetPerferencesRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetPerferencesResponse) => void): grpc.ClientUnaryCall;
+    public getUserPerferences(request: neo4j_pb.GetUserPerferencesRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetUserPerferencesResponse) => void): grpc.ClientUnaryCall;
+    public getUserPerferences(request: neo4j_pb.GetUserPerferencesRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetUserPerferencesResponse) => void): grpc.ClientUnaryCall;
+    public getUserPerferences(request: neo4j_pb.GetUserPerferencesRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetUserPerferencesResponse) => void): grpc.ClientUnaryCall;
 }

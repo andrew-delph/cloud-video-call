@@ -10,6 +10,7 @@ export class CreateUserRequest extends jspb.Message {
     getUserId(): string;
     setUserId(value: string): CreateUserRequest;
 
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CreateUserRequest.AsObject;
     static toObject(includeInstance: boolean, msg: CreateUserRequest): CreateUserRequest.AsObject;
@@ -29,10 +30,13 @@ export namespace CreateUserRequest {
 export class CreateUserResponse extends jspb.Message { 
     getError(): boolean;
     setError(value: boolean): CreateUserResponse;
+
     getMessage(): string;
     setMessage(value: string): CreateUserResponse;
+
     getPriority(): string;
     setPriority(value: string): CreateUserResponse;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CreateUserResponse.AsObject;
@@ -55,8 +59,10 @@ export namespace CreateUserResponse {
 export class CreateMatchRequest extends jspb.Message { 
     getUserId1(): string;
     setUserId1(value: string): CreateMatchRequest;
+
     getUserId2(): string;
     setUserId2(value: string): CreateMatchRequest;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CreateMatchRequest.AsObject;
@@ -78,16 +84,22 @@ export namespace CreateMatchRequest {
 export class CreateMatchResponse extends jspb.Message { 
     getError(): boolean;
     setError(value: boolean): CreateMatchResponse;
+
     getMessage(): string;
     setMessage(value: string): CreateMatchResponse;
+
     getUserId1(): string;
     setUserId1(value: string): CreateMatchResponse;
+
     getUserId2(): string;
     setUserId2(value: string): CreateMatchResponse;
+
     getRelationshipId1(): string;
     setRelationshipId1(value: string): CreateMatchResponse;
+
     getRelationshipId2(): string;
     setRelationshipId2(value: string): CreateMatchResponse;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CreateMatchResponse.AsObject;
@@ -113,10 +125,13 @@ export namespace CreateMatchResponse {
 export class UpdateMatchRequest extends jspb.Message { 
     getRelationshipId(): string;
     setRelationshipId(value: string): UpdateMatchRequest;
+
     getKey(): string;
     setKey(value: string): UpdateMatchRequest;
+
     getValue(): string;
     setValue(value: string): UpdateMatchRequest;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): UpdateMatchRequest.AsObject;
@@ -139,8 +154,10 @@ export namespace UpdateMatchRequest {
 export class UpdateMatchResponse extends jspb.Message { 
     getError(): boolean;
     setError(value: boolean): UpdateMatchResponse;
+
     getMessage(): string;
     setMessage(value: string): UpdateMatchResponse;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): UpdateMatchResponse.AsObject;
@@ -162,10 +179,12 @@ export namespace UpdateMatchResponse {
 export class GetRelationshipScoresRequest extends jspb.Message { 
     getUserId(): string;
     setUserId(value: string): GetRelationshipScoresRequest;
+
     clearOtherUsersList(): void;
     getOtherUsersList(): Array<string>;
     setOtherUsersList(value: Array<string>): GetRelationshipScoresRequest;
     addOtherUsers(value: string, index?: number): string;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): GetRelationshipScoresRequest.AsObject;
@@ -187,11 +206,14 @@ export namespace GetRelationshipScoresRequest {
 export class GetRelationshipScoresResponse extends jspb.Message { 
     getError(): boolean;
     setError(value: boolean): GetRelationshipScoresResponse;
+
     getMessage(): string;
     setMessage(value: string): GetRelationshipScoresResponse;
 
+
     getRelationshipScoresMap(): jspb.Map<string, number>;
     clearRelationshipScoresMap(): void;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): GetRelationshipScoresResponse.AsObject;
@@ -215,8 +237,10 @@ export namespace GetRelationshipScoresResponse {
 export class CheckUserFiltersRequest extends jspb.Message { 
     getUserId1(): string;
     setUserId1(value: string): CheckUserFiltersRequest;
+
     getUserId2(): string;
     setUserId2(value: string): CheckUserFiltersRequest;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CheckUserFiltersRequest.AsObject;
@@ -238,10 +262,13 @@ export namespace CheckUserFiltersRequest {
 export class CheckUserFiltersResponse extends jspb.Message { 
     getError(): boolean;
     setError(value: boolean): CheckUserFiltersResponse;
+
     getMessage(): string;
     setMessage(value: string): CheckUserFiltersResponse;
+
     getPassed(): boolean;
     setPassed(value: boolean): CheckUserFiltersResponse;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CheckUserFiltersResponse.AsObject;
@@ -264,8 +291,10 @@ export namespace CheckUserFiltersResponse {
 export class StandardResponse extends jspb.Message { 
     getError(): boolean;
     setError(value: boolean): StandardResponse;
+
     getMessage(): string;
     setMessage(value: string): StandardResponse;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): StandardResponse.AsObject;
@@ -288,17 +317,22 @@ export class UpdatePerferencesRequest extends jspb.Message {
     getUserId(): string;
     setUserId(value: string): UpdatePerferencesRequest;
 
+
     getAttributesConstantMap(): jspb.Map<string, string>;
     clearAttributesConstantMap(): void;
+
 
     getFiltersConstantMap(): jspb.Map<string, string>;
     clearFiltersConstantMap(): void;
 
+
     getAttributesCustomMap(): jspb.Map<string, string>;
     clearAttributesCustomMap(): void;
 
+
     getFiltersCustomMap(): jspb.Map<string, string>;
     clearFiltersCustomMap(): void;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): UpdatePerferencesRequest.AsObject;
@@ -324,57 +358,65 @@ export namespace UpdatePerferencesRequest {
     }
 }
 
-export class GetPerferencesRequest extends jspb.Message { 
+export class GetUserPerferencesRequest extends jspb.Message { 
     getUserId(): string;
-    setUserId(value: string): GetPerferencesRequest;
+    setUserId(value: string): GetUserPerferencesRequest;
+
 
     serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): GetPerferencesRequest.AsObject;
-    static toObject(includeInstance: boolean, msg: GetPerferencesRequest): GetPerferencesRequest.AsObject;
+    toObject(includeInstance?: boolean): GetUserPerferencesRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: GetUserPerferencesRequest): GetUserPerferencesRequest.AsObject;
     static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
     static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: GetPerferencesRequest, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): GetPerferencesRequest;
-    static deserializeBinaryFromReader(message: GetPerferencesRequest, reader: jspb.BinaryReader): GetPerferencesRequest;
+    static serializeBinaryToWriter(message: GetUserPerferencesRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): GetUserPerferencesRequest;
+    static deserializeBinaryFromReader(message: GetUserPerferencesRequest, reader: jspb.BinaryReader): GetUserPerferencesRequest;
 }
 
-export namespace GetPerferencesRequest {
+export namespace GetUserPerferencesRequest {
     export type AsObject = {
         userId: string,
     }
 }
 
-export class GetPerferencesResponse extends jspb.Message { 
+export class GetUserPerferencesResponse extends jspb.Message { 
     getError(): boolean;
-    setError(value: boolean): GetPerferencesResponse;
+    setError(value: boolean): GetUserPerferencesResponse;
+
     getMessage(): string;
-    setMessage(value: string): GetPerferencesResponse;
+    setMessage(value: string): GetUserPerferencesResponse;
+
     getUserId(): string;
-    setUserId(value: string): GetPerferencesResponse;
+    setUserId(value: string): GetUserPerferencesResponse;
+
 
     getAttributesConstantMap(): jspb.Map<string, string>;
     clearAttributesConstantMap(): void;
 
+
     getFiltersConstantMap(): jspb.Map<string, string>;
     clearFiltersConstantMap(): void;
+
 
     getAttributesCustomMap(): jspb.Map<string, string>;
     clearAttributesCustomMap(): void;
 
+
     getFiltersCustomMap(): jspb.Map<string, string>;
     clearFiltersCustomMap(): void;
 
+
     serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): GetPerferencesResponse.AsObject;
-    static toObject(includeInstance: boolean, msg: GetPerferencesResponse): GetPerferencesResponse.AsObject;
+    toObject(includeInstance?: boolean): GetUserPerferencesResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: GetUserPerferencesResponse): GetUserPerferencesResponse.AsObject;
     static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
     static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: GetPerferencesResponse, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): GetPerferencesResponse;
-    static deserializeBinaryFromReader(message: GetPerferencesResponse, reader: jspb.BinaryReader): GetPerferencesResponse;
+    static serializeBinaryToWriter(message: GetUserPerferencesResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): GetUserPerferencesResponse;
+    static deserializeBinaryFromReader(message: GetUserPerferencesResponse, reader: jspb.BinaryReader): GetUserPerferencesResponse;
 }
 
-export namespace GetPerferencesResponse {
+export namespace GetUserPerferencesResponse {
     export type AsObject = {
         error: boolean,
         message: string,
