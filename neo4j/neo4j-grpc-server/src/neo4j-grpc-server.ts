@@ -21,37 +21,14 @@ import {
 } from 'neo4j-grpc-common';
 
 import haversine from 'haversine-distance';
-
 import * as neo4j from 'neo4j-driver';
 import * as common from 'common';
 import { v4 } from 'uuid';
-
-const queryMetadata = `
-MATCH (p1:Person {userId: $userId})
-OPTIONAL MATCH (p1)-[r1:USER_ATTRIBUTES_CONSTANT]->(a_constant:MetaData)
-OPTIONAL MATCH (p1)-[r2:USER_FILTERS_CONSTANT]->(f_constant:MetaData)
-OPTIONAL MATCH (p1)-[r3:USER_ATTRIBUTES_CUSTOM]->(a_custom:MetaData)
-OPTIONAL MATCH (p1)-[r4:USER_FILTERS_CUSTOM]->(f_custom:MetaData)
-RETURN p1, a_constant, f_constant, a_custom, f_custom`;
-
-type MdObject = {
-  a_constant: any;
-  f_constant: any;
-  a_custom: any;
-  f_custom: any;
-};
-
-const getMdProps = (results: neo4j.QueryResult): MdObject => {
-  if (results && results.records && results.records.length) {
-    return {
-      a_constant: results.records[0].get(`a_constant`)?.properties || {},
-      f_constant: results.records[0].get(`f_constant`)?.properties || {},
-      a_custom: results.records[0].get(`a_custom`)?.properties || {},
-      f_custom: results.records[0].get(`f_custom`)?.properties || {},
-    };
-  }
-  return { a_constant: {}, f_constant: {}, a_custom: {}, f_custom: {} };
-};
+import {
+  UserPreferences,
+  readUserPreferences,
+  writeUserPreferencesDatabase,
+} from './UserPreferences';
 
 var server = new grpc.Server();
 
@@ -61,13 +38,14 @@ common.listenGlobalExceptions(async () => {
   });
 });
 
-const redisClient = common.createRedisClient();
+type Client = ReturnType<typeof common.createRedisClient>;
+export const redisClient: Client = common.createRedisClient();
 
 const serverID = v4();
 
 const logger = common.getLogger();
 
-const driver = neo4j.driver(
+export const driver = neo4j.driver(
   `neo4j://neo4j:7687`,
   neo4j.auth.basic(`neo4j`, `password`),
 );
@@ -421,21 +399,15 @@ const checkUserFilters = async (
 
   const session = driver.session();
 
-  const user1Data = await session
-    .run(queryMetadata, { userId: userId1 })
-    .then((results) => {
-      return getMdProps(results);
-    });
-
-  const user2Data = await session
-    .run(queryMetadata, { userId: userId2 })
-    .then((results) => {
-      return getMdProps(results);
-    });
+  const user1Data = await readUserPreferences(userId1);
+  const user2Data = await readUserPreferences(userId2);
 
   await session.close();
 
-  const filterConstants = (userDataA: MdObject, userDataB: MdObject) => {
+  const filterConstants = (
+    userDataA: UserPreferences,
+    userDataB: UserPreferences,
+  ) => {
     let inner_valid = true;
     Object.entries(userDataA.f_constant).forEach((entry) => {
       const key = entry[0].toString();
@@ -453,7 +425,10 @@ const checkUserFilters = async (
   valid = valid && filterConstants(user1Data, user2Data);
   valid = valid && filterConstants(user2Data, user1Data);
 
-  const filterDistance = (userDataA: MdObject, userDataB: MdObject) => {
+  const filterDistance = (
+    userDataA: UserPreferences,
+    userDataB: UserPreferences,
+  ) => {
     const aDistance = userDataA.f_custom.distance;
     const aLong = userDataA.a_custom.long;
     const aLat = userDataA.a_custom.lat;
@@ -497,28 +472,19 @@ const getUserPerferences = async (
   const uid = call.request.getUserId();
   const reply = new GetUserPerferencesResponse();
 
-  const session = driver.session();
-
-  const user1Data = await session
-    .run(queryMetadata, { userId: uid })
-    .then((results) => {
-      if (results.records.length == 0) {
-        throw Error(`No results`);
-      }
-      return getMdProps(results);
-    });
+  const user1Data = await readUserPreferences(uid);
 
   try {
-    Object.entries(user1Data.a_constant).forEach(([key, value]) => {
+    Object.entries(user1Data.a_constant || {}).forEach(([key, value]) => {
       reply.getAttributesConstantMap().set(String(key), String(value));
     });
-    Object.entries(user1Data.a_custom).forEach(([key, value]) => {
+    Object.entries(user1Data.a_custom || {}).forEach(([key, value]) => {
       reply.getAttributesCustomMap().set(String(key), String(value));
     });
-    Object.entries(user1Data.f_constant).forEach(([key, value]) => {
+    Object.entries(user1Data.f_constant || {}).forEach(([key, value]) => {
       reply.getFiltersConstantMap().set(String(key), String(value));
     });
-    Object.entries(user1Data.f_custom).forEach(([key, value]) => {
+    Object.entries(user1Data.f_custom || {}).forEach(([key, value]) => {
       reply.getFiltersCustomMap().set(String(key), String(value));
     });
   } catch (e) {
@@ -536,7 +502,7 @@ const putUserPerferences = async (
   callback: grpc.sendUnaryData<PutUserPerferencesResponse>,
 ): Promise<void> => {
   const request = call.request;
-  const uid = call.request.getUserId();
+  const userId = call.request.getUserId();
   const reply = new PutUserPerferencesResponse();
 
   const a_custom: { [key: string]: string } = {};
@@ -576,55 +542,12 @@ const putUserPerferences = async (
     return;
   }
 
-  const session = driver.session();
-
-  let results;
-
-  results = await session.run(
-    `
-    MERGE (p:Person{userId: $uid})
-    MERGE (p)-[r:USER_ATTRIBUTES_CONSTANT]->(md:MetaData{type:"USER_ATTRIBUTES_CONSTANT"})
-    SET md = $constant
-    SET md.type = "USER_ATTRIBUTES_CONSTANT"
-    RETURN p, md
-    `,
-    { uid, constant: a_constant || {} },
-  );
-
-  results = await session.run(
-    `
-    MERGE (p:Person{userId: $uid})
-    MERGE (p)-[r:USER_ATTRIBUTES_CUSTOM]->(md:MetaData{type:"USER_ATTRIBUTES_CUSTOM"})
-    SET md = $custom
-    SET md.type = "USER_ATTRIBUTES_CUSTOM"
-    RETURN p, md
-    `,
-    { uid, custom: a_custom || {} },
-  );
-
-  results = await session.run(
-    `
-    MERGE (p:Person{userId: $uid})
-    MERGE (p)-[r:USER_FILTERS_CONSTANT]->(md:MetaData{type:"USER_FILTERS_CONSTANT"})
-    SET md = $constant
-    SET md.type = "USER_FILTERS_CONSTANT"
-    RETURN p, md
-    `,
-    { uid, constant: f_constant || {} },
-  );
-
-  results = await session.run(
-    `
-    MERGE (p:Person{userId: $uid})
-    MERGE (p)-[r:USER_FILTERS_CUSTOM]->(md:MetaData{type:"USER_FILTERS_CUSTOM"})
-    SET md = $custom
-    SET md.type = "USER_FILTERS_CUSTOM"
-    RETURN p, md
-    `,
-    { uid, custom: f_custom || {} },
-  );
-
-  await session.close();
+  await writeUserPreferencesDatabase(userId, {
+    a_constant,
+    f_constant,
+    a_custom,
+    f_custom,
+  });
 
   callback(null, reply);
 };
