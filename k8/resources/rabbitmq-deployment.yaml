@@ -17,6 +17,7 @@ spec:
       labels:
         app: rabbitmq
     spec:
+      priorityClassName: 'high-priority'
       containers:
         - args:
             - rabbitmq-server

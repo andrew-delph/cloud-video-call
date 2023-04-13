@@ -12,6 +12,7 @@ spec:
         autoscaling.knative.dev/class: 'kpa.autoscaling.knative.dev'
     spec:
       containerConcurrency: 50
+      priorityClassName: 'mid-priority'
       containers:
         - image: andrewdelph/video-call-neo4j-grpc-server:latest
           ports:

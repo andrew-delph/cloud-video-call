@@ -17,6 +17,7 @@ spec:
       labels:
         app: matchmaker
     spec:
+      priorityClassName: 'mid-priority'
       containers:
         - envFrom:
             - configMapRef:

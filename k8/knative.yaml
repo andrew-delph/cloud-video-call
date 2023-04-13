@@ -60,6 +60,14 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: config-features
+  namespace: knative-serving
+data:
+  kubernetes.podspec-priorityclassname: 'enabled'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: config-autoscaler
   namespace: knative-serving
 data:
