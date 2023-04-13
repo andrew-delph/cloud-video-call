@@ -12,6 +12,7 @@ interface INeo4jService extends grpc.ServiceDefinition<grpc.UntypedServiceImplem
     createUser: INeo4jService_ICreateUser;
     createMatch: INeo4jService_ICreateMatch;
     updateMatch: INeo4jService_IUpdateMatch;
+    createFeedback: INeo4jService_ICreateFeedback;
     getRelationshipScores: INeo4jService_IGetRelationshipScores;
     checkUserFilters: INeo4jService_ICheckUserFilters;
     updatePerferences: INeo4jService_IUpdatePerferences;
@@ -45,6 +46,15 @@ interface INeo4jService_IUpdateMatch extends grpc.MethodDefinition<neo4j_pb.Upda
     requestDeserialize: grpc.deserialize<neo4j_pb.UpdateMatchRequest>;
     responseSerialize: grpc.serialize<neo4j_pb.UpdateMatchResponse>;
     responseDeserialize: grpc.deserialize<neo4j_pb.UpdateMatchResponse>;
+}
+interface INeo4jService_ICreateFeedback extends grpc.MethodDefinition<neo4j_pb.CreateFeedbackRequest, neo4j_pb.StandardResponse> {
+    path: "/neo4j.Neo4j/CreateFeedback";
+    requestStream: false;
+    responseStream: false;
+    requestSerialize: grpc.serialize<neo4j_pb.CreateFeedbackRequest>;
+    requestDeserialize: grpc.deserialize<neo4j_pb.CreateFeedbackRequest>;
+    responseSerialize: grpc.serialize<neo4j_pb.StandardResponse>;
+    responseDeserialize: grpc.deserialize<neo4j_pb.StandardResponse>;
 }
 interface INeo4jService_IGetRelationshipScores extends grpc.MethodDefinition<neo4j_pb.GetRelationshipScoresRequest, neo4j_pb.GetRelationshipScoresResponse> {
     path: "/neo4j.Neo4j/GetRelationshipScores";
@@ -98,6 +108,7 @@ export interface INeo4jServer {
     createUser: grpc.handleUnaryCall<neo4j_pb.CreateUserRequest, neo4j_pb.CreateUserResponse>;
     createMatch: grpc.handleUnaryCall<neo4j_pb.CreateMatchRequest, neo4j_pb.CreateMatchResponse>;
     updateMatch: grpc.handleUnaryCall<neo4j_pb.UpdateMatchRequest, neo4j_pb.UpdateMatchResponse>;
+    createFeedback: grpc.handleUnaryCall<neo4j_pb.CreateFeedbackRequest, neo4j_pb.StandardResponse>;
     getRelationshipScores: grpc.handleUnaryCall<neo4j_pb.GetRelationshipScoresRequest, neo4j_pb.GetRelationshipScoresResponse>;
     checkUserFilters: grpc.handleUnaryCall<neo4j_pb.CheckUserFiltersRequest, neo4j_pb.CheckUserFiltersResponse>;
     updatePerferences: grpc.handleUnaryCall<neo4j_pb.UpdatePerferencesRequest, neo4j_pb.StandardResponse>;
@@ -115,6 +126,9 @@ export interface INeo4jClient {
     updateMatch(request: neo4j_pb.UpdateMatchRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.UpdateMatchResponse) => void): grpc.ClientUnaryCall;
     updateMatch(request: neo4j_pb.UpdateMatchRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.UpdateMatchResponse) => void): grpc.ClientUnaryCall;
     updateMatch(request: neo4j_pb.UpdateMatchRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.UpdateMatchResponse) => void): grpc.ClientUnaryCall;
+    createFeedback(request: neo4j_pb.CreateFeedbackRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    createFeedback(request: neo4j_pb.CreateFeedbackRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    createFeedback(request: neo4j_pb.CreateFeedbackRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
     getRelationshipScores(request: neo4j_pb.GetRelationshipScoresRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetRelationshipScoresResponse) => void): grpc.ClientUnaryCall;
     getRelationshipScores(request: neo4j_pb.GetRelationshipScoresRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetRelationshipScoresResponse) => void): grpc.ClientUnaryCall;
     getRelationshipScores(request: neo4j_pb.GetRelationshipScoresRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetRelationshipScoresResponse) => void): grpc.ClientUnaryCall;
@@ -143,6 +157,9 @@ export class Neo4jClient extends grpc.Client implements INeo4jClient {
     public updateMatch(request: neo4j_pb.UpdateMatchRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.UpdateMatchResponse) => void): grpc.ClientUnaryCall;
     public updateMatch(request: neo4j_pb.UpdateMatchRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.UpdateMatchResponse) => void): grpc.ClientUnaryCall;
     public updateMatch(request: neo4j_pb.UpdateMatchRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.UpdateMatchResponse) => void): grpc.ClientUnaryCall;
+    public createFeedback(request: neo4j_pb.CreateFeedbackRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    public createFeedback(request: neo4j_pb.CreateFeedbackRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    public createFeedback(request: neo4j_pb.CreateFeedbackRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
     public getRelationshipScores(request: neo4j_pb.GetRelationshipScoresRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetRelationshipScoresResponse) => void): grpc.ClientUnaryCall;
     public getRelationshipScores(request: neo4j_pb.GetRelationshipScoresRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetRelationshipScoresResponse) => void): grpc.ClientUnaryCall;
     public getRelationshipScores(request: neo4j_pb.GetRelationshipScoresRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.GetRelationshipScoresResponse) => void): grpc.ClientUnaryCall;

@@ -501,3 +501,32 @@ export namespace PutUserPerferencesResponse {
         message: string,
     }
 }
+
+export class CreateFeedbackRequest extends jspb.Message { 
+    getUserId(): string;
+    setUserId(value: string): CreateFeedbackRequest;
+
+    getFeedbackId(): number;
+    setFeedbackId(value: number): CreateFeedbackRequest;
+
+    getScore(): number;
+    setScore(value: number): CreateFeedbackRequest;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): CreateFeedbackRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: CreateFeedbackRequest): CreateFeedbackRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: CreateFeedbackRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): CreateFeedbackRequest;
+    static deserializeBinaryFromReader(message: CreateFeedbackRequest, reader: jspb.BinaryReader): CreateFeedbackRequest;
+}
+
+export namespace CreateFeedbackRequest {
+    export type AsObject = {
+        userId: string,
+        feedbackId: number,
+        score: number,
+    }
+}

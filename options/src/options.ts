@@ -41,7 +41,9 @@ app.get(`/health`, (req, res) => {
 });
 
 app.post(`/providefeedback`, async (req, res) => {
-  const { feedback_id, score } = req.body;
+  let { feedback_id, score } = req.body;
+
+  feedback_id = parseInt(feedback_id); // TODO send number from ui
 
   const auth = req.headers.authorization;
 
@@ -49,7 +51,10 @@ app.post(`/providefeedback`, async (req, res) => {
     logger.debug(`Missing Authorization`);
     res.status(401).json({ error: `Missing Authorization` });
     return;
-  } else if (!feedback_id || !(typeof score === `number` && !isNaN(score))) {
+  } else if (
+    !(typeof feedback_id === `number` && !isNaN(feedback_id)) ||
+    !(typeof score === `number` && !isNaN(score))
+  ) {
     logger.debug(
       `!feedback_id || !score) feedback_id: ${feedback_id} score: ${score}`,
     );
@@ -63,64 +68,31 @@ app.post(`/providefeedback`, async (req, res) => {
     return;
   });
 
-  const start_time = performance.now();
-  let session = driver.session();
+  const createFeedbackRequest = new neo4j_common.CreateFeedbackRequest();
+  createFeedbackRequest.setUserId(uid);
+  createFeedbackRequest.setScore(score);
+  createFeedbackRequest.setFeedbackId(feedback_id);
 
-  // get the match with id
-
-  const match_rel = await session.run(
-    `
-      MATCH (n1)-[r]->(n2)
-      WHERE id(r) = $feedback_id
-      RETURN r, n1.userId, n2.userId
-    `,
-    { feedback_id: parseInt(feedback_id) },
-  );
-
-  await session.close();
-  // if doesnt exist return error
-  if (match_rel.records.length == 0) {
-    logger.debug(`No records found for feedback_id: ${feedback_id}`);
-    res.status(404).send(`No records found for feedback_id: ${feedback_id}`);
-    return;
+  try {
+    await neo4jRpcClient.createFeedback(
+      createFeedbackRequest,
+      (error: any, response: neo4j_common.StandardResponse) => {
+        if (error) {
+          res.status(401).json({
+            error: JSON.stringify(error),
+            message: `Failed createFeedbackRequest`,
+          });
+        } else {
+          res.status(201).send(`Feedback created.`);
+        }
+      },
+    );
+  } catch (error) {
+    res.status(401).json({
+      error: JSON.stringify(error),
+      message: `failed createFeedbackRequest`,
+    });
   }
-
-  const n1_userId = match_rel.records[0].get(`n1.userId`);
-  const n2_userId = match_rel.records[0].get(`n2.userId`);
-
-  // verify request owns the rel
-  if (n1_userId != uid) {
-    logger.debug(`Forbidden ${n1_userId} ${uid}`);
-    res.status(403).send({ message: `Forbidden`, auth, uid, n1_userId });
-    return;
-  }
-
-  // create new feedback relationship with score and id
-  // merge so it can only be done once per match rel
-  session = driver.session();
-  const feedback_rel = await session.run(
-    // TODO only allow one feedback for match.
-    `
-      MATCH (n1:Person {userId: $n1_userId}), (n2:Person {userId: $n2_userId })
-      CREATE (n1)-[r:FEEDBACK {score: $score}]->(n2) return r
-    `,
-    { score, n1_userId, n2_userId },
-  );
-
-  await session.close();
-
-  if (feedback_rel.records.length != 1) {
-    logger.debug(`Failed to create feedback ${feedback_rel.records.length} `);
-    res.status(500).send(`Failed to create feedback`);
-    return;
-  }
-  const duration = (performance.now() - start_time) / 1000;
-  if (duration > durationWarn) {
-    logger.warn(`providefeedback duration: \t ${duration}s`);
-  } else {
-    logger.debug(`providefeedback duration: \t ${duration}s`);
-  }
-  res.status(201).send(`Feedback created.`);
 });
 
 app.put(`/preferences`, async (req, res) => {

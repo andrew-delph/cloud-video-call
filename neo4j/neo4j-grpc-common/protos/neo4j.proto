@@ -11,6 +11,8 @@ service Neo4j {
 
   rpc UpdateMatch (UpdateMatchRequest) returns (UpdateMatchResponse) {}
 
+  rpc CreateFeedback (CreateFeedbackRequest) returns (StandardResponse) {}
+
   rpc GetRelationshipScores (GetRelationshipScoresRequest) returns (GetRelationshipScoresResponse) {}
 
   rpc CheckUserFilters(CheckUserFiltersRequest) returns (CheckUserFiltersResponse) {}
@@ -124,3 +126,10 @@ message PutUserPerferencesResponse {
   bool error = 1;
   string message = 2;
 }
+
+message CreateFeedbackRequest {
+  string user_id = 1;
+  int32 feedback_id = 2;
+  float score = 3;
+}
+

@@ -26,6 +26,17 @@ function deserialize_neo4j_CheckUserFiltersResponse(buffer_arg) {
   return neo4j_pb.CheckUserFiltersResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_neo4j_CreateFeedbackRequest(arg) {
+  if (!(arg instanceof neo4j_pb.CreateFeedbackRequest)) {
+    throw new Error('Expected argument of type neo4j.CreateFeedbackRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_neo4j_CreateFeedbackRequest(buffer_arg) {
+  return neo4j_pb.CreateFeedbackRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_neo4j_CreateMatchRequest(arg) {
   if (!(arg instanceof neo4j_pb.CreateMatchRequest)) {
     throw new Error('Expected argument of type neo4j.CreateMatchRequest');
@@ -216,6 +227,17 @@ createUser: {
     requestDeserialize: deserialize_neo4j_UpdateMatchRequest,
     responseSerialize: serialize_neo4j_UpdateMatchResponse,
     responseDeserialize: deserialize_neo4j_UpdateMatchResponse,
+  },
+  createFeedback: {
+    path: '/neo4j.Neo4j/CreateFeedback',
+    requestStream: false,
+    responseStream: false,
+    requestType: neo4j_pb.CreateFeedbackRequest,
+    responseType: neo4j_pb.StandardResponse,
+    requestSerialize: serialize_neo4j_CreateFeedbackRequest,
+    requestDeserialize: deserialize_neo4j_CreateFeedbackRequest,
+    responseSerialize: serialize_neo4j_StandardResponse,
+    responseDeserialize: deserialize_neo4j_StandardResponse,
   },
   getRelationshipScores: {
     path: '/neo4j.Neo4j/GetRelationshipScores',

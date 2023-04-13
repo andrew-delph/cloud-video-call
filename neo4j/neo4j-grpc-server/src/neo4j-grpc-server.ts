@@ -16,6 +16,8 @@ import {
   GetUserPerferencesResponse,
   PutUserPerferencesResponse,
   PutUserPerferencesRequest,
+  CreateFeedbackRequest,
+  StandardResponse,
 } from 'neo4j-grpc-common';
 
 import haversine from 'haversine-distance';
@@ -235,6 +237,58 @@ const getRelationshipScores = async (
     logger.warn(`getRelationshipScores duration: \t ${duration}s`);
   } else {
     logger.debug(`getRelationshipScores duration: \t ${duration}s`);
+  }
+
+  callback(null, reply);
+};
+
+const createFeedback = async (
+  call: grpc.ServerUnaryCall<CreateFeedbackRequest, StandardResponse>,
+  callback: grpc.sendUnaryData<StandardResponse>,
+): Promise<void> => {
+  const userId = call.request.getUserId();
+  const feedbackId = call.request.getFeedbackId();
+  const score = call.request.getScore();
+  const reply = new StandardResponse();
+
+  if (!userId || !feedbackId) {
+    logger.debug(`! userId || !feedbackId`);
+    return callback({
+      code: 2,
+      message: `! userId || !feedbackId`,
+    });
+  }
+
+  const start_time = performance.now();
+
+  let session = driver.session();
+  const feedback_rel = await session.run(
+    `
+      MATCH (n1:Person {userId: $userId})-[r:MATCHED]->(n2:Person)
+      WHERE id(r) = $feedbackId
+      CREATE (n1)-[f:FEEDBACK {score: $score}]->(n2) return f
+    `,
+    { score, userId, feedbackId },
+  );
+
+  await session.close();
+
+  if (feedback_rel.records.length != 1) {
+    logger.debug(
+      `Failed to create feedback. returned rows: ${feedback_rel.records.length} `,
+    );
+    return callback({
+      code: 2,
+      message: `Feedback not created.`,
+    });
+  }
+
+  const duration = (performance.now() - start_time) / 1000;
+
+  if (duration > durationWarn) {
+    logger.warn(`createFeedback duration: \t ${duration}s`);
+  } else {
+    logger.debug(`createFeedback duration: \t ${duration}s`);
   }
 
   callback(null, reply);
@@ -581,6 +635,7 @@ server.addService(Neo4jService, {
   checkUserFilters,
   getUserPerferences,
   putUserPerferences,
+  createFeedback,
 });
 
 server.addService(HealthService, {
