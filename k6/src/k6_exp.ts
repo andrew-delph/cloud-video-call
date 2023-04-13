@@ -1,9 +1,5 @@
 import { Counter, Rate, Trend } from 'k6/metrics';
 import { K6SocketIoExp } from '../libs/K6SocketIoExp';
-import {
-  randomString,
-  randomIntBetween,
-} from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 import redis from 'k6/experimental/redis';
 import { check, sleep } from 'k6';
 import http from 'k6/http';
@@ -21,7 +17,7 @@ console.log(`options_url`, options_url);
 export const redisClient = new redis.Client({
   addrs: new Array(__ENV.REDIS || `localhost:6379`), // in the form of 'host:port', separated by commas
 });
-const authKeysNum = 10;
+const authKeysNum = 300;
 const authKeysName = `authKeysName`;
 export function setup() {
   nuke();
@@ -29,10 +25,13 @@ export function setup() {
   for (let i = 0; i < authKeysNum; i++) {
     authKeys.push(`k6_auth_${i}`);
   }
+  console.log(`pre delete authKeysName`);
   redisClient.del(authKeysName).finally(async () => {
+    console.log(`post delete authKeysName`);
     for (let auth of authKeys) {
       let user = users.getRandomUser(auth);
       await user.updatePreferences();
+      console.log(`post updatePreferences ${auth}`);
     }
 
     await redisClient.lpush(authKeysName, ...authKeys);
@@ -41,6 +40,7 @@ export function setup() {
 
 const vus = 5;
 export const options = {
+  setupTimeout: `10m`,
   // vus: 5,
   // iterations: authKeysNum * 10,
   // duration: `1h`,
@@ -49,17 +49,17 @@ export const options = {
       executor: `ramping-vus`,
       startVUs: 5,
       stages: [
-        { duration: `2m`, target: vus * 1 },
+        { duration: `10m`, target: vus * 3 },
         // { duration: `2h`, target: vus * 3 },
         // { duration: `3m`, target: vus * 1 },
       ],
     },
-    // longConnection: {
-    //   executor: `ramping-vus`,
-    //   exec: `longWait`,
-    //   startVUs: 10,
-    //   stages: [{ duration: `2m`, target: 10 }],
-    // },
+    longConnection: {
+      executor: `ramping-vus`,
+      exec: `longWait`,
+      startVUs: 10,
+      stages: [{ duration: `10m`, target: 10 }],
+    },
   },
 };
 
