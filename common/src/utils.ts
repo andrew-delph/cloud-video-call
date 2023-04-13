@@ -1,5 +1,6 @@
 import { getLogger } from './logger';
 import { getAuth } from 'firebase-admin/auth';
+import Client from 'ioredis';
 
 const logger = getLogger();
 
@@ -17,4 +18,16 @@ export async function getUid(auth: string) {
         return decodedToken.uid;
       });
   }
+}
+
+export function createRedisClient() {
+  const client = new Client({
+    host: `${process.env.REDIS_HOST || `redis`}`,
+  });
+
+  client.on(`error`, (err) => {
+    throw `REDIS: FAILED ${err}`;
+  });
+
+  return client;
 }

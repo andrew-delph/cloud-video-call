@@ -61,6 +61,8 @@ common.listenGlobalExceptions(async () => {
   });
 });
 
+const redisClient = common.createRedisClient();
+
 const serverID = v4();
 
 const logger = common.getLogger();

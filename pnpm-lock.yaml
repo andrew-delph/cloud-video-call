@@ -13,6 +13,9 @@ importers:
       firebase-admin:
         specifier: ^11.4.1
         version: 11.4.1(@firebase/app-types@0.9.0)
+      ioredis:
+        specifier: 5.2.5
+        version: 5.2.5
       uuid:
         specifier: ^9.0.0
         version: 9.0.0
