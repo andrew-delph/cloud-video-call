@@ -391,6 +391,7 @@ const checkUserFilters = async (
   call: grpc.ServerUnaryCall<CheckUserFiltersRequest, CheckUserFiltersResponse>,
   callback: grpc.sendUnaryData<CheckUserFiltersResponse>,
 ): Promise<void> => {
+  // TODO try and cache the result
   const start_time = performance.now();
 
   const userId1 = call.request.getUserId1();
@@ -469,6 +470,7 @@ const getUserPerferences = async (
   >,
   callback: grpc.sendUnaryData<GetUserPerferencesResponse>,
 ): Promise<void> => {
+  const start_time = performance.now();
   const uid = call.request.getUserId();
   const reply = new GetUserPerferencesResponse();
 
@@ -491,6 +493,13 @@ const getUserPerferences = async (
     reply.setMessage(String(e));
   }
 
+  const duration = (performance.now() - start_time) / 1000;
+  if (duration > durationWarn) {
+    logger.warn(`createMatch duration: \t ${duration}s`);
+  } else {
+    logger.debug(`createMatch duration: \t ${duration}s`);
+  }
+
   callback(null, reply);
 };
 
@@ -501,6 +510,8 @@ const putUserPerferences = async (
   >,
   callback: grpc.sendUnaryData<PutUserPerferencesResponse>,
 ): Promise<void> => {
+  const start_time = performance.now();
+
   const request = call.request;
   const userId = call.request.getUserId();
   const reply = new PutUserPerferencesResponse();
@@ -548,6 +559,13 @@ const putUserPerferences = async (
     a_custom,
     f_custom,
   });
+
+  const duration = (performance.now() - start_time) / 1000;
+  if (duration > durationWarn) {
+    logger.warn(`createMatch duration: \t ${duration}s`);
+  } else {
+    logger.debug(`createMatch duration: \t ${duration}s`);
+  }
 
   callback(null, reply);
 };
