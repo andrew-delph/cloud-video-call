@@ -5,6 +5,7 @@
 /* eslint-disable */
 
 import * as grpc from "@grpc/grpc-js";
+import {handleClientStreamingCall} from "@grpc/grpc-js/build/src/server-call";
 import * as health_pb from "./health_pb";
 
 interface IHealthService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
@@ -33,7 +34,7 @@ interface IHealthService_IWatch extends grpc.MethodDefinition<health_pb.HealthCh
 
 export const HealthService: IHealthService;
 
-export interface IHealthServer extends grpc.UntypedServiceImplementation {
+export interface IHealthServer {
     check: grpc.handleUnaryCall<health_pb.HealthCheckRequest, health_pb.HealthCheckResponse>;
     watch: grpc.handleServerStreamingCall<health_pb.HealthCheckRequest, health_pb.HealthCheckResponse>;
 }

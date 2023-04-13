@@ -12,6 +12,12 @@ import {
   HealthService,
   CheckUserFiltersResponse,
   CheckUserFiltersRequest,
+  GetUserPerferencesRequest,
+  GetUserPerferencesResponse,
+  PutUserPerferencesResponse,
+  PutUserPerferencesRequest,
+  CreateFeedbackRequest,
+  StandardResponse,
 } from 'neo4j-grpc-common';
 
 import haversine from 'haversine-distance';
@@ -19,6 +25,33 @@ import haversine from 'haversine-distance';
 import * as neo4j from 'neo4j-driver';
 import * as common from 'common';
 import { v4 } from 'uuid';
+
+const queryMetadata = `
+MATCH (p1:Person {userId: $userId})
+OPTIONAL MATCH (p1)-[r1:USER_ATTRIBUTES_CONSTANT]->(a_constant:MetaData)
+OPTIONAL MATCH (p1)-[r2:USER_FILTERS_CONSTANT]->(f_constant:MetaData)
+OPTIONAL MATCH (p1)-[r3:USER_ATTRIBUTES_CUSTOM]->(a_custom:MetaData)
+OPTIONAL MATCH (p1)-[r4:USER_FILTERS_CUSTOM]->(f_custom:MetaData)
+RETURN p1, a_constant, f_constant, a_custom, f_custom`;
+
+type MdObject = {
+  a_constant: any;
+  f_constant: any;
+  a_custom: any;
+  f_custom: any;
+};
+
+const getMdProps = (results: neo4j.QueryResult): MdObject => {
+  if (results && results.records && results.records.length) {
+    return {
+      a_constant: results.records[0].get(`a_constant`)?.properties || {},
+      f_constant: results.records[0].get(`f_constant`)?.properties || {},
+      a_custom: results.records[0].get(`a_custom`)?.properties || {},
+      f_custom: results.records[0].get(`f_custom`)?.properties || {},
+    };
+  }
+  return { a_constant: {}, f_constant: {}, a_custom: {}, f_custom: {} };
+};
 
 var server = new grpc.Server();
 
@@ -209,6 +242,58 @@ const getRelationshipScores = async (
   callback(null, reply);
 };
 
+const createFeedback = async (
+  call: grpc.ServerUnaryCall<CreateFeedbackRequest, StandardResponse>,
+  callback: grpc.sendUnaryData<StandardResponse>,
+): Promise<void> => {
+  const userId = call.request.getUserId();
+  const feedbackId = call.request.getFeedbackId();
+  const score = call.request.getScore();
+  const reply = new StandardResponse();
+
+  if (!userId || !feedbackId) {
+    logger.debug(`! userId || !feedbackId`);
+    return callback({
+      code: 2,
+      message: `! userId || !feedbackId`,
+    });
+  }
+
+  const start_time = performance.now();
+
+  let session = driver.session();
+  const feedback_rel = await session.run(
+    `
+      MATCH (n1:Person {userId: $userId})-[r:MATCHED]->(n2:Person)
+      WHERE id(r) = $feedbackId
+      CREATE (n1)-[f:FEEDBACK {score: $score}]->(n2) return f
+    `,
+    { score, userId, feedbackId },
+  );
+
+  await session.close();
+
+  if (feedback_rel.records.length != 1) {
+    logger.debug(
+      `Failed to create feedback. returned rows: ${feedback_rel.records.length} `,
+    );
+    return callback({
+      code: 2,
+      message: `Feedback not created.`,
+    });
+  }
+
+  const duration = (performance.now() - start_time) / 1000;
+
+  if (duration > durationWarn) {
+    logger.warn(`createFeedback duration: \t ${duration}s`);
+  } else {
+    logger.debug(`createFeedback duration: \t ${duration}s`);
+  }
+
+  callback(null, reply);
+};
+
 const getRelationshipScoresLinkPrediction = async (
   call: grpc.ServerUnaryCall<
     GetRelationshipScoresRequest,
@@ -334,33 +419,6 @@ const checkUserFilters = async (
 
   const session = driver.session();
 
-  type MdObject = {
-    a_constant: any;
-    f_constant: any;
-    a_custom: any;
-    f_custom: any;
-  };
-
-  const getMdProps = (results: neo4j.QueryResult): MdObject => {
-    if (results && results.records && results.records.length) {
-      return {
-        a_constant: results.records[0].get(`a_constant`)?.properties || {},
-        f_constant: results.records[0].get(`f_constant`)?.properties || {},
-        a_custom: results.records[0].get(`a_custom`)?.properties || {},
-        f_custom: results.records[0].get(`f_custom`)?.properties || {},
-      };
-    }
-    return { a_constant: {}, f_constant: {}, a_custom: {}, f_custom: {} };
-  };
-
-  const queryMetadata = `
-    MATCH (p1:Person {userId: $userId})
-    OPTIONAL MATCH (p1)-[r1:USER_ATTRIBUTES_CONSTANT]->(a_constant:MetaData)
-    OPTIONAL MATCH (p1)-[r2:USER_FILTERS_CONSTANT]->(f_constant:MetaData)
-    OPTIONAL MATCH (p1)-[r3:USER_ATTRIBUTES_CUSTOM]->(a_custom:MetaData)
-    OPTIONAL MATCH (p1)-[r4:USER_FILTERS_CUSTOM]->(f_custom:MetaData)
-    RETURN p1, a_constant, f_constant, a_custom, f_custom`;
-
   const user1Data = await session
     .run(queryMetadata, { userId: userId1 })
     .then((results) => {
@@ -427,12 +485,157 @@ const checkUserFilters = async (
   callback(null, reply);
 };
 
+const getUserPerferences = async (
+  call: grpc.ServerUnaryCall<
+    GetUserPerferencesRequest,
+    GetUserPerferencesResponse
+  >,
+  callback: grpc.sendUnaryData<GetUserPerferencesResponse>,
+): Promise<void> => {
+  const uid = call.request.getUserId();
+  const reply = new GetUserPerferencesResponse();
+
+  const session = driver.session();
+
+  const user1Data = await session
+    .run(queryMetadata, { userId: uid })
+    .then((results) => {
+      if (results.records.length == 0) {
+        throw Error(`No results`);
+      }
+      return getMdProps(results);
+    });
+
+  try {
+    Object.entries(user1Data.a_constant).forEach(([key, value]) => {
+      reply.getAttributesConstantMap().set(String(key), String(value));
+    });
+    Object.entries(user1Data.a_custom).forEach(([key, value]) => {
+      reply.getAttributesCustomMap().set(String(key), String(value));
+    });
+    Object.entries(user1Data.f_constant).forEach(([key, value]) => {
+      reply.getFiltersConstantMap().set(String(key), String(value));
+    });
+    Object.entries(user1Data.f_custom).forEach(([key, value]) => {
+      reply.getFiltersCustomMap().set(String(key), String(value));
+    });
+  } catch (e) {
+    reply.setMessage(String(e));
+  }
+
+  callback(null, reply);
+};
+
+const putUserPerferences = async (
+  call: grpc.ServerUnaryCall<
+    PutUserPerferencesRequest,
+    PutUserPerferencesResponse
+  >,
+  callback: grpc.sendUnaryData<PutUserPerferencesResponse>,
+): Promise<void> => {
+  const request = call.request;
+  const uid = call.request.getUserId();
+  const reply = new PutUserPerferencesResponse();
+
+  const a_custom: { [key: string]: string } = {};
+  const a_constant: { [key: string]: string } = {};
+  const f_custom: { [key: string]: string } = {};
+  const f_constant: { [key: string]: string } = {};
+
+  try {
+    request
+      .getAttributesConstantMap()
+      .getEntryList()
+      .forEach(([key, value]: [string, string]) => {
+        a_constant[key] = value;
+      });
+    request
+      .getAttributesCustomMap()
+      .getEntryList()
+      .forEach(([key, value]: [string, string]) => {
+        a_custom[key] = value;
+      });
+    request
+      .getFiltersConstantMap()
+      .getEntryList()
+      .forEach(([key, value]: [string, string]) => {
+        f_constant[key] = value;
+      });
+    request
+      .getFiltersCustomMap()
+      .getEntryList()
+      .forEach(([key, value]: [string, string]) => {
+        f_custom[key] = value;
+      });
+  } catch (e) {
+    // TODO return error
+    reply.setMessage(String(e));
+    callback(null, reply);
+    return;
+  }
+
+  const session = driver.session();
+
+  let results;
+
+  results = await session.run(
+    `
+    MERGE (p:Person{userId: $uid})
+    MERGE (p)-[r:USER_ATTRIBUTES_CONSTANT]->(md:MetaData{type:"USER_ATTRIBUTES_CONSTANT"})
+    SET md = $constant
+    SET md.type = "USER_ATTRIBUTES_CONSTANT"
+    RETURN p, md
+    `,
+    { uid, constant: a_constant || {} },
+  );
+
+  results = await session.run(
+    `
+    MERGE (p:Person{userId: $uid})
+    MERGE (p)-[r:USER_ATTRIBUTES_CUSTOM]->(md:MetaData{type:"USER_ATTRIBUTES_CUSTOM"})
+    SET md = $custom
+    SET md.type = "USER_ATTRIBUTES_CUSTOM"
+    RETURN p, md
+    `,
+    { uid, custom: a_custom || {} },
+  );
+
+  results = await session.run(
+    `
+    MERGE (p:Person{userId: $uid})
+    MERGE (p)-[r:USER_FILTERS_CONSTANT]->(md:MetaData{type:"USER_FILTERS_CONSTANT"})
+    SET md = $constant
+    SET md.type = "USER_FILTERS_CONSTANT"
+    RETURN p, md
+    `,
+    { uid, constant: f_constant || {} },
+  );
+
+  results = await session.run(
+    `
+    MERGE (p:Person{userId: $uid})
+    MERGE (p)-[r:USER_FILTERS_CUSTOM]->(md:MetaData{type:"USER_FILTERS_CUSTOM"})
+    SET md = $custom
+    SET md.type = "USER_FILTERS_CUSTOM"
+    RETURN p, md
+    `,
+    { uid, custom: f_custom || {} },
+  );
+
+  await session.close();
+
+  callback(null, reply);
+};
+
 server.addService(Neo4jService, {
   createUser,
   createMatch,
   updateMatch,
   getRelationshipScores: getRelationshipScores,
   checkUserFilters,
+  getUserPerferences,
+  putUserPerferences,
+  createFeedback,
 });
 
 server.addService(HealthService, {
