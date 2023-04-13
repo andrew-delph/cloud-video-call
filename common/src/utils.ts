@@ -20,7 +20,7 @@ export async function getUid(auth: string) {
   }
 }
 
-export function createRedisClient() {
+export function createRedisClient(): Client {
   const client = new Client({
     host: `${process.env.REDIS_HOST || `redis`}`,
   });
