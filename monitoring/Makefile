@@ -19,6 +19,9 @@ apply:
 delete:
 	kubectl delete namespace monitoring
 
+watch:
+	kubectl get pods -n monitoring
+
 query_metrics:
 	@kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/namespaces/default/services/prometheus-rabbitmq-exporter/matchQueue | jq  | grep value ; echo "matchQueue"
 	@kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/namespaces/default/services/prometheus-rabbitmq-exporter/readyQueue | jq | grep value ; echo "readyQueue" 
