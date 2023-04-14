@@ -15,10 +15,11 @@ export enum UserType {
   Female = `Female`,
   Male = `Male`,
   LocationBound = `LocationBound`,
+  Hot = `Hot`,
 }
 
 export const getRandomUser = (auth: string): User => {
-  const userFunctions = [createRandom];
+  const userFunctions = [createHot];
 
   return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
 };
@@ -59,6 +60,13 @@ export const createLocationBound = (auth: string): User => {
   return new User(auth, attributes, filters, UserType.LocationBound);
 };
 
+export const createHot = (auth: string): User => {
+  const attributes = { constant: { hot: randomIntBetween(-10, 10) } };
+  const filters = {};
+
+  return new User(auth, attributes, filters, UserType.Hot);
+};
+
 export const fromRedis = async (auth: string): Promise<User> => {
   const type: UserType = await redisClient.get(auth + `_type`);
   const attributes = JSON.parse(await redisClient.get(auth + `_attributes`));
@@ -66,29 +74,40 @@ export const fromRedis = async (auth: string): Promise<User> => {
   return new User(auth, attributes, {}, type);
 };
 
-export const calcScoreMap = new Map<UserType, (otherAttr: any) => number>([
+export const calcScoreMap = new Map<
+  UserType,
+  (me: any, otherAttr: any) => number
+>([
   [
     UserType.Random,
-    (otherAttr: any) => {
+    (me: any, otherAttr: any) => {
       return 3;
     },
   ],
   [
     UserType.Male,
-    (otherAttr: any) => {
+    (me: any, otherAttr: any) => {
       return otherAttr?.constant?.gender?.startsWith(`female`) ? 5 : 1;
     },
   ],
   [
     UserType.Female,
-    (otherAttr: any) => {
+    (me: any, otherAttr: any) => {
       return otherAttr?.constant?.gender?.startsWith(`male`) ? 5 : 1;
     },
   ],
   [
     UserType.LocationBound,
-    (otherAttr: any) => {
+    (me: any, otherAttr: any) => {
       return 5;
+    },
+  ],
+  [
+    UserType.Hot,
+    (me: any, otherAttr: any) => {
+      const myHot = me?.constant?.hot ?? 0;
+      const otherHot = otherAttr?.constant?.hot ?? 0;
+      return myHot > otherHot ? -10 : otherHot;
     },
   ],
 ]);
@@ -132,6 +151,6 @@ export class User {
     const otherAtributes = JSON.parse(
       await redisClient.get(otherAuth + `_attributes`),
     );
-    return calcScoreMap.get(this.type)!(otherAtributes);
+    return calcScoreMap.get(this.type)!(this.attributes, otherAtributes);
   }
 }

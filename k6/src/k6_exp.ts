@@ -25,17 +25,23 @@ export function setup() {
   for (let i = 0; i < authKeysNum; i++) {
     authKeys.push(`k6_auth_${i}`);
   }
-  console.log(`pre delete authKeysName`);
-  redisClient.del(authKeysName).finally(async () => {
-    console.log(`post delete authKeysName`);
-    for (let auth of authKeys) {
-      let user = users.getRandomUser(auth);
-      await user.updatePreferences();
-      console.log(`post updatePreferences ${auth}`);
-    }
+  console.log(`pre delete connectedAuthMapName`);
+  redisClient
+    .del(`connectedAuthMapName`)
+    .then(() => {
+      console.log(`pre delete authKeysName`);
+      return redisClient.del(authKeysName);
+    })
+    .then(async () => {
+      console.log(`post delete authKeysName`);
+      for (let auth of authKeys) {
+        let user = users.getRandomUser(auth);
+        await user.updatePreferences();
+        console.log(`post updatePreferences ${auth}`);
+      }
 
-    await redisClient.lpush(authKeysName, ...authKeys);
-  });
+      await redisClient.lpush(authKeysName, ...authKeys);
+    });
 }
 
 const vus = 5;
@@ -46,14 +52,19 @@ export const options = {
   // duration: `1h`,
   scenarios: {
     matchTest: {
-      executor: `ramping-vus`,
-      startVUs: 5,
-      stages: [
-        { duration: `10m`, target: vus * 3 },
-        // { duration: `2h`, target: vus * 3 },
-        // { duration: `3m`, target: vus * 1 },
-      ],
+      executor: `shared-iterations`,
+      vus: 50,
+      iterations: authKeysNum * 10,
     },
+    // matchTest: {
+    //   executor: `ramping-vus`,
+    //   startVUs: 5,
+    //   stages: [
+    //     { duration: `10m`, target: vus * 3 },
+    //     // { duration: `2h`, target: vus * 3 },
+    //     // { duration: `3m`, target: vus * 1 },
+    //   ],
+    // },
     longConnection: {
       executor: `ramping-vus`,
       exec: `longWait`,

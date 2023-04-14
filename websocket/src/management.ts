@@ -52,6 +52,7 @@ export const cleanSocket = async (
   await mainRedisClient.srem(common.readySetName, auth);
   await pubRedisClient.publish(common.activeCountChannel, `change`);
   await mainRedisClient.srem(server_key, auth);
+  logger.debug(`completed cleanSocket ${auth}`);
 };
 
 const cleanSocketServer = async (server_hostname: string) => {

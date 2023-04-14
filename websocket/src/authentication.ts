@@ -5,8 +5,6 @@ import { mainRedisClient } from './socketio_server';
 import * as common from 'react-video-call-common';
 import { cleanSocket, registerSocket } from './management';
 
-import { getAuth } from 'firebase-admin/auth';
-
 const logger = getLogger();
 
 export const auth_middleware = async (
@@ -35,7 +33,7 @@ export const auth_middleware = async (
 
   if (await mainRedisClient.hexists(common.connectedAuthMapName, uid)) {
     logger.debug(`User already connected: ${uid}`);
-    next(new Error(`User already connected`));
+    next(new Error(`User already connected: ${uid}`));
     return;
   }
 
