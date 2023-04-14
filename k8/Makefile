@@ -55,3 +55,6 @@ dtoken:
 
 ehosts:
 	code /etc/hosts
+
+curl:
+	kubectl run -it --rm --image yauritux/busybox-curl sh

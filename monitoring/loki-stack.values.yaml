@@ -4,9 +4,50 @@ test_pod:
   pullPolicy: IfNotPresent
 
 grafana:
-  enabled: false
-  # adminUser: admin
-  # adminPassword: password
+  enabled: true
+  adminUser: admin
+  adminPassword: password
+  image:
+    tag: latest
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      labelValue: '1'
+      annotations: {}
+      multicluster:
+        global:
+          enabled: false
+        etcd:
+          enabled: false
+      provider:
+        foldersFromFilesStructure: true
+        updateIntervalSeconds: 30
+        allowUiUpdates: false
+    datasources:
+      enabled: true
+      defaultDatasourceEnabled: true
+      isDefaultDatasource: true
+      uid: prometheus
+      annotations: {}
+      createPrometheusReplicasDatasources: false
+      label: grafana_datasource
+      labelValue: '1'
+
+      exemplarTraceIdDestinations: {}
+
+prometheus:
+  enabled: true
+  server:
+    image:
+      tag: v2.42.0
+    # extraArgs:
+    #   log.level: debug
+    extraFlags:
+      - web.enable-lifecycle
+      - enable-feature=remote-write-receiver
+      # - web.enable-remote-write-receiver
+      # - log.level=debug
 
 loki:
   enabled: true
@@ -53,6 +94,7 @@ promtail:
             older_than: 1h
             drop_counter_reason: 'line_too_old'
         - cri:
+        - docker:
         - json:
             expressions:
               level: level
