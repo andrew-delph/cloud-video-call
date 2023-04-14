@@ -1,5 +1,6 @@
 import { session } from './neo4j_functions';
 import { printResults } from './neo4j_index';
+import * as funcs from './neo4j_functions';
 
 export async function linkPredictionML() {
   console.log(``);

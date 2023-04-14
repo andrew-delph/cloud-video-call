@@ -18,7 +18,7 @@ export function printResults(
   console.log(`print records. limit is ${limit}`);
   records.slice(0, limit).forEach((record) => {
     try {
-      throw `now`;
+      throw `dont use`;
       // console.log(record.get(`r`));
       // console.log(`value`, Object.keys(record.get(`r`)));
       console.log(
@@ -42,32 +42,25 @@ export function printResults(
 
 (async () => {
   try {
-    let result;
+    let results;
 
-    const x = new Set<string>();
+    await funcs.createData({ deleteData: true });
 
-    for (let i = 1; i < 5; i++) {
-      x.add(`k6_auth_${i}`);
-    }
+    // await funcs.createFriends();
+    // // await funcs.createFeedback2();
 
-    // await funcs.createData(0, 0, true);
     // await funcs.createGraph();
-    // // result = await funcs.callWriteSimilar();
+
     // await funcs.callPriority();
-    // result = await funcs.callCommunities();
-    result = await funcs.test();
+    // results = await funcs.callCommunities();
 
-    const n = result.records[0].get(`n`);
+    // // // // results = await funcs.callWriteSimilar();
 
-    console.log(typeof n.properties);
+    // results = await funcs.getUsers();
+    // printResults(results, 500);
 
-    console.log(n.properties);
-
-    Object.entries(n.properties).forEach((key, value) => {
-      console.log(`k`, key, `v`, value, `t`, typeof value);
-    });
-
-    // printResults(result, 400);
+    // results = await funcs.getVarience();
+    // printResults(results);
   } finally {
     console.log(`closing.`);
     await funcs.session.close();

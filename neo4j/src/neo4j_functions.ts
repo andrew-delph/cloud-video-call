@@ -5,6 +5,7 @@ import { printResults } from './neo4j_index';
 export const driver = neo4j.driver(
   `neo4j://localhost:7687`,
   neo4j.auth.basic(`neo4j`, `password`),
+  { disableLosslessIntegers: true },
 );
 export const session = driver.session();
 
@@ -12,44 +13,11 @@ function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
 
-export async function createData(
-  nodesNum: number = 1000,
-  edgesNum: number = 4,
-  deleteData: Boolean = false,
-) {
-  edgesNum = nodesNum * edgesNum;
-
-  const nodes = [];
-  const edges = [];
-
-  for (var i = 0; i < nodesNum; i++) {
-    nodes.push(`node${i}`);
-  }
-
-  nodes.push(`andrew1`);
-  nodes.push(`andrew2`);
-  nodes.push(`andrew3`);
-  nodes.push(`andrew4`);
-  nodes.push(`andrew5`);
-  nodes.push(`andrew6`);
-
-  for (var i = 0; i < edgesNum; i++) {
-    const a = nodes[Math.floor(Math.random() * nodesNum)];
-    let b = nodes[Math.floor(Math.random() * nodesNum)];
-    while (a === b) {
-      b = nodes[Math.floor(Math.random() * nodesNum)];
-    }
-    edges.push({ a, b });
-  }
-
-  edges.push({ a: `andrew1`, b: `andrew2` });
-  edges.push({ a: `andrew2`, b: `andrew3` });
-  edges.push({ a: `andrew3`, b: `andrew4` });
-  edges.push({ a: `andrew4`, b: `andrew2` });
-  edges.push({ a: `andrew4`, b: `andrew5` });
-  edges.push({ a: `andrew3`, b: `andrew6` });
-  edges.push({ a: `andrew2`, b: `andrew3` });
-
+export async function createData({
+  nodesNum = 10,
+  edgesNum = 1,
+  deleteData = false,
+}) {
   if (deleteData) {
     console.log(`Deleting`);
     await session.run(`
@@ -61,21 +29,177 @@ export async function createData(
     `);
   }
 
+  const nodes = [];
+  const edges = [];
+
+  for (var i = 0; i < nodesNum; i++) {
+    nodes.push(`node${i}`);
+  }
+
+  edgesNum = nodesNum * edgesNum;
+  for (var i = 0; i < edgesNum; i++) {
+    const a = nodes[Math.floor(Math.random() * nodesNum)];
+    let b = nodes[Math.floor(Math.random() * nodesNum)];
+    while (a === b) {
+      b = nodes[Math.floor(Math.random() * nodesNum)];
+    }
+    edges.push({ a, b });
+  }
+
   console.log(`create nodes ${nodesNum}`);
 
   await session.run(
-    `UNWIND $nodes as node MERGE (:Person {name: toString(node)})`,
+    `UNWIND $nodes as node
+    MERGE (p:Person {userId: toString(node)})
+    WITH p
+    CREATE (d:MetaData)
+    SET d.hot = toString(toInteger(rand()*10))
+    MERGE (p)-[:USER_ATTRIBUTES_CONSTANT]->(d);
+    `,
     { nodes: nodes },
   );
 
   console.log(`create edges ${edgesNum}`);
 
   await session.run(
-    `UNWIND $edges as edge MATCH (a:Person), (b:Person) WHERE a.name = toString(edge.a) AND b.name = toString(edge.b) MERGE (a)-[:KNOWS {value: 'test'}]->(b)`,
+    `
+    UNWIND $edges as edge MATCH (a1:Person)-[rel1:USER_ATTRIBUTES_CONSTANT]->(b1:MetaData), (a2:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b2:MetaData)
+    WHERE a1.userId = toString(edge.a) AND a2.userId = toString(edge.b) 
+    CREATE (a1)-[f1:FEEDBACK {score: CASE WHEN b1.hot <= b2.hot THEN 10 ELSE -10 END}]->(a2)
+    CREATE (a2)-[f2:FEEDBACK {score: CASE WHEN b2.hot <= b1.hot THEN 10 ELSE -10 END}]->(a1)
+    `,
     { edges: edges },
   );
 
   console.log(`done`);
+}
+export async function getUsers() {
+  console.log();
+  console.log(`running getUsers`);
+
+  const start_time = performance.now();
+
+  let result;
+
+  result = await session.run(
+    `
+    MATCH (a:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(b:MetaData)
+    RETURN a.userId, a.community, a.priority, b.hot
+    ORDER BY a.priority DESCENDING
+    `,
+  );
+
+  // ORDER BY rel.score DESCENDING
+
+  const end_time = performance.now();
+
+  console.log(`getUsers`, end_time - start_time);
+
+  return result;
+}
+
+export async function getVarience() {
+  console.log();
+  console.log(`running getVarience`);
+
+  const start_time = performance.now();
+
+  let result;
+
+  // result = await session.run(
+  //   `
+  //   MATCH (n:Person)
+  //     WHERE n.community = 88
+  //     WITH avg(n.priority) as mean_priority, collect(n.priority) as priorities
+  //     WITH mean_priority, reduce(s = 0.0, p IN priorities | s + (p - mean_priority) ^ 2) as sum_square_diffs, size(priorities) as num_nodes
+  //     RETURN sum_square_diffs / (num_nodes - 1) as variance;
+  //   `,
+  // );
+
+  result = await session.run(
+    `
+    MATCH (n:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(b:MetaData)
+      WITH n.community as community, avg(n.priority) as mean_priority, collect(n.priority) as priorities, avg(toFloat(b.hot)) as mean_hot, max(toFloat(b.hot)) as max_hot
+      WITH community, mean_priority, reduce(s = 0.0, p IN priorities | s + (p - mean_priority) ^ 2) as sum_square_diffs, size(priorities) as num_nodes, mean_hot, max_hot
+      RETURN community, sum_square_diffs / (num_nodes) as variance, num_nodes, mean_hot, max_hot
+      ORDER BY num_nodes DESCENDING;
+  `,
+  );
+
+  // ORDER BY rel.score DESCENDING
+
+  const end_time = performance.now();
+
+  console.log(`getVarience`, end_time - start_time);
+
+  return result;
+}
+
+export async function createFriends() {
+  let start_time = performance.now();
+  let result;
+  // delete friends
+  result = await session.run(
+    `
+    MATCH ()-[r:FRIENDS]-()
+    DELETE r
+    RETURN r
+  `,
+  );
+
+  console.log(`deleted friends: ${result.records.length}`);
+
+  // create friends
+  result = await session.run(
+    `
+      MATCH (a)-[r1:FEEDBACK]->(b), (a)<-[r2:FEEDBACK]-(b)
+      WHERE r1.score > -5 AND r2.score > -5 AND id(a) > id(b)
+      MERGE (a)-[r:FRIENDS]-(b)
+      RETURN r
+  `,
+  );
+  console.log(`created friends: ${result.records.length}`);
+  console.log(`createFriends`, performance.now() - start_time);
+
+  return result;
+}
+
+export async function createFeedback2() {
+  let start_time = performance.now();
+  let result;
+  // delete friends
+  result = await session.run(
+    `
+    MATCH ()-[r:FEEDBACK2]-()
+    DELETE r
+    RETURN r
+  `,
+  );
+
+  console.log(`deleted FEEDBACK2: ${result.records.length}`);
+
+  // create friends
+  result = await session.run(
+    `
+      MATCH (a)-[r:FEEDBACK]->(b)
+      WITH a, b, r
+      MERGE (a)-[r2:FEEDBACK2]->(b)
+      SET r2.score = CASE
+        WHEN r.score < -9 THEN -10
+        ELSE 10
+      END
+      return r2
+  `,
+  );
+
+  // MATCH (a)-[r1:FEEDBACK]->(b)
+  // WHERE r1.score > -5
+  // MERGE (a)-[r:FEEDBACK2{score:10}]-(b)
+  // RETURN r
+  console.log(`created FEEDBACK2: ${result.records.length}`);
+  console.log(`createFeedback2`, performance.now() - start_time);
+
+  return result;
 }
 
 export async function createGraph() {
@@ -91,8 +215,14 @@ export async function createGraph() {
   let start_time = performance.now();
   // create myGraph
   console.log(`creating graph`);
+  // `CALL gds.graph.project( 'myGraph', {Person:{}, MetaData:{}}, {FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{}, USER_ATTRIBUTES_CONSTANT: {}}, {relationshipProperties: ['score'] });`
   result = await session.run(
-    `CALL gds.graph.project( 'myGraph', 'Person', 'FEEDBACK' ,{ relationshipProperties: ['score'] } );`,
+    `CALL gds.graph.project( 
+      'myGraph', 
+      {Person:{}, MetaData:{}}, 
+      {FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{}, USER_ATTRIBUTES_CONSTANT: {}},
+      {relationshipProperties: ['score'] }
+    );`,
   );
   console.log(`created graph`, performance.now() - start_time);
 
@@ -214,8 +344,14 @@ export async function callPriority() {
 
   let result = await session.run(
     `
-    CALL gds.pageRank.write('myGraph', {  scaler: "MinMax", writeProperty: 'priority' })
-        YIELD nodePropertiesWritten, ranIterations
+    CALL gds.articleRank.write('myGraph', {  
+        scaler: "MinMax",
+        relationshipTypes: ['FEEDBACK'],
+        relationshipWeightProperty: 'score',
+        writeProperty: 'priority' 
+      }
+    )
+    YIELD nodePropertiesWritten, ranIterations
   `,
   );
 
@@ -234,7 +370,12 @@ export async function callCommunities() {
 
   let result = await session.run(
     `
-    CALL gds.louvain.write('myGraph', { writeProperty: 'community' })
+    CALL gds.louvain.write('myGraph', 
+    {  
+      relationshipTypes: ['FRIENDS'],
+      writeProperty: 'community' 
+    }
+    )
       YIELD communityCount, modularity, modularities
   `,
   );
@@ -262,7 +403,7 @@ export async function changeRandomReady() {
 
 export async function test() {
   const start_time = performance.now();
-  // create myGraph
+
   let result;
   console.log(`running getAllReady`);
   result = await session.run(`
@@ -276,7 +417,6 @@ export async function test() {
 export async function getFirstN() {
   const n = 100;
   const start_time = performance.now();
-  // create myGraph
 
   let result;
   console.log(`running getFirstN n:${n}`);
