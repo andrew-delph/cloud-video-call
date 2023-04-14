@@ -1,9 +1,6 @@
 
 export IMAGE_NAME=andrewdelph/k6_tests:latest
 
-gcloud:
-	gcloud container clusters describe k6-cluster --region us-central1 --project react-video-call-thing72 || gcloud container clusters create-auto k6-cluster --region us-central1 --project react-video-call-thing72; 
-	gcloud container clusters get-credentials k6-cluster --region us-central1 --project=react-video-call-thing72
 
 build:
 	docker build -t andrewdelph/k6-tests:latest .
