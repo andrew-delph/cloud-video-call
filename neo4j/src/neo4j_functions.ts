@@ -14,8 +14,8 @@ function getRandomInt(max: number) {
 }
 
 export async function createData({
-  nodesNum = 10,
-  edgesNum = 1,
+  nodesNum = 100,
+  edgesNum = 7,
   deleteData = false,
 }) {
   if (deleteData) {
@@ -65,11 +65,14 @@ export async function createData({
     `
     UNWIND $edges as edge MATCH (a1:Person)-[rel1:USER_ATTRIBUTES_CONSTANT]->(b1:MetaData), (a2:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b2:MetaData)
     WHERE a1.userId = toString(edge.a) AND a2.userId = toString(edge.b) 
-    CREATE (a1)-[f1:FEEDBACK {score: CASE WHEN b1.hot <= b2.hot THEN 10 ELSE -10 END}]->(a2)
-    CREATE (a2)-[f2:FEEDBACK {score: CASE WHEN b2.hot <= b1.hot THEN 10 ELSE -10 END}]->(a1)
+    CREATE (a1)-[f1:FEEDBACK {score: toInteger(b2.hot)}]->(a2)
+    CREATE (a2)-[f2:FEEDBACK {score: toInteger(b1.hot)}]->(a1)
     `,
     { edges: edges },
   );
+
+  // CREATE (a1)-[f1:FEEDBACK {score: CASE WHEN b1.hot <= b2.hot THEN 10 ELSE -10 END}]->(a2)
+  // CREATE (a2)-[f2:FEEDBACK {score: CASE WHEN b2.hot <= b1.hot THEN 10 ELSE -10 END}]->(a1)
 
   console.log(`done`);
 }
@@ -119,9 +122,9 @@ export async function getVarience() {
   result = await session.run(
     `
     MATCH (n:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(b:MetaData)
-      WITH n.community as community, avg(n.priority) as mean_priority, collect(n.priority) as priorities, avg(toFloat(b.hot)) as mean_hot, max(toFloat(b.hot)) as max_hot
-      WITH community, mean_priority, reduce(s = 0.0, p IN priorities | s + (p - mean_priority) ^ 2) as sum_square_diffs, size(priorities) as num_nodes, mean_hot, max_hot
-      RETURN community, sum_square_diffs / (num_nodes) as variance, num_nodes, mean_hot, max_hot
+      WITH n.community as community, avg(n.priority) as mean_priority, collect(n.priority) as priorities, avg(toFloat(b.hot)) as mean_hot, max(toFloat(b.hot)) as max_hot, min(toFloat(b.hot)) as min_hot
+      WITH community, mean_priority, reduce(s = 0.0, p IN priorities | s + (p - mean_priority) ^ 2) as sum_square_diffs, size(priorities) as num_nodes, mean_hot, max_hot, min_hot
+      RETURN community, sum_square_diffs / (num_nodes) as variance, num_nodes, mean_hot, max_hot, min_hot
       ORDER BY num_nodes DESCENDING;
   `,
   );
@@ -153,7 +156,7 @@ export async function createFriends() {
   result = await session.run(
     `
       MATCH (a)-[r1:FEEDBACK]->(b), (a)<-[r2:FEEDBACK]-(b)
-      WHERE r1.score > -5 AND r2.score > -5 AND id(a) > id(b)
+      WHERE r1.score > 0 AND r2.score > 0 AND id(a) > id(b)
       MERGE (a)-[r:FRIENDS]-(b)
       RETURN r
   `,
