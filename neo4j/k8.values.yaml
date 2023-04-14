@@ -6,12 +6,6 @@ neo4j:
 
   password: 'password'
 
-volumes:
-  data:
-    mode: defaultStorageClass
-    defaultStorageClass:
-      requests:
-        storage: 40Gi
 env:
   NEO4J_PLUGINS: '["graph-data-science"]'
 
@@ -20,8 +14,15 @@ config:
   dbms.memory.transaction.total.max: '1GB'
   server.bolt.thread_pool_max_size: '1000'
 
-nodeSelector:
-  vke.vultr.com/node-pool: video-call
-
 podSpec:
   priorityClassName: 'high-priority'
+
+volumes:
+  data:
+    mode: defaultStorageClass
+    defaultStorageClass:
+      requests:
+        storage: 40Gi
+
+nodeSelector:
+  vke.vultr.com/node-pool: video-call
