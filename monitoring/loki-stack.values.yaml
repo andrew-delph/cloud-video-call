@@ -8,7 +8,7 @@ grafana:
   adminUser: admin
   adminPassword: password
   image:
-    tag: latest
+    tag: ''
   sidecar:
     dashboards:
       enabled: true
