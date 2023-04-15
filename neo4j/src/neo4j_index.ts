@@ -59,8 +59,8 @@ export function printResults(
     results = await funcs.getUsers();
     printResults(results, 50);
 
-    // results = await funcs.getVarience();
-    // printResults(results, 10);
+    results = await funcs.getVarience();
+    printResults(results, 10);
   } finally {
     console.log(`closing.`);
     await funcs.session.close();
