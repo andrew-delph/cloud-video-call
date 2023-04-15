@@ -44,7 +44,7 @@ export function printResults(
   try {
     let results;
 
-    await funcs.createData({ deleteData: true, nodesNum: 999 });
+    await funcs.createData({ deleteData: true, nodesNum: 30 });
 
     await funcs.createFriends();
     // await funcs.createFeedback2();
@@ -52,15 +52,16 @@ export function printResults(
     await funcs.createGraph();
 
     await funcs.callPriority();
+
+    results = await funcs.callWriteSimilar();
+
     results = await funcs.callCommunities();
 
-    // // // results = await funcs.callWriteSimilar();
-
     results = await funcs.getUsers();
-    printResults(results, 50);
+    // printResults(results, 50);
 
     results = await funcs.getVarience();
-    printResults(results, 10);
+    printResults(results, 3);
   } finally {
     console.log(`closing.`);
     await funcs.session.close();

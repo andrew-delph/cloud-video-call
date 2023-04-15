@@ -78,9 +78,9 @@ export async function createData({
   await session.run(
     `
     UNWIND $edges as edge MATCH (a1:Person)-[rel1:USER_ATTRIBUTES_CONSTANT]->(b1:MetaData), (a2:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b2:MetaData)
-    WHERE a1.userId = toString(edge.a) AND a2.userId = toString(edge.b) 
-    CREATE (a1)-[f1:FEEDBACK {score: CASE WHEN b1.hot <= b2.hot THEN 10 ELSE -10 END}]->(a2)
-    CREATE (a2)-[f2:FEEDBACK {score: CASE WHEN b2.hot <= b1.hot THEN 10 ELSE -10 END}]->(a1)
+    WHERE a1.userId = toString(edge.a) AND a2.userId = toString(edge.b)
+    CREATE (a1)-[f1:FEEDBACK {score: CASE WHEN toInteger(b1.hot)-2 <= toInteger(b2.hot) THEN 10 ELSE -10 END}]->(a2)
+    CREATE (a2)-[f2:FEEDBACK {score: CASE WHEN toInteger(b2.hot)-2 <= toInteger(b1.hot) THEN 10 ELSE -10 END}]->(a1)
     `,
     { edges: edges },
   );
@@ -402,6 +402,8 @@ export async function callWriteSimilar() {
   console.log(`--- callWriteSimilar`);
 
   const query7 = `CALL gds.nodeSimilarity.write('myGraph', {
+            nodeLabels: ['Person'],
+            relationshipTypes: ['FRIENDS'],
             writeRelationshipType: 'SIMILAR',
             writeProperty: 'score'
         })
@@ -413,7 +415,7 @@ export async function callWriteSimilar() {
 
   const end_time = performance.now();
 
-  console.log(`query`, end_time - start_time);
+  console.log(`callWriteSimilar`, end_time - start_time);
 
   return result;
 }
@@ -428,6 +430,7 @@ export async function callPriority() {
     `
     CALL gds.articleRank.write('myGraph', {  
         scaler: "MinMax",
+        nodeLabels: ['Person'],
         relationshipTypes: ['FEEDBACK'],
         relationshipWeightProperty: 'score',
         writeProperty: 'priority' 
@@ -454,6 +457,7 @@ export async function callCommunities() {
     `
     CALL gds.louvain.write('myGraph', 
     {  
+      nodeLabels: ['Person'],
       relationshipTypes: ['FRIENDS'],
       writeProperty: 'community' 
     }
