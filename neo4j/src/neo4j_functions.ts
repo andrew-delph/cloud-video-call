@@ -103,7 +103,7 @@ export async function getUsers() {
     `,
   );
 
-  // ORDER BY rel.score DESCENDING
+  // ORDER BY a.priority DESCENDING
 
   const end_time = performance.now();
 
@@ -121,16 +121,16 @@ function createDotGraph(result: neo4j.QueryResult<Dict<PropertyKey, any>>) {
   }[] = [];
 
   const records = result.records;
-  records.forEach((record) => {
-    const x = parseFloat(record.get(`a.priority`));
+  records.slice(0, -1).forEach((record) => {
+    const x = parseFloat(record.get(`a.community`));
     const y = parseFloat(record.get(`b.hot`));
     data.push({ x, y });
   });
 
   const fs = require(`fs`);
 
-  const width = 800;
-  const height = 600;
+  const width = 800 * 2;
+  const height = 600 * 2;
   const padding = 50;
   const dotSize = 5;
   const dotColor = `red`;
@@ -235,8 +235,9 @@ export async function createFriends() {
     `
       MATCH (a)-[r1:FEEDBACK]->(b), (a)<-[r2:FEEDBACK]-(b)
       WHERE r1.score > 0 AND r2.score > 0 AND id(a) > id(b)
-      MERGE (a)-[r:FRIENDS]-(b)
-      RETURN r
+      CREATE (a)-[f1:FRIENDS]->(b)
+      CREATE (b)-[f2:FRIENDS]->(a)
+      RETURN f1, f2
   `,
   );
   console.log(`created friends: ${result.records.length}`);
@@ -451,7 +452,7 @@ export async function callCommunities() {
 
   let result = await session.run(
     `
-    CALL gds.beta.k1coloring.write('myGraph', 
+    CALL gds.louvain.write('myGraph', 
     {  
       relationshipTypes: ['FRIENDS'],
       writeProperty: 'community' 
