@@ -235,8 +235,8 @@ export async function createFriends() {
     `
       MATCH (a)-[r1:FEEDBACK]->(b), (a)<-[r2:FEEDBACK]-(b)
       WHERE r1.score > 0 AND r2.score > 0 AND id(a) > id(b)
-      CREATE (a)-[f1:FRIENDS]->(b)
-      CREATE (b)-[f2:FRIENDS]->(a)
+      MERGE (a)-[f1:FRIENDS]->(b)
+      MERGE (b)-[f2:FRIENDS]->(a)
       RETURN f1, f2
   `,
   );

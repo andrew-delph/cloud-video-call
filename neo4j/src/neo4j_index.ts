@@ -51,10 +51,8 @@ export function printResults(
 
     await funcs.createGraph();
 
-    await funcs.callPriority();
-
+    results = await funcs.callPriority();
     results = await funcs.callWriteSimilar();
-
     results = await funcs.callCommunities();
 
     results = await funcs.getUsers();
