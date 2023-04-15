@@ -56,10 +56,12 @@ export function printResults(
     results = await funcs.callCommunities();
 
     results = await funcs.getUsers();
-    // printResults(results, 50);
+    // // printResults(results, 50);
 
-    results = await funcs.getVarience();
-    printResults(results, 3);
+    // results = await funcs.getVarience();
+    // printResults(results, 3);
+
+    await linkPredictionML();
   } finally {
     console.log(`closing.`);
     await funcs.session.close();

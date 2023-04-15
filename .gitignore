@@ -36,4 +36,4 @@ ui-debug.log*
 
 bazel-*
 flutter_app/android/fastlane/report.xml
-neo4j/dot_graph.png
+neo4j/*.png

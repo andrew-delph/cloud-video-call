@@ -109,29 +109,47 @@ export async function getUsers() {
 
   console.log(`getUsers`, end_time - start_time);
 
-  createDotGraph(result);
-
-  return result;
-}
-
-function createDotGraph(result: neo4j.QueryResult<Dict<PropertyKey, any>>) {
-  const data: {
+  const community_data: {
     x: number;
     y: number;
   }[] = [];
 
-  const records = result.records;
-  records.slice(0, -1).forEach((record) => {
+  result.records.forEach((record) => {
     const x = parseFloat(record.get(`a.community`));
     const y = parseFloat(record.get(`b.hot`));
-    data.push({ x, y });
+    community_data.push({ x, y });
   });
 
+  createDotGraph(community_data, `community`);
+
+  const priority_data: {
+    x: number;
+    y: number;
+  }[] = [];
+
+  result.records.forEach((record) => {
+    const x = parseFloat(record.get(`a.priority`));
+    const y = parseFloat(record.get(`b.hot`));
+    priority_data.push({ x, y });
+  });
+
+  createDotGraph(priority_data, `priority`);
+
+  return result;
+}
+
+export function createDotGraph(
+  data: {
+    x: number;
+    y: number;
+  }[],
+  name: string,
+) {
   const fs = require(`fs`);
 
   const width = 800 * 2;
   const height = 600 * 2;
-  const padding = 50;
+  const padding = 100;
   const dotSize = 5;
   const dotColor = `red`;
 
@@ -176,7 +194,7 @@ function createDotGraph(result: neo4j.QueryResult<Dict<PropertyKey, any>>) {
   });
 
   const buffer = canvas.toBuffer(`image/png`);
-  fs.writeFileSync(`./dot_graph.png`, buffer);
+  fs.writeFileSync(`./${name}.png`, buffer);
 }
 
 export async function getVarience() {
