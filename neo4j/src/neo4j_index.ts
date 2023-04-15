@@ -56,11 +56,11 @@ export function printResults(
 
     // // // results = await funcs.callWriteSimilar();
 
-    // results = await funcs.getUsers();
-    // printResults(results, 500);
+    results = await funcs.getUsers();
+    printResults(results, 50);
 
-    results = await funcs.getVarience();
-    printResults(results, 10);
+    // results = await funcs.getVarience();
+    // printResults(results, 10);
   } finally {
     console.log(`closing.`);
     await funcs.session.close();

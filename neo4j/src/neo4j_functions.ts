@@ -1,6 +1,8 @@
 import * as neo4j from 'neo4j-driver';
 import { v4 as uuid } from 'uuid';
 import { printResults } from './neo4j_index';
+import { createCanvas } from 'canvas';
+import { Dict } from 'neo4j-driver-core/types/record';
 
 export const driver = neo4j.driver(
   `neo4j://localhost:7687`,
@@ -53,26 +55,35 @@ export async function createData({
     MERGE (p:Person {userId: toString(node)})
     WITH p
     CREATE (d:MetaData)
-    SET d.hot = toString(toInteger(rand()*10))
+    SET d.hot = toString(toInteger((rand()*20)-10))
     MERGE (p)-[:USER_ATTRIBUTES_CONSTANT]->(d);
     `,
     { nodes: nodes },
   );
 
+  //SET d.hot = toString(toInteger((rand()*20)-10))
+
   console.log(`create edges ${edgesNum}`);
+
+  // await session.run(
+  //   `
+  //   UNWIND $edges as edge MATCH (a1:Person)-[rel1:USER_ATTRIBUTES_CONSTANT]->(b1:MetaData), (a2:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b2:MetaData)
+  //   WHERE a1.userId = toString(edge.a) AND a2.userId = toString(edge.b)
+  //   CREATE (a1)-[f1:FEEDBACK {score: toInteger(b2.hot)}]->(a2)
+  //   CREATE (a2)-[f2:FEEDBACK {score: toInteger(b1.hot)}]->(a1)
+  //   `,
+  //   { edges: edges },
+  // );
 
   await session.run(
     `
     UNWIND $edges as edge MATCH (a1:Person)-[rel1:USER_ATTRIBUTES_CONSTANT]->(b1:MetaData), (a2:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b2:MetaData)
     WHERE a1.userId = toString(edge.a) AND a2.userId = toString(edge.b) 
-    CREATE (a1)-[f1:FEEDBACK {score: toInteger(b2.hot)}]->(a2)
-    CREATE (a2)-[f2:FEEDBACK {score: toInteger(b1.hot)}]->(a1)
+    CREATE (a1)-[f1:FEEDBACK {score: CASE WHEN b1.hot <= b2.hot THEN 10 ELSE -10 END}]->(a2)
+    CREATE (a2)-[f2:FEEDBACK {score: CASE WHEN b2.hot <= b1.hot THEN 10 ELSE -10 END}]->(a1)
     `,
     { edges: edges },
   );
-
-  // CREATE (a1)-[f1:FEEDBACK {score: CASE WHEN b1.hot <= b2.hot THEN 10 ELSE -10 END}]->(a2)
-  // CREATE (a2)-[f2:FEEDBACK {score: CASE WHEN b2.hot <= b1.hot THEN 10 ELSE -10 END}]->(a1)
 
   console.log(`done`);
 }
@@ -98,7 +109,74 @@ export async function getUsers() {
 
   console.log(`getUsers`, end_time - start_time);
 
+  createDotGraph(result);
+
   return result;
+}
+
+function createDotGraph(result: neo4j.QueryResult<Dict<PropertyKey, any>>) {
+  const data: {
+    x: number;
+    y: number;
+  }[] = [];
+
+  const records = result.records;
+  records.forEach((record) => {
+    const x = parseFloat(record.get(`a.priority`));
+    const y = parseFloat(record.get(`b.hot`));
+    data.push({ x, y });
+  });
+
+  const fs = require(`fs`);
+
+  const width = 800;
+  const height = 600;
+  const padding = 50;
+  const dotSize = 5;
+  const dotColor = `red`;
+
+  const minX = Math.min(...data.map((p) => p.x));
+  const maxX = Math.max(...data.map((p) => p.x));
+  const minY = Math.min(...data.map((p) => p.y));
+  const maxY = Math.max(...data.map((p) => p.y));
+
+  const scaleX = (width - 2 * padding) / (maxX - minX);
+  const scaleY = (height - 2 * padding) / (maxY - minY);
+
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext(`2d`);
+
+  // Background
+  ctx.fillStyle = `white`;
+  ctx.fillRect(0, 0, width, height);
+
+  // Axes
+  ctx.strokeStyle = `black`;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(padding, padding);
+  ctx.lineTo(padding, height - padding);
+  ctx.lineTo(width - padding, height - padding);
+  ctx.stroke();
+
+  // Labels
+  ctx.font = `16px Arial`;
+  ctx.fillStyle = `black`;
+  ctx.fillText(`(${minX}, ${minY})`, padding, height - padding + 20);
+  ctx.fillText(`(${maxX}, ${maxY})`, width - padding, padding + 20);
+
+  // Dots
+  ctx.fillStyle = dotColor;
+  data.forEach((point) => {
+    const x = (point.x - minX) * scaleX + padding;
+    const y = height - padding - (point.y - minY) * scaleY;
+    ctx.beginPath();
+    ctx.arc(x, y, dotSize, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  const buffer = canvas.toBuffer(`image/png`);
+  fs.writeFileSync(`./dot_graph.png`, buffer);
 }
 
 export async function getVarience() {
@@ -223,7 +301,7 @@ export async function createGraph() {
     `CALL gds.graph.project( 
       'myGraph', 
       {Person:{}, MetaData:{}}, 
-      {FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{}, USER_ATTRIBUTES_CONSTANT: {}},
+      {FRIENDS:{}, FEEDBACK:{}, USER_ATTRIBUTES_CONSTANT: {}},
       {relationshipProperties: ['score'] }
     );`,
   );
@@ -373,13 +451,12 @@ export async function callCommunities() {
 
   let result = await session.run(
     `
-    CALL gds.louvain.write('myGraph', 
+    CALL gds.beta.k1coloring.write('myGraph', 
     {  
       relationshipTypes: ['FRIENDS'],
       writeProperty: 'community' 
     }
     )
-      YIELD communityCount, modularity, modularities
   `,
   );
 
@@ -410,7 +487,11 @@ export async function test() {
   let result;
   console.log(`running getAllReady`);
   result = await session.run(`
-    MATCH (n:Person{userId: 'k6_auth_1'}) return n
+  CALL gds.alpha.linkprediction.adamicAdar.stream('myGraph', {
+    relationshipWeightProperty: 'weight'
+  })
+  YIELD node1, node2, similarity
+
   `);
   const end_time = performance.now();
   console.log(`it took: `, end_time - start_time);
