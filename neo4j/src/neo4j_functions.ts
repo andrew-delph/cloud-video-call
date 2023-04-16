@@ -180,8 +180,14 @@ export function createDotGraph(
   // Labels
   ctx.font = `16px Arial`;
   ctx.fillStyle = `black`;
-  ctx.fillText(`(${minX}, ${minY})`, padding, height - padding + 20);
-  ctx.fillText(`(${maxX}, ${maxY})`, width - padding, padding + 20);
+
+  const topRight = `(${maxX.toFixed(2)}, ${maxY.toFixed(2)})`;
+  const bottomLeft = `(${minX.toFixed(2)}, ${minY.toFixed(2)})`;
+  ctx.fillText(bottomLeft, padding, height - padding + 20);
+  ctx.fillText(topRight, width - padding, padding + 20);
+
+  // ctx.fillText(`(${minX}, ${minY})`, padding, height - padding + 20);
+  // ctx.fillText(`(${maxX}, ${maxY})`, width - padding, padding + 20);
 
   // Dots
   ctx.fillStyle = dotColor;
@@ -253,8 +259,8 @@ export async function createFriends() {
     `
       MATCH (a)-[r1:FEEDBACK]->(b), (a)<-[r2:FEEDBACK]-(b)
       WHERE r1.score > 0 AND r2.score > 0 AND id(a) > id(b)
-      MERGE (a)-[f1:FRIENDS]->(b)
-      MERGE (b)-[f2:FRIENDS]->(a)
+      MERGE (a)-[f1:FRIENDS]-(b)
+      MERGE (b)-[f2:FRIENDS]-(a)
       RETURN f1, f2
   `,
   );

@@ -49,13 +49,33 @@ export async function linkPredictionML() {
 
   result = await session.run(
     `
+      CALL gds.beta.pipeline.linkPrediction.addNodeProperty('lp-pipeline', 'fastRP', {
+        mutateProperty: 'embedding3',
+        embeddingDimension: 256,
+        randomSeed: 42,
+        contextNodeLabels: ['Person','MetaData'],
+        contextRelationshipTypes: ['FEEDBACK', 'FRIENDS','USER_ATTRIBUTES_CONSTANT']
+      })
+    `,
+  );
+
+  // result = await session.run(
+  //   `
+  //     CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'hadamard', {
+  //       nodeProperties: ['embedding1','embedding2']
+  //     }) YIELD featureSteps
+  //   `,
+  // );
+
+  result = await session.run(
+    `
       CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'hadamard', {
-        nodeProperties: ['embedding1','embedding2']
+        nodeProperties: ['embedding1','embedding2','embedding3']
       }) YIELD featureSteps
     `,
   );
-  // printResults(result, 400);
 
+  // console.log(`configureSplit disabled.`);
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.configureSplit('lp-pipeline', {
@@ -68,13 +88,13 @@ export async function linkPredictionML() {
   );
   // printResults(result, 400);
 
-  // result = await session.run(
-  //   `
-  //   CALL gds.alpha.pipeline.linkPrediction.configureAutoTuning('lp-pipeline', {
-  //     maxTrials: 10
-  //   }) YIELD autoTuningConfig
-  // `,
-  // );
+  result = await session.run(
+    `
+    CALL gds.alpha.pipeline.linkPrediction.configureAutoTuning('lp-pipeline', {
+      maxTrials: 20
+    }) YIELD autoTuningConfig
+  `,
+  );
 
   result = await session.run(
     `
@@ -106,14 +126,6 @@ export async function linkPredictionML() {
   // `,
   // );
 
-  result = await session.run(
-    `
-      MATCH (a)-[r1:FEEDBACK]->(b), (a)<-[r2:FEEDBACK]-(b)
-      WHERE r1.score > 4 AND r2.score > 4
-      MERGE (a)-[:FRIENDS]-(b)
-  `,
-  );
-
   try {
     result = await session.run(`CALL gds.graph.drop('mlGraph');`);
     console.log(`graph delete successfully`);
@@ -121,21 +133,13 @@ export async function linkPredictionML() {
     console.log(`graph doesn't exist`);
   }
 
-  // result = await session.run(
-  //   `CALL gds.graph.project(
-  //     'mlGraph',
-  //     {Person:{}, MetaData:{}},
-  //     {FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{}, USER_ATTRIBUTES_CONSTANT: {}},
-  //     {relationshipProperties: ['score'] }
-  //   );`,
-  // );
-
   result = await session.run(
     `CALL gds.graph.project( 
-      'mlGraph', 
-      {Person:{}, MetaData:{}}, 
-      {FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{}, USER_ATTRIBUTES_CONSTANT: {}},
-      {relationshipProperties: ['score'] }
+        'mlGraph', 
+        {Person:{}, MetaData:{}}, 
+        {FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{}, USER_ATTRIBUTES_CONSTANT: {}},
+        {relationshipProperties: ['score'] 
+      }
     );`,
   );
 
@@ -171,11 +175,14 @@ export async function linkPredictionML() {
         topN: 1000,
         threshold: 0
       })
-       YIELD node1, node2, probability
-       WITH gds.util.asNode(node1) AS person1, gds.util.asNode(node2) AS person2, probability
-       MATCH (person1:Person)-[r1:USER_ATTRIBUTES_CONSTANT]-(md1:MetaData), (person2:Person)-[r2:USER_ATTRIBUTES_CONSTANT]-(md2:MetaData) OPTIONAL MATCH (person1)-[f:FRIENDS]-(person2)
-       RETURN person1.userId,  person2.userId, probability, md1.hot , md2.hot , abs(toInteger(md1.hot) - toInteger(md2.hot)) as abs
-       ORDER BY probability DESC
+        YIELD node1, node2, probability
+        WITH gds.util.asNode(node1) AS person1, gds.util.asNode(node2) AS person2, probability
+        MATCH (person1:Person)-[r1:USER_ATTRIBUTES_CONSTANT]->(md1:MetaData), 
+          (person2:Person)-[r2:USER_ATTRIBUTES_CONSTANT]->(md2:MetaData) 
+        OPTIONAL MATCH (person1)-[f:FRIENDS]-(person2)
+        RETURN person1.userId,  person2.userId, probability, md1.hot, md2.hot,
+            abs(toInteger(md1.hot) - toInteger(md2.hot)) as abs 
+        ORDER BY probability DESC
       `,
   );
 
@@ -198,7 +205,7 @@ export async function linkPredictionML() {
   console.log(`query took:`, end_time - start_time);
 
   printResults(result, 10);
-  // printResults(training_result);
+  printResults(training_result);
 
   return result;
 }
