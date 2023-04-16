@@ -90,14 +90,6 @@ export async function linkPredictionML() {
 
   result = await session.run(
     `
-    CALL gds.alpha.pipeline.linkPrediction.configureAutoTuning('lp-pipeline', {
-      maxTrials: 20
-    }) YIELD autoTuningConfig
-  `,
-  );
-
-  result = await session.run(
-    `
       CALL gds.alpha.pipeline.linkPrediction.addRandomForest('lp-pipeline', {})
         YIELD parameterSpace
     `,
@@ -136,11 +128,29 @@ export async function linkPredictionML() {
   result = await session.run(
     `CALL gds.graph.project( 
         'mlGraph', 
-        {Person:{}, MetaData:{}}, 
-        {FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{}, USER_ATTRIBUTES_CONSTANT: {}},
-        {relationshipProperties: ['score'] 
-      }
+        {
+          Person:{
+            properties: ['priority', 'community']
+          }, 
+          MetaData:{
+            properties: ['hot']
+          }
+        }, 
+        {
+          FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{}, USER_ATTRIBUTES_CONSTANT: {}
+        },
+        {
+          relationshipProperties: ['score'] 
+        }
     );`,
+  );
+
+  result = await session.run(
+    `
+    CALL gds.alpha.pipeline.linkPrediction.configureAutoTuning('lp-pipeline', {
+      maxTrials: 20
+    }) YIELD autoTuningConfig
+  `,
   );
 
   result = await session.run(

@@ -55,7 +55,7 @@ export async function createData({
     MERGE (p:Person {userId: toString(node)})
     WITH p
     CREATE (d:MetaData)
-    SET d.hot = toString(toInteger((rand()*20)-10))
+    SET d.hot = toInteger((rand()*20)-10)
     MERGE (p)-[:USER_ATTRIBUTES_CONSTANT]->(d);
     `,
     { nodes: nodes },

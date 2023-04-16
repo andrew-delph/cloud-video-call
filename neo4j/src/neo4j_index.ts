@@ -44,7 +44,7 @@ export function printResults(
   try {
     let results;
 
-    await funcs.createData({ deleteData: true, nodesNum: 1000, edgesNum: 7 });
+    await funcs.createData({ deleteData: true, nodesNum: 1000, edgesNum: 6 });
 
     await funcs.createFriends();
     // await funcs.createFeedback2();
