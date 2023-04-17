@@ -107,7 +107,11 @@ export async function getUsers() {
 
   const end_time = performance.now();
 
-  console.log(`getUsers`, end_time - start_time);
+  console.log(
+    `getUsers`,
+    `time ${end_time - start_time}`,
+    `length ${result.records.length}`,
+  );
 
   const community_data: {
     x: number;

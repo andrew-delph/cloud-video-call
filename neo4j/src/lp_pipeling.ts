@@ -2,7 +2,7 @@ import { session } from './neo4j_functions';
 import { printResults } from './neo4j_index';
 import * as funcs from './neo4j_functions';
 
-export async function linkPredictionML() {
+export async function createPipeline() {
   console.log(``);
   console.log(`--- linkPredictionML`);
   let result;
@@ -69,8 +69,8 @@ export async function linkPredictionML() {
 
   result = await session.run(
     `
-      CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'hadamard', {
-        nodeProperties: ['embedding1','embedding2','embedding3']
+      CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'L2', {
+        nodeProperties: ['embedding1']
       }) YIELD featureSteps
     `,
   );
@@ -118,6 +118,21 @@ export async function linkPredictionML() {
   // `,
   // );
 
+  result = await session.run(
+    `
+    CALL gds.alpha.pipeline.linkPrediction.configureAutoTuning('lp-pipeline', {
+      maxTrials: 20
+    }) YIELD autoTuningConfig
+  `,
+  );
+
+  return result;
+}
+
+export async function createMLGraph() {
+  let start_time = performance.now();
+  let result;
+
   try {
     result = await session.run(`CALL gds.graph.drop('mlGraph');`);
     console.log(`graph delete successfully`);
@@ -145,14 +160,12 @@ export async function linkPredictionML() {
     );`,
   );
 
-  result = await session.run(
-    `
-    CALL gds.alpha.pipeline.linkPrediction.configureAutoTuning('lp-pipeline', {
-      maxTrials: 20
-    }) YIELD autoTuningConfig
-  `,
-  );
+  return result;
+}
 
+export async function train() {
+  let start_time = performance.now();
+  let result;
   result = await session.run(
     `CALL gds.beta.model.drop('lp-pipeline-model', False)
       YIELD modelInfo, loaded, shared, stored
@@ -177,12 +190,18 @@ export async function linkPredictionML() {
     `,
   );
 
+  return result;
+}
+
+export async function predict() {
+  let start_time = performance.now();
   console.log(`predicting`);
+  let result;
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.predict.stream('mlGraph', {
         modelName: 'lp-pipeline-model',
-        topN: 1000,
+        topN: 5000,
         threshold: 0
       })
         YIELD node1, node2, probability
@@ -212,10 +231,9 @@ export async function linkPredictionML() {
 
   funcs.createDotGraph(data, `link-prediction`);
 
-  console.log(`query took:`, end_time - start_time);
+  console.log(`predict:`, end_time - start_time);
 
   printResults(result, 10);
-  printResults(training_result);
 
   return result;
 }

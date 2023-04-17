@@ -1,6 +1,6 @@
 import * as neo4j from 'neo4j-driver';
 import { Dict } from 'neo4j-driver-core/types/record';
-import { linkPredictionML } from './lp_pipeling';
+import * as lp from './lp_pipeling';
 import * as funcs from './neo4j_functions';
 
 let result: neo4j.QueryResult<Dict<PropertyKey, any>>;
@@ -44,7 +44,7 @@ export function printResults(
   try {
     let results;
 
-    await funcs.createData({ deleteData: true, nodesNum: 1000, edgesNum: 6 });
+    await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 50 });
 
     await funcs.createFriends();
     // await funcs.createFeedback2();
@@ -61,7 +61,10 @@ export function printResults(
     // results = await funcs.getVarience();
     // printResults(results, 3);
 
-    await linkPredictionML();
+    await lp.createPipeline();
+    await lp.createMLGraph();
+    await lp.train();
+    await lp.predict();
   } finally {
     console.log(`closing.`);
     await funcs.session.close();
