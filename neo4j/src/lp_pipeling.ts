@@ -73,7 +73,7 @@ export async function createPipeline() {
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'COSINE', {
-        nodeProperties: ['embedding1']
+        nodeProperties: ['hot']
       }) YIELD featureSteps
     `,
   );
@@ -82,9 +82,9 @@ export async function createPipeline() {
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.configureSplit('lp-pipeline', {
-        testFraction: 0.2,
-        trainFraction: 0.2,
-        validationFolds: 2
+        testFraction: 0.25,
+        trainFraction: 0.6,
+        validationFolds: 3
       })
       YIELD splitConfig
     `,
@@ -150,10 +150,10 @@ export async function createMLGraph() {
         'mlGraph', 
         {
           Person:{
-            properties: ['hot', 'priority', 'community']
+            properties: {hot: {defaultValue: 0}, priority: {priority: 0.0}, community: {defaultValue: 0.0}}
           }, 
           MetaData:{
-            properties: ['hot']
+            properties: {hot: {defaultValue: 0}}
           }
         }, 
         {
