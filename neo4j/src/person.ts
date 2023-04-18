@@ -53,7 +53,7 @@ export const getRandomPerson = (auth: string): Person => {
 };
 
 export const createRandom = (auth: string): Person => {
-  const attributes = {};
+  const attributes = { type: `random` };
 
   return new Person(PersonType.Random, auth, attributes);
 };
@@ -61,13 +61,14 @@ export const createRandom = (auth: string): Person => {
 export const createFemale = (auth: string): Person => {
   const attributes = {
     gender: `female`,
+    type: `female`,
   };
 
   return new Person(PersonType.Female, auth, attributes);
 };
 
 export const createMale = (auth: string): Person => {
-  const attributes = { gender: `male` };
+  const attributes = { gender: `male`, type: `male` };
 
   return new Person(PersonType.Male, auth, attributes);
 };
