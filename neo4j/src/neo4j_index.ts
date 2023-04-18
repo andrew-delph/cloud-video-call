@@ -44,7 +44,7 @@ const start_time = performance.now();
   try {
     let results;
 
-    await funcs.createData({ deleteData: true, nodesNum: 10, edgesNum: 1 });
+    await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 10 });
 
     await funcs.createFriends();
 
@@ -56,6 +56,8 @@ const start_time = performance.now();
 
     results = await funcs.getUsers();
     printResults(results, 50);
+
+    return;
 
     // results = await funcs.getVarience();
     // printResults(results, 3);

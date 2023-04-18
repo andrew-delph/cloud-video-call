@@ -152,8 +152,8 @@ export async function getUsers() {
   result = await session.run(
     `
     MATCH (a:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(b:MetaData)
-    RETURN a.userId, a.community, a.priority, a.embedding, b.hot
-    ORDER BY a.hot DESCENDING
+    RETURN a.userId, a.community, a.priority, a.embedding, b.hot, b.type
+    ORDER BY a.priority DESCENDING
     `,
   );
 
