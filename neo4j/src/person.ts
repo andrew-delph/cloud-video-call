@@ -69,13 +69,19 @@ export class Person {
   }
 
   async createFeedback(other: Person): Promise<void> {
+    const calcScore = calcScoreMap.get(this.type);
+    if (!calcScore) throw Error(`calcScore is undefined`);
     await session.run(
       `
         MATCH (a:Person{userId: $userId})
         MATCH (b:Person{userId: $otherId})
         CREATE (a)-[f1:FEEDBACK {score: $score}]->(b)
       `,
-      { userId: this.userId, otherId: other.userId, score: 0 },
+      {
+        userId: this.userId,
+        otherId: other.userId,
+        score: calcScore(this, other),
+      },
     );
   }
 }
