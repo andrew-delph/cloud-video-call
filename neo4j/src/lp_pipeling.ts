@@ -72,8 +72,8 @@ export async function createPipeline() {
 
   result = await session.run(
     `
-      CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'COSINE', {
-        nodeProperties: ['hot']
+      CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'L2', {
+        nodeProperties: ['embedding1', 'hot', 'priority', 'community']
       }) YIELD featureSteps
     `,
   );
@@ -132,7 +132,7 @@ export async function createPipeline() {
   return result;
 }
 
-export async function createMLGraph() {
+export async function createMLGraph(graphName: string = `mlGraph`) {
   console.log(``);
   console.log(`--- createMLGraph`);
   let start_time = performance.now();
@@ -147,13 +147,13 @@ export async function createMLGraph() {
 
   result = await session.run(
     `CALL gds.graph.project( 
-        'mlGraph', 
+        '${graphName}', 
         {
           Person:{
-            properties: {hot: {defaultValue: 0}, priority: {priority: 0.0}, community: {defaultValue: 0.0}}
+            properties: {hot: {defaultValue: 0.0}, priority: {defaultValue: 0.0}, community: {defaultValue: 0.0}}
           }, 
           MetaData:{
-            properties: {hot: {defaultValue: 0}}
+            properties: {hot: {defaultValue: 0.0}}
           }
         }, 
         {
@@ -212,7 +212,7 @@ export async function predict() {
       CALL gds.beta.pipeline.linkPrediction.predict.stream('mlGraph', {
         modelName: 'lp-pipeline-model',
         topN: 5000,
-        threshold: 0.5
+        threshold: 0
       })
         YIELD node1, node2, probability
         WITH gds.util.asNode(node1) AS person1, gds.util.asNode(node2) AS person2, probability

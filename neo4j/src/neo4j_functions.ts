@@ -313,29 +313,40 @@ export async function createFeedback2() {
   return result;
 }
 
-export async function createGraph() {
+export async function createGraph(graphName: string = `mlGraph`) {
+  console.log(``);
+  console.log(`--- createGraph ${graphName}`);
+  let start_time = performance.now();
   let result;
-  // delete myGraph if it exists
+
   try {
-    result = await session.run(`CALL gds.graph.drop('myGraph');`);
+    result = await session.run(`CALL gds.graph.drop('${graphName}');`);
     console.log(`graph delete successfully`);
   } catch (e) {
     console.log(`graph doesn't exist`);
   }
 
-  let start_time = performance.now();
-  // create myGraph
-  console.log(`creating graph`);
-  // `CALL gds.graph.project( 'myGraph', {Person:{}, MetaData:{}}, {FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{}, USER_ATTRIBUTES_CONSTANT: {}}, {relationshipProperties: ['score'] });`
   result = await session.run(
     `CALL gds.graph.project( 
-      'myGraph', 
-      {Person:{properties: 'hot'}, MetaData:{properties: 'hot'}}, 
-      {FRIENDS:{}, FEEDBACK:{}, USER_ATTRIBUTES_CONSTANT: {}},
-      {relationshipProperties: ['score'] }
+        '${graphName}', 
+        {
+          Person:{
+            properties: {hot: {defaultValue: 0.0}, priority: {defaultValue: 0.0}, community: {defaultValue: 0.0}}
+          }, 
+          MetaData:{
+            properties: {hot: {defaultValue: 0.0}}
+          }
+        }, 
+        {
+          FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{}, USER_ATTRIBUTES_CONSTANT: {}
+        },
+        {
+          relationshipProperties: ['score'] 
+        }
     );`,
   );
-  console.log(`created graph`, performance.now() - start_time);
+  const end_time = performance.now();
+  console.log(`createGraph`, end_time - start_time);
 
   return result;
 }
