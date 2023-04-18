@@ -167,14 +167,27 @@ export async function getUsers() {
     `length ${result.records.length}`,
   );
 
+  // const priority_vs_community: {
+  //   x: number;
+  //   y: number;
+  // }[] = [];
+
+  // result.records.forEach((record) => {
+  //   const x = parseFloat(record.get(`a.community`));
+  //   const y = parseFloat(record.get(`a.priority`));
+  //   priority_vs_community.push({ x, y });
+  // });
+
+  // createDotGraph(priority_vs_community, `priority_vs_community`);
+
   const community_data: {
     x: number;
     y: number;
   }[] = [];
 
   result.records.forEach((record) => {
-    const x = parseFloat(record.get(`a.community`));
-    const y = parseFloat(record.get(`b.hot`));
+    const y = parseFloat(record.get(`a.community`));
+    const x = parseFloat(record.get(`b.type`));
     community_data.push({ x, y });
   });
 
@@ -186,8 +199,8 @@ export async function getUsers() {
   }[] = [];
 
   result.records.forEach((record) => {
-    const x = parseFloat(record.get(`a.priority`));
-    const y = parseFloat(record.get(`b.hot`));
+    const y = parseFloat(record.get(`a.priority`));
+    const x = parseFloat(record.get(`b.type`));
     priority_data.push({ x, y });
   });
 
@@ -200,16 +213,17 @@ export function createDotGraph(
   data: {
     x: number;
     y: number;
+    dotColor?: string;
   }[],
   name: string,
 ) {
+  console.log(`create data ${data.length}`);
   const fs = require(`fs`);
 
   const width = 800 * 2;
   const height = 600 * 2;
   const padding = 100;
   const dotSize = 5;
-  const dotColor = `red`;
 
   const minX = Math.min(...data.map((p) => p.x));
   const maxX = Math.max(...data.map((p) => p.x));
@@ -248,14 +262,14 @@ export function createDotGraph(
   // ctx.fillText(`(${maxX}, ${maxY})`, width - padding, padding + 20);
 
   // Dots
-  ctx.fillStyle = dotColor;
-  data.forEach((point) => {
+  for (const point of data) {
+    ctx.fillStyle = point.dotColor ?? `red`;
     const x = (point.x - minX) * scaleX + padding;
     const y = height - padding - (point.y - minY) * scaleY;
     ctx.beginPath();
     ctx.arc(x, y, dotSize, 0, Math.PI * 2);
     ctx.fill();
-  });
+  }
 
   const buffer = canvas.toBuffer(`image/png`);
   fs.writeFileSync(`./${name}.png`, buffer);
@@ -328,40 +342,20 @@ export async function createFriends() {
   return result;
 }
 
-export async function createFeedback2() {
+export async function getFriends() {
   let start_time = performance.now();
   let result;
-  // delete friends
+
   result = await session.run(
     `
-    MATCH ()-[r:FEEDBACK2]-()
-    DELETE r
-    RETURN r
+      MATCH (a:Person)-[r:FRIENDS]->(b:Person)
+      MATCH (a:Person)-[rel1:USER_ATTRIBUTES_CONSTANT]->(ad:MetaData)
+      MATCH (b:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(bd:MetaData)
+      return ad.type, bd.type
   `,
   );
 
-  console.log(`deleted FEEDBACK2: ${result.records.length}`);
-
-  // create friends
-  result = await session.run(
-    `
-      MATCH (a)-[r:FEEDBACK]->(b)
-      WITH a, b, r
-      MERGE (a)-[r2:FEEDBACK2]->(b)
-      SET r2.score = CASE
-        WHEN r.score < -9 THEN -10
-        ELSE 10
-      END
-      return r2
-  `,
-  );
-
-  // MATCH (a)-[r1:FEEDBACK]->(b)
-  // WHERE r1.score > -5
-  // MERGE (a)-[r:FEEDBACK2{score:10}]-(b)
-  // RETURN r
-  console.log(`created FEEDBACK2: ${result.records.length}`);
-  console.log(`createFeedback2`, performance.now() - start_time);
+  console.log(`getFriends`, performance.now() - start_time);
 
   return result;
 }
@@ -384,10 +378,10 @@ export async function createGraph(graphName: string = `myGraph`) {
         '${graphName}', 
         {
           Person:{
-            properties: {hot: {defaultValue: 0.0}, priority: {defaultValue: 0.0}, community: {defaultValue: 0.0}}
+            properties: {priority: {defaultValue: 0.0}, community: {defaultValue: 0.0}}
           }, 
           MetaData:{
-            properties: {hot: {defaultValue: 0.0}}
+            properties: {}
           }
         }, 
         {

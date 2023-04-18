@@ -73,7 +73,7 @@ export async function createPipeline() {
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'L2', {
-        nodeProperties: ['embedding1', 'hot', 'priority', 'community']
+        nodeProperties: ['embedding1', 'priority', 'community']
       }) YIELD featureSteps
     `,
   );
@@ -132,10 +132,6 @@ export async function createPipeline() {
   return result;
 }
 
-export async function createMLGraph() {
-  return await funcs.createGraph(`mlGraph`);
-}
-
 export async function train() {
   console.log(``);
   console.log(`--- train`);
@@ -188,7 +184,8 @@ export async function predict() {
           (person2:Person)-[r2:USER_ATTRIBUTES_CONSTANT]->(md2:MetaData) 
         OPTIONAL MATCH (person1)-[f:FRIENDS]-(person2)
         RETURN person1.userId,  person2.userId, probability, md1.hot, md2.hot,
-            abs(toInteger(md1.hot) - toInteger(md2.hot)) as abs 
+        abs(toInteger(md1.hot) - toInteger(md2.hot)) as abs,
+        (toInteger(md1.type) + toInteger(md2.type)) as type_sum 
         ORDER BY probability DESC
       `,
   );
@@ -203,7 +200,7 @@ export async function predict() {
   const records = result.records;
   records.slice(0, -1).forEach((record) => {
     const x = parseFloat(record.get(`probability`));
-    const y = parseFloat(record.get(`abs`));
+    const y = parseFloat(record.get(`type_sum`));
     data.push({ x, y });
   });
 

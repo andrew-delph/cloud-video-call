@@ -44,7 +44,12 @@ const start_time = performance.now();
   try {
     let results;
 
-    await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 10 });
+    // results = await funcs.getFriends();
+    // printResults(results, 50);
+
+    // return;
+
+    await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 50 });
 
     await funcs.createFriends();
 
@@ -55,15 +60,13 @@ const start_time = performance.now();
     // results = await funcs.callNodeEmbeddings();
 
     results = await funcs.getUsers();
-    printResults(results, 50);
-
-    return;
+    // printResults(results, 50);
 
     // results = await funcs.getVarience();
     // printResults(results, 3);
 
     await lp.createPipeline();
-    await lp.createMLGraph();
+    await funcs.createGraph(`mlGraph`);
     await lp.train();
     await lp.predict();
   } finally {

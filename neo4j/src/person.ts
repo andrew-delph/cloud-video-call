@@ -29,7 +29,7 @@ export const calcScoreMap = new Map<
     PersonType.Female,
     (me: Person, otherPerson: Person) => {
       if (otherPerson.type == PersonType.Male) return 10;
-      if (otherPerson.type == PersonType.Female) return 0;
+      //   if (otherPerson.type == PersonType.Female) return 0;
       return -10;
     },
   ],
@@ -54,7 +54,7 @@ export const getRandomPerson = (auth: string): Person => {
 };
 
 export const createRandom = (auth: string): Person => {
-  const attributes = { type: `random` };
+  const attributes = { type: 0 };
 
   return new Person(PersonType.Random, auth, attributes);
 };
@@ -62,14 +62,14 @@ export const createRandom = (auth: string): Person => {
 export const createFemale = (auth: string): Person => {
   const attributes = {
     gender: `female`,
-    type: `female`,
+    type: 1,
   };
 
   return new Person(PersonType.Female, auth, attributes);
 };
 
 export const createMale = (auth: string): Person => {
-  const attributes = { gender: `male`, type: `male` };
+  const attributes = { gender: `male`, type: 2 };
 
   return new Person(PersonType.Male, auth, attributes);
 };
