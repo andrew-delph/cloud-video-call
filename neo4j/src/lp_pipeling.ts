@@ -132,40 +132,8 @@ export async function createPipeline() {
   return result;
 }
 
-export async function createMLGraph(graphName: string = `mlGraph`) {
-  console.log(``);
-  console.log(`--- createMLGraph`);
-  let start_time = performance.now();
-  let result;
-
-  try {
-    result = await session.run(`CALL gds.graph.drop('mlGraph');`);
-    console.log(`graph delete successfully`);
-  } catch (e) {
-    console.log(`graph doesn't exist`);
-  }
-
-  result = await session.run(
-    `CALL gds.graph.project( 
-        '${graphName}', 
-        {
-          Person:{
-            properties: {hot: {defaultValue: 0.0}, priority: {defaultValue: 0.0}, community: {defaultValue: 0.0}}
-          }, 
-          MetaData:{
-            properties: {hot: {defaultValue: 0.0}}
-          }
-        }, 
-        {
-          FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{}, USER_ATTRIBUTES_CONSTANT: {}
-        },
-        {
-          relationshipProperties: ['score'] 
-        }
-    );`,
-  );
-
-  return result;
+export async function createMLGraph() {
+  return await funcs.createGraph(`mlGraph`);
 }
 
 export async function train() {

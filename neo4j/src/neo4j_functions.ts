@@ -313,7 +313,7 @@ export async function createFeedback2() {
   return result;
 }
 
-export async function createGraph(graphName: string = `mlGraph`) {
+export async function createGraph(graphName: string = `myGraph`) {
   console.log(``);
   console.log(`--- createGraph ${graphName}`);
   let start_time = performance.now();
