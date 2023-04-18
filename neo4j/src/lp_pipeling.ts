@@ -34,42 +34,45 @@ export async function createPipeline() {
   );
   // printResults(result, 400);
 
-  result = await session.run(
-    `
-      CALL gds.beta.pipeline.linkPrediction.addNodeProperty('lp-pipeline', 'fastRP', {
-        mutateProperty: 'embedding2',
-        embeddingDimension: 256,
-        randomSeed: 42,
-        contextNodeLabels: ['Person'],
-        contextRelationshipTypes: ['FEEDBACK']
-      })
-    `,
-  );
-  // printResults(result, 400);
-
-  result = await session.run(
-    `
-      CALL gds.beta.pipeline.linkPrediction.addNodeProperty('lp-pipeline', 'fastRP', {
-        mutateProperty: 'embedding3',
-        embeddingDimension: 256,
-        randomSeed: 42,
-        contextNodeLabels: ['Person','MetaData'],
-        contextRelationshipTypes: ['FEEDBACK', 'FRIENDS','USER_ATTRIBUTES_CONSTANT']
-      })
-    `,
-  );
+  // result = await session.run(
+  //   `
+  //     CALL gds.beta.pipeline.linkPrediction.addNodeProperty('lp-pipeline', 'fastRP', {
+  //       mutateProperty: 'embedding2',
+  //       embeddingDimension: 256,
+  //       randomSeed: 42,
+  //       contextNodeLabels: ['Person'],
+  //       contextRelationshipTypes: ['FEEDBACK']
+  //     })
+  //   `,
+  // );
 
   // result = await session.run(
   //   `
-  //     CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'hadamard', {
-  //       nodeProperties: ['embedding1','embedding2']
-  //     }) YIELD featureSteps
+  //     CALL gds.beta.pipeline.linkPrediction.addNodeProperty('lp-pipeline', 'fastRP', {
+  //       mutateProperty: 'embedding2',
+  //       embeddingDimension: 256,
+  //       randomSeed: 42,
+  //       contextNodeLabels: ['Person'],
+  //       contextRelationshipTypes: ['FEEDBACK']
+  //     })
+  //   `,
+  // );
+
+  // result = await session.run(
+  //   `
+  //     CALL gds.beta.pipeline.linkPrediction.addNodeProperty('lp-pipeline', 'fastRP', {
+  //       mutateProperty: 'embedding3',
+  //       embeddingDimension: 256,
+  //       randomSeed: 42,
+  //       contextNodeLabels: ['Person','MetaData'],
+  //       contextRelationshipTypes: ['FEEDBACK', 'FRIENDS','USER_ATTRIBUTES_CONSTANT']
+  //     })
   //   `,
   // );
 
   result = await session.run(
     `
-      CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'L2', {
+      CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'COSINE', {
         nodeProperties: ['embedding1']
       }) YIELD featureSteps
     `,
@@ -118,18 +121,20 @@ export async function createPipeline() {
   // `,
   // );
 
-  result = await session.run(
-    `
-    CALL gds.alpha.pipeline.linkPrediction.configureAutoTuning('lp-pipeline', {
-      maxTrials: 20
-    }) YIELD autoTuningConfig
-  `,
-  );
+  // result = await session.run(
+  //   `
+  //   CALL gds.alpha.pipeline.linkPrediction.configureAutoTuning('lp-pipeline', {
+  //     maxTrials: 20
+  //   }) YIELD autoTuningConfig
+  // `,
+  // );
 
   return result;
 }
 
 export async function createMLGraph() {
+  console.log(``);
+  console.log(`--- createMLGraph`);
   let start_time = performance.now();
   let result;
 
@@ -145,7 +150,7 @@ export async function createMLGraph() {
         'mlGraph', 
         {
           Person:{
-            properties: ['priority', 'community']
+            properties: ['hot', 'priority', 'community']
           }, 
           MetaData:{
             properties: ['hot']
@@ -164,6 +169,8 @@ export async function createMLGraph() {
 }
 
 export async function train() {
+  console.log(``);
+  console.log(`--- train`);
   let start_time = performance.now();
   let result;
   result = await session.run(
@@ -179,6 +186,8 @@ export async function train() {
         pipeline: 'lp-pipeline',
         modelName: 'lp-pipeline-model',
         metrics: ['AUCPR'],
+        sourceNodeLabel: 'Person',
+        targetNodeLabel: 'Person',
         targetRelationshipType: 'FRIENDS'
       }) YIELD modelInfo, modelSelectionStats
       RETURN
@@ -194,15 +203,16 @@ export async function train() {
 }
 
 export async function predict() {
+  console.log(``);
+  console.log(`--- predict`);
   let start_time = performance.now();
-  console.log(`predicting`);
   let result;
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.predict.stream('mlGraph', {
         modelName: 'lp-pipeline-model',
         topN: 5000,
-        threshold: 0
+        threshold: 0.5
       })
         YIELD node1, node2, probability
         WITH gds.util.asNode(node1) AS person1, gds.util.asNode(node2) AS person2, probability
@@ -233,7 +243,7 @@ export async function predict() {
 
   console.log(`predict:`, end_time - start_time);
 
-  printResults(result, 10);
+  printResults(result, 50);
 
   return result;
 }

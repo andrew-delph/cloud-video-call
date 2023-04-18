@@ -56,6 +56,7 @@ export async function createData({
     WITH p
     CREATE (d:MetaData)
     SET d.hot = toInteger((rand()*20)-10)
+    SET p.hot = d.hot
     MERGE (p)-[:USER_ATTRIBUTES_CONSTANT]->(d);
     `,
     { nodes: nodes },
@@ -98,8 +99,8 @@ export async function getUsers() {
   result = await session.run(
     `
     MATCH (a:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(b:MetaData)
-    RETURN a.userId, a.community, a.priority, b.hot
-    ORDER BY a.priority DESCENDING
+    RETURN a.userId, a.community, a.priority, a.embedding, b.hot
+    ORDER BY a.hot DESCENDING
     `,
   );
 
@@ -329,7 +330,7 @@ export async function createGraph() {
   result = await session.run(
     `CALL gds.graph.project( 
       'myGraph', 
-      {Person:{}, MetaData:{}}, 
+      {Person:{properties: 'hot'}, MetaData:{properties: 'hot'}}, 
       {FRIENDS:{}, FEEDBACK:{}, USER_ATTRIBUTES_CONSTANT: {}},
       {relationshipProperties: ['score'] }
     );`,
@@ -488,6 +489,34 @@ export async function callCommunities() {
       nodeLabels: ['Person'],
       relationshipTypes: ['FRIENDS'],
       writeProperty: 'community' 
+    }
+    )
+  `,
+  );
+
+  const end_time = performance.now();
+
+  console.log(`query`, end_time - start_time);
+
+  return result;
+}
+
+export async function callNodeEmbeddings() {
+  console.log(``);
+  console.log(`--- callNodeEmbeddings`);
+
+  let start_time = performance.now();
+
+  let result = await session.run(
+    `
+    CALL gds.fastRP.write('myGraph', 
+    {  
+      nodeLabels: ['Person'],
+      featureProperties: ['hot'],
+      embeddingDimension: 2,
+      writeProperty: 'embedding',
+      propertyRatio: 1.0,
+      randomSeed: 33
     }
     )
   `,

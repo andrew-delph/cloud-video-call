@@ -47,16 +47,15 @@ export function printResults(
     await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 50 });
 
     await funcs.createFriends();
-    // await funcs.createFeedback2();
 
     await funcs.createGraph();
-
     results = await funcs.callPriority();
     results = await funcs.callWriteSimilar();
     results = await funcs.callCommunities();
+    results = await funcs.callNodeEmbeddings();
 
     results = await funcs.getUsers();
-    // // printResults(results, 50);
+    printResults(results, 50);
 
     // results = await funcs.getVarience();
     // printResults(results, 3);
