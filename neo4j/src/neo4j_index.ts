@@ -39,12 +39,13 @@ export function printResults(
   });
   console.log(`records.length:`, records.length);
 }
-
+const start_time = performance.now();
 (async () => {
   try {
     let results;
 
-    await funcs.createData({ deleteData: true, nodesNum: 110, edgesNum: 50 });
+    await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 50 });
+    return;
 
     await funcs.createFriends();
 
@@ -65,7 +66,8 @@ export function printResults(
     await lp.train();
     await lp.predict();
   } finally {
-    console.log(`closing.`);
+    const end_time = performance.now();
+    console.log(`closing. ${(end_time - start_time) / 1000}`);
     await funcs.session.close();
     await funcs.driver.close();
   }

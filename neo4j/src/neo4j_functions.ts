@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { printResults } from './neo4j_index';
 import { createCanvas } from 'canvas';
 import { Dict } from 'neo4j-driver-core/types/record';
+import { getRandomPerson } from './person';
 
 export const driver = neo4j.driver(
   `neo4j://localhost:7687`,
@@ -35,7 +36,7 @@ export async function createData({
   const edges = [];
 
   for (var i = 0; i < nodesNum; i++) {
-    nodes.push(`node${i}`);
+    nodes.push(getRandomPerson(`node${i}`));
   }
 
   edgesNum = nodesNum * edgesNum;
@@ -48,46 +49,98 @@ export async function createData({
     edges.push({ a, b });
   }
 
-  console.log(`create nodes ${nodesNum}`);
+  console.log(`create nodes ${nodes.length}`);
 
-  await session.run(
-    `UNWIND $nodes as node
-    MERGE (p:Person {userId: toString(node)})
-    WITH p
-    CREATE (d:MetaData)
-    SET d.hot = toInteger((rand()*20)-10)
-    SET p.hot = d.hot
-    MERGE (p)-[:USER_ATTRIBUTES_CONSTANT]->(d);
-    `,
-    { nodes: nodes },
-  );
+  for (const person of nodes) {
+    await person.createNode();
+  }
 
-  //SET d.hot = toString(toInteger((rand()*20)-10))
+  console.log(`create edges ${edges.length}`);
 
-  console.log(`create edges ${edgesNum}`);
-
-  // await session.run(
-  //   `
-  //   UNWIND $edges as edge MATCH (a1:Person)-[rel1:USER_ATTRIBUTES_CONSTANT]->(b1:MetaData), (a2:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b2:MetaData)
-  //   WHERE a1.userId = toString(edge.a) AND a2.userId = toString(edge.b)
-  //   CREATE (a1)-[f1:FEEDBACK {score: toInteger(b2.hot)}]->(a2)
-  //   CREATE (a2)-[f2:FEEDBACK {score: toInteger(b1.hot)}]->(a1)
-  //   `,
-  //   { edges: edges },
-  // );
-
-  await session.run(
-    `
-    UNWIND $edges as edge MATCH (a1:Person)-[rel1:USER_ATTRIBUTES_CONSTANT]->(b1:MetaData), (a2:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b2:MetaData)
-    WHERE a1.userId = toString(edge.a) AND a2.userId = toString(edge.b)
-    CREATE (a1)-[f1:FEEDBACK {score: CASE WHEN toInteger(b1.hot)-2 <= toInteger(b2.hot) THEN 10 ELSE -10 END}]->(a2)
-    CREATE (a2)-[f2:FEEDBACK {score: CASE WHEN toInteger(b2.hot)-2 <= toInteger(b1.hot) THEN 10 ELSE -10 END}]->(a1)
-    `,
-    { edges: edges },
-  );
+  for (const edge of edges) {
+    const a = edge.a;
+    const b = edge.b;
+    await a.createFeedback(b);
+    await b.createFeedback(a);
+  }
 
   console.log(`done`);
 }
+
+// export async function createDataOld({
+//   nodesNum = 100,
+//   edgesNum = 7,
+//   deleteData = false,
+// }) {
+//   if (deleteData) {
+//     console.log(`Deleting`);
+//     await session.run(`
+//     MATCH (n)
+//     CALL {
+//       WITH n
+//       DETACH DELETE n
+//     } IN TRANSACTIONS
+//     `);
+//   }
+
+//   const nodes = [];
+//   const edges = [];
+
+//   for (var i = 0; i < nodesNum; i++) {
+//     nodes.push(`node${i}`);
+//   }
+
+//   edgesNum = nodesNum * edgesNum;
+//   for (var i = 0; i < edgesNum; i++) {
+//     const a = nodes[Math.floor(Math.random() * nodesNum)];
+//     let b = nodes[Math.floor(Math.random() * nodesNum)];
+//     while (a === b) {
+//       b = nodes[Math.floor(Math.random() * nodesNum)];
+//     }
+//     edges.push({ a, b });
+//   }
+
+//   console.log(`create nodes ${nodesNum}`);
+
+//   await session.run(
+//     `UNWIND $nodes as node
+//     MERGE (p:Person {userId: toString(node)})
+//     WITH p
+//     CREATE (d:MetaData)
+//     SET d.hot = toInteger((rand()*20)-10)
+//     SET p.hot = d.hot
+//     MERGE (p)-[:USER_ATTRIBUTES_CONSTANT]->(d);
+//     `,
+//     { nodes: nodes },
+//   );
+
+//   //SET d.hot = toString(toInteger((rand()*20)-10))
+
+//   console.log(`create edges ${edgesNum}`);
+
+//   // await session.run(
+//   //   `
+//   //   UNWIND $edges as edge MATCH (a1:Person)-[rel1:USER_ATTRIBUTES_CONSTANT]->(b1:MetaData), (a2:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b2:MetaData)
+//   //   WHERE a1.userId = toString(edge.a) AND a2.userId = toString(edge.b)
+//   //   CREATE (a1)-[f1:FEEDBACK {score: toInteger(b2.hot)}]->(a2)
+//   //   CREATE (a2)-[f2:FEEDBACK {score: toInteger(b1.hot)}]->(a1)
+//   //   `,
+//   //   { edges: edges },
+//   // );
+
+//   await session.run(
+//     `
+//     UNWIND $edges as edge MATCH (a1:Person)-[rel1:USER_ATTRIBUTES_CONSTANT]->(b1:MetaData), (a2:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b2:MetaData)
+//     WHERE a1.userId = toString(edge.a) AND a2.userId = toString(edge.b)
+//     CREATE (a1)-[f1:FEEDBACK {score: CASE WHEN toInteger(b1.hot)-2 <= toInteger(b2.hot) THEN 10 ELSE -10 END}]->(a2)
+//     CREATE (a2)-[f2:FEEDBACK {score: CASE WHEN toInteger(b2.hot)-2 <= toInteger(b1.hot) THEN 10 ELSE -10 END}]->(a1)
+//     `,
+//     { edges: edges },
+//   );
+
+//   console.log(`done`);
+// }
+
 export async function getUsers() {
   console.log();
   console.log(`running getUsers`);
