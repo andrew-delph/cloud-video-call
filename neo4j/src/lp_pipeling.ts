@@ -72,8 +72,8 @@ export async function createPipeline() {
 
   result = await session.run(
     `
-      CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'L2', {
-        nodeProperties: ['embedding1', 'priority', 'community']
+      CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'COSINE', {
+        nodeProperties: ['type']
       }) YIELD featureSteps
     `,
   );
@@ -183,8 +183,7 @@ export async function predict() {
         MATCH (person1:Person)-[r1:USER_ATTRIBUTES_CONSTANT]->(md1:MetaData), 
           (person2:Person)-[r2:USER_ATTRIBUTES_CONSTANT]->(md2:MetaData) 
         OPTIONAL MATCH (person1)-[f:FRIENDS]-(person2)
-        RETURN person1.userId,  person2.userId, probability, md1.hot, md2.hot,
-        abs(toInteger(md1.hot) - toInteger(md2.hot)) as abs,
+        RETURN person1.userId,  person2.userId, probability,
         (toInteger(md1.type) + toInteger(md2.type)) as type_sum 
         ORDER BY probability DESC
       `,

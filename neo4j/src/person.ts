@@ -105,9 +105,10 @@ export class Person {
   }
 
   async createNode(): Promise<void> {
+    const type = this.attributes.type;
     await session.run(
       `
-        MERGE (p:Person {userId:$userId})
+        MERGE (p:Person {userId:$userId, type: ${type}})
         WITH p
         CREATE (d:MetaData)
         SET d = $attributes

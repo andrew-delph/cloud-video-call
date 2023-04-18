@@ -16,6 +16,7 @@ export function printResults(
   // console.log(result.summary);
   const records = result.records;
   console.log(`print records. limit is ${limit}`);
+  console.log(`>>`);
   records.slice(0, limit).forEach((record) => {
     try {
       throw `dont use`;
@@ -30,13 +31,23 @@ export function printResults(
         record.get(`other`),
       );
     } catch (e) {
-      console.log(`>>`);
+      let line = ``;
       record.keys.forEach((key) => {
-        console.log(`${key.toString()}: ${JSON.stringify(record.get(key))}`);
+        line =
+          line +
+          ` ` +
+          `${key.toString()}: ${JSON.stringify(record.get(key))}` +
+          `\t`;
       });
-      console.log(`<<`);
+      console.log(line);
+
+      // record.keys.forEach((key) => {
+      // console.log(`${key.toString()}: ${JSON.stringify(record.get(key))}`);
+      // });
     }
   });
+  console.log(`<<`);
+
   console.log(`records.length:`, records.length);
 }
 const start_time = performance.now();
