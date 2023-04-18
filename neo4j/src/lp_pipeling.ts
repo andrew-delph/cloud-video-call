@@ -211,7 +211,7 @@ export async function predict() {
 
   console.log(`predict:`, end_time - start_time);
 
-  printResults(result, 50);
+  printResults(result, 30);
 
   return result;
 }

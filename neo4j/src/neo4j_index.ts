@@ -51,8 +51,8 @@ export function printResults(
     await funcs.createGraph();
     results = await funcs.callPriority();
     results = await funcs.callCommunities();
-    results = await funcs.callWriteSimilar();
-    results = await funcs.callNodeEmbeddings();
+    // results = await funcs.callWriteSimilar();
+    // results = await funcs.callNodeEmbeddings();
 
     results = await funcs.getUsers();
     printResults(results, 50);
@@ -62,7 +62,7 @@ export function printResults(
 
     await lp.createPipeline();
     await lp.createMLGraph();
-    // await lp.train();
+    await lp.train();
     await lp.predict();
   } finally {
     console.log(`closing.`);
