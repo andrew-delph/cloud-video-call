@@ -207,8 +207,8 @@ export async function createRidgeLineChart(
   );
   const xScale = d3
     .scaleLinear()
-    .range([options.margin.left, options.width - options.margin.right])
-    .domain([0, d3.max(dataParsed, (d) => d.values.length)!]);
+    .range([options.margin.left, options.width - options.margin.right]);
+  // .domain([0, d3.max(dataParsed, (d) => d.values.length)! / 5]);
 
   const yScale = d3
     .scaleLinear()
