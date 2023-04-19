@@ -140,12 +140,16 @@ function createHistogram(numbers: number[]): [number, number][] {
 
   const min = Math.min(...numbers);
   const max = Math.max(...numbers);
-  const range = 100;
+  const range = 10;
+  const bucketSize = (max - min) / range;
+
+  for (let i = min; i < max; i = i + bucketSize) {
+    histogram[i] = 0;
+  }
 
   numbers.forEach((number) => {
-    const bucketSize = (max - min) / range;
     const roundedNumber =
-      Math.round((number - min) / bucketSize) * bucketSize + min;
+      Math.floor((number - min) / bucketSize) * bucketSize + min;
 
     if (histogram.hasOwnProperty(roundedNumber)) {
       histogram[roundedNumber]++;
@@ -161,7 +165,8 @@ function createHistogram(numbers: number[]): [number, number][] {
 
   result.sort((a, b) => a[0] - b[0]);
 
-  console.log(`histo`, result);
+  console.log(`result`, result);
+
   return result;
 }
 
@@ -199,7 +204,7 @@ export async function createRidgeLineChart(
   const xScale = d3
     .scaleLinear()
     .range([options.margin.left, options.width - options.margin.right])
-    .domain([0, dataParsed[0].values.length - 1]);
+    .domain([0, dataParsed[1].values.length - 1]);
 
   const yScale = d3
     .scaleLinear()
