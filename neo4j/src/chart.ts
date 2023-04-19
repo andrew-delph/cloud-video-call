@@ -148,6 +148,7 @@ export async function createRidgeLineChart(filename: string) {
   const data: {
     key: string;
     values: [number, number][];
+    colour?: string;
   }[] = [
     {
       key: `A`,
@@ -156,12 +157,15 @@ export async function createRidgeLineChart(filename: string) {
     {
       key: `B`,
       values: [6, 12, 5, 8, 6, 13, 9, 7, 12, 4].map((d, i) => [i, d]),
+      colour: `red`,
     },
     {
       key: `C`,
       values: [8, 4, 7, 9, 10, 6, 8, 13, 12, 7].map((d, i) => [i, d]),
     },
   ];
+
+  console.log(`data`, JSON.stringify(data));
 
   const xScale = d3
     .scaleLinear()
@@ -170,22 +174,23 @@ export async function createRidgeLineChart(filename: string) {
 
   const yScale = d3
     .scaleLinear()
-    .range([options.height - options.margin.bottom, options.margin.top])
+    .range([
+      options.height / data.length - options.margin.bottom,
+      options.margin.top,
+    ])
     .domain([0, d3.max(data, (d) => d3.max(d.values, (value) => value[1]))!]);
 
   const ySpacing =
-    (options.height - options.margin.top - options.margin.bottom) /
-    (data.length - 1);
+    (options.height - options.margin.top - options.margin.bottom) / data.length;
 
-  //   function drawPath(context, points) {
-  //     context.beginPath();
-  //     points.forEach((point, i) => {
-  //       context.lineTo(xScale(point[0]), yScale(point[1]));
-  //     });
-  //     context.stroke();
-  //   }
+  //   ySpacing = 200;
+  console.log(`ySpacing`, ySpacing);
 
-  context.lineWidth = 1.5;
+  // Set background color
+  context.fillStyle = `#f0f0f0`; // Change this to your desired color
+  context.fillRect(0, 0, options.width, options.height);
+
+  context.lineWidth = 1;
 
   data.forEach((d, index) => {
     context.save();
@@ -194,11 +199,9 @@ export async function createRidgeLineChart(filename: string) {
     const line = d3
       .line()
       .x((d) => {
-        console.log(`d[0]`, d[0]);
         return xScale(d[0]);
       })
       .y((d) => {
-        console.log(`d[1]`, d[1]);
         return yScale(d[1]);
       })
       .context(context);
@@ -210,15 +213,17 @@ export async function createRidgeLineChart(filename: string) {
       .y1((d) => yScale(d[1]))
       .context(context);
 
-    context.fillStyle = `rgba(0, 0, 0, 0.1)`;
-    d.values;
-    area(d.values);
-    context.fill(area(d.values));
+    context.strokeStyle = d.colour ?? `steelblue`;
+    context.beginPath();
+    line(d.values);
+    context.stroke();
 
-    context.strokeStyle = `steelblue`;
-
-    console.log(`d.values`, d.values);
-    // drawPath(context, line(d.values));
+    context.fillStyle = `black`;
+    context.fillText(
+      d.key,
+      options.margin.left - 20,
+      yScale(d3.mean(d.values, (value) => value[1])!),
+    );
 
     context.restore();
   });
