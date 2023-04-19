@@ -220,7 +220,7 @@ export async function createRidgeLineChart(
   console.log(`ySpacing`, ySpacing);
 
   // Set background color
-  context.fillStyle = `#f0f0f0`; // Change this to your desired color
+  context.fillStyle = `#f0f0f0`;
   context.fillRect(0, 0, options.width, options.height);
 
   context.lineWidth = 1;
