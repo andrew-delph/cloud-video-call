@@ -135,7 +135,45 @@ export async function createPieChart(
   canvas.pngStream().pipe(fs.createWriteStream(`${filename}.png`));
 }
 
-export async function createRidgeLineChart(filename: string) {
+function createHistogram(numbers: number[]): [number, number][] {
+  const histogram: { [key: number]: number } = {};
+
+  const min = Math.min(...numbers);
+  const max = Math.max(...numbers);
+  const range = 100;
+
+  numbers.forEach((number) => {
+    const bucketSize = (max - min) / range;
+    const roundedNumber =
+      Math.round((number - min) / bucketSize) * bucketSize + min;
+
+    if (histogram.hasOwnProperty(roundedNumber)) {
+      histogram[roundedNumber]++;
+    } else {
+      histogram[roundedNumber] = 1;
+    }
+  });
+
+  const result: [number, number][] = [];
+  for (const number in histogram) {
+    result.push([parseFloat(number), histogram[number]]);
+  }
+
+  result.sort((a, b) => a[0] - b[0]);
+
+  console.log(`histo`, result);
+  return result;
+}
+
+export async function createRidgeLineChart(
+  data: {
+    [key: string]: {
+      values: number[];
+      colour?: string;
+    };
+  },
+  filename: string,
+) {
   const options = {
     width: 960,
     height: 500,
@@ -145,43 +183,38 @@ export async function createRidgeLineChart(filename: string) {
   var canvas = d3n.createCanvas(options.width, options.height);
   var context = canvas.getContext(`2d`);
 
-  const data: {
+  const dataParsed: {
     key: string;
     values: [number, number][];
     colour?: string;
-  }[] = [
-    {
-      key: `A`,
-      values: [5, 7, 10, 12, 6, 8, 5, 11, 9, 7].map((d, i) => [i, d]),
-    },
-    {
-      key: `B`,
-      values: [6, 12, 5, 8, 6, 13, 9, 7, 12, 4].map((d, i) => [i, d]),
-      colour: `red`,
-    },
-    {
-      key: `C`,
-      values: [8, 4, 7, 9, 10, 6, 8, 13, 12, 7].map((d, i) => [i, d]),
-    },
-  ];
+  }[] = [];
 
-  console.log(`data`, JSON.stringify(data));
+  for (const key in data) {
+    const item = data[key];
+    const histogram = createHistogram(item.values);
+
+    dataParsed.push({ key, values: histogram, colour: item.colour ?? `red` });
+  }
 
   const xScale = d3
     .scaleLinear()
     .range([options.margin.left, options.width - options.margin.right])
-    .domain([0, data[0].values.length - 1]);
+    .domain([0, dataParsed[0].values.length - 1]);
 
   const yScale = d3
     .scaleLinear()
     .range([
-      options.height / data.length - options.margin.bottom,
+      options.height / dataParsed.length - options.margin.bottom,
       options.margin.top,
     ])
-    .domain([0, d3.max(data, (d) => d3.max(d.values, (value) => value[1]))!]);
+    .domain([
+      0,
+      d3.max(dataParsed, (d) => d3.max(d.values, (value) => value[1]))!,
+    ]);
 
   const ySpacing =
-    (options.height - options.margin.top - options.margin.bottom) / data.length;
+    (options.height - options.margin.top - options.margin.bottom) /
+    dataParsed.length;
 
   //   ySpacing = 200;
   console.log(`ySpacing`, ySpacing);
@@ -192,7 +225,7 @@ export async function createRidgeLineChart(filename: string) {
 
   context.lineWidth = 1;
 
-  data.forEach((d, index) => {
+  dataParsed.forEach((d, index) => {
     context.save();
     context.translate(0, index * ySpacing);
 
@@ -209,14 +242,20 @@ export async function createRidgeLineChart(filename: string) {
     const area = d3
       .area()
       .x((d) => xScale(d[0]))
-      .y0(options.height)
+      .y0(yScale(0))
       .y1((d) => yScale(d[1]))
       .context(context);
 
-    context.strokeStyle = d.colour ?? `steelblue`;
+    context.strokeStyle = d.colour ?? `red`;
     context.beginPath();
     line(d.values);
     context.stroke();
+
+    context.fillStyle = d.colour ?? `red33`;
+    context.beginPath();
+    area(d.values);
+    context.closePath();
+    context.fill();
 
     context.fillStyle = `black`;
     context.fillText(

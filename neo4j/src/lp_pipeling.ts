@@ -1,7 +1,7 @@
 import { session } from './neo4j_functions';
 import { printResults } from './neo4j_index';
 import * as funcs from './neo4j_functions';
-import { createDotGraph } from './chart';
+import { createDotGraph, createRidgeLineChart } from './chart';
 import { QueryResult } from 'neo4j-driver-core/types/result';
 
 export async function createPipeline() {
@@ -75,7 +75,7 @@ export async function createPipeline() {
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'COSINE', {
-        nodeProperties: ['type']
+        nodeProperties: ['embedding1', 'type']
       }) YIELD featureSteps
     `,
   );
@@ -194,22 +194,32 @@ export async function predict() {
   const end_time = performance.now();
 
   const data: {
-    x: number;
-    y: number;
-  }[] = [];
+    [key: string]: {
+      values: number[];
+      colour?: string;
+    };
+  } = {};
 
-  const records = result.records;
-  records.slice(0, -1).forEach((record) => {
+  result.records.slice(0, -1).forEach((record) => {
     const x = parseFloat(record.get(`probability`));
     const y = parseFloat(record.get(`type_sum`));
-    data.push({ x, y });
-  });
+    const key = y + ``;
 
-  createDotGraph(data, `link-prediction`);
+    if (!data[key]) {
+      data[key] = {
+        values: [1],
+        colour: key == `3` ? `blue` : `red`,
+      };
+    }
+    const values = data[key];
+    values.values.push(x);
+  });
 
   console.log(`predict:`, end_time - start_time);
 
   printResults(result, 30);
+
+  await createRidgeLineChart(data, `link-prediction`);
 
   return result;
 }

@@ -29,7 +29,7 @@ export const calcScoreMap = new Map<
     PersonType.Female,
     (me: Person, otherPerson: Person) => {
       if (otherPerson.type == PersonType.Male) return 10;
-      //   if (otherPerson.type == PersonType.Female) return 0;
+      if (otherPerson.type == PersonType.Female) return 2;
       return -10;
     },
   ],
