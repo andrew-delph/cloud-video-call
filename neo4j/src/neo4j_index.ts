@@ -54,9 +54,6 @@ export function printResults(
 const start_time = performance.now();
 (async () => {
   try {
-    await lp.predict();
-
-    return;
     let results;
 
     // results = await funcs.getFriends();

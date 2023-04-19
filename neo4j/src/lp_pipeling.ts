@@ -202,12 +202,11 @@ export async function predict() {
   } = {};
 
   result.records.slice(0, -1).forEach((record) => {
-    const x = parseFloat(record.get(`probability`));
-    const y = parseFloat(record.get(`abs`));
+    const probability = parseFloat(record.get(`probability`));
+    const abs = parseFloat(record.get(`abs`));
     const type1 = record.get(`md1.type`);
     const type2 = record.get(`md2.type`);
     let key = type1 > type2 ? `${type1}-${type2}` : `${type2}-${type1}`;
-    key = record.get(`abs`);
 
     if (!predictLine[key]) {
       predictLine[key] = {
@@ -216,7 +215,7 @@ export async function predict() {
       };
     }
     const values = predictLine[key];
-    values.values.push(x);
+    values.values.push(probability);
   });
 
   console.log(`predict:`, end_time - start_time);

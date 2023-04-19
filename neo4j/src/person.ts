@@ -50,7 +50,7 @@ export const calcScoreMap = new Map<
 ]);
 
 export const getRandomPerson = (auth: string): Person => {
-  const userFunctions = [createHot];
+  const userFunctions = [createFemale, createMale];
 
   return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
 };
@@ -113,8 +113,6 @@ export class Person {
         WITH p
         CREATE (d:MetaData)
         SET d = $attributes
-        SET p.userId = $userId
-        SET p.type = ${type}
         MERGE (p)-[:USER_ATTRIBUTES_CONSTANT]->(d);
     `,
       { userId: this.userId, attributes: this.attributes },
