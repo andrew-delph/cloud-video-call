@@ -135,63 +135,92 @@ export async function createPieChart(
   canvas.pngStream().pipe(fs.createWriteStream(`${filename}.png`));
 }
 
-export async function createRidgeLineChart(
-  data: {
-    value: number;
-    name: string;
-    colour?: string;
-  }[],
-  filename: string,
-) {
-  var canvas = d3n.createCanvas(960, 500);
+export async function createRidgeLineChart(filename: string) {
+  const options = {
+    width: 960,
+    height: 500,
+    margin: { top: 30, right: 30, bottom: 30, left: 30 },
+  };
+
+  var canvas = d3n.createCanvas(options.width, options.height);
   var context = canvas.getContext(`2d`);
 
-  var width = canvas.width;
-  var height = canvas.height;
-  var radius = Math.min(width, height) / 2;
+  const data: {
+    key: string;
+    values: [number, number][];
+  }[] = [
+    {
+      key: `A`,
+      values: [5, 7, 10, 12, 6, 8, 5, 11, 9, 7].map((d, i) => [i, d]),
+    },
+    {
+      key: `B`,
+      values: [6, 12, 5, 8, 6, 13, 9, 7, 12, 4].map((d, i) => [i, d]),
+    },
+    {
+      key: `C`,
+      values: [8, 4, 7, 9, 10, 6, 8, 13, 12, 7].map((d, i) => [i, d]),
+    },
+  ];
 
-  var arc = d3
-    .arc<d3.PieArcDatum<typeof data[0]>>()
-    .outerRadius(radius - 10)
-    .innerRadius(0)
-    .context(context);
+  const xScale = d3
+    .scaleLinear()
+    .range([options.margin.left, options.width - options.margin.right])
+    .domain([0, data[0].values.length - 1]);
 
-  var labelArc = d3
-    .arc<d3.PieArcDatum<typeof data[0]>>()
-    .outerRadius(radius - 40)
-    .innerRadius(radius - 40)
-    .context(context);
+  const yScale = d3
+    .scaleLinear()
+    .range([options.height - options.margin.bottom, options.margin.top])
+    .domain([0, d3.max(data, (d) => d3.max(d.values, (value) => value[1]))!]);
 
-  var pie = d3.pie<typeof data[0]>().value(function (d) {
-    return d.value;
-  });
+  const ySpacing =
+    (options.height - options.margin.top - options.margin.bottom) /
+    (data.length - 1);
 
-  context.translate(width / 2, height / 2);
+  //   function drawPath(context, points) {
+  //     context.beginPath();
+  //     points.forEach((point, i) => {
+  //       context.lineTo(xScale(point[0]), yScale(point[1]));
+  //     });
+  //     context.stroke();
+  //   }
 
-  console.log(`Data`, data);
+  context.lineWidth = 1.5;
 
-  const arcs = pie(data);
+  data.forEach((d, index) => {
+    context.save();
+    context.translate(0, index * ySpacing);
 
-  arcs.forEach(function (d, i) {
-    context.beginPath();
-    console.log(d);
-    arc(d);
-    context.fillStyle = d.data.colour ?? `red`;
-    context.fill();
-  });
+    const line = d3
+      .line()
+      .x((d) => {
+        console.log(`d[0]`, d[0]);
+        return xScale(d[0]);
+      })
+      .y((d) => {
+        console.log(`d[1]`, d[1]);
+        return yScale(d[1]);
+      })
+      .context(context);
 
-  context.beginPath();
-  arcs.forEach(arc);
-  context.strokeStyle = `#fff`;
-  context.stroke();
+    const area = d3
+      .area()
+      .x((d) => xScale(d[0]))
+      .y0(options.height)
+      .y1((d) => yScale(d[1]))
+      .context(context);
 
-  context.textAlign = `center`;
-  context.textBaseline = `middle`;
-  context.fillStyle = `#000`;
+    context.fillStyle = `rgba(0, 0, 0, 0.1)`;
+    d.values;
+    area(d.values);
+    context.fill(area(d.values));
 
-  arcs.forEach(function (d) {
-    const c = labelArc.centroid(d);
-    context.fillText(d.data.name, c[0], c[1]);
+    context.strokeStyle = `steelblue`;
+
+    console.log(`d.values`, d.values);
+    // drawPath(context, line(d.values));
+
+    context.restore();
   });
 
   canvas.pngStream().pipe(fs.createWriteStream(`${filename}.png`));
