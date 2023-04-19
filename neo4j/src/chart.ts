@@ -79,6 +79,7 @@ export async function createLineChart(
     name: string;
     colour?: string;
   }[],
+  filename: string,
 ) {
   var canvas = d3n.createCanvas(960, 500);
   var context = canvas.getContext(`2d`);
@@ -131,5 +132,5 @@ export async function createLineChart(
     context.fillText(d.data.name, c[0], c[1]);
   });
 
-  canvas.pngStream().pipe(fs.createWriteStream(`output.png`));
+  canvas.pngStream().pipe(fs.createWriteStream(`${filename}.png`));
 }

@@ -59,7 +59,7 @@ const start_time = performance.now();
       { value: 2, name: `value2` },
       { value: 3, name: `value3`, colour: `blue` },
     ];
-    await createLineChart(pieData);
+    await createLineChart(pieData, `test`);
 
     return;
     let results;
