@@ -74,14 +74,14 @@ export function createDotGraph(
 }
 
 export async function createLineChart() {
-  const canvas = d3n.createCanvas(960, 500);
-  const context = canvas.getContext(`2d`);
+  var canvas = d3n.createCanvas(960, 500);
+  var context = canvas.getContext(`2d`);
 
-  const width = canvas.width;
-  const height = canvas.height;
-  const radius = Math.min(width, height) / 2;
+  var width = canvas.width;
+  var height = canvas.height;
+  var radius = Math.min(width, height) / 2;
 
-  const colors = [
+  var colors = [
     `#98abc5`,
     `#8a89a6`,
     `#7b6888`,
@@ -91,19 +91,19 @@ export async function createLineChart() {
     `#ff8c00`,
   ];
 
-  const arc = d3
-    .arc()
+  var arc = d3
+    .arc<any, d3.PieArcDatum<number | { valueOf(): number }>>()
     .outerRadius(radius - 10)
     .innerRadius(0)
     .context(context);
 
-  const labelArc = d3
+  var labelArc = d3
     .arc()
     .outerRadius(radius - 40)
     .innerRadius(radius - 40)
     .context(context);
 
-  const pie = d3
+  var pie = d3
     .pie()
     .sort(null)
     .value(function (d: any) {
@@ -112,20 +112,18 @@ export async function createLineChart() {
 
   context.translate(width / 2, height / 2);
 
-  const data = d3.range(1000).map(d3.randomBates(10));
+  var data = d3.range(1000).map(d3.randomBates(10));
 
   const arcs = pie(data);
 
   arcs.forEach(function (d, i) {
     context.beginPath();
-    //@ts-ignore
     arc(d);
     context.fillStyle = colors[i];
     context.fill();
   });
 
   context.beginPath();
-  //@ts-ignore
   arcs.forEach(arc);
   context.strokeStyle = `#fff`;
   context.stroke();
