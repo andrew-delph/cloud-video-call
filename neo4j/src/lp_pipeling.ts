@@ -186,7 +186,7 @@ export async function predict() {
           (person2:Person)-[r2:USER_ATTRIBUTES_CONSTANT]->(md2:MetaData) 
         OPTIONAL MATCH (person1)-[f:FRIENDS]-(person2)
         RETURN person1.userId,  person2.userId, probability,
-        (toInteger(md1.type) + toInteger(md2.type)) as type_sum 
+        (toInteger(md1.type) + toInteger(md2.type)) as type_sum ,md1.type, md2.type
         ORDER BY probability DESC
       `,
   );
@@ -203,7 +203,9 @@ export async function predict() {
   result.records.slice(0, -1).forEach((record) => {
     const x = parseFloat(record.get(`probability`));
     const y = parseFloat(record.get(`type_sum`));
-    const key = y + ``;
+    const type1 = record.get(`md1.type`);
+    const type2 = record.get(`md2.type`);
+    const key = type1 > type2 ? `${type1}-${type2}` : `${type2}-${type1}`;
 
     if (!data[key]) {
       data[key] = {
