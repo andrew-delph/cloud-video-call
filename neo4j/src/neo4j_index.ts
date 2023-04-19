@@ -2,7 +2,7 @@ import * as neo4j from 'neo4j-driver';
 import { Dict } from 'neo4j-driver-core/types/record';
 import * as lp from './lp_pipeling';
 import * as funcs from './neo4j_functions';
-import { createLineChart } from './chart';
+import { createPieChart } from './chart';
 
 let result: neo4j.QueryResult<Dict<PropertyKey, any>>;
 
@@ -59,7 +59,7 @@ const start_time = performance.now();
       { value: 2, name: `value2` },
       { value: 3, name: `value3`, colour: `blue` },
     ];
-    await createLineChart(pieData, `test`);
+    await createPieChart(pieData, `test`);
 
     return;
     let results;
