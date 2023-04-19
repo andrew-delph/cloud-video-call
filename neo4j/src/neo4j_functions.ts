@@ -186,8 +186,8 @@ export async function getUsers() {
   }[] = [];
 
   result.records.forEach((record) => {
-    const y = parseFloat(record.get(`a.community`));
     const x = parseFloat(record.get(`b.type`));
+    const y = parseFloat(record.get(`a.community`));
     community_data.push({ x, y });
   });
 
