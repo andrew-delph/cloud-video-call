@@ -1,9 +1,9 @@
 import * as neo4j from 'neo4j-driver';
 import { v4 as uuid } from 'uuid';
 import { printResults } from './neo4j_index';
-import { createCanvas } from 'canvas';
 import { Dict } from 'neo4j-driver-core/types/record';
 import { getRandomPerson } from './person';
+import { createDotGraph } from './chart';
 
 export const driver = neo4j.driver(
   `neo4j://localhost:7687`,
@@ -207,72 +207,6 @@ export async function getUsers() {
   createDotGraph(priority_data, `priority`);
 
   return result;
-}
-
-export function createDotGraph(
-  data: {
-    x: number;
-    y: number;
-    dotColor?: string;
-  }[],
-  name: string,
-) {
-  console.log(`create data ${data.length}`);
-  const fs = require(`fs`);
-
-  const width = 800 * 2;
-  const height = 600 * 2;
-  const padding = 100;
-  const dotSize = 5;
-
-  const minX = Math.min(...data.map((p) => p.x));
-  const maxX = Math.max(...data.map((p) => p.x));
-  const minY = Math.min(...data.map((p) => p.y));
-  const maxY = Math.max(...data.map((p) => p.y));
-
-  const scaleX = (width - 2 * padding) / (maxX - minX);
-  const scaleY = (height - 2 * padding) / (maxY - minY);
-
-  const canvas = createCanvas(width, height);
-  const ctx = canvas.getContext(`2d`);
-
-  // Background
-  ctx.fillStyle = `white`;
-  ctx.fillRect(0, 0, width, height);
-
-  // Axes
-  ctx.strokeStyle = `black`;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(padding, padding);
-  ctx.lineTo(padding, height - padding);
-  ctx.lineTo(width - padding, height - padding);
-  ctx.stroke();
-
-  // Labels
-  ctx.font = `16px Arial`;
-  ctx.fillStyle = `black`;
-
-  const topRight = `(${maxX.toFixed(2)}, ${maxY.toFixed(2)})`;
-  const bottomLeft = `(${minX.toFixed(2)}, ${minY.toFixed(2)})`;
-  ctx.fillText(bottomLeft, padding, height - padding + 20);
-  ctx.fillText(topRight, width - padding, padding + 20);
-
-  // ctx.fillText(`(${minX}, ${minY})`, padding, height - padding + 20);
-  // ctx.fillText(`(${maxX}, ${maxY})`, width - padding, padding + 20);
-
-  // Dots
-  for (const point of data) {
-    ctx.fillStyle = point.dotColor ?? `red`;
-    const x = (point.x - minX) * scaleX + padding;
-    const y = height - padding - (point.y - minY) * scaleY;
-    ctx.beginPath();
-    ctx.arc(x, y, dotSize, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  const buffer = canvas.toBuffer(`image/png`);
-  fs.writeFileSync(`./${name}.png`, buffer);
 }
 
 export async function getVarience() {

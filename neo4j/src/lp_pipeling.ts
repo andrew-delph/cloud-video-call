@@ -1,6 +1,8 @@
 import { session } from './neo4j_functions';
 import { printResults } from './neo4j_index';
 import * as funcs from './neo4j_functions';
+import { createDotGraph } from './chart';
+import { QueryResult } from 'neo4j-driver-core/types/result';
 
 export async function createPipeline() {
   console.log(``);
@@ -203,7 +205,7 @@ export async function predict() {
     data.push({ x, y });
   });
 
-  funcs.createDotGraph(data, `link-prediction`);
+  createDotGraph(data, `link-prediction`);
 
   console.log(`predict:`, end_time - start_time);
 

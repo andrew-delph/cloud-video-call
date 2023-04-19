@@ -2,6 +2,7 @@ import * as neo4j from 'neo4j-driver';
 import { Dict } from 'neo4j-driver-core/types/record';
 import * as lp from './lp_pipeling';
 import * as funcs from './neo4j_functions';
+import { createLineChart } from './chart';
 
 let result: neo4j.QueryResult<Dict<PropertyKey, any>>;
 
@@ -53,6 +54,9 @@ export function printResults(
 const start_time = performance.now();
 (async () => {
   try {
+    await createLineChart();
+
+    return;
     let results;
 
     // results = await funcs.getFriends();
