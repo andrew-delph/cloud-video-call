@@ -165,7 +165,7 @@ function createHistogram(numbers: number[]): [number, number][] {
 
   result.sort((a, b) => a[0] - b[0]);
 
-  console.log(`result`, result);
+  console.log(`result`, result.length);
 
   return result;
 }
@@ -201,10 +201,14 @@ export async function createRidgeLineChart(
     dataParsed.push({ key, values: histogram, colour: item.colour ?? `red` });
   }
 
+  console.log(
+    `d3.max(dataParsed, (d) => d.values.length)!`,
+    d3.max(dataParsed, (d) => d.values.length)!,
+  );
   const xScale = d3
     .scaleLinear()
     .range([options.margin.left, options.width - options.margin.right])
-    .domain([0, dataParsed[1].values.length - 1]);
+    .domain([0, d3.max(dataParsed, (d) => d.values.length)!]);
 
   const yScale = d3
     .scaleLinear()
