@@ -186,14 +186,15 @@ export async function predict() {
           (person2:Person)-[r2:USER_ATTRIBUTES_CONSTANT]->(md2:MetaData) 
         OPTIONAL MATCH (person1)-[f:FRIENDS]-(person2)
         RETURN person1.userId,  person2.userId, probability,
-        (toInteger(md1.type) + toInteger(md2.type)) as type_sum ,md1.type, md2.type
+        (toInteger(md1.type) + toInteger(md2.type)) as type_sum ,md1.type, md2.type,
+        abs(toInteger(md1.hot) - toInteger(md2.hot)) as abs
         ORDER BY probability DESC
       `,
   );
 
   const end_time = performance.now();
 
-  const data: {
+  const predictLine: {
     [key: string]: {
       values: number[];
       colour?: string;
@@ -202,18 +203,19 @@ export async function predict() {
 
   result.records.slice(0, -1).forEach((record) => {
     const x = parseFloat(record.get(`probability`));
-    const y = parseFloat(record.get(`type_sum`));
+    const y = parseFloat(record.get(`abs`));
     const type1 = record.get(`md1.type`);
     const type2 = record.get(`md2.type`);
-    const key = type1 > type2 ? `${type1}-${type2}` : `${type2}-${type1}`;
+    let key = type1 > type2 ? `${type1}-${type2}` : `${type2}-${type1}`;
+    key = record.get(`abs`);
 
-    if (!data[key]) {
-      data[key] = {
+    if (!predictLine[key]) {
+      predictLine[key] = {
         values: [1],
         colour: key == `3` ? `blue` : `red`,
       };
     }
-    const values = data[key];
+    const values = predictLine[key];
     values.values.push(x);
   });
 
@@ -221,7 +223,20 @@ export async function predict() {
 
   printResults(result, 30);
 
-  await createRidgeLineChart(data, `link-prediction`);
+  await createRidgeLineChart(predictLine, `predict-line`);
+
+  const predictDot: {
+    x: number;
+    y: number;
+  }[] = [];
+
+  result.records.forEach((record) => {
+    const y = parseFloat(record.get(`abs`));
+    const x = parseFloat(record.get(`probability`));
+    predictDot.push({ x, y });
+  });
+
+  createDotGraph(predictDot, `predict-dot`);
 
   return result;
 }

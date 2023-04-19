@@ -312,7 +312,7 @@ export async function createGraph(graphName: string = `myGraph`) {
         '${graphName}', 
         {
           Person:{
-            properties: {type: {defaultValue: -1}, priority: {defaultValue: 0.0}, community: {defaultValue: 0.0}}
+            properties: {hot: {defaultValue: -1}, type: {defaultValue: -1}, priority: {defaultValue: 0.0}, community: {defaultValue: 0.0}}
           }, 
           MetaData:{
             properties: {}

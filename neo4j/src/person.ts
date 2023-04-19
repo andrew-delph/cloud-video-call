@@ -39,16 +39,18 @@ export const calcScoreMap = new Map<
   //       return 3;
   //     },
   //   ],
-  //   [
-  //     PersonType.Hot,
-  //     (me: Person, otherPerson: Person) => {
-  //       return 3;
-  //     },
-  //   ],
+  [
+    PersonType.Hot,
+    (me: Person, otherPerson: Person) => {
+      if ((otherPerson.attributes.hot ?? -10) >= me.attributes.hot - 2)
+        return 10;
+      return -10;
+    },
+  ],
 ]);
 
 export const getRandomPerson = (auth: string): Person => {
-  const userFunctions = [createFemale, createMale];
+  const userFunctions = [createHot];
 
   return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
 };
@@ -86,12 +88,11 @@ export const createMale = (auth: string): Person => {
 //   return new Person(auth, attributes, filters, PersonType.LocationBound);
 // };
 
-// export const createHot = (auth: string): Person => {
-//   const attributes = { constant: { hot: randomIntBetween(-10, 10) } };
-//   const filters = {};
+export const createHot = (auth: string): Person => {
+  const attributes = { hot: Math.round(Math.random() * 20) - 10, type: 4 };
 
-//   return new Person(auth, attributes, filters, UserType.Hot);
-// };
+  return new Person(PersonType.Hot, auth, attributes);
+};
 
 export class Person {
   type: PersonType;
@@ -112,6 +113,8 @@ export class Person {
         WITH p
         CREATE (d:MetaData)
         SET d = $attributes
+        SET p.userId = $userId
+        SET p.type = ${type}
         MERGE (p)-[:USER_ATTRIBUTES_CONSTANT]->(d);
     `,
       { userId: this.userId, attributes: this.attributes },

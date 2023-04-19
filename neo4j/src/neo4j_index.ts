@@ -54,18 +54,9 @@ export function printResults(
 const start_time = performance.now();
 (async () => {
   try {
-    // const pieData = [
-    //   { value: 1, name: `value1` },
-    //   { value: 2, name: `value2` },
-    //   { value: 3, name: `value3`, colour: `blue` },
-    // ];
-    // await createPieChart(pieData, `test`);
-
-    // await createRidgeLineChart(`test`);
-
     await lp.predict();
-    return;
 
+    return;
     let results;
 
     // results = await funcs.getFriends();
