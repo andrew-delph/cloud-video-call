@@ -73,7 +73,13 @@ export function createDotGraph(
   fs.writeFileSync(`./${name}.png`, buffer);
 }
 
-export async function createLineChart() {
+export async function createLineChart(
+  data: {
+    value: number;
+    name: string;
+    colour?: string;
+  }[],
+) {
   var canvas = d3n.createCanvas(960, 500);
   var context = canvas.getContext(`2d`);
 
@@ -81,45 +87,33 @@ export async function createLineChart() {
   var height = canvas.height;
   var radius = Math.min(width, height) / 2;
 
-  var colors = [
-    `#98abc5`,
-    `#8a89a6`,
-    `#7b6888`,
-    `#6b486b`,
-    `#a05d56`,
-    `#d0743c`,
-    `#ff8c00`,
-  ];
-
   var arc = d3
-    .arc<any, d3.PieArcDatum<number | { valueOf(): number }>>()
+    .arc<d3.PieArcDatum<typeof data[0]>>()
     .outerRadius(radius - 10)
     .innerRadius(0)
     .context(context);
 
   var labelArc = d3
-    .arc()
+    .arc<d3.PieArcDatum<typeof data[0]>>()
     .outerRadius(radius - 40)
     .innerRadius(radius - 40)
     .context(context);
 
-  var pie = d3
-    .pie()
-    .sort(null)
-    .value(function (d: any) {
-      return d.population;
-    });
+  var pie = d3.pie<typeof data[0]>().value(function (d) {
+    return d.value;
+  });
 
   context.translate(width / 2, height / 2);
 
-  var data = d3.range(1000).map(d3.randomBates(10));
+  console.log(`Data`, data);
 
   const arcs = pie(data);
 
   arcs.forEach(function (d, i) {
     context.beginPath();
+    console.log(d);
     arc(d);
-    context.fillStyle = colors[i];
+    context.fillStyle = d.data.colour ?? `red`;
     context.fill();
   });
 
@@ -132,9 +126,9 @@ export async function createLineChart() {
   context.textBaseline = `middle`;
   context.fillStyle = `#000`;
 
-  arcs.forEach(function (d: any) {
+  arcs.forEach(function (d) {
     const c = labelArc.centroid(d);
-    context.fillText(d.data.age, c[0], c[1]);
+    context.fillText(d.data.name, c[0], c[1]);
   });
 
   canvas.pngStream().pipe(fs.createWriteStream(`output.png`));
