@@ -165,8 +165,6 @@ function createHistogram(numbers: number[]): [number, number][] {
 
   result.sort((a, b) => a[0] - b[0]);
 
-  console.log(`result`, result.length);
-
   return result;
 }
 
@@ -202,19 +200,19 @@ export async function createRidgeLineChart(
   }
 
   const x_max = d3.max(dataParsed, (d) =>
-    d3.max(d.values, (value) => value[1]),
-  )!;
-
-  const x_min = d3.min(dataParsed, (d) =>
-    d3.min(d.values, (value) => value[1]),
-  )!;
-
-  const y_max = d3.max(dataParsed, (d) =>
     d3.max(d.values, (value) => value[0]),
   )!;
 
-  const y_min = d3.min(dataParsed, (d) =>
+  const x_min = d3.min(dataParsed, (d) =>
     d3.min(d.values, (value) => value[0]),
+  )!;
+
+  const y_max = d3.max(dataParsed, (d) =>
+    d3.max(d.values, (value) => value[1]),
+  )!;
+
+  const y_min = d3.min(dataParsed, (d) =>
+    d3.min(d.values, (value) => value[1]),
   )!;
 
   console.log(`x_min`, x_min, `x_max`, x_max);
@@ -224,10 +222,11 @@ export async function createRidgeLineChart(
     `d3.max(dataParsed, (d) => d.values.length)!`,
     d3.max(dataParsed, (d) => d.values.length)!,
   );
+
   const xScale = d3
     .scaleLinear()
-    .range([options.margin.left, options.width - options.margin.right]);
-  // .domain([0, d3.max(dataParsed, (d) => d.values.length)! / 5]);
+    .range([options.margin.left, options.width - options.margin.right])
+    .domain([x_min, x_max]);
 
   const yScale = d3
     .scaleLinear()

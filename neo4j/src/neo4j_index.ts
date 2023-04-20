@@ -56,10 +56,11 @@ const start_time = performance.now();
   try {
     let results;
 
-    // results = await funcs.getFriends();
-    // printResults(results, 50);
+    await lp.predict();
+    return;
 
-    // return;
+    // results = await funcs.getUsers();
+    // printResults(results, 50);
 
     await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 50 });
 
@@ -72,7 +73,7 @@ const start_time = performance.now();
     // results = await funcs.callNodeEmbeddings();
 
     results = await funcs.getUsers();
-    // printResults(results, 50);
+    printResults(results, 50);
 
     // results = await funcs.getVarience();
     // printResults(results, 3);
@@ -83,7 +84,9 @@ const start_time = performance.now();
     await lp.predict();
   } finally {
     const end_time = performance.now();
-    console.log(`closing. ${(end_time - start_time) / 1000}`);
+    console.log(
+      `closing. ${Math.round((end_time - start_time) / 1000 / 60)}mins`,
+    );
     await funcs.session.close();
     await funcs.driver.close();
   }

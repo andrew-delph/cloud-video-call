@@ -164,6 +164,8 @@ export async function train() {
         [cand IN modelSelectionStats.modelCandidates | cand.metrics.AUCPR.validation.avg] AS validationScores
     `,
   );
+  const end_time = performance.now();
+  console.log(`train:`, end_time - start_time);
 
   return result;
 }
@@ -177,22 +179,22 @@ export async function predict() {
     `
       CALL gds.beta.pipeline.linkPrediction.predict.stream('mlGraph', {
         modelName: 'lp-pipeline-model',
-        topN: 5000,
-        threshold: 0
+        topN: 500,
+        threshold: 0.2
       })
         YIELD node1, node2, probability
         WITH gds.util.asNode(node1) AS person1, gds.util.asNode(node2) AS person2, probability
         MATCH (person1:Person)-[r1:USER_ATTRIBUTES_CONSTANT]->(md1:MetaData), 
           (person2:Person)-[r2:USER_ATTRIBUTES_CONSTANT]->(md2:MetaData) 
         OPTIONAL MATCH (person1)-[f:FRIENDS]-(person2)
-        RETURN person1.userId,  person2.userId, probability,
-        (toInteger(md1.type) + toInteger(md2.type)) as type_sum ,md1.type, md2.type,
-        abs(toInteger(md1.hot) - toInteger(md2.hot)) as abs
+        RETURN (person1.userId+"-"+person2.userId) as nodes, probability,
+        md1.type, md2.type
         ORDER BY probability DESC
       `,
   );
 
   const end_time = performance.now();
+  console.log(`predict:`, end_time - start_time);
 
   const predictLine: {
     [key: string]: {
@@ -203,7 +205,6 @@ export async function predict() {
 
   result.records.slice(0, -1).forEach((record) => {
     const probability = parseFloat(record.get(`probability`));
-    const abs = parseFloat(record.get(`abs`));
     const type1 = record.get(`md1.type`);
     const type2 = record.get(`md2.type`);
     let key = type1 > type2 ? `${type1}-${type2}` : `${type2}-${type1}`;
@@ -218,8 +219,6 @@ export async function predict() {
     values.values.push(probability);
   });
 
-  console.log(`predict:`, end_time - start_time);
-
   printResults(result, 30);
 
   await createRidgeLineChart(predictLine, `predict-line`);
@@ -230,7 +229,9 @@ export async function predict() {
   }[] = [];
 
   result.records.forEach((record) => {
-    const y = parseFloat(record.get(`abs`));
+    const type1 = parseInt(record.get(`md1.type`));
+    const type2 = parseInt(record.get(`md2.type`));
+    const y = Math.abs(type1 - type2);
     const x = parseFloat(record.get(`probability`));
     predictDot.push({ x, y });
   });
