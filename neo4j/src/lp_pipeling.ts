@@ -75,7 +75,7 @@ export async function createPipeline() {
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'COSINE', {
-        nodeProperties: ['embedding1', 'type']
+        nodeProperties: ['embedding1']
       }) YIELD featureSteps
     `,
   );
@@ -219,7 +219,7 @@ export async function predict() {
     values.values.push(probability);
   });
 
-  printResults(result, 30);
+  printResults(result, 100);
 
   await createRidgeLineChart(predictLine, `predict-line`);
 

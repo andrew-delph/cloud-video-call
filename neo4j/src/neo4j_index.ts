@@ -56,9 +56,6 @@ const start_time = performance.now();
   try {
     let results;
 
-    await lp.predict();
-    return;
-
     // results = await funcs.getUsers();
     // printResults(results, 50);
 

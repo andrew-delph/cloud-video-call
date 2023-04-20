@@ -199,20 +199,20 @@ export async function createRidgeLineChart(
     dataParsed.push({ key, values: histogram, colour: item.colour ?? `red` });
   }
 
-  const x_max = d3.max(dataParsed, (d) =>
-    d3.max(d.values, (value) => value[0]),
-  )!;
-
   const x_min = d3.min(dataParsed, (d) =>
     d3.min(d.values, (value) => value[0]),
   )!;
 
-  const y_max = d3.max(dataParsed, (d) =>
-    d3.max(d.values, (value) => value[1]),
+  const x_max = d3.max(dataParsed, (d) =>
+    d3.max(d.values, (value) => value[0]),
   )!;
 
   const y_min = d3.min(dataParsed, (d) =>
     d3.min(d.values, (value) => value[1]),
+  )!;
+
+  const y_max = d3.max(dataParsed, (d) =>
+    d3.max(d.values, (value) => value[1]),
   )!;
 
   console.log(`x_min`, x_min, `x_max`, x_max);
@@ -273,10 +273,10 @@ export async function createRidgeLineChart(
       .y1((d) => yScale(d[1]))
       .context(context);
 
-    context.strokeStyle = d.colour ?? `red`;
-    context.beginPath();
-    line(d.values);
-    context.stroke();
+    // context.strokeStyle = d.colour ?? `red`;
+    // context.beginPath();
+    // line(d.values);
+    // context.stroke();
 
     context.fillStyle = d.colour ?? `red33`;
     context.beginPath();

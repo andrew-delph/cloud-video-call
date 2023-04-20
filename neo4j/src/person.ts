@@ -33,12 +33,6 @@ export const calcScoreMap = new Map<
       return -10;
     },
   ],
-  //   [
-  //     PersonType.LocationBound,
-  //     (me: Person, otherPerson: Person) => {
-  //       return 3;
-  //     },
-  //   ],
   [
     PersonType.Hot,
     (me: Person, otherPerson: Person) => {
@@ -47,6 +41,12 @@ export const calcScoreMap = new Map<
       return -10;
     },
   ],
+  //   [
+  //     PersonType.LocationBound,
+  //     (me: Person, otherPerson: Person) => {
+  //       return 3;
+  //     },
+  //   ],
 ]);
 
 export const getRandomPerson = (auth: string): Person => {
@@ -56,7 +56,7 @@ export const getRandomPerson = (auth: string): Person => {
 };
 
 export const createRandom = (auth: string): Person => {
-  const attributes = { type: 0 };
+  const attributes = { type: `random`, hot: -5 };
 
   return new Person(PersonType.Random, auth, attributes);
 };
@@ -64,16 +64,22 @@ export const createRandom = (auth: string): Person => {
 export const createFemale = (auth: string): Person => {
   const attributes = {
     gender: `female`,
-    type: 1,
+    type: `female`,
   };
 
   return new Person(PersonType.Female, auth, attributes);
 };
 
 export const createMale = (auth: string): Person => {
-  const attributes = { gender: `male`, type: 2 };
+  const attributes = { type: `male`, gender: `male` };
 
   return new Person(PersonType.Male, auth, attributes);
+};
+
+export const createHot = (auth: string): Person => {
+  const attributes = { type: `hot`, hot: Math.round(Math.random() * 20) - 10 };
+
+  return new Person(PersonType.Hot, auth, attributes);
 };
 
 // export const createLocationBound = (auth: string): Person => {
@@ -87,12 +93,6 @@ export const createMale = (auth: string): Person => {
 
 //   return new Person(auth, attributes, filters, PersonType.LocationBound);
 // };
-
-export const createHot = (auth: string): Person => {
-  const attributes = { hot: Math.round(Math.random() * 20) - 10, type: 4 };
-
-  return new Person(PersonType.Hot, auth, attributes);
-};
 
 export class Person {
   type: PersonType;
@@ -109,7 +109,7 @@ export class Person {
     const type = this.attributes.type;
     await session.run(
       `
-        MERGE (p:Person {userId:$userId, type: ${type}})
+        MERGE (p:Person {userId:$userId})
         WITH p
         CREATE (d:MetaData)
         SET d = $attributes
