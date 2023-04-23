@@ -61,8 +61,8 @@ const start_time = performance.now();
     results = await funcs.createAttributeFloat();
     printResults(results, 50);
 
-    results = await funcs.getAttributeKeys();
-    printResults(results, 50);
+    const attributesList: string[] = await funcs.getAttributeKeys();
+    console.log(`attributesList = ${attributesList}`);
 
     // results = await funcs.getUsers();
     // printResults(results, 50);

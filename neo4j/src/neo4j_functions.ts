@@ -319,7 +319,7 @@ export async function getAttributeKeys() {
 
   console.log(`getAttributeKeys`, performance.now() - start_time);
 
-  return result;
+  return result.records[0].get(`attributes`);
 }
 
 export async function getFriends() {
