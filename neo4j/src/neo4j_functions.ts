@@ -276,6 +276,24 @@ export async function createFriends() {
   return result;
 }
 
+export async function createAttributeFloat() {
+  let start_time = performance.now();
+  let result;
+
+  result = await session.run(
+    `
+    MATCH (p:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(n:MetaData)
+    WITH n, apoc.map.fromPairs([key IN keys(n) | [key, toInteger(n[key])]]) as attributes 
+    SET n = attributes
+    RETURN attributes
+  `,
+  );
+
+  console.log(`getFriends`, performance.now() - start_time);
+
+  return result;
+}
+
 export async function getFriends() {
   let start_time = performance.now();
   let result;
@@ -315,14 +333,14 @@ export async function createGraph(graphName: string = `myGraph`) {
             properties: { priority: {defaultValue: 0.0}, community: {defaultValue: 0.0}}
           }, 
           MetaData:{
-            properties: ['hot']
+ 
           }
         }, 
         {
-          FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{}, USER_ATTRIBUTES_CONSTANT: {}
+          FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{properties: ['score']}, USER_ATTRIBUTES_CONSTANT: {}
         },
         {
-          relationshipProperties: ['score'] 
+          
         }
     );`,
   );

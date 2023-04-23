@@ -56,6 +56,18 @@ const start_time = performance.now();
   try {
     let results;
 
+    await funcs.createData({ deleteData: true, nodesNum: 10, edgesNum: 1 });
+
+    results = await funcs.createAttributeFloat();
+    printResults(results, 50);
+    return;
+
+    results = await funcs.getUsers();
+    printResults(results, 50);
+
+    await funcs.createGraph();
+    return;
+
     // results = await funcs.getUsers();
     // printResults(results, 50);
 
@@ -68,6 +80,9 @@ const start_time = performance.now();
     results = await funcs.callCommunities();
     // results = await funcs.callWriteSimilar();
     // results = await funcs.callNodeEmbeddings();
+
+    await lp.predict();
+    return;
 
     results = await funcs.getUsers();
     printResults(results, 50);

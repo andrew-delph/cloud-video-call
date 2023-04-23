@@ -6,5 +6,5 @@ make apply:
 	helm upgrade --install neo4j neo4j/neo4j -f k8.values.yaml
 	# kubectl apply -f ./resources/.
 
-# make delete:
-# 	kubectl delete -f ./resources/.
+make delete:
+	helm uninstall neo4j
