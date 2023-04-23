@@ -130,6 +130,8 @@ export async function createPipeline() {
   //   }) YIELD autoTuningConfig
   // `,
   // );
+  const end_time = performance.now();
+  console.log(`createPipeline:`, end_time - start_time);
 
   return result;
 }
