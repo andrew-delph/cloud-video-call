@@ -29,8 +29,8 @@ export async function createPipeline() {
         mutateProperty: 'embedding1',
         embeddingDimension: 256,
         randomSeed: 42,
-        contextNodeLabels: ['Person','MetaData'],
-        contextRelationshipTypes: ['USER_ATTRIBUTES_CONSTANT']
+        contextNodeLabels: ['Person','MetaDataGraph'],
+        contextRelationshipTypes: ['USER_ATTRIBUTES_GRAPH']
       })
     `,
   );
@@ -75,7 +75,7 @@ export async function createPipeline() {
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'COSINE', {
-        nodeProperties: ['embedding1']
+        nodeProperties: ['priority']
       }) YIELD featureSteps
     `,
   );
@@ -186,6 +186,8 @@ export async function predict() {
         WITH gds.util.asNode(node1) AS person1, gds.util.asNode(node2) AS person2, probability
         MATCH (person1:Person)-[r1:USER_ATTRIBUTES_CONSTANT]->(md1:MetaData), 
           (person2:Person)-[r2:USER_ATTRIBUTES_CONSTANT]->(md2:MetaData) 
+        MATCH (person1:Person)-[]->(g1:MetaDataGraph), 
+          (person2:Person)-[]->(g2:MetaDataGraph) 
         OPTIONAL MATCH (person1)-[f:FRIENDS]-(person2)
         RETURN (person1.userId+"-"+person2.userId) as nodes, probability,
         md1.type, md2.type

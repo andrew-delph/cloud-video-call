@@ -151,7 +151,7 @@ export async function getUsers() {
 
   result = await session.run(
     `
-    MATCH (a:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(b:MetaData)
+    MATCH (a:Person)-[rel2:USER_ATTRIBUTES_GRAPH]->(b:MetaDataGraph)
     RETURN a.userId, a.community, a.priority, b.type, b.hot, b.gender
     ORDER BY a.priority DESCENDING
     `,
@@ -292,7 +292,7 @@ export async function createAttributeFloat() {
         END
         ]
     ]) as attributes 
-    MERGE (p)-[rel2:USER_ATTRIBUTES_GRAPH]->(num_n:MetaData)
+    MERGE (p)-[rel2:USER_ATTRIBUTES_GRAPH]->(num_n:MetaDataGraph)
     ON CREATE SET num_n = attributes
     ON MATCH SET num_n = attributes
     RETURN attributes
@@ -309,7 +309,7 @@ export async function getAttributeKeys() {
   let result;
 
   result = await session.run(
-    `MATCH (p:Person)-[rel2:USER_ATTRIBUTES_GRAPH]->(n:MetaData)
+    `MATCH (p:Person)-[rel2:USER_ATTRIBUTES_GRAPH]->(n:MetaDataGraph)
     WITH DISTINCT keys(n) as keyList
     UNWIND keyList as individualKeys
     WITH DISTINCT individualKeys as uniqueKeys
@@ -340,9 +340,14 @@ export async function getFriends() {
   return result;
 }
 
-export async function createGraph(graphName: string = `myGraph`) {
+export async function createGraph(
+  graphName: string = `myGraph`,
+  graph_attributes: string[] = [],
+) {
   console.log(``);
-  console.log(`--- createGraph ${graphName}`);
+  console.log(
+    `--- createGraph ${graphName} graph_attributes = ${graph_attributes}`,
+  );
   let start_time = performance.now();
   let result;
 
@@ -360,12 +365,12 @@ export async function createGraph(graphName: string = `myGraph`) {
           Person:{
             properties: { priority: {defaultValue: 0.0}, community: {defaultValue: 0.0}}
           }, 
-          MetaData:{
- 
+          MetaDataGraph:{
+            properties: ${JSON.stringify(graph_attributes)}
           }
         }, 
         {
-          FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{properties: ['score']}, USER_ATTRIBUTES_CONSTANT: {}
+          FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{properties: ['score']}, USER_ATTRIBUTES_GRAPH: {}
         },
         {
           

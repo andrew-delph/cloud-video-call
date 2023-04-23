@@ -16,7 +16,7 @@ export function createDotGraph(
   }[],
   name: string,
 ) {
-  console.log(`create data ${data.length}`);
+  console.log(`createDotGraph ${name} data.length ${data.length}`);
 
   const width = 800 * 2;
   const height = 600 * 2;
