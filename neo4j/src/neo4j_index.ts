@@ -60,10 +60,11 @@ const start_time = performance.now();
 
     results = await funcs.createAttributeFloat();
     printResults(results, 50);
-    return;
 
     results = await funcs.getUsers();
     printResults(results, 50);
+
+    return;
 
     await funcs.createGraph();
     return;

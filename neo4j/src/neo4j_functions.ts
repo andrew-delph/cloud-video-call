@@ -152,7 +152,7 @@ export async function getUsers() {
   result = await session.run(
     `
     MATCH (a:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(b:MetaData)
-    RETURN a.userId, a.community, a.priority, b.hot, b.type
+    RETURN a.userId, a.community, a.priority, b.type, b.hot, b.gender
     ORDER BY a.priority DESCENDING
     `,
   );
@@ -283,7 +283,15 @@ export async function createAttributeFloat() {
   result = await session.run(
     `
     MATCH (p:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(n:MetaData)
-    WITH n, apoc.map.fromPairs([key IN keys(n) | [key, toInteger(n[key])]]) as attributes 
+    WITH n, apoc.map.fromPairs([key IN keys(n) |
+        [key, 
+        CASE
+            WHEN toString(n[key]) = n[key]
+            THEN reduce(total = 0, value IN apoc.text.bytes(n[key]) | total + value)
+            ELSE n[key]
+        END
+        ]
+    ]) as attributes 
     SET n = attributes
     RETURN attributes
   `,
