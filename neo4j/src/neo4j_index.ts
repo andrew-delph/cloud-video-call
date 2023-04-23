@@ -4,6 +4,7 @@ import * as lp from './lp_pipeling';
 import * as funcs from './neo4j_functions';
 import { createPieChart, createRidgeLineChart } from './chart';
 
+console.log(`starting neo4j_index`);
 let result: neo4j.QueryResult<Dict<PropertyKey, any>>;
 
 export function printResults(
@@ -20,7 +21,6 @@ export function printResults(
   console.log(`>>`);
   records.slice(0, limit).forEach((record) => {
     try {
-      throw `dont use`;
       // console.log(record.get(`r`));
       // console.log(`value`, Object.keys(record.get(`r`)));
       console.log(
@@ -97,7 +97,9 @@ const start_time = performance.now();
   } finally {
     const end_time = performance.now();
     console.log(
-      `closing. ${Math.round((end_time - start_time) / 1000 / 60)}mins`,
+      `neo4j_index closing. ${Math.round(
+        (end_time - start_time) / 1000 / 60,
+      )}mins`,
     );
     await funcs.session.close();
     await funcs.driver.close();
