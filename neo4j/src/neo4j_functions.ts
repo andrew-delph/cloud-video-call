@@ -283,7 +283,7 @@ export async function createAttributeFloat() {
   result = await session.run(
     `
     MATCH (p:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(n:MetaData)
-    WITH n, apoc.map.fromPairs([key IN keys(n) |
+    WITH p, n, apoc.map.fromPairs([key IN keys(n) |
         [key, 
         CASE
             WHEN toString(n[key]) = n[key]
@@ -292,7 +292,9 @@ export async function createAttributeFloat() {
         END
         ]
     ]) as attributes 
-    SET n = attributes
+    MERGE (p)-[rel2:USER_ATTRIBUTES_GRAPH]->(num_n:MetaData)
+    ON CREATE SET num_n = attributes
+    ON MATCH SET num_n = attributes
     RETURN attributes
   `,
   );
@@ -307,7 +309,7 @@ export async function getAttributeKeys() {
   let result;
 
   result = await session.run(
-    `MATCH (n:MetaData)
+    `MATCH (p:Person)-[rel2:USER_ATTRIBUTES_GRAPH]->(n:MetaData)
     WITH DISTINCT keys(n) as keyList
     UNWIND keyList as individualKeys
     WITH DISTINCT individualKeys as uniqueKeys
