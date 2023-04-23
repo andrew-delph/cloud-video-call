@@ -97,8 +97,8 @@ const start_time = performance.now();
   } finally {
     const end_time = performance.now();
     console.log(
-      `neo4j_index closing. ${Math.round(
-        (end_time - start_time) / 1000 / 60,
+      `neo4j_index closing. ${((end_time - start_time) / 1000 / 60).toFixed(
+        2,
       )}mins`,
     );
     await funcs.session.close();
