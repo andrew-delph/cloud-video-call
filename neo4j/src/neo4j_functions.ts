@@ -297,7 +297,25 @@ export async function createAttributeFloat() {
   `,
   );
 
-  console.log(`getFriends`, performance.now() - start_time);
+  console.log(`createAttributeFloat`, performance.now() - start_time);
+
+  return result;
+}
+
+export async function getAttributeKeys() {
+  let start_time = performance.now();
+  let result;
+
+  result = await session.run(
+    `MATCH (n:MetaData)
+    WITH DISTINCT keys(n) as keyList
+    UNWIND keyList as individualKeys
+    WITH DISTINCT individualKeys as uniqueKeys
+    RETURN collect(uniqueKeys) as attributes
+    `,
+  );
+
+  console.log(`getAttributeKeys`, performance.now() - start_time);
 
   return result;
 }

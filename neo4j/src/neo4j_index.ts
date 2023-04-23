@@ -61,8 +61,11 @@ const start_time = performance.now();
     results = await funcs.createAttributeFloat();
     printResults(results, 50);
 
-    results = await funcs.getUsers();
+    results = await funcs.getAttributeKeys();
     printResults(results, 50);
+
+    // results = await funcs.getUsers();
+    // printResults(results, 50);
 
     return;
 
