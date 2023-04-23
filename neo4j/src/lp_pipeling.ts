@@ -75,7 +75,7 @@ export async function createPipeline() {
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'COSINE', {
-        nodeProperties: ['priority']
+        nodeProperties: ['embedding1', 'priority', 'community']
       }) YIELD featureSteps
     `,
   );
@@ -215,7 +215,7 @@ export async function predict() {
 
     if (!predictLine[key]) {
       predictLine[key] = {
-        values: [1],
+        values: [],
         colour: key == `3` ? `blue` : `red`,
       };
     }

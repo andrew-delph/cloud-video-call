@@ -50,7 +50,7 @@ export const calcScoreMap = new Map<
 ]);
 
 export const getRandomPerson = (auth: string): Person => {
-  const userFunctions = [createFemale, createMale];
+  const userFunctions = [createFemale, createMale, createHot];
 
   return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
 };
@@ -65,7 +65,6 @@ export const createFemale = (auth: string): Person => {
   const attributes = {
     gender: `female`,
     type: `female`,
-    hot: 0,
   };
 
   return new Person(PersonType.Female, auth, attributes);

@@ -151,11 +151,13 @@ function createHistogram(numbers: number[]): [number, number][] {
     const roundedNumber =
       Math.floor((number - min) / bucketSize) * bucketSize + min;
 
-    if (histogram.hasOwnProperty(roundedNumber)) {
-      histogram[roundedNumber]++;
+    if (!histogram.hasOwnProperty(roundedNumber)) {
+      console.log(`does not fit`, number, roundedNumber);
+      histogram[roundedNumber] = 0;
     } else {
-      histogram[roundedNumber] = 1;
     }
+
+    histogram[roundedNumber]++;
   });
 
   const result: [number, number][] = [];
@@ -195,6 +197,8 @@ export async function createRidgeLineChart(
   for (const key in data) {
     const item = data[key];
     const histogram = createHistogram(item.values);
+
+    console.log(`histogram`, key, histogram);
 
     dataParsed.push({ key, values: histogram, colour: item.colour ?? `red` });
   }

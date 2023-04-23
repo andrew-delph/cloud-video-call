@@ -56,11 +56,6 @@ const start_time = performance.now();
   try {
     let results;
 
-    // results = await funcs.getUsers();
-    // results = await funcs.getFriends();
-    // printResults(results, 50);
-    // return;
-
     await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 50 });
 
     await funcs.createFriends();
