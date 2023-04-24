@@ -25,11 +25,15 @@ export async function createPipeline() {
 
   result = await session.run(
     `
-      CALL gds.beta.pipeline.linkPrediction.addNodeProperty('lp-pipeline', 'fastRP', {
-        mutateProperty: 'embedding1',
-        embeddingDimension: 256,
-        randomSeed: 42
-      })
+      CALL gds.beta.pipeline.linkPrediction.addNodeProperty(
+        'lp-pipeline', 
+        'fastRP', 
+        {
+          mutateProperty: 'embedding1',
+          embeddingDimension: 256,
+          randomSeed: 42
+        }
+      )
     `,
   );
   result = await session.run(
