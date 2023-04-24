@@ -34,44 +34,6 @@ export async function createPipeline() {
       })
     `,
   );
-  // printResults(result, 400);
-
-  // result = await session.run(
-  //   `
-  //     CALL gds.beta.pipeline.linkPrediction.addNodeProperty('lp-pipeline', 'fastRP', {
-  //       mutateProperty: 'embedding2',
-  //       embeddingDimension: 256,
-  //       randomSeed: 42,
-  //       contextNodeLabels: ['Person'],
-  //       contextRelationshipTypes: ['FEEDBACK']
-  //     })
-  //   `,
-  // );
-
-  // result = await session.run(
-  //   `
-  //     CALL gds.beta.pipeline.linkPrediction.addNodeProperty('lp-pipeline', 'fastRP', {
-  //       mutateProperty: 'embedding2',
-  //       embeddingDimension: 256,
-  //       randomSeed: 42,
-  //       contextNodeLabels: ['Person'],
-  //       contextRelationshipTypes: ['FEEDBACK']
-  //     })
-  //   `,
-  // );
-
-  // result = await session.run(
-  //   `
-  //     CALL gds.beta.pipeline.linkPrediction.addNodeProperty('lp-pipeline', 'fastRP', {
-  //       mutateProperty: 'embedding3',
-  //       embeddingDimension: 256,
-  //       randomSeed: 42,
-  //       contextNodeLabels: ['Person','MetaData'],
-  //       contextRelationshipTypes: ['FEEDBACK', 'FRIENDS','USER_ATTRIBUTES_CONSTANT']
-  //     })
-  //   `,
-  // );
-
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'COSINE', {
@@ -99,29 +61,6 @@ export async function createPipeline() {
         YIELD parameterSpace
     `,
   );
-
-  // result = await session.run(
-  //   `
-  //   CALL gds.beta.pipeline.linkPrediction.addLogisticRegression('lp-pipeline')
-  //     YIELD parameterSpace
-  // `,
-  // );
-
-  // result = await session.run(
-  //   `
-  //   CALL gds.alpha.pipeline.linkPrediction.addMLP('lp-pipeline',
-  //     {hiddenLayerSizes: [4, 2], penalty: 0.5, patience: 2, classWeights: [0.55, 0.45], focusWeight: {range: [0.0, 0.1]}})
-  //     YIELD parameterSpace
-  // `,
-  // );
-
-  // result = await session.run(
-  //   `
-  //   CALL gds.beta.pipeline.linkPrediction.addLogisticRegression('lp-pipeline', {maxEpochs: 500, penalty: {range: [1e-4, 1e2]}})
-  //     YIELD parameterSpace
-  //     RETURN parameterSpace.RandomForest AS randomForestSpace, parameterSpace.LogisticRegression AS logisticRegressionSpace, parameterSpace.MultilayerPerceptron AS MultilayerPerceptronSpace
-  // `,
-  // );
 
   // result = await session.run(
   //   `
