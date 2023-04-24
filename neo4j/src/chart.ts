@@ -295,5 +295,25 @@ export async function createRidgeLineChart(
     context.restore();
   });
 
+  // Draw the x-axis grid
+  context.strokeStyle = `#000`;
+  context.lineWidth = 1;
+  xScale.ticks().forEach((tick) => {
+    console.log(`tick`, tick);
+
+    const textWidth = context.measureText(tick).width;
+    const textHeight = context.measureText(tick).emHeightAscent;
+    console.log(`textHeight`, textHeight);
+
+    const x = xScale(tick);
+    context.fillStyle = `black`;
+    context.fillText(tick, x - textWidth / 2, 20 + textHeight);
+
+    context.beginPath();
+    context.moveTo(x, 0);
+    context.lineTo(x, 20);
+    context.stroke();
+  });
+
   canvas.pngStream().pipe(fs.createWriteStream(`${filename}.png`));
 }
