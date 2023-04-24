@@ -67,7 +67,7 @@ export async function createData({
 
   console.log(`create edges ${edges.length}`);
 
-  await async.eachLimit(edges, limit, async (edge, callback) => {
+  await async.eachLimit(edges, limit / 2, async (edge, callback) => {
     await edge.a.createFeedback(edge.b);
     await edge.b.createFeedback(edge.a);
     callback();
