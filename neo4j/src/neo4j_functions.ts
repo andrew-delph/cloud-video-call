@@ -2,8 +2,9 @@ import * as neo4j from 'neo4j-driver';
 import { v4 as uuid } from 'uuid';
 import { printResults } from './neo4j_index';
 import { Dict } from 'neo4j-driver-core/types/record';
-import { getRandomPerson } from './person';
+import { Person, getRandomPerson } from './person';
 import { createDotGraph } from './chart';
+import async from 'async';
 
 export const driver = neo4j.driver(
   `neo4j://localhost:7687`,
@@ -12,8 +13,12 @@ export const driver = neo4j.driver(
 );
 export const session = driver.session();
 
-function getRandomInt(max: number) {
+export function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
+}
+
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export async function createData({
@@ -53,18 +58,20 @@ export async function createData({
 
   console.log(`create nodes ${nodes.length}`);
 
-  for (const person of nodes) {
-    await person.createNode();
-  }
+  const limit = 15;
+
+  await async.eachLimit(nodes, limit, async (node, callback) => {
+    await node.createNode();
+    callback();
+  });
 
   console.log(`create edges ${edges.length}`);
 
-  for (const edge of edges) {
-    const a = edge.a;
-    const b = edge.b;
-    await a.createFeedback(b);
-    await b.createFeedback(a);
-  }
+  await async.eachLimit(edges, limit, async (edge, callback) => {
+    await edge.a.createFeedback(edge.b);
+    await edge.b.createFeedback(edge.a);
+    callback();
+  });
 
   const end_time = performance.now();
 

@@ -28,9 +28,7 @@ export async function createPipeline() {
       CALL gds.beta.pipeline.linkPrediction.addNodeProperty('lp-pipeline', 'fastRP', {
         mutateProperty: 'embedding1',
         embeddingDimension: 256,
-        randomSeed: 42,
-        contextNodeLabels: ['Person','MetaDataGraph'],
-        contextRelationshipTypes: ['USER_ATTRIBUTES_GRAPH']
+        randomSeed: 42
       })
     `,
   );

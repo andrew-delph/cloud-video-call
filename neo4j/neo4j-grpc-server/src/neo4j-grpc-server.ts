@@ -46,7 +46,7 @@ const serverID = v4();
 const logger = common.getLogger();
 
 export const driver = neo4j.driver(
-  `neo4j://neo4j:7687`,
+  `bolt://neo4j:7687`,
   neo4j.auth.basic(`neo4j`, `password`),
 );
 

@@ -2,7 +2,6 @@ import * as neo4j from 'neo4j-driver';
 import { Dict } from 'neo4j-driver-core/types/record';
 import * as lp from './lp_pipeling';
 import * as funcs from './neo4j_functions';
-import { createPieChart, createRidgeLineChart } from './chart';
 
 console.log(`starting neo4j_index`);
 let result: neo4j.QueryResult<Dict<PropertyKey, any>>;

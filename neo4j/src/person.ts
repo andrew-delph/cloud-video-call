@@ -1,4 +1,4 @@
-import { session } from './neo4j_functions';
+import { driver, session } from './neo4j_functions';
 
 export enum PersonType {
   Random = `Random`,
@@ -106,6 +106,7 @@ export class Person {
 
   async createNode(): Promise<void> {
     const typeIndex = Object.values(PersonType).indexOf(this.type);
+    const session = driver.session();
     await session.run(
       `
         MERGE (p:Person {userId:$userId})
@@ -117,11 +118,14 @@ export class Person {
     `,
       { userId: this.userId, attributes: this.attributes },
     );
+
+    await session.close();
   }
 
   async createFeedback(other: Person): Promise<void> {
     const calcScore = calcScoreMap.get(this.type);
     if (!calcScore) throw Error(`calcScore is undefined`);
+    const session = driver.session();
     await session.run(
       `
         MATCH (a:Person{userId: $userId})
@@ -134,5 +138,6 @@ export class Person {
         score: calcScore(this, other),
       },
     );
+    await session.close();
   }
 }
