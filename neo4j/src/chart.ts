@@ -299,11 +299,8 @@ export async function createRidgeLineChart(
   context.strokeStyle = `#000`;
   context.lineWidth = 1;
   xScale.ticks().forEach((tick) => {
-    console.log(`tick`, tick);
-
     const textWidth = context.measureText(tick).width;
     const textHeight = context.measureText(tick).emHeightAscent;
-    console.log(`textHeight`, textHeight);
 
     const x = xScale(tick);
     context.fillStyle = `black`;
