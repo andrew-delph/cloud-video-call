@@ -21,6 +21,8 @@ export async function createData({
   edgesNum = 7,
   deleteData = false,
 }) {
+  const start_time = performance.now();
+
   if (deleteData) {
     console.log(`Deleting`);
     await session.run(`
@@ -64,82 +66,10 @@ export async function createData({
     await b.createFeedback(a);
   }
 
-  console.log(`done`);
+  const end_time = performance.now();
+
+  console.log(`createData`, end_time - start_time);
 }
-
-// export async function createDataOld({
-//   nodesNum = 100,
-//   edgesNum = 7,
-//   deleteData = false,
-// }) {
-//   if (deleteData) {
-//     console.log(`Deleting`);
-//     await session.run(`
-//     MATCH (n)
-//     CALL {
-//       WITH n
-//       DETACH DELETE n
-//     } IN TRANSACTIONS
-//     `);
-//   }
-
-//   const nodes = [];
-//   const edges = [];
-
-//   for (var i = 0; i < nodesNum; i++) {
-//     nodes.push(`node${i}`);
-//   }
-
-//   edgesNum = nodesNum * edgesNum;
-//   for (var i = 0; i < edgesNum; i++) {
-//     const a = nodes[Math.floor(Math.random() * nodesNum)];
-//     let b = nodes[Math.floor(Math.random() * nodesNum)];
-//     while (a === b) {
-//       b = nodes[Math.floor(Math.random() * nodesNum)];
-//     }
-//     edges.push({ a, b });
-//   }
-
-//   console.log(`create nodes ${nodesNum}`);
-
-//   await session.run(
-//     `UNWIND $nodes as node
-//     MERGE (p:Person {userId: toString(node)})
-//     WITH p
-//     CREATE (d:MetaData)
-//     SET d.hot = toInteger((rand()*20)-10)
-//     SET p.hot = d.hot
-//     MERGE (p)-[:USER_ATTRIBUTES_CONSTANT]->(d);
-//     `,
-//     { nodes: nodes },
-//   );
-
-//   //SET d.hot = toString(toInteger((rand()*20)-10))
-
-//   console.log(`create edges ${edgesNum}`);
-
-//   // await session.run(
-//   //   `
-//   //   UNWIND $edges as edge MATCH (a1:Person)-[rel1:USER_ATTRIBUTES_CONSTANT]->(b1:MetaData), (a2:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b2:MetaData)
-//   //   WHERE a1.userId = toString(edge.a) AND a2.userId = toString(edge.b)
-//   //   CREATE (a1)-[f1:FEEDBACK {score: toInteger(b2.hot)}]->(a2)
-//   //   CREATE (a2)-[f2:FEEDBACK {score: toInteger(b1.hot)}]->(a1)
-//   //   `,
-//   //   { edges: edges },
-//   // );
-
-//   await session.run(
-//     `
-//     UNWIND $edges as edge MATCH (a1:Person)-[rel1:USER_ATTRIBUTES_CONSTANT]->(b1:MetaData), (a2:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b2:MetaData)
-//     WHERE a1.userId = toString(edge.a) AND a2.userId = toString(edge.b)
-//     CREATE (a1)-[f1:FEEDBACK {score: CASE WHEN toInteger(b1.hot)-2 <= toInteger(b2.hot) THEN 10 ELSE -10 END}]->(a2)
-//     CREATE (a2)-[f2:FEEDBACK {score: CASE WHEN toInteger(b2.hot)-2 <= toInteger(b1.hot) THEN 10 ELSE -10 END}]->(a1)
-//     `,
-//     { edges: edges },
-//   );
-
-//   console.log(`done`);
-// }
 
 export async function getUsers() {
   console.log();
@@ -363,14 +293,14 @@ export async function createGraph(
         '${graphName}', 
         {
           Person:{
-            properties: { priority: {defaultValue: 0.0}, community: {defaultValue: 0.0}}
+            properties: {}
           }, 
           MetaDataGraph:{
             properties: ${JSON.stringify(graph_attributes)}
           }
         }, 
         {
-          FRIENDS:{orientation:'UNDIRECTED'}, FEEDBACK:{properties: ['score']}, USER_ATTRIBUTES_GRAPH: {}
+          FRIENDS:{orientation:'UNDIRECTED'}, USER_ATTRIBUTES_GRAPH: {}
         },
         {
           
@@ -503,8 +433,7 @@ export async function callPriority() {
     CALL gds.articleRank.write('myGraph', {  
         scaler: "MinMax",
         nodeLabels: ['Person'],
-        relationshipTypes: ['FEEDBACK'],
-        relationshipWeightProperty: 'score',
+        relationshipTypes: ['FRIENDS'],
         writeProperty: 'priority' 
       }
     )

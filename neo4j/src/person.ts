@@ -29,7 +29,6 @@ export const calcScoreMap = new Map<
     PersonType.Female,
     (me: Person, otherPerson: Person) => {
       if (otherPerson.type == PersonType.Male) return 10;
-      if (otherPerson.type == PersonType.Female) return 2;
       return -10;
     },
   ],
@@ -50,7 +49,7 @@ export const calcScoreMap = new Map<
 ]);
 
 export const getRandomPerson = (auth: string): Person => {
-  const userFunctions = [createFemale, createMale, createHot];
+  const userFunctions = [createFemale, createMale];
 
   return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
 };
@@ -106,13 +105,14 @@ export class Person {
   }
 
   async createNode(): Promise<void> {
-    const type = this.attributes.type;
+    const typeIndex = Object.values(PersonType).indexOf(this.type);
     await session.run(
       `
         MERGE (p:Person {userId:$userId})
         WITH p
         CREATE (d:MetaData)
         SET d = $attributes
+        SET p.type = ${typeIndex}
         MERGE (p)-[:USER_ATTRIBUTES_CONSTANT]->(d);
     `,
       { userId: this.userId, attributes: this.attributes },

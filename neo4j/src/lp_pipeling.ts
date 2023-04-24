@@ -75,22 +75,22 @@ export async function createPipeline() {
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'COSINE', {
-        nodeProperties: ['embedding1', 'priority', 'community']
+        nodeProperties: ['embedding1']
       }) YIELD featureSteps
     `,
   );
 
   // console.log(`configureSplit disabled.`);
-  result = await session.run(
-    `
-      CALL gds.beta.pipeline.linkPrediction.configureSplit('lp-pipeline', {
-        testFraction: 0.25,
-        trainFraction: 0.6,
-        validationFolds: 3
-      })
-      YIELD splitConfig
-    `,
-  );
+  // result = await session.run(
+  //   `
+  //     CALL gds.beta.pipeline.linkPrediction.configureSplit('lp-pipeline', {
+  //       testFraction: 0.25,
+  //       trainFraction: 0.6,
+  //       validationFolds: 3
+  //     })
+  //     YIELD splitConfig
+  //   `,
+  // );
   // printResults(result, 400);
 
   result = await session.run(
@@ -169,7 +169,7 @@ export async function train() {
   const end_time = performance.now();
   console.log(`train:`, end_time - start_time);
 
-  return result;
+  return training_result;
 }
 
 export async function predict() {

@@ -89,18 +89,18 @@ export async function createPieChart(
   var radius = Math.min(width, height) / 2;
 
   var arc = d3
-    .arc<d3.PieArcDatum<typeof data[0]>>()
+    .arc<d3.PieArcDatum<(typeof data)[0]>>()
     .outerRadius(radius - 10)
     .innerRadius(0)
     .context(context);
 
   var labelArc = d3
-    .arc<d3.PieArcDatum<typeof data[0]>>()
+    .arc<d3.PieArcDatum<(typeof data)[0]>>()
     .outerRadius(radius - 40)
     .innerRadius(radius - 40)
     .context(context);
 
-  var pie = d3.pie<typeof data[0]>().value(function (d) {
+  var pie = d3.pie<(typeof data)[0]>().value(function (d) {
     return d.value;
   });
 
@@ -152,7 +152,6 @@ function createHistogram(numbers: number[]): [number, number][] {
       Math.floor((number - min) / bucketSize) * bucketSize + min;
 
     if (!histogram.hasOwnProperty(roundedNumber)) {
-      console.log(`does not fit`, number, roundedNumber);
       histogram[roundedNumber] = 0;
     } else {
     }
@@ -197,8 +196,6 @@ export async function createRidgeLineChart(
   for (const key in data) {
     const item = data[key];
     const histogram = createHistogram(item.values);
-
-    console.log(`histogram`, key, histogram);
 
     dataParsed.push({ key, values: histogram, colour: item.colour ?? `red` });
   }
