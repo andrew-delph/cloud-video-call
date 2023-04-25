@@ -5,11 +5,12 @@ import { Dict } from 'neo4j-driver-core/types/record';
 import { Person, getRandomPerson } from './person';
 import { createDotGraph } from './chart';
 import async from 'async';
+const maxRetryTimeMs = 15 * 1000;
 
 export const driver = neo4j.driver(
   `neo4j://localhost:7687`,
   neo4j.auth.basic(`neo4j`, `password`),
-  { disableLosslessIntegers: true },
+  { disableLosslessIntegers: true, maxTransactionRetryTime: maxRetryTimeMs },
 );
 export const session = driver.session();
 
@@ -183,6 +184,29 @@ export async function getVarience() {
   return result;
 }
 
+export async function readGraph(graphName: string = `myGraph`) {
+  console.log();
+  console.log(`running readGraph`);
+
+  const start_time = performance.now();
+
+  let result;
+
+  result = await session.run(
+    `
+    CALL gds.graph.nodeProperty.stream('${graphName}', 'values')
+      YIELD nodeId, propertyValue
+      RETURN propertyValue as values
+  `,
+  );
+
+  const end_time = performance.now();
+
+  console.log(`readGraph`, end_time - start_time);
+
+  return result;
+}
+
 export async function createFriends() {
   let start_time = performance.now();
   let result;
@@ -246,7 +270,7 @@ export async function getAttributeKeys() {
   let result;
 
   result = await session.run(
-    `MATCH (p:Person)-[rel2:USER_ATTRIBUTES_GRAPH]->(n:MetaDataGraph)
+    `MATCH (p:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(n:MetaData)
     WITH DISTINCT keys(n) as keyList
     UNWIND keyList as individualKeys
     WITH DISTINCT individualKeys as uniqueKeys
@@ -296,24 +320,48 @@ export async function createGraph(
   }
 
   result = await session.run(
-    `CALL gds.graph.project( 
-        '${graphName}', 
-        {
-          Person:{
-            properties: {}
-          }, 
-          MetaDataGraph:{
-            properties: ${JSON.stringify(graph_attributes)}
-          }
-        }, 
-        {
-          FRIENDS:{orientation:'UNDIRECTED'}, USER_ATTRIBUTES_GRAPH: {}
-        },
-        {
-          
-        }
-    );`,
+    `CALL gds.graph.project.cypher(
+      '${graphName}',
+      'MATCH (p:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(n:MetaData)
+      WITH p, n, apoc.map.fromPairs([key IN ${JSON.stringify(
+        graph_attributes,
+      )} |
+        [key, 
+        CASE
+            WHEN n[key] IS NULL THEN toFloat(0)
+            WHEN toString(n[key]) = n[key]
+            THEN reduce(total = 0.0, value IN apoc.text.bytes(n[key]) | total + value)
+            ELSE toFloat(n[key])
+        END
+        ]
+      ]) as attributes 
+    RETURN id(p) AS id, labels(p) AS labels, apoc.map.values(attributes, ${JSON.stringify(
+      graph_attributes,
+    )}) AS values',
+      'MATCH (n)-[r:FRIENDS]->(m) RETURN id(n) AS source, id(m) AS target, type(r) AS type')
+    YIELD
+      graphName AS graph, nodeQuery, nodeCount AS nodes, relationshipCount AS rels`,
   );
+
+  // result = await session.run(
+  //   `CALL gds.graph.project(
+  //       '${graphName}',
+  //       {
+  //         Person:{
+  //           properties: {}
+  //         },
+  //         MetaDataGraph:{
+  //           properties: ${JSON.stringify(graph_attributes)}
+  //         }
+  //       },
+  //       {
+  //         FRIENDS:{orientation:'UNDIRECTED'}, USER_ATTRIBUTES_GRAPH: {}
+  //       },
+  //       {
+
+  //       }
+  //   );`,
+  // );
   const end_time = performance.now();
   console.log(`createGraph`, end_time - start_time);
 

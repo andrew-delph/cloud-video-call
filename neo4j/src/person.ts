@@ -113,7 +113,7 @@ export class Person {
         WITH p
         CREATE (d:MetaData)
         SET d = $attributes
-        SET p.type = ${typeIndex}
+        SET p.type = "${this.type.valueOf()}"
         MERGE (p)-[:USER_ATTRIBUTES_CONSTANT]->(d);
     `,
       { userId: this.userId, attributes: this.attributes },

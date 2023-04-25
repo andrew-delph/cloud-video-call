@@ -55,14 +55,23 @@ const start_time = performance.now();
   try {
     let results;
 
-    await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 50 });
+    await funcs.createData({ deleteData: true, nodesNum: 10, edgesNum: 5 });
 
     await funcs.createFriends();
 
-    await funcs.createAttributeFloat();
+    // await funcs.createAttributeFloat();
 
     const graph_attributes: string[] = await funcs.getAttributeKeys();
-    await funcs.createGraph(`myGraph`, graph_attributes);
+    results = await funcs.createGraph(`myGraph`, graph_attributes);
+
+    results = await funcs.readGraph(`myGraph`);
+
+    printResults(results, 50);
+
+    console.log(`graph_attributes`, graph_attributes);
+
+    return;
+
     results = await funcs.callPriority();
     results = await funcs.callCommunities();
     // results = await funcs.callWriteSimilar();
