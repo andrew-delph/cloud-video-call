@@ -348,7 +348,7 @@ export async function createGraph(
             ELSE toFloat(${node}_md[key])
         END
         ]
-      ]), ${JSON.stringify(graph_attributes)}) AS ${node}_values
+      ]), ${JSON.stringify(graph_attributes)})
     `;
   };
 
@@ -356,18 +356,22 @@ export async function createGraph(
     `MATCH (source:Person)-[r:FRIENDS]-(target:Person),
     (source)-[:USER_ATTRIBUTES_CONSTANT]->(source_md:MetaData),
     (target)-[:USER_ATTRIBUTES_CONSTANT]->(target_md:MetaData)
-    WITH source, target, source_md, target_md, ${createValues(
-      `source`,
-    )}, ${createValues(`target`)}
+    WITH source, target, r,  
+    ${createValues(`source`)} AS source_values, 
+    ${createValues(`target`)} AS target_values
       WITH gds.alpha.graph.project(
       '${graphName}',
       source,
       target,
       {
+        sourceNodeLabels: labels(source),
+        targetNodeLabels: labels(target),
         sourceNodeProperties: source { values: source_values },
         targetNodeProperties: target { values: target_values }
       },
-      {},
+      {
+        relationshipType: type(r)
+      },
       {undirectedRelationshipTypes: ['*']}
     ) as g
     RETURN g.graphName AS graph, g.nodeCount AS nodes, g.relationshipCount AS rels`,

@@ -69,9 +69,6 @@ const start_time = performance.now();
     results = await funcs.readGraph(`myGraph`);
 
     printResults(results, 50);
-    return;
-
-    console.log(`graph_attributes`, graph_attributes);
 
     results = await funcs.callPriority();
     results = await funcs.callCommunities();
@@ -91,6 +88,8 @@ const start_time = performance.now();
     await funcs.createGraph(`mlGraph`, graph_attributes);
     await lp.train();
     await lp.predict();
+
+    console.log(`graph_attributes`, graph_attributes);
   } finally {
     const end_time = performance.now();
     console.log(
