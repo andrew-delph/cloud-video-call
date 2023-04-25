@@ -88,8 +88,8 @@ export async function getUsers() {
 
   result = await session.run(
     `
-    MATCH (a:Person)-[rel2:USER_ATTRIBUTES_GRAPH]->(b:MetaDataGraph)
-    RETURN a.userId, a.community, a.priority, b.type, b.hot, b.gender
+    MATCH (a:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b:MetaData)
+    RETURN a.community, a.priority, b.type, a.embedding
     ORDER BY a.priority DESCENDING
     `,
   );
@@ -491,10 +491,8 @@ export async function callNodeEmbeddings() {
     CALL gds.fastRP.write('myGraph', 
     {  
       nodeLabels: ['Person'],
-      featureProperties: ['hot'],
-      embeddingDimension: 2,
+      embeddingDimension: 16,
       writeProperty: 'embedding',
-      propertyRatio: 1.0,
       randomSeed: 33
     }
     )
