@@ -55,9 +55,12 @@ const start_time = performance.now();
   try {
     let results;
 
-    await funcs.createData({ deleteData: true, nodesNum: 10, edgesNum: 3 });
+    await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 30 });
 
     await funcs.createFriends();
+
+    results = await funcs.getFriends();
+    printResults(results, 50);
 
     // await funcs.createAttributeFloat();
 

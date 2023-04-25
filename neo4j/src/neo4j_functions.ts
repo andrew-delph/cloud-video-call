@@ -201,8 +201,8 @@ export async function getVarience() {
 }
 
 export async function readGraph(graphName: string = `myGraph`) {
-  console.log();
-  console.log(`running readGraph`);
+  console.log(``);
+  console.log(`--- readGraph`);
 
   const start_time = performance.now();
 
@@ -224,6 +224,8 @@ export async function readGraph(graphName: string = `myGraph`) {
 }
 
 export async function createFriends() {
+  console.log(``);
+  console.log(`--- createFriends`);
   let start_time = performance.now();
   let result;
   // delete friends
@@ -231,17 +233,17 @@ export async function createFriends() {
     `
     MATCH ()-[r:FRIENDS]-()
     DELETE r
-    RETURN r
   `,
   );
 
   console.log(`deleted friends: ${result.records.length}`);
+  console.log(`deleteFriends`, performance.now() - start_time);
 
   // create friends
   result = await session.run(
     `
       MATCH (a)-[r1:FEEDBACK]->(b), (a)<-[r2:FEEDBACK]-(b)
-      //WHERE r1.score > 0 AND r2.score > 0 AND id(a) > id(b)
+      WHERE r1.score > 0 AND r2.score > 0 AND id(a) > id(b)
       MERGE (a)-[f1:FRIENDS]-(b)
       MERGE (b)-[f2:FRIENDS]-(a)
       RETURN f1, f2
@@ -254,6 +256,8 @@ export async function createFriends() {
 }
 
 export async function createAttributeFloat() {
+  console.log(``);
+  console.log(`--- createAttributeFloat`);
   let start_time = performance.now();
   let result;
 
@@ -282,6 +286,8 @@ export async function createAttributeFloat() {
 }
 
 export async function getAttributeKeys() {
+  console.log(``);
+  console.log(`--- getAttributeKeys`);
   let start_time = performance.now();
   let result;
 
