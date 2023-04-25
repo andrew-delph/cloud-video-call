@@ -32,7 +32,7 @@ export async function createPipeline() {
           embeddingDimension: 256,
           randomSeed: 42,
           contextNodeLabels: ['Person'],
-          contextRelationshipTypes: ['FRIENDS']
+          contextRelationshipTypes: ['FRIENDS', 'FEEDBACK']
         }
       )
     `,
@@ -40,7 +40,7 @@ export async function createPipeline() {
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'COSINE', {
-        nodeProperties: ['embedding1', 'values']
+        nodeProperties: [ 'embedding1', 'values']
       }) YIELD featureSteps
     `,
   );
@@ -89,7 +89,6 @@ export async function train() {
       RETURN modelInfo.modelName AS modelName, loaded, shared, stored`,
   );
 
-  console.log(`Training`);
   const training_result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.train('mlGraph', {

@@ -240,26 +240,31 @@ export async function readGraph(
   return result;
 }
 
-export async function createFriends() {
-  console.log(``);
-  console.log(`--- createFriends`);
+export async function createFriends(deleteFriends: boolean = true) {
   let start_time = performance.now();
   let result;
   // delete friends
-  result = await session.run(
-    `
-    MATCH (:Person)-[f:FRIENDS]-(:Person)
-    CALL {
-      WITH f
-      DELETE f
-    } IN TRANSACTIONS
-    return f
-  `,
-  );
+  if (deleteFriends) {
+    console.log(``);
+    console.log(`--- deleteFriends`);
+    result = await session.run(
+      `
+      MATCH (:Person)-[f:FRIENDS]-(:Person)
+      CALL {
+        WITH f
+        DELETE f
+      } IN TRANSACTIONS
+      return f
+    `,
+    );
 
-  console.log(`deleted friends: ${result.records.length}`);
-  console.log(`deleteFriends`, performance.now() - start_time);
-  start_time = performance.now();
+    console.log(`deleted friends: ${result.records.length}`);
+    console.log(`deleteFriends`, performance.now() - start_time);
+    start_time = performance.now();
+  }
+
+  console.log(``);
+  console.log(`--- createFriends`);
 
   // create friends
   result = await session.run(
@@ -328,6 +333,8 @@ export async function getAttributeKeys() {
 }
 
 export async function getFriends() {
+  console.log(``);
+  console.log(`--- getFriends`);
   let start_time = performance.now();
   let result;
 
@@ -389,7 +396,7 @@ export async function createGraph(
   };
 
   result = await session.run(
-    `MATCH (source:Person)-[r:FRIENDS]-(target:Person),
+    `MATCH (source:Person)-[r:FRIENDS|FEEDBACK]->(target:Person),
     (source)-[:USER_ATTRIBUTES_CONSTANT]->(source_md:MetaData),
     (target)-[:USER_ATTRIBUTES_CONSTANT]->(target_md:MetaData)
     WITH source, target, r,  
@@ -410,9 +417,10 @@ export async function createGraph(
           }
       },
       {
-        relationshipType: 'FRIENDS'
+        relationshipType: type(r),
+        properties: r { .score }
       },
-      {undirectedRelationshipTypes: ['*']}
+      {undirectedRelationshipTypes: ['FRIENDS']}
     ) as g
     RETURN g.graphName AS graph, g.nodeCount AS nodes, g.relationshipCount AS rels`,
   );
