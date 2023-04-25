@@ -2,7 +2,7 @@ import * as neo4j from 'neo4j-driver';
 import { v4 as uuid } from 'uuid';
 import { printResults } from './neo4j_index';
 import { Dict } from 'neo4j-driver-core/types/record';
-import { Person, getRandomPerson } from './person';
+import { Person, getRandomPerson, indexToColor } from './person';
 import { createDotGraph } from './chart';
 import async from 'async';
 const maxRetryTimeMs = 15 * 1000;
@@ -43,10 +43,10 @@ export async function createData({
   edgesNum = 7,
   deleteData = false,
 }) {
-  const start_time = performance.now();
+  const full_start_time = performance.now();
+  let start_time = full_start_time;
 
   if (deleteData) {
-    console.log(`Deleting`);
     await session.run(`
     MATCH (n)
     CALL {
@@ -54,6 +54,7 @@ export async function createData({
       DETACH DELETE n
     } IN TRANSACTIONS
     `);
+    console.log(`Deletion time:`, performance.now() - start_time);
   }
 
   const nodes = [];
@@ -73,26 +74,33 @@ export async function createData({
     edges.push({ a, b });
   }
 
-  console.log(`create nodes ${nodes.length}`);
-
   const limit = 15;
-
+  start_time = performance.now();
   await async.eachLimit(nodes, limit, async (node, callback) => {
     await node.createNode();
     callback();
   });
 
-  console.log(`create edges ${edges.length}`);
+  console.log(
+    `create nodes num:${nodes.length} time:`,
+    performance.now() - start_time,
+  );
 
+  start_time = performance.now();
   await async.eachLimit(edges, limit, async (edge, callback) => {
     await edge.a.createFeedback(edge.b);
     await edge.b.createFeedback(edge.a);
     callback();
   });
 
+  console.log(
+    `create edges num:${edges.length} time:`,
+    performance.now() - start_time,
+  );
+
   const end_time = performance.now();
 
-  console.log(`createData`, end_time - start_time);
+  console.log(`createData`, performance.now() - full_start_time);
 }
 
 export async function getUsers() {
@@ -106,7 +114,7 @@ export async function getUsers() {
   result = await session.run(
     `
     MATCH (a:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b:MetaData)
-    RETURN a.community, a.priority, b.type, a.embedding
+    RETURN a.community, a.priority, b.type, a.embedding, a.typeIndex
     ORDER BY a.priority DESCENDING
     `,
   );
@@ -137,12 +145,14 @@ export async function getUsers() {
   const community_data: {
     x: number;
     y: number;
+    dotColor?: string;
   }[] = [];
 
   result.records.forEach((record) => {
-    const x = parseFloat(record.get(`b.type`));
+    const x = parseFloat(record.get(`a.typeIndex`));
     const y = parseFloat(record.get(`a.community`));
-    community_data.push({ x, y });
+    const dotColor = indexToColor[x];
+    community_data.push({ x, y, dotColor });
   });
 
   createDotGraph(community_data, `community`);
@@ -150,12 +160,14 @@ export async function getUsers() {
   const priority_data: {
     x: number;
     y: number;
+    dotColor?: string;
   }[] = [];
 
   result.records.forEach((record) => {
+    const x = parseFloat(record.get(`a.typeIndex`));
     const y = parseFloat(record.get(`a.priority`));
-    const x = parseFloat(record.get(`b.type`));
-    priority_data.push({ x, y });
+    const dotColor = indexToColor[x];
+    priority_data.push({ x, y, dotColor });
   });
 
   createDotGraph(priority_data, `priority`);
@@ -200,7 +212,10 @@ export async function getVarience() {
   return result;
 }
 
-export async function readGraph(graphName: string = `myGraph`) {
+export async function readGraph(
+  graphName: string = `myGraph`,
+  value: string = `values`,
+) {
   console.log(``);
   console.log(`--- readGraph`);
 
@@ -210,9 +225,11 @@ export async function readGraph(graphName: string = `myGraph`) {
 
   result = await session.run(
     `
-    CALL gds.graph.nodeProperty.stream('${graphName}', 'values')
+    CALL gds.graph.nodeProperty.stream('${graphName}', '${value}')
       YIELD nodeId, propertyValue
-      RETURN propertyValue as values, gds.util.asNode(nodeId).type AS type
+      WITH propertyValue, gds.util.asNode(nodeId) as p
+      MATCH (p)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b:MetaData)
+      return propertyValue as ${value}, b.type
   `,
   );
 
@@ -231,13 +248,18 @@ export async function createFriends() {
   // delete friends
   result = await session.run(
     `
-    MATCH ()-[r:FRIENDS]-()
-    DELETE r
+    MATCH (:Person)-[f:FRIENDS]-(:Person)
+    CALL {
+      WITH f
+      DELETE f
+    } IN TRANSACTIONS
+    return f
   `,
   );
 
   console.log(`deleted friends: ${result.records.length}`);
   console.log(`deleteFriends`, performance.now() - start_time);
+  start_time = performance.now();
 
   // create friends
   result = await session.run(
@@ -358,6 +380,14 @@ export async function createGraph(
     `;
   };
 
+  const getExtraNodeProperties = (node: string) => {
+    let extra_node_properties = ``;
+    extra_node_properties += `, priority: coalesce(${node}.priority, -1)`;
+    extra_node_properties += `, typeIndex: coalesce(${node}.typeIndex, -1)`;
+
+    return extra_node_properties;
+  };
+
   result = await session.run(
     `MATCH (source:Person)-[r:FRIENDS]-(target:Person),
     (source)-[:USER_ATTRIBUTES_CONSTANT]->(source_md:MetaData),
@@ -372,8 +402,12 @@ export async function createGraph(
       {
         sourceNodeLabels: labels(source),
         targetNodeLabels: labels(target),
-        sourceNodeProperties: source { values: source_values },
-        targetNodeProperties: target { values: target_values }
+        sourceNodeProperties: source { 
+            values: source_values ${getExtraNodeProperties(`source`)}
+          },
+        targetNodeProperties: target { 
+            values: target_values ${getExtraNodeProperties(`target`)}
+          }
       },
       {
         relationshipType: type(r)

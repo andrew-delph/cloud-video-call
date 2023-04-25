@@ -16,20 +16,26 @@ export function createDotGraph(
   }[],
   name: string,
 ) {
-  console.log(`createDotGraph ${name} data.length ${data.length}`);
-
   const width = 800 * 2;
   const height = 600 * 2;
   const padding = 100;
-  const dotSize = 5;
+  const dotSize = 10;
 
   const minX = Math.min(...data.map((p) => p.x));
-  const maxX = Math.max(...data.map((p) => p.x));
   const minY = Math.min(...data.map((p) => p.y));
+  const maxX = Math.max(...data.map((p) => p.x));
   const maxY = Math.max(...data.map((p) => p.y));
 
   const scaleX = (width - 2 * padding) / (maxX - minX);
   const scaleY = (height - 2 * padding) / (maxY - minY);
+
+  console.log(
+    `createDotGraph ${name} points ${
+      data.length
+    } minX,minY ${minX},${minY} maxX,maxY ${maxX},${maxY} diffX ${
+      maxX - minX
+    } diffY ${maxY - minY} scaleX ${scaleX} scaleY ${scaleY}`,
+  );
 
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext(`2d`);

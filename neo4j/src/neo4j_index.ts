@@ -55,7 +55,12 @@ const start_time = performance.now();
   try {
     let results;
 
-    await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 30 });
+    // await funcs.createFriends();
+    // results = await funcs.getFriends();
+    // printResults(results, 50);
+    // return;
+
+    await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 50 });
 
     await funcs.createFriends();
 
@@ -67,11 +72,16 @@ const start_time = performance.now();
     const graph_attributes: string[] = await funcs.getAttributeKeys();
     results = await funcs.createGraph(`myGraph`, graph_attributes);
 
-    printResults(results, 50);
+    results = await funcs.callPriority();
+    results = await funcs.callCommunities();
+    results = await funcs.getUsers();
 
-    results = await funcs.readGraph(`myGraph`);
+    // printResults(results, 50);
 
-    printResults(results, 50);
+    results = await funcs.readGraph(`myGraph`, `values`);
+    // printResults(results, 50);
+
+    // return;
 
     results = await funcs.callPriority();
     results = await funcs.callCommunities();
@@ -87,10 +97,18 @@ const start_time = performance.now();
     // results = await funcs.getFriends();
     // printResults(results, 50);
 
-    await lp.createPipeline();
-    await funcs.createGraph(`mlGraph`, graph_attributes);
-    await lp.train();
+    results = await lp.createPipeline();
+    results = await funcs.createGraph(`mlGraph`, graph_attributes);
+
+    const train_results = await lp.train();
     await lp.predict();
+
+    // results = await funcs.readGraph(`myGraph`, `typeIndex`);
+    // printResults(results, 15);
+    // results = await funcs.readGraph(`mlGraph`, `typeIndex`);
+    // printResults(results, 15);
+    // results = await funcs.readGraph(`mlGraph`, `priority`);
+    // printResults(results, 15);
 
     console.log(`graph_attributes`, graph_attributes);
   } finally {

@@ -8,6 +8,11 @@ export enum PersonType {
   Hot = `Hot`,
 }
 
+export const indexToColor: { [key: number]: string } = {
+  1: `Orange`,
+  2: `Blue`,
+};
+
 export const calcScoreMap = new Map<
   PersonType,
   (me: Person, otherPerson: Person) => number
@@ -49,7 +54,11 @@ export const calcScoreMap = new Map<
 ]);
 
 export const getRandomPerson = (auth: string): Person => {
-  const userFunctions = [createFemale, createMale];
+  let userFunctions = [];
+  userFunctions.push(createFemale);
+  userFunctions.push(createMale);
+  userFunctions.push(createRandom);
+  userFunctions.push(createHot);
 
   return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
 };
@@ -113,8 +122,7 @@ export class Person {
         WITH p
         CREATE (d:MetaData)
         SET d = $attributes
-        SET p.type = ${typeIndex}
-        SET d.type = ${typeIndex}
+        SET p.typeIndex = ${typeIndex}
         MERGE (p)-[:USER_ATTRIBUTES_CONSTANT]->(d);
     `,
       { userId: this.userId, attributes: this.attributes },

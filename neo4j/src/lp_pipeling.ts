@@ -8,14 +8,13 @@ export async function createPipeline() {
   console.log(``);
   console.log(`--- linkPredictionML`);
   let result;
+  let start_time = performance.now();
 
   // delete pipline if it exists
   result = await session.run(
     `CALL gds.beta.pipeline.drop('lp-pipeline', False);`,
   );
   console.log(`pipeline delete successfully`);
-
-  let start_time = performance.now();
 
   result = await session.run(
     `
@@ -31,7 +30,9 @@ export async function createPipeline() {
         {
           mutateProperty: 'embedding1',
           embeddingDimension: 256,
-          randomSeed: 42
+          randomSeed: 42,
+          contextNodeLabels: ['Person'],
+          contextRelationshipTypes: ['FRIENDS']
         }
       )
     `,
@@ -39,7 +40,7 @@ export async function createPipeline() {
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'COSINE', {
-        nodeProperties: ['embedding1']
+        nodeProperties: ['embedding1','typeIndex', 'priority']
       }) YIELD featureSteps
     `,
   );
@@ -71,8 +72,8 @@ export async function createPipeline() {
   //   }) YIELD autoTuningConfig
   // `,
   // );
-  const end_time = performance.now();
-  console.log(`createPipeline:`, end_time - start_time);
+
+  console.log(`createPipeline:`, performance.now() - start_time);
 
   return result;
 }
@@ -123,7 +124,7 @@ export async function predict() {
       CALL gds.beta.pipeline.linkPrediction.predict.stream('mlGraph', {
         modelName: 'lp-pipeline-model',
         topN: 5000,
-        threshold: 0.2
+        threshold: 0
       })
         YIELD node1, node2, probability
         WITH gds.util.asNode(node1) AS person1, gds.util.asNode(node2) AS person2, probability
@@ -168,20 +169,20 @@ export async function predict() {
 
   await createRidgeLineChart(predictLine, `predict-line`);
 
-  const predictDot: {
-    x: number;
-    y: number;
-  }[] = [];
+  // const predictDot: {
+  //   x: number;
+  //   y: number;
+  // }[] = [];
 
-  result.records.forEach((record) => {
-    const type1 = parseInt(record.get(`md1.type`));
-    const type2 = parseInt(record.get(`md2.type`));
-    const y = Math.abs(type1 - type2);
-    const x = parseFloat(record.get(`probability`));
-    predictDot.push({ x, y });
-  });
+  // result.records.forEach((record) => {
+  //   const type1 = parseInt(record.get(`md1.type`));
+  //   const type2 = parseInt(record.get(`md2.type`));
+  //   const y = Math.abs(type1 - type2);
+  //   const x = parseFloat(record.get(`probability`));
+  //   predictDot.push({ x, y });
+  // });
 
-  createDotGraph(predictDot, `predict-dot`);
+  // createDotGraph(predictDot, `predict-dot`);
 
   return result;
 }
