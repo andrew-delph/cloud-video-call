@@ -1,4 +1,4 @@
-import { driver, session } from './neo4j_functions';
+import { driver, retryFunction, session } from './neo4j_functions';
 
 export enum PersonType {
   Random = `Random`,
@@ -113,7 +113,8 @@ export class Person {
         WITH p
         CREATE (d:MetaData)
         SET d = $attributes
-        SET p.type = "${this.type.valueOf()}"
+        SET p.type = ${typeIndex}
+        SET d.type = ${typeIndex}
         MERGE (p)-[:USER_ATTRIBUTES_CONSTANT]->(d);
     `,
       { userId: this.userId, attributes: this.attributes },
@@ -125,6 +126,15 @@ export class Person {
   async createFeedback(other: Person): Promise<void> {
     const calcScore = calcScoreMap.get(this.type);
     if (!calcScore) throw Error(`calcScore is undefined`);
+
+    retryFunction(
+      this._createFeedback.bind(this, other, calcScore(this, other)),
+      5,
+      100,
+    );
+  }
+
+  async _createFeedback(other: Person, score: number): Promise<void> {
     const session = driver.session();
     await session.run(
       `
@@ -135,7 +145,7 @@ export class Person {
       {
         userId: this.userId,
         otherId: other.userId,
-        score: calcScore(this, other),
+        score: score,
       },
     );
     await session.close();

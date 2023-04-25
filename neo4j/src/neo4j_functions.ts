@@ -8,7 +8,7 @@ import async from 'async';
 const maxRetryTimeMs = 15 * 1000;
 
 export const driver = neo4j.driver(
-  `neo4j://localhost:7687`,
+  `bolt://localhost:7687`,
   neo4j.auth.basic(`neo4j`, `password`),
   { disableLosslessIntegers: true, maxTransactionRetryTime: maxRetryTimeMs },
 );
@@ -20,6 +20,22 @@ export function getRandomInt(max: number) {
 
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function retryFunction(func: any, retries: number, delay: number) {
+  return new Promise((resolve, reject) => {
+    func()
+      .then(resolve)
+      .catch((error: any) => {
+        if (retries === 0) {
+          reject(error);
+        } else {
+          setTimeout(() => {
+            retryFunction(func, retries - 1, delay).then(resolve, reject);
+          }, delay);
+        }
+      });
+  });
 }
 
 export async function createData({
@@ -68,7 +84,7 @@ export async function createData({
 
   console.log(`create edges ${edges.length}`);
 
-  await async.eachLimit(edges, limit / 2, async (edge, callback) => {
+  await async.eachLimit(edges, limit, async (edge, callback) => {
     await edge.a.createFeedback(edge.b);
     await edge.b.createFeedback(edge.a);
     callback();
@@ -196,7 +212,7 @@ export async function readGraph(graphName: string = `myGraph`) {
     `
     CALL gds.graph.nodeProperty.stream('${graphName}', 'values')
       YIELD nodeId, propertyValue
-      RETURN propertyValue as values
+      RETURN propertyValue as values, gds.util.asNode(nodeId).type AS type
   `,
   );
 
@@ -225,7 +241,7 @@ export async function createFriends() {
   result = await session.run(
     `
       MATCH (a)-[r1:FEEDBACK]->(b), (a)<-[r2:FEEDBACK]-(b)
-      WHERE r1.score > 0 AND r2.score > 0 AND id(a) > id(b)
+      //WHERE r1.score > 0 AND r2.score > 0 AND id(a) > id(b)
       MERGE (a)-[f1:FRIENDS]-(b)
       MERGE (b)-[f2:FRIENDS]-(a)
       RETURN f1, f2
@@ -319,29 +335,75 @@ export async function createGraph(
     console.log(`graph doesn't exist`);
   }
 
-  result = await session.run(
-    `CALL gds.graph.project.cypher(
-      '${graphName}',
-      'MATCH (p:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(n:MetaData)
-      WITH p, n, apoc.map.fromPairs([key IN ${JSON.stringify(
+  const createValues = (node: string) => {
+    return `
+      apoc.map.values(apoc.map.fromPairs([key IN ${JSON.stringify(
         graph_attributes,
       )} |
-        [key, 
+        [key,
         CASE
-            WHEN n[key] IS NULL THEN toFloat(0)
-            WHEN toString(n[key]) = n[key]
-            THEN reduce(total = 0.0, value IN apoc.text.bytes(n[key]) | total + value)
-            ELSE toFloat(n[key])
+            WHEN ${node}_md[key] IS NULL THEN NaN
+            WHEN toString(${node}_md[key]) = ${node}_md[key]
+            THEN reduce(total = 0.0, value IN apoc.text.bytes(${node}_md[key]) | total + value)
+            ELSE toFloat(${node}_md[key])
         END
         ]
-      ]) as attributes 
-    RETURN id(p) AS id, labels(p) AS labels, apoc.map.values(attributes, ${JSON.stringify(
-      graph_attributes,
-    )}) AS values',
-      'MATCH (n)-[r:FRIENDS]->(m) RETURN id(n) AS source, id(m) AS target, type(r) AS type')
-    YIELD
-      graphName AS graph, nodeQuery, nodeCount AS nodes, relationshipCount AS rels`,
+      ]), ${JSON.stringify(graph_attributes)}) AS ${node}_values
+    `;
+  };
+
+  result = await session.run(
+    `MATCH (source:Person)-[r:FRIENDS]-(target:Person),
+    (source)-[:USER_ATTRIBUTES_CONSTANT]->(source_md:MetaData),
+    (target)-[:USER_ATTRIBUTES_CONSTANT]->(target_md:MetaData)
+    WITH source, target, source_md, target_md, ${createValues(
+      `source`,
+    )}, ${createValues(`target`)}
+      WITH gds.alpha.graph.project(
+      '${graphName}',
+      source,
+      target,
+      {
+        sourceNodeProperties: source { values: source_values },
+        targetNodeProperties: target { values: target_values }
+      },
+      {},
+      {undirectedRelationshipTypes: ['*']}
+    ) as g
+    RETURN g.graphName AS graph, g.nodeCount AS nodes, g.relationshipCount AS rels`,
   );
+
+  // result = await session.run(
+  //   `MATCH (source:Person)-[r:FRIENDS]-(target:Person),
+  //   (source)-[:USER_ATTRIBUTES_CONSTANT]->(source_md:MetaData),
+  //   (target)-[:USER_ATTRIBUTES_CONSTANT]->(target_md:MetaData)
+
+  //   return ${createValues(`source`)},${createValues(`target`)}`,
+  // );
+
+  // result = await session.run(
+  //   `CALL gds.graph.project.cypher(
+  //     '${graphName}',
+  //     'MATCH (p:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(n:MetaData)
+  //     WITH p, n, apoc.map.fromPairs([key IN ${JSON.stringify(
+  //       graph_attributes,
+  //     )} |
+  //       [key,
+  //       CASE
+  //           WHEN n[key] IS NULL THEN NaN
+  //           WHEN toString(n[key]) = n[key]
+  //           THEN reduce(total = 0.0, value IN apoc.text.bytes(n[key]) | total + value)
+  //           ELSE toFloat(n[key])
+  //       END
+  //       ]
+  //     ]) as attributes
+  //   RETURN id(p) AS id, labels(p) AS labels, apoc.map.values(attributes, ${JSON.stringify(
+  //     graph_attributes,
+  //   )}) AS values',
+  //     'MATCH (n)-[r:FRIENDS]->(m) RETURN id(n) AS source, id(m) AS target, type(r) AS type')
+  //   YIELD
+  //     graphName AS graph, nodeQuery, nodeCount AS nodes, relationshipCount AS rels`,
+  // );
 
   // result = await session.run(
   //   `CALL gds.graph.project(
