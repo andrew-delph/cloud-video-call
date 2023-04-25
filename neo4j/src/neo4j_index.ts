@@ -60,7 +60,7 @@ const start_time = performance.now();
     // printResults(results, 50);
     // return;
 
-    await funcs.createData({ deleteData: true, nodesNum: 200, edgesNum: 5 });
+    await funcs.createData({ deleteData: true, nodesNum: 200, edgesNum: 30 });
 
     await funcs.createFriends();
 
