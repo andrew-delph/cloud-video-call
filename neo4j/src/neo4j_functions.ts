@@ -400,8 +400,8 @@ export async function createGraph(
       source,
       target,
       {
-        sourceNodeLabels: labels(source),
-        targetNodeLabels: labels(target),
+        sourceNodeLabels: 'Person',
+        targetNodeLabels: 'Person',
         sourceNodeProperties: source { 
             values: source_values ${getExtraNodeProperties(`source`)}
           },
@@ -410,7 +410,7 @@ export async function createGraph(
           }
       },
       {
-        relationshipType: type(r)
+        relationshipType: 'FRIENDS'
       },
       {undirectedRelationshipTypes: ['*']}
     ) as g

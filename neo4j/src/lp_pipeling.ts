@@ -128,9 +128,9 @@ export async function predict() {
       })
         YIELD node1, node2, probability
         WITH gds.util.asNode(node1) AS person1, gds.util.asNode(node2) AS person2, probability
-        MATCH (person1:Person)-[r1:USER_ATTRIBUTES_CONSTANT]->(md1:MetaData), 
+        OPTIONAL MATCH (person1:Person)-[r1:USER_ATTRIBUTES_CONSTANT]->(md1:MetaData), 
           (person2:Person)-[r2:USER_ATTRIBUTES_CONSTANT]->(md2:MetaData) 
-        MATCH (person1:Person)-[]->(g1:MetaDataGraph), 
+        OPTIONAL MATCH (person1:Person)-[]->(g1:MetaDataGraph), 
           (person2:Person)-[]->(g2:MetaDataGraph) 
         OPTIONAL MATCH (person1)-[f:FRIENDS]-(person2)
         RETURN (person1.userId+"-"+person2.userId) as nodes, probability,
