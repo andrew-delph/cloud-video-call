@@ -57,14 +57,14 @@ export const getRandomPerson = (auth: string): Person => {
   let userFunctions = [];
   userFunctions.push(createFemale);
   userFunctions.push(createMale);
-  userFunctions.push(createRandom);
-  userFunctions.push(createHot);
+  // userFunctions.push(createRandom);
+  // userFunctions.push(createHot);
 
   return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
 };
 
 export const createRandom = (auth: string): Person => {
-  const attributes = { type: `random`, hot: -5 };
+  const attributes = { hot: -5 };
 
   return new Person(PersonType.Random, auth, attributes);
 };
@@ -72,20 +72,19 @@ export const createRandom = (auth: string): Person => {
 export const createFemale = (auth: string): Person => {
   const attributes = {
     gender: `female`,
-    type: `female`,
   };
 
   return new Person(PersonType.Female, auth, attributes);
 };
 
 export const createMale = (auth: string): Person => {
-  const attributes = { type: `male`, gender: `male` };
+  const attributes = { gender: `male` };
 
   return new Person(PersonType.Male, auth, attributes);
 };
 
 export const createHot = (auth: string): Person => {
-  const attributes = { type: `hot`, hot: Math.round(Math.random() * 20) - 10 };
+  const attributes = { hot: Math.round(Math.random() * 20) - 10 };
 
   return new Person(PersonType.Hot, auth, attributes);
 };
@@ -123,6 +122,7 @@ export class Person {
         CREATE (d:MetaData)
         SET d = $attributes
         SET p.typeIndex = ${typeIndex}
+        SET p.type = '${this.type.valueOf()}'
         MERGE (p)-[:USER_ATTRIBUTES_CONSTANT]->(d);
     `,
       { userId: this.userId, attributes: this.attributes },

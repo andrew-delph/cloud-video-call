@@ -114,7 +114,7 @@ export async function getUsers() {
   result = await session.run(
     `
     MATCH (a:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b:MetaData)
-    RETURN a.community, a.priority, b.type, a.embedding, a.typeIndex
+    RETURN a.community, a.priority, a.type, a.embedding, a.typeIndex
     ORDER BY a.priority DESCENDING
     `,
   );
@@ -229,7 +229,7 @@ export async function readGraph(
       YIELD nodeId, propertyValue
       WITH propertyValue, gds.util.asNode(nodeId) as p
       MATCH (p)-[rel2:USER_ATTRIBUTES_CONSTANT]->(b:MetaData)
-      return propertyValue as ${value}, b.type
+      return propertyValue as ${value}, p.type
   `,
   );
 
@@ -336,7 +336,7 @@ export async function getFriends() {
       MATCH (a:Person)-[r:FRIENDS]->(b:Person)
       MATCH (a:Person)-[rel1:USER_ATTRIBUTES_CONSTANT]->(ad:MetaData)
       MATCH (b:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(bd:MetaData)
-      return ad.type, bd.type
+      return a.type, b.type
   `,
   );
 
@@ -382,8 +382,8 @@ export async function createGraph(
 
   const getExtraNodeProperties = (node: string) => {
     let extra_node_properties = ``;
-    extra_node_properties += `, priority: coalesce(${node}.priority, -1)`;
-    extra_node_properties += `, typeIndex: coalesce(${node}.typeIndex, -1)`;
+    // extra_node_properties += `, priority: coalesce(${node}.priority, -1)`;
+    // extra_node_properties += `, typeIndex: coalesce(${node}.typeIndex, -1)`;
 
     return extra_node_properties;
   };

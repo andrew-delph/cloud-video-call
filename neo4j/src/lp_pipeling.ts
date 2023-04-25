@@ -40,7 +40,7 @@ export async function createPipeline() {
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'COSINE', {
-        nodeProperties: ['embedding1','typeIndex', 'priority']
+        nodeProperties: ['embedding1', 'values']
       }) YIELD featureSteps
     `,
   );
@@ -134,7 +134,7 @@ export async function predict() {
           (person2:Person)-[]->(g2:MetaDataGraph) 
         OPTIONAL MATCH (person1)-[f:FRIENDS]-(person2)
         RETURN (person1.userId+"-"+person2.userId) as nodes, probability,
-        md1.type, md2.type
+        person1.type, person2.type
         ORDER BY probability DESC
       `,
   );
@@ -151,8 +151,8 @@ export async function predict() {
 
   result.records.slice(0, -1).forEach((record) => {
     const probability = parseFloat(record.get(`probability`));
-    const type1 = record.get(`md1.type`);
-    const type2 = record.get(`md2.type`);
+    const type1 = record.get(`person1.type`);
+    const type2 = record.get(`person2.type`);
     let key = type1 > type2 ? `${type1}-${type2}` : `${type2}-${type1}`;
 
     if (!predictLine[key]) {
