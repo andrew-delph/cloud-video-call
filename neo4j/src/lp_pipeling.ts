@@ -2,8 +2,9 @@ import { session } from './neo4j_functions';
 import { printResults } from './neo4j_index';
 import * as funcs from './neo4j_functions';
 import { createDotGraph, createRidgeLineChart } from './chart';
+import * as neo4j from 'neo4j-driver';
 
-export async function createPipeline() {
+export async function createPipeline(): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- linkPredictionML`);
   let result;
@@ -79,7 +80,7 @@ export async function createPipeline() {
   return result;
 }
 
-export async function train() {
+export async function train(): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- train`);
   let start_time = performance.now();
@@ -114,7 +115,7 @@ export async function train() {
   return training_result;
 }
 
-export async function predict() {
+export async function predict(): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- predict`);
   let start_time = performance.now();

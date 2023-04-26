@@ -47,7 +47,8 @@ export function printResults(result: neo4j.QueryResult, limit: number = 10) {
   console.log(`records.length:`, records.length);
 }
 const start_time = performance.now();
-(async () => {
+
+export const run = async () => {
   try {
     let results;
 
@@ -95,4 +96,4 @@ const start_time = performance.now();
   }
 
   // on application exit:
-})().then(() => {});
+};

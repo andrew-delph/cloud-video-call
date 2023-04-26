@@ -41,7 +41,7 @@ export async function createData({
   nodesNum = 100,
   edgesNum = 7,
   deleteData = false,
-}) {
+}): Promise<void> {
   const full_start_time = performance.now();
   let start_time = full_start_time;
 
@@ -103,7 +103,7 @@ export async function createData({
   console.log(`createData`, performance.now() - full_start_time);
 }
 
-export async function getUsers() {
+export async function getUsers(): Promise<neo4j.QueryResult> {
   console.log();
   console.log(`running getUsers`);
 
@@ -175,7 +175,10 @@ export async function getUsers() {
   return result;
 }
 
-export async function compareTypes(type1: string = ``, type2: string = ``) {
+export async function compareTypes(
+  type1: string = ``,
+  type2: string = ``,
+): Promise<neo4j.QueryResult> {
   console.log();
   console.log(`running compareTypes type1="${type1}" type2="${type2}"`);
 
@@ -252,7 +255,7 @@ export async function compareTypes(type1: string = ``, type2: string = ``) {
   return result;
 }
 
-export async function getVarience() {
+export async function getVarience(): Promise<neo4j.QueryResult> {
   console.log();
   console.log(`running getVarience`);
 
@@ -292,7 +295,7 @@ export async function getVarience() {
 export async function readGraph(
   graphName: string = `myGraph`,
   value: string = `values`,
-) {
+): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- readGraph`);
 
@@ -317,7 +320,9 @@ export async function readGraph(
   return result;
 }
 
-export async function createFriends(deleteFriends: boolean = true) {
+export async function createFriends(
+  deleteFriends: boolean = true,
+): Promise<neo4j.QueryResult> {
   let start_time = performance.now();
   let result;
   // delete friends
@@ -371,7 +376,7 @@ export async function createFriends(deleteFriends: boolean = true) {
   return result;
 }
 
-export async function createAttributeFloat() {
+export async function createAttributeFloat(): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- createAttributeFloat`);
   let start_time = performance.now();
@@ -421,7 +426,7 @@ export async function getAttributeKeys() {
   return result.records[0].get(`attributes`);
 }
 
-export async function getFriends() {
+export async function getFriends(): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- getFriends`);
   let start_time = performance.now();
@@ -444,7 +449,7 @@ export async function getFriends() {
 export async function createGraph(
   graphName: string = `myGraph`,
   node_attributes: string[] = [],
-) {
+): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(
     `--- createGraph ${graphName} node_attributes = ${node_attributes}`,
@@ -571,7 +576,7 @@ export async function createGraph(
   return result;
 }
 
-export async function callAlgo() {
+export async function callAlgo(): Promise<neo4j.QueryResult> {
   // run simularity
   console.log(``);
   console.log(`--- callAlgo`);
@@ -656,7 +661,7 @@ export async function callAlgo() {
   return result;
 }
 
-export async function callShortestPath() {
+export async function callShortestPath(): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- callShortestPath`);
 
@@ -689,7 +694,7 @@ export async function callShortestPath() {
   return result;
 }
 
-export async function callWriteSimilar() {
+export async function callWriteSimilar(): Promise<neo4j.QueryResult> {
   // run simularity
   console.log(``);
   console.log(`--- callWriteSimilar`);
@@ -713,7 +718,7 @@ export async function callWriteSimilar() {
   return result;
 }
 
-export async function callPriority() {
+export async function callPriority(): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- callPriority`);
 
@@ -739,7 +744,7 @@ export async function callPriority() {
   return result;
 }
 
-export async function callCommunities() {
+export async function callCommunities(): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- callCommunities`);
 
@@ -764,7 +769,7 @@ export async function callCommunities() {
   return result;
 }
 
-export async function callNodeEmbeddings() {
+export async function callNodeEmbeddings(): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- callNodeEmbeddings`);
 
@@ -804,7 +809,7 @@ export async function changeRandomReady() {
   //   return result;
 }
 
-export async function test() {
+export async function test(): Promise<neo4j.QueryResult> {
   const start_time = performance.now();
 
   let result;
@@ -821,7 +826,7 @@ export async function test() {
   return result;
 }
 
-export async function getFirstN() {
+export async function getFirstN(): Promise<neo4j.QueryResult> {
   const n = 100;
   const start_time = performance.now();
 
@@ -841,7 +846,9 @@ export async function getFirstN() {
   return result;
 }
 
-export async function getSimilar(names: Array<string>) {
+export async function getSimilar(
+  names: Array<string>,
+): Promise<neo4j.QueryResult> {
   console.log();
   console.log(`running getSimilar`);
 
@@ -877,7 +884,10 @@ export async function getSimilar(names: Array<string>) {
   return result;
 }
 
-export async function getSimilarTarget(target: string, names: Array<string>) {
+export async function getSimilarTarget(
+  target: string,
+  names: Array<string>,
+): Promise<neo4j.QueryResult> {
   console.log();
   console.log(`running getSimilar`);
 
@@ -904,7 +914,7 @@ export async function getSimilarTarget(target: string, names: Array<string>) {
   return result;
 }
 
-export async function mergePerson() {
+export async function mergePerson(): Promise<neo4j.QueryResult> {
   let result;
 
   // result = await session.run(`
