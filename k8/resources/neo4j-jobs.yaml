@@ -5,7 +5,7 @@ metadata:
 spec:
   concurrencyPolicy: Forbid
   schedule: '0 0 * * *'
-  suspend: true
+  suspend: false
   jobTemplate:
     spec:
       template:
@@ -25,8 +25,8 @@ metadata:
   name: neo4j-jobs-compute
 spec:
   concurrencyPolicy: Forbid
-  schedule: '0 * * * *'
-  suspend: true
+  schedule: '0 1-23 * * *'
+  suspend: false
   jobTemplate:
     spec:
       template:
