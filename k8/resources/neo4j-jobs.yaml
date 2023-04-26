@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: neo4j-jobs-train
+spec:
+  concurrencyPolicy: Forbid
+  schedule: '0 0 * * *'
+  suspend: true
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: neo4j-jobs
+              image: andrewdelph/video-call-neo4j-jobs:latest
+              imagePullPolicy: Always
+              env:
+                - name: JOB
+                  value: TRAIN
+          restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: neo4j-jobs-compute
+spec:
+  concurrencyPolicy: Forbid
+  schedule: '0 * * * *'
+  suspend: true
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: neo4j-jobs
+              image: andrewdelph/video-call-neo4j-jobs:latest
+              imagePullPolicy: Always
+              env:
+                - name: JOB
+                  value: COMPUTE
+          restartPolicy: Never

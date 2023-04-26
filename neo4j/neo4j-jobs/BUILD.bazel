@@ -73,6 +73,6 @@ container_push(
    image = ":image",
    format = "Docker",
    registry = "docker.io",
-   repository = "andrewdelph/video-call-neo4j-jobs", # TODO create 1 index file that handles calls the right job depending. or just call both in sequence
+   repository = "andrewdelph/video-call-neo4j-jobs",
    tag = "latest",
 )
