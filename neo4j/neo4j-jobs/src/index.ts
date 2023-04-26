@@ -58,5 +58,6 @@ console.log(`Value of JOB:`, job);
 
       break;
   }
+  console.log(`complted ${job}`);
   process.exit(0);
 })();
