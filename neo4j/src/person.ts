@@ -123,8 +123,8 @@ export const createNegative = (auth: string): Person => {
 let userFunctions: any[] = [];
 userFunctions.push(createFemale);
 userFunctions.push(createMale);
-userFunctions.push(createPositive);
-userFunctions.push(createNegative);
+// userFunctions.push(createPositive);
+// userFunctions.push(createNegative);
 // userFunctions.push(createRandom);
 // userFunctions.push(createHot);
 

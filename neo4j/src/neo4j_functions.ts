@@ -355,6 +355,18 @@ export async function createFriends(deleteFriends: boolean = true) {
   );
   console.log(`created friends: ${result.records.length}`);
   console.log(`createFriends`, performance.now() - start_time);
+  start_time = performance.now();
+  result = await session.run(
+    `
+      MATCH (a)-[r1:FEEDBACK]->(b), (a)<-[r2:FEEDBACK]-(b)
+      WHERE r1.score < 0 OR r2.score < 0 AND id(a) > id(b)
+      MERGE (a)-[n1:NEGATIVE]-(b)
+      MERGE (b)-[n2:NEGATIVE]-(a)
+      RETURN n1, n2
+  `,
+  );
+  console.log(`created negative: ${result.records.length}`);
+  console.log(`createNegative`, performance.now() - start_time);
 
   return result;
 }
@@ -473,7 +485,7 @@ export async function createGraph(
   };
 
   result = await session.run(
-    `MATCH (source:Person)-[r:FRIENDS|FEEDBACK]->(target:Person),
+    `MATCH (source:Person)-[r:FRIENDS|FEEDBACK|NEGATIVE]->(target:Person),
     (source)-[:USER_ATTRIBUTES_CONSTANT]->(source_md:MetaData),
     (target)-[:USER_ATTRIBUTES_CONSTANT]->(target_md:MetaData)
     WITH source, target, r,  
@@ -497,7 +509,7 @@ export async function createGraph(
         relationshipType: type(r),
         properties: r { .score }
       },
-      {undirectedRelationshipTypes: ['FRIENDS']}
+      {undirectedRelationshipTypes: ['FRIENDS','NEGATIVE']}
     ) as g
     RETURN g.graphName AS graph, g.nodeCount AS nodes, g.relationshipCount AS rels`,
   );

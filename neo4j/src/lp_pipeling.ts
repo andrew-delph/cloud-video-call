@@ -32,7 +32,7 @@ export async function createPipeline() {
           embeddingDimension: 256,
           randomSeed: 42,
           contextNodeLabels: ['Person'],
-          contextRelationshipTypes: ['FRIENDS', 'FEEDBACK']
+          contextRelationshipTypes: ['FRIENDS', 'FEEDBACK', 'NEGATIVE']
         }
       )
     `,
@@ -51,7 +51,9 @@ export async function createPipeline() {
   //     CALL gds.beta.pipeline.linkPrediction.configureSplit('lp-pipeline', {
   //       testFraction: 0.25,
   //       trainFraction: 0.6,
-  //       validationFolds: 3
+  //       validationFolds: 3,
+  //       negativeSamplingRatio: 0.1,
+  //       negativeRelationshipType: 'NEGATIVE'
   //     })
   //     YIELD splitConfig
   //   `,
