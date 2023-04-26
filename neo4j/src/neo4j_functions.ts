@@ -377,7 +377,7 @@ export async function createGraph(
       )} |
         [key,
         CASE
-            WHEN ${node}_md[key] IS NULL THEN NaN
+            WHEN ${node}_md[key] IS NULL THEN 0.0
             WHEN toString(${node}_md[key]) = ${node}_md[key]
             THEN reduce(total = 0.0, value IN apoc.text.bytes(${node}_md[key]) | total + value)
             ELSE toFloat(${node}_md[key])

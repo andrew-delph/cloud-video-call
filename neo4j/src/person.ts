@@ -57,8 +57,8 @@ export const getRandomPerson = (auth: string): Person => {
   let userFunctions = [];
   userFunctions.push(createFemale);
   userFunctions.push(createMale);
-  // userFunctions.push(createRandom);
-  // userFunctions.push(createHot);
+  userFunctions.push(createRandom);
+  userFunctions.push(createHot);
 
   return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
 };
