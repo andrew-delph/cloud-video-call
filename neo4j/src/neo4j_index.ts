@@ -1,15 +1,11 @@
 import * as neo4j from 'neo4j-driver';
-import { Dict } from 'neo4j-driver-core/types/record';
 import * as lp from './lp_pipeling';
 import * as funcs from './neo4j_functions';
 
 console.log(`starting neo4j_index`);
-let result: neo4j.QueryResult<Dict<PropertyKey, any>>;
+let result: neo4j.QueryResult;
 
-export function printResults(
-  result: neo4j.QueryResult<Dict<PropertyKey, any>>,
-  limit: number = 10,
-) {
+export function printResults(result: neo4j.QueryResult, limit: number = 10) {
   console.log(``);
   //   console.log("Results:");
   //   console.log(result.records);

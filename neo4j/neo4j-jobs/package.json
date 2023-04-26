@@ -18,7 +18,8 @@
     "ioredis": "5.2.5",
     "neo4j-driver": "^5.5.0",
     "common": "link:../../common",
-    "neo4j-grpc-common": "link:../neo4j-grpc-common"
+    "neo4j-grpc-common": "link:../neo4j-grpc-common",
+    "neo4j-funcs": "link:../"
   },
   "devDependencies": {
     "@types/node": "^18.13.0",

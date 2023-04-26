@@ -1,7 +1,6 @@
 import * as neo4j from 'neo4j-driver';
 import { v4 as uuid } from 'uuid';
 import { printResults } from './neo4j_index';
-import { Dict } from 'neo4j-driver-core/types/record';
 import { Person, getPerson, indexToColor } from './person';
 import { createDotGraph, createRidgeLineChart } from './chart';
 import async from 'async';

@@ -1,0 +1,33 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+
+npm_link_all_packages(
+    name = "node_modules",
+)
+
+ts_project(
+    name = "ts",
+    srcs = glob(["src/**/*.ts"]),
+    out_dir = ".",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":node_modules",
+    ],
+)
+
+js_library(
+    name = "lib",
+    srcs = [
+        "package.json",
+        ":ts",
+    ],
+)
+
+npm_package(
+    name = "neo4j",
+    srcs = [":lib"],
+    visibility = ["//visibility:public"],
+)
