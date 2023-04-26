@@ -6,12 +6,17 @@ import { createDotGraph, createRidgeLineChart } from './chart';
 import async from 'async';
 const maxRetryTimeMs = 15 * 1000;
 
-export const driver = neo4j.driver(
-  `bolt://localhost:7687`,
-  neo4j.auth.basic(`neo4j`, `password`),
-  { disableLosslessIntegers: true, maxTransactionRetryTime: maxRetryTimeMs },
-);
-export const session = driver.session();
+export let driver: neo4j.Driver;
+export let session: neo4j.Session;
+
+export function setDriver(host: string) {
+  console.log(`setting driver`, host);
+  driver = neo4j.driver(host, neo4j.auth.basic(`neo4j`, `password`), {
+    disableLosslessIntegers: true,
+    maxTransactionRetryTime: maxRetryTimeMs,
+  });
+  session = driver.session();
+}
 
 export function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);

@@ -50,6 +50,7 @@ const start_time = performance.now();
 
 export const run = async () => {
   try {
+    funcs.setDriver(`bolt://localhost:7687`);
     let results;
 
     await funcs.createData({ deleteData: true, nodesNum: 50, edgesNum: 30 });
