@@ -176,6 +176,54 @@ export async function getUsers() {
   return result;
 }
 
+export async function compareTypes(type1: string = ``, type2: string = ``) {
+  console.log();
+  console.log(`running compareTypes type1="${type1}" type2="${type2}"`);
+
+  if (type1) {
+    type1 = `{type:'${type1}'}`;
+  }
+
+  if (type2) {
+    type2 = `{type:'${type2}'}`;
+  }
+
+  const start_time = performance.now();
+
+  let result;
+
+  result = await session.run(
+    `
+    MATCH (n1:Person${type1})
+    MATCH (n2:Person${type2})
+    OPTIONAL MATCH (n1)-[prel:PREDICTION]->(n2)
+    OPTIONAL MATCH (n1)-[srel:SIMILAR]->(n2)
+    OPTIONAL MATCH (n1)-[drel:DISTANCE]->(n2)
+    WITH n1, n2, prel, srel, drel
+    // where coalesce(prel.probability,0) < 2 and n1.type = n2.type
+    return n1.type as t1, 
+    n2.type as t2, 
+    coalesce(prel.probability,0) as prob, 
+    coalesce(drel.distance, Infinity) as dist,
+    round(coalesce(srel.score,0),3) as sim, 
+    // round(n1.priority,3) as p1, 
+    round(n2.priority,3) as p2
+    // n1.community as c1, 
+    // n2.community as c2,
+    // round(gds.alpha.linkprediction.adamicAdar(n1, n2, {relationshipQuery: 'FRIENDS'}),3) AS score,
+    ORDER BY prob DESC, dist ASC, sim DESC, p2 DESC
+    // WITH CASE WHEN prel IS NOT NULL THEN 1 ELSE 0 END as hasPrediction
+    // RETURN sum(hasPrediction) as existingCount, sum(1 - hasPrediction) as nonExistingCount  
+  `,
+  );
+
+  const end_time = performance.now();
+
+  console.log(`compareTypes`, end_time - start_time);
+
+  return result;
+}
+
 export async function getVarience() {
   console.log();
   console.log(`running getVarience`);
@@ -355,11 +403,11 @@ export async function getFriends() {
 
 export async function createGraph(
   graphName: string = `myGraph`,
-  graph_attributes: string[] = [],
+  node_attributes: string[] = [],
 ) {
   console.log(``);
   console.log(
-    `--- createGraph ${graphName} graph_attributes = ${graph_attributes}`,
+    `--- createGraph ${graphName} node_attributes = ${node_attributes}`,
   );
   let start_time = performance.now();
   let result;
@@ -374,7 +422,7 @@ export async function createGraph(
   const createValues = (node: string) => {
     return `
       apoc.map.values(apoc.map.fromPairs([key IN ${JSON.stringify(
-        graph_attributes,
+        node_attributes,
       )} |
         [key,
         CASE
@@ -384,7 +432,7 @@ export async function createGraph(
             ELSE toFloat(${node}_md[key])
         END
         ]
-      ]), ${JSON.stringify(graph_attributes)})
+      ]), ${JSON.stringify(node_attributes)})
     `;
   };
 
@@ -439,7 +487,7 @@ export async function createGraph(
   //     '${graphName}',
   //     'MATCH (p:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(n:MetaData)
   //     WITH p, n, apoc.map.fromPairs([key IN ${JSON.stringify(
-  //       graph_attributes,
+  //       node_attributes,
   //     )} |
   //       [key,
   //       CASE
@@ -451,7 +499,7 @@ export async function createGraph(
   //       ]
   //     ]) as attributes
   //   RETURN id(p) AS id, labels(p) AS labels, apoc.map.values(attributes, ${JSON.stringify(
-  //     graph_attributes,
+  //     node_attributes,
   //   )}) AS values',
   //     'MATCH (n)-[r:FRIENDS]->(m) RETURN id(n) AS source, id(m) AS target, type(r) AS type')
   //   YIELD
@@ -466,7 +514,7 @@ export async function createGraph(
   //           properties: {}
   //         },
   //         MetaDataGraph:{
-  //           properties: ${JSON.stringify(graph_attributes)}
+  //           properties: ${JSON.stringify(node_attributes)}
   //         }
   //       },
   //       {
@@ -568,6 +616,39 @@ export async function callAlgo() {
   return result;
 }
 
+export async function callShortestPath() {
+  console.log(``);
+  console.log(`--- callShortestPath`);
+
+  let start_time = performance.now();
+
+  let result = await session.run(
+    `
+    CALL gds.alpha.allShortestPaths.stream('myGraph', {
+      relationshipTypes: ['FRIENDS']
+    })
+      YIELD sourceNodeId, targetNodeId, distance
+      WITH sourceNodeId, targetNodeId, distance
+      WHERE gds.util.isFinite(distance) = true
+      
+      MATCH (source) WHERE id(source) = sourceNodeId
+      MATCH (target) WHERE id(target) = targetNodeId
+      WITH source, target, distance WHERE source <> target
+
+      MERGE (source)-[:DISTANCE{distance:distance}]->(target)
+      
+      RETURN source.type AS source, target.type AS target, distance
+      ORDER BY distance DESC
+  `,
+  );
+
+  const end_time = performance.now();
+
+  console.log(`callShortestPath`, end_time - start_time);
+
+  return result;
+}
+
 export async function callWriteSimilar() {
   // run simularity
   console.log(``);
@@ -613,7 +694,7 @@ export async function callPriority() {
 
   const end_time = performance.now();
 
-  console.log(`query`, end_time - start_time);
+  console.log(`callPriority`, end_time - start_time);
 
   return result;
 }
@@ -638,7 +719,7 @@ export async function callCommunities() {
 
   const end_time = performance.now();
 
-  console.log(`query`, end_time - start_time);
+  console.log(`callCommunities`, end_time - start_time);
 
   return result;
 }
@@ -664,7 +745,7 @@ export async function callNodeEmbeddings() {
 
   const end_time = performance.now();
 
-  console.log(`query`, end_time - start_time);
+  console.log(`callNodeEmbeddings`, end_time - start_time);
 
   return result;
 }

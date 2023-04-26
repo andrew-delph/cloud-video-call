@@ -55,68 +55,44 @@ const start_time = performance.now();
   try {
     let results;
 
-    // await funcs.createFriends();
-    // results = await funcs.getFriends();
-    // printResults(results, 50);
-    // return;
-
     await funcs.createData({ deleteData: true, nodesNum: 200, edgesNum: 30 });
 
     await funcs.createFriends();
 
     results = await funcs.getFriends();
-    printResults(results, 50);
+    // printResults(results, 50);
 
     // await funcs.createAttributeFloat();
 
-    const graph_attributes: string[] = await funcs.getAttributeKeys();
-    results = await funcs.createGraph(`myGraph`, graph_attributes);
+    const node_attributes: string[] = await funcs.getAttributeKeys();
+    results = await funcs.createGraph(`myGraph`, node_attributes);
+
+    results = await funcs.callShortestPath();
 
     results = await funcs.callPriority();
     results = await funcs.callCommunities();
+    results = await funcs.callWriteSimilar();
+    // results = await funcs.callNodeEmbeddings();
     results = await funcs.getUsers();
-
     // printResults(results, 50);
 
     results = await funcs.readGraph(`myGraph`, `values`);
     // printResults(results, 50);
 
-    // return;
-
-    results = await funcs.callPriority();
-    results = await funcs.callCommunities();
-    // results = await funcs.callWriteSimilar();
-    // results = await funcs.callNodeEmbeddings();
-
-    results = await funcs.getUsers();
-    printResults(results, 50);
-
-    // results = await funcs.getVarience();
-    // printResults(results, 3);
-
-    // results = await funcs.getFriends();
-    // printResults(results, 50);
-
     results = await lp.createPipeline();
-    results = await funcs.createGraph(`mlGraph`, graph_attributes);
+    results = await funcs.createGraph(`mlGraph`, node_attributes);
 
     const train_results = await lp.train();
     await lp.predict();
 
-    // results = await funcs.readGraph(`myGraph`, `typeIndex`);
-    // printResults(results, 15);
-    // results = await funcs.readGraph(`mlGraph`, `typeIndex`);
-    // printResults(results, 15);
-    // results = await funcs.readGraph(`mlGraph`, `priority`);
-    // printResults(results, 15);
+    results = await funcs.compareTypes();
+    printResults(results, 200);
 
-    console.log(`graph_attributes`, graph_attributes);
+    console.log(`graph_attributes`, node_attributes);
   } finally {
     const end_time = performance.now();
     console.log(
-      `neo4j_index closing. ${((end_time - start_time) / 1000 / 60).toFixed(
-        2,
-      )}mins`,
+      `neo4j_index closing. ${((end_time - start_time) / 1000).toFixed(1)}secs`,
     );
     await funcs.session.close();
     await funcs.driver.close();
