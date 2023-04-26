@@ -40,8 +40,7 @@ export const calcScoreMap = new Map<
   [
     PersonType.Hot,
     (me: Person, otherPerson: Person) => {
-      if ((otherPerson.attributes.hot ?? -10) >= me.attributes.hot - 2)
-        return 10;
+      if ((otherPerson.attributes.hot ?? -10) >= me.attributes.hot) return 10;
       return -10;
     },
   ],
@@ -55,9 +54,9 @@ export const calcScoreMap = new Map<
 
 export const getRandomPerson = (auth: string): Person => {
   let userFunctions = [];
-  userFunctions.push(createFemale);
-  userFunctions.push(createMale);
-  userFunctions.push(createRandom);
+  // userFunctions.push(createFemale);
+  // userFunctions.push(createMale);
+  // userFunctions.push(createRandom);
   userFunctions.push(createHot);
 
   return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
@@ -84,7 +83,7 @@ export const createMale = (auth: string): Person => {
 };
 
 export const createHot = (auth: string): Person => {
-  const attributes = { hot: Math.round(Math.random() * 20) - 10 };
+  const attributes = { hot: Math.floor(Math.random() * 4) };
 
   return new Person(PersonType.Hot, auth, attributes);
 };
@@ -114,6 +113,10 @@ export class Person {
 
   async createNode(): Promise<void> {
     const typeIndex = Object.values(PersonType).indexOf(this.type);
+    let typeLabel = this.type.valueOf();
+    if (this.attributes.hot) {
+      typeLabel += this.attributes.hot;
+    }
     const session = driver.session();
     await session.run(
       `
@@ -122,7 +125,7 @@ export class Person {
         CREATE (d:MetaData)
         SET d = $attributes
         SET p.typeIndex = ${typeIndex}
-        SET p.type = '${this.type.valueOf()}'
+        SET p.type = '${typeLabel}'
         MERGE (p)-[:USER_ATTRIBUTES_CONSTANT]->(d);
     `,
       { userId: this.userId, attributes: this.attributes },
