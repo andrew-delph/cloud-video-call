@@ -169,7 +169,7 @@ export async function predict(): Promise<neo4j.QueryResult> {
     values.values.push(probability);
   });
 
-  printResults(result, 100);
+  // printResults(result, 100);
 
   await createRidgeLineChart(predictLine, `predict-line`);
 
