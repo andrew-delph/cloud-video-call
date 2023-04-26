@@ -6,6 +6,8 @@ export enum PersonType {
   Male = `Male`,
   LocationBound = `LocationBound`,
   Hot = `Hot`,
+  Positive = `Positive`,
+  Negative = `Negative`,
 }
 
 export const indexToColor: { [key: number]: string } = {
@@ -44,6 +46,18 @@ export const calcScoreMap = new Map<
       return -10;
     },
   ],
+  [
+    PersonType.Positive,
+    (me: Person, otherPerson: Person) => {
+      return 10;
+    },
+  ],
+  [
+    PersonType.Negative,
+    (me: Person, otherPerson: Person) => {
+      return -10;
+    },
+  ],
   //   [
   //     PersonType.LocationBound,
   //     (me: Person, otherPerson: Person) => {
@@ -54,10 +68,12 @@ export const calcScoreMap = new Map<
 
 export const getRandomPerson = (auth: string): Person => {
   let userFunctions = [];
-  // userFunctions.push(createFemale);
-  // userFunctions.push(createMale);
+  userFunctions.push(createFemale);
+  userFunctions.push(createMale);
+  userFunctions.push(createPositive);
+  userFunctions.push(createNegative);
   // userFunctions.push(createRandom);
-  userFunctions.push(createHot);
+  // userFunctions.push(createHot);
 
   return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
 };
@@ -69,15 +85,17 @@ export const createRandom = (auth: string): Person => {
 };
 
 export const createFemale = (auth: string): Person => {
-  const attributes = {
+  let attributes: any = {
     gender: `female`,
   };
+  // attributes = {};
 
   return new Person(PersonType.Female, auth, attributes);
 };
 
 export const createMale = (auth: string): Person => {
-  const attributes = { gender: `male` };
+  let attributes: any = { gender: `male` };
+  // attributes = {};
 
   return new Person(PersonType.Male, auth, attributes);
 };
@@ -86,6 +104,18 @@ export const createHot = (auth: string): Person => {
   const attributes = { hot: Math.floor(Math.random() * 4) };
 
   return new Person(PersonType.Hot, auth, attributes);
+};
+
+export const createPositive = (auth: string): Person => {
+  const attributes = {};
+
+  return new Person(PersonType.Positive, auth, attributes);
+};
+
+export const createNegative = (auth: string): Person => {
+  const attributes = {};
+
+  return new Person(PersonType.Negative, auth, attributes);
 };
 
 // export const createLocationBound = (auth: string): Person => {
