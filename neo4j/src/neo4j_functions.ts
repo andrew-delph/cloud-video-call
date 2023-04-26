@@ -202,7 +202,8 @@ export async function compareTypes(type1: string = ``, type2: string = ``) {
     WITH n1, n2, prel, srel, drel
     // where coalesce(prel.probability,0) > 0.4
     return n1.type as t1, 
-    n2.type as t2, 
+    n2.type as t2,
+    EXISTS((n1)-[:FRIENDS]->(n2)) as friends, 
     coalesce(prel.probability,0) as prob, 
     coalesce(drel.distance, Infinity) as dist,
     round(coalesce(srel.score,0),3) as sim, 

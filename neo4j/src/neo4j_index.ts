@@ -55,11 +55,7 @@ const start_time = performance.now();
   try {
     let results;
 
-    // results = await funcs.compareTypes(`Male`);
-    // printResults(results, 200);
-    // return;
-
-    await funcs.createData({ deleteData: true, nodesNum: 200, edgesNum: 30 });
+    await funcs.createData({ deleteData: true, nodesNum: 50, edgesNum: 30 });
 
     await funcs.createFriends();
 
