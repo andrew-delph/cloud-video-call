@@ -2,7 +2,7 @@ import * as neo4j from 'neo4j-driver';
 import { v4 as uuid } from 'uuid';
 import { printResults } from './neo4j_index';
 import { Dict } from 'neo4j-driver-core/types/record';
-import { Person, getRandomPerson, indexToColor } from './person';
+import { Person, getPerson, indexToColor } from './person';
 import { createDotGraph } from './chart';
 import async from 'async';
 const maxRetryTimeMs = 15 * 1000;
@@ -61,7 +61,8 @@ export async function createData({
   const edges = [];
 
   for (var i = 0; i < nodesNum; i++) {
-    nodes.push(getRandomPerson(`node${i}`));
+    const person = getPerson(`node${i}`);
+    nodes.push(person);
   }
 
   edgesNum = nodesNum * edgesNum;

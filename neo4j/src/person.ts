@@ -66,18 +66,6 @@ export const calcScoreMap = new Map<
   //   ],
 ]);
 
-export const getRandomPerson = (auth: string): Person => {
-  let userFunctions = [];
-  userFunctions.push(createFemale);
-  userFunctions.push(createMale);
-  userFunctions.push(createPositive);
-  userFunctions.push(createNegative);
-  // userFunctions.push(createRandom);
-  // userFunctions.push(createHot);
-
-  return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
-};
-
 export const createRandom = (auth: string): Person => {
   const attributes = { hot: -5 };
 
@@ -107,13 +95,15 @@ export const createHot = (auth: string): Person => {
 };
 
 export const createPositive = (auth: string): Person => {
-  const attributes = {};
+  let attributes = {};
+  attributes = { random: `other` };
 
   return new Person(PersonType.Positive, auth, attributes);
 };
 
 export const createNegative = (auth: string): Person => {
-  const attributes = {};
+  let attributes = {};
+  attributes = { random: `other` };
 
   return new Person(PersonType.Negative, auth, attributes);
 };
@@ -129,6 +119,30 @@ export const createNegative = (auth: string): Person => {
 
 //   return new Person(auth, attributes, filters, PersonType.LocationBound);
 // };
+
+let userFunctions: any[] = [];
+userFunctions.push(createFemale);
+userFunctions.push(createMale);
+userFunctions.push(createPositive);
+// userFunctions.push(createNegative);
+// userFunctions.push(createRandom);
+// userFunctions.push(createHot);
+
+function* getPersonGenerator() {
+  let current = 0;
+
+  while (true) {
+    yield userFunctions[current % userFunctions.length];
+    current += 1;
+  }
+}
+
+const personGenerator = getPersonGenerator();
+
+export const getPerson = (auth: string): Person => {
+  //return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
+  return personGenerator.next().value(auth);
+};
 
 export class Person {
   type: PersonType;
