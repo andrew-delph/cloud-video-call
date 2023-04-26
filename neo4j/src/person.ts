@@ -96,14 +96,14 @@ export const createHot = (auth: string): Person => {
 
 export const createPositive = (auth: string): Person => {
   let attributes = {};
-  attributes = { random: `other` };
+  // attributes = { random: `other` };
 
   return new Person(PersonType.Positive, auth, attributes);
 };
 
 export const createNegative = (auth: string): Person => {
   let attributes = {};
-  attributes = { random: `other` };
+  // attributes = { random: `other` };
 
   return new Person(PersonType.Negative, auth, attributes);
 };
@@ -123,8 +123,8 @@ export const createNegative = (auth: string): Person => {
 let userFunctions: any[] = [];
 userFunctions.push(createFemale);
 userFunctions.push(createMale);
-// userFunctions.push(createPositive);
-// userFunctions.push(createNegative);
+userFunctions.push(createPositive);
+userFunctions.push(createNegative);
 // userFunctions.push(createRandom);
 // userFunctions.push(createHot);
 

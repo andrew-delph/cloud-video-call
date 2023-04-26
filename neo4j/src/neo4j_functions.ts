@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { printResults } from './neo4j_index';
 import { Dict } from 'neo4j-driver-core/types/record';
 import { Person, getPerson, indexToColor } from './person';
-import { createDotGraph } from './chart';
+import { createDotGraph, createRidgeLineChart } from './chart';
 import async from 'async';
 const maxRetryTimeMs = 15 * 1000;
 
@@ -200,7 +200,7 @@ export async function compareTypes(type1: string = ``, type2: string = ``) {
     OPTIONAL MATCH (n1)-[srel:SIMILAR]->(n2)
     OPTIONAL MATCH (n1)-[drel:DISTANCE]->(n2)
     WITH n1, n2, prel, srel, drel
-    // where coalesce(prel.probability,0) < 2 and n1.type = n2.type
+    // where coalesce(prel.probability,0) > 0.4
     return n1.type as t1, 
     n2.type as t2, 
     coalesce(prel.probability,0) as prob, 
@@ -220,6 +220,34 @@ export async function compareTypes(type1: string = ``, type2: string = ``) {
   const end_time = performance.now();
 
   console.log(`compareTypes`, end_time - start_time);
+
+  const predictLine: {
+    [key: string]: {
+      values: number[];
+      colour?: string;
+    };
+  } = {};
+
+  const length = result.records.length;
+
+  result.records.slice(0, -1).forEach((record, index) => {
+    const value = length - index;
+    const type1 = record.get(`t1`);
+    const type2 = record.get(`t2`);
+    let key = type1 > type2 ? `${type1}-${type2}` : `${type2}-${type1}`;
+    key = `${type1}-${type2}`;
+
+    if (!predictLine[key]) {
+      predictLine[key] = {
+        values: [],
+        colour: key == `3` ? `blue` : `red`,
+      };
+    }
+    const values = predictLine[key];
+    values.values.push(value);
+  });
+
+  await createRidgeLineChart(predictLine, `predict-line-all`);
 
   return result;
 }

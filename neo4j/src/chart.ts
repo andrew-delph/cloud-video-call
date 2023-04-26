@@ -185,8 +185,8 @@ export async function createRidgeLineChart(
   filename: string,
 ) {
   const options = {
-    width: 960,
-    height: 500,
+    width: 960 * 2,
+    height: 500 * 2,
     margin: { top: 30, right: 30, bottom: 30, left: 30 },
   };
 
@@ -259,47 +259,57 @@ export async function createRidgeLineChart(
 
   context.lineWidth = 1;
 
-  dataParsed.forEach((d, index) => {
-    context.save();
-    context.translate(0, index * ySpacing);
+  dataParsed
+    .sort((a, b) => {
+      const aTotal = a.values.reduce((accumulator, currentItem) => {
+        return accumulator + currentItem[0] * currentItem[1];
+      }, 0);
+      const bTotal = b.values.reduce((accumulator, currentItem) => {
+        return accumulator + currentItem[0] * currentItem[1];
+      }, 0);
+      return bTotal - aTotal;
+    })
+    .forEach((d, index) => {
+      context.save();
+      context.translate(0, index * ySpacing);
 
-    const line = d3
-      .line()
-      .x((d) => {
-        return xScale(d[0]);
-      })
-      .y((d) => {
-        return yScale(d[1]);
-      })
-      .context(context);
+      const line = d3
+        .line()
+        .x((d) => {
+          return xScale(d[0]);
+        })
+        .y((d) => {
+          return yScale(d[1]);
+        })
+        .context(context);
 
-    const area = d3
-      .area()
-      .x((d) => xScale(d[0]))
-      .y0(yScale(0))
-      .y1((d) => yScale(d[1]))
-      .context(context);
+      const area = d3
+        .area()
+        .x((d) => xScale(d[0]))
+        .y0(yScale(0))
+        .y1((d) => yScale(d[1]))
+        .context(context);
 
-    // context.strokeStyle = d.colour ?? `red`;
-    // context.beginPath();
-    // line(d.values);
-    // context.stroke();
+      // context.strokeStyle = d.colour ?? `red`;
+      // context.beginPath();
+      // line(d.values);
+      // context.stroke();
 
-    context.fillStyle = d.colour ?? `red33`;
-    context.beginPath();
-    area(d.values);
-    context.closePath();
-    context.fill();
+      context.fillStyle = d.colour ?? `red33`;
+      context.beginPath();
+      area(d.values);
+      context.closePath();
+      context.fill();
 
-    context.fillStyle = `black`;
-    context.fillText(
-      d.key,
-      options.margin.left - 20,
-      yScale(d3.mean(d.values, (value) => value[1])!),
-    );
+      context.fillStyle = `black`;
+      context.fillText(
+        d.key,
+        options.margin.left - 20,
+        yScale(d3.mean(d.values, (value) => value[1])!),
+      );
 
-    context.restore();
-  });
+      context.restore();
+    });
 
   // Draw the x-axis grid
   context.strokeStyle = `#000`;

@@ -155,6 +155,7 @@ export async function predict() {
     const type1 = record.get(`person1.type`);
     const type2 = record.get(`person2.type`);
     let key = type1 > type2 ? `${type1}-${type2}` : `${type2}-${type1}`;
+    key = `${type1}-${type2}`;
 
     if (!predictLine[key]) {
       predictLine[key] = {
