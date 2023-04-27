@@ -123,10 +123,10 @@ export const createNegative = (auth: string): Person => {
 let userFunctions: any[] = [];
 userFunctions.push(createFemale);
 userFunctions.push(createMale);
-// userFunctions.push(createPositive);
-// userFunctions.push(createNegative);
-// userFunctions.push(createRandom);
-// userFunctions.push(createHot);
+userFunctions.push(createPositive);
+userFunctions.push(createNegative);
+userFunctions.push(createRandom);
+userFunctions.push(createHot);
 
 function* getPersonGenerator() {
   let current = 0;
@@ -161,7 +161,7 @@ export class Person {
     if (this.attributes.hot) {
       typeLabel += this.attributes.hot;
     }
-    const session = driver.session();
+    // const session = driver.session();
     await session.run(
       `
         MERGE (p:Person {userId:$userId})
@@ -175,22 +175,23 @@ export class Person {
       { userId: this.userId, attributes: this.attributes },
     );
 
-    await session.close();
+    // await session.close();
   }
 
   async createFeedback(other: Person): Promise<void> {
     const calcScore = calcScoreMap.get(this.type);
     if (!calcScore) throw Error(`calcScore is undefined`);
 
-    retryFunction(
-      this._createFeedback.bind(this, other, calcScore(this, other)),
-      5,
-      100,
-    );
+    await this._createFeedback(other, calcScore(this, other));
+    // retryFunction(
+    //   this._createFeedback.bind(this, other, calcScore(this, other)),
+    //   5,
+    //   100,
+    // );
   }
 
   async _createFeedback(other: Person, score: number): Promise<void> {
-    const session = driver.session();
+    // const session = driver.session();
     await session.run(
       `
         MATCH (a:Person{userId: $userId})
@@ -203,6 +204,6 @@ export class Person {
         score: score,
       },
     );
-    await session.close();
+    // await session.close();
   }
 }

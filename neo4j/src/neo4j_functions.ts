@@ -4,7 +4,7 @@ import { printResults } from './neo4j_index';
 import { Person, getPerson, indexToColor } from './person';
 import { createDotGraph, createRidgeLineChart } from './chart';
 import async from 'async';
-const maxRetryTimeMs = 15 * 1000;
+const maxRetryTimeMs = 120 * 1000;
 
 export let driver: neo4j.Driver;
 export let session: neo4j.Session;
@@ -47,16 +47,19 @@ export async function createData({
   edgesNum = 7,
   deleteData = false,
 }): Promise<void> {
+  console.log(``);
+  console.log(`--- createData`);
   const full_start_time = performance.now();
   let start_time = full_start_time;
 
   if (deleteData) {
+    console.log(`deleting data`);
     await session.run(`
     MATCH (n)
     CALL {
       WITH n
       DETACH DELETE n
-    } IN TRANSACTIONS
+    } IN TRANSACTIONS OF 10 ROWS
     `);
     console.log(`Deletion time:`, performance.now() - start_time);
   }
@@ -66,6 +69,7 @@ export async function createData({
 
   for (var i = 0; i < nodesNum; i++) {
     const person = getPerson(`node${i}`);
+    // console.log(`person.type`, person.type.valueOf());
     nodes.push(person);
   }
 
@@ -79,12 +83,15 @@ export async function createData({
     edges.push({ a, b });
   }
 
-  const limit = 15;
+  const limit = 1;
   start_time = performance.now();
-  await async.eachLimit(nodes, limit, async (node, callback) => {
+  // await async.eachLimit(nodes, limit, async (node, callback) => {
+  //   await node.createNode();
+  //   callback();
+  // });
+  for (const node of nodes) {
     await node.createNode();
-    callback();
-  });
+  }
 
   console.log(
     `create nodes num:${nodes.length} time:`,
@@ -92,11 +99,16 @@ export async function createData({
   );
 
   start_time = performance.now();
-  await async.eachLimit(edges, limit, async (edge, callback) => {
+  // await async.eachLimit(edges, limit, async (edge, callback) => {
+  //   await edge.a.createFeedback(edge.b);
+  //   await edge.b.createFeedback(edge.a);
+  //   callback();
+  // });
+
+  for (const edge of edges) {
     await edge.a.createFeedback(edge.b);
     await edge.b.createFeedback(edge.a);
-    callback();
-  });
+  }
 
   console.log(
     `create edges num:${edges.length} time:`,
@@ -224,7 +236,6 @@ export async function compareTypes(
     ORDER BY prob DESC, dist ASC, sim DESC, p2 DESC
     // WITH CASE WHEN prel IS NOT NULL THEN 1 ELSE 0 END as hasPrediction
     // RETURN sum(hasPrediction) as existingCount, sum(1 - hasPrediction) as nonExistingCount 
-    LIMIT 100 
   `,
   );
 
@@ -241,7 +252,7 @@ export async function compareTypes(
 
   const length = result.records.length;
 
-  result.records.slice(0, 2000).forEach((record, index) => {
+  result.records.slice(0, 5000).forEach((record, index) => {
     const value = length - index;
     const type1 = record.get(`t1`);
     const type2 = record.get(`t2`);

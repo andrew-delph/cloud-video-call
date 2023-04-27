@@ -209,19 +209,15 @@ export async function createRidgeLineChart(
   const x_min = d3.min(dataParsed, (d) =>
     d3.min(d.values, (value) => value[0]),
   )!;
-
   const x_max = d3.max(dataParsed, (d) =>
     d3.max(d.values, (value) => value[0]),
   )!;
-
   const y_min = d3.min(dataParsed, (d) =>
     d3.min(d.values, (value) => value[1]),
   )!;
-
   const y_max = d3.max(dataParsed, (d) =>
     d3.max(d.values, (value) => value[1]),
   )!;
-
   console.log(`x_min`, x_min, `x_max`, x_max);
   console.log(`y_min`, y_min, `y_max`, y_max);
 

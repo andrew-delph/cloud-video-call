@@ -50,25 +50,19 @@ const start_time = performance.now();
 
 export const run = async () => {
   try {
-    funcs.setDriver(`neo4j://localhost:7687`);
+    funcs.setDriver(`bolt://localhost:7687`);
     let results;
 
-    // results = await funcs.callShortestPath();
+    // results = await funcs.compareTypes(
+    //   ``,
+    //   ``,
+    //   // `{gender:'male'}`,
+    //   // `{gender:'female'}`,
+    // );
+    // printResults(results, 20);
+    // return;
 
-    results = await funcs.compareTypes(
-      ``,
-      ``,
-      // `{gender:'male'}`,
-      // `{gender:'female'}`,
-    );
-
-    // results = await funcs.getFriends();
-    printResults(results, 20);
-
-    return;
-
-    await funcs.createData({ deleteData: true, nodesNum: 50, edgesNum: 30 });
-
+    await funcs.createData({ deleteData: true, nodesNum: 1000, edgesNum: 30 });
     await funcs.createFriends();
 
     results = await funcs.getFriends();
@@ -79,7 +73,7 @@ export const run = async () => {
     const node_attributes: string[] = await funcs.getAttributeKeys();
     results = await funcs.createGraph(`myGraph`, node_attributes);
 
-    results = await funcs.callShortestPath();
+    // results = await funcs.callShortestPath();
 
     results = await funcs.callPriority();
     results = await funcs.callCommunities();
@@ -98,13 +92,15 @@ export const run = async () => {
     await lp.predict();
 
     results = await funcs.compareTypes();
-    printResults(results, 200);
+    // printResults(results, 200);
 
     console.log(`graph_attributes`, node_attributes);
   } finally {
     const end_time = performance.now();
     console.log(
-      `neo4j_index closing. ${((end_time - start_time) / 1000).toFixed(1)}secs`,
+      `neo4j_index closing. ${((end_time - start_time) / 1000).toFixed(
+        1,
+      )}secs ${((end_time - start_time) / 1000 / 60).toFixed(1)}mins`,
     );
     await funcs.session.close();
     await funcs.driver.close();
