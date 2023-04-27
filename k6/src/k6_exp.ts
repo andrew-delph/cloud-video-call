@@ -44,27 +44,27 @@ export function setup() {
     });
 }
 
-const vus = 5;
+const vus = 20;
 export const options = {
   setupTimeout: `10m`,
   // vus: 5,
   // iterations: authKeysNum * 10,
   // duration: `1h`,
   scenarios: {
-    matchTest: {
-      executor: `shared-iterations`,
-      vus: 50,
-      iterations: authKeysNum * 10,
-    },
     // matchTest: {
-    //   executor: `ramping-vus`,
-    //   startVUs: 5,
-    //   stages: [
-    //     { duration: `10m`, target: vus * 3 },
-    //     // { duration: `2h`, target: vus * 3 },
-    //     // { duration: `3m`, target: vus * 1 },
-    //   ],
+    //   executor: `shared-iterations`,
+    //   vus: 50,
+    //   iterations: authKeysNum * 10,
     // },
+    matchTest: {
+      executor: `ramping-vus`,
+      startVUs: vus,
+      stages: [
+        { duration: `2h`, target: vus * 3 },
+        // { duration: `2h`, target: vus * 3 },
+        // { duration: `3m`, target: vus * 1 },
+      ],
+    },
     longConnection: {
       executor: `ramping-vus`,
       exec: `longWait`,
