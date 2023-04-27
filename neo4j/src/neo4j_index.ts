@@ -53,9 +53,6 @@ export const run = async () => {
     funcs.setDriver(`neo4j://localhost:7687`);
     let results;
 
-    const test: string[] = await funcs.getAttributeKeys();
-    results = await funcs.createGraph(`myGraph`, test);
-
     // results = await funcs.callShortestPath();
 
     results = await funcs.compareTypes(
