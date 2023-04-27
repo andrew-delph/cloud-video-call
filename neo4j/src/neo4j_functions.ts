@@ -223,7 +223,8 @@ export async function compareTypes(
     // round(gds.alpha.linkprediction.adamicAdar(n1, n2, {relationshipQuery: 'FRIENDS'}),3) AS score,
     ORDER BY prob DESC, dist ASC, sim DESC, p2 DESC
     // WITH CASE WHEN prel IS NOT NULL THEN 1 ELSE 0 END as hasPrediction
-    // RETURN sum(hasPrediction) as existingCount, sum(1 - hasPrediction) as nonExistingCount  
+    // RETURN sum(hasPrediction) as existingCount, sum(1 - hasPrediction) as nonExistingCount 
+    LIMIT 100 
   `,
   );
 
