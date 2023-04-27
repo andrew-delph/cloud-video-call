@@ -99,13 +99,13 @@ export const calcScoreMap = new Map<
   [
     UserType.Male,
     (me: any, otherAttr: any) => {
-      return otherAttr?.constant?.gender?.startsWith(`female`) ? 5 : 1;
+      return otherAttr?.constant?.gender?.startsWith(`female`) ? 5 : -5;
     },
   ],
   [
     UserType.Female,
     (me: any, otherAttr: any) => {
-      return otherAttr?.constant?.gender?.startsWith(`male`) ? 5 : 1;
+      return otherAttr?.constant?.gender?.startsWith(`male`) ? 5 : -5;
     },
   ],
   [

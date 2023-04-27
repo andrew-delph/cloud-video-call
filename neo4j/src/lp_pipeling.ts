@@ -6,7 +6,7 @@ import * as neo4j from 'neo4j-driver';
 
 export async function createPipeline(): Promise<neo4j.QueryResult> {
   console.log(``);
-  console.log(`--- linkPredictionML`);
+  console.log(`--- createPipeline`);
   let result;
   let start_time = performance.now();
 

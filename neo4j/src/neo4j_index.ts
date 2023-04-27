@@ -50,8 +50,25 @@ const start_time = performance.now();
 
 export const run = async () => {
   try {
-    funcs.setDriver(`bolt://localhost:7687`);
+    funcs.setDriver(`neo4j://localhost:7687`);
     let results;
+
+    const test: string[] = await funcs.getAttributeKeys();
+    results = await funcs.createGraph(`myGraph`, test);
+
+    // results = await funcs.callShortestPath();
+
+    results = await funcs.compareTypes(
+      ``,
+      ``,
+      // `{gender:'male'}`,
+      // `{gender:'female'}`,
+    );
+
+    // results = await funcs.getFriends();
+    printResults(results, 20);
+
+    return;
 
     await funcs.createData({ deleteData: true, nodesNum: 50, edgesNum: 30 });
 

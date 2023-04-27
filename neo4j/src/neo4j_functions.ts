@@ -183,6 +183,8 @@ export async function getUsers(): Promise<neo4j.QueryResult> {
 export async function compareTypes(
   type1: string = ``,
   type2: string = ``,
+  md1: string = ``,
+  md2: string = ``,
 ): Promise<neo4j.QueryResult> {
   console.log();
   console.log(`running compareTypes type1="${type1}" type2="${type2}"`);
@@ -201,8 +203,8 @@ export async function compareTypes(
 
   result = await session.run(
     `
-    MATCH (n1:Person${type1})
-    MATCH (n2:Person${type2})
+    MATCH (n1:Person${type1})-[:USER_ATTRIBUTES_CONSTANT]->(md1:MetaData${md1})
+    MATCH (n2:Person${type2})-[:USER_ATTRIBUTES_CONSTANT]->(md2:MetaData${md2})
     OPTIONAL MATCH (n1)-[prel:PREDICTION]->(n2)
     OPTIONAL MATCH (n1)-[srel:SIMILAR]->(n2)
     OPTIONAL MATCH (n1)-[drel:DISTANCE]->(n2)
@@ -440,9 +442,9 @@ export async function getFriends(): Promise<neo4j.QueryResult> {
   result = await session.run(
     `
       MATCH (a:Person)-[r:FRIENDS]->(b:Person)
-      MATCH (a:Person)-[rel1:USER_ATTRIBUTES_CONSTANT]->(ad:MetaData)
-      MATCH (b:Person)-[rel2:USER_ATTRIBUTES_CONSTANT]->(bd:MetaData)
-      return a.type, b.type
+      MATCH (a)-[rel1:USER_ATTRIBUTES_CONSTANT]->(ad:MetaData)
+      MATCH (b)-[rel2:USER_ATTRIBUTES_CONSTANT]->(bd:MetaData)
+      return ad.gender, bd.gender
   `,
   );
 

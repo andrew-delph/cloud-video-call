@@ -24,8 +24,8 @@ console.log(`Value of JOB:`, job);
       results = await funcs.createGraph(`myGraph`, node_attributes);
       funcs.printResults(results, print_num);
 
-      results = await funcs.callShortestPath();
-      funcs.printResults(results, print_num);
+      // results = await funcs.callShortestPath();
+      // funcs.printResults(results, print_num);
 
       results = await funcs.callPriority();
       funcs.printResults(results, print_num);
