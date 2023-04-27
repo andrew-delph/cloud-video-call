@@ -8,3 +8,6 @@ make apply:
 
 make delete:
 	helm uninstall neo4j
+
+make pneo4j:
+	make -C ../k8 pneo4j

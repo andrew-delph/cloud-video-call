@@ -19,6 +19,12 @@ ts_project(
     ],
 )
 
+js_binary(
+    name = "binary",
+    data = [":ts"],
+    entry_point = "src/index.js",
+)
+
 js_library(
     name = "lib",
     srcs = [
@@ -26,6 +32,7 @@ js_library(
         ":ts",
     ],
 )
+
 
 npm_package(
     name = "neo4j",
