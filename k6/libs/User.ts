@@ -18,12 +18,6 @@ export enum UserType {
   Hot = `Hot`,
 }
 
-export const getRandomUser = (auth: string): User => {
-  const userFunctions = [createHot];
-
-  return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
-};
-
 export const createRandom = (auth: string): User => {
   const attributes = {};
   const filters = {};
@@ -36,14 +30,14 @@ export const createFemale = (auth: string): User => {
     constant: { gender: `female` },
     custom: { long: 1, lat: 1 },
   };
-  const filters = { constant: { gender: `male` } };
+  const filters = { constant: {} };
 
   return new User(auth, attributes, filters, UserType.Female);
 };
 
 export const createMale = (auth: string): User => {
   const attributes = { constant: { gender: `male` } };
-  const filters = { constant: { gender: `female` } };
+  const filters = { constant: {} };
 
   return new User(auth, attributes, filters, UserType.Male);
 };
@@ -65,6 +59,24 @@ export const createHot = (auth: string): User => {
   const filters = {};
 
   return new User(auth, attributes, filters, UserType.Hot);
+};
+
+const userFunctions: any[] = [createFemale, createMale];
+
+function* getUserGenerator() {
+  let current = 0;
+
+  while (true) {
+    yield userFunctions[current % userFunctions.length];
+    current += 1;
+  }
+}
+
+const userGenerator = getUserGenerator();
+
+export const getUser = (auth: string): User => {
+  // return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
+  return userGenerator.next().value(auth);
 };
 
 export const fromRedis = async (auth: string): Promise<User> => {

@@ -17,10 +17,44 @@ console.log(`options_url`, options_url);
 export const redisClient = new redis.Client({
   addrs: new Array(__ENV.REDIS || `localhost:6379`), // in the form of 'host:port', separated by commas
 });
+
 const authKeysNum = 300;
+const vus = 20;
+const nukeData = false;
+
+export const options = {
+  setupTimeout: `10m`,
+  // vus: 5,
+  // iterations: authKeysNum * 10,
+  // duration: `1h`,
+  scenarios: {
+    matchTest: {
+      executor: `shared-iterations`,
+      vus: vus,
+      iterations: authKeysNum * 10,
+    },
+    // matchTest: {
+    //   executor: `ramping-vus`,
+    //   startVUs: vus,
+    //   stages: [
+    //     { duration: `2h`, target: vus * 3 },
+    //     // { duration: `2h`, target: vus * 3 },
+    //     // { duration: `3m`, target: vus * 1 },
+    //   ],
+    // },
+    longConnection: {
+      executor: `ramping-vus`,
+      exec: `longWait`,
+      startVUs: 10,
+      stages: [{ duration: `10m`, target: 10 }],
+    },
+  },
+};
+
 const authKeysName = `authKeysName`;
+
 export function setup() {
-  nuke();
+  if (nukeData) nuke();
   const authKeys: string[] = [];
   for (let i = 0; i < authKeysNum; i++) {
     authKeys.push(`k6_auth_${i}`);
@@ -35,7 +69,7 @@ export function setup() {
     .then(async () => {
       console.log(`post delete authKeysName`);
       for (let auth of authKeys) {
-        let user = users.getRandomUser(auth);
+        let user = users.getUser(auth);
         await user.updatePreferences();
         console.log(`post updatePreferences ${auth}`);
       }
@@ -43,36 +77,6 @@ export function setup() {
       await redisClient.lpush(authKeysName, ...authKeys);
     });
 }
-
-const vus = 20;
-export const options = {
-  setupTimeout: `10m`,
-  // vus: 5,
-  // iterations: authKeysNum * 10,
-  // duration: `1h`,
-  scenarios: {
-    // matchTest: {
-    //   executor: `shared-iterations`,
-    //   vus: 50,
-    //   iterations: authKeysNum * 10,
-    // },
-    matchTest: {
-      executor: `ramping-vus`,
-      startVUs: vus,
-      stages: [
-        { duration: `2h`, target: vus * 3 },
-        // { duration: `2h`, target: vus * 3 },
-        // { duration: `3m`, target: vus * 1 },
-      ],
-    },
-    longConnection: {
-      executor: `ramping-vus`,
-      exec: `longWait`,
-      startVUs: 10,
-      stages: [{ duration: `10m`, target: 10 }],
-    },
-  },
-};
 
 const established_elapsed = new Trend(`established_elapsed`, true);
 const match_elapsed = new Trend(`match_elapsed`, true);

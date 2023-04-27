@@ -222,7 +222,7 @@ const getRelationshipScores = async (
     // n2.community as c2,
     // round(gds.alpha.linkprediction.adamicAdar(n1, n2, {relationshipQuery: 'FRIENDS'}),3) AS score,
     n1.userId as targetId,
-    n2.userId as otherId,
+    n2.userId as otherId
     ORDER BY prob DESC, dist ASC, sim DESC, p2 DESC
   `,
     { target: userId, otherUsers: otherUsers },
