@@ -208,10 +208,10 @@ export async function compareTypes(
     OPTIONAL MATCH (n1)-[prel:PREDICTION]->(n2)
     OPTIONAL MATCH (n1)-[srel:SIMILAR]->(n2)
     OPTIONAL MATCH (n1)-[drel:DISTANCE]->(n2)
-    WITH n1, n2, prel, srel, drel
-    // where coalesce(prel.probability,0) > 0.4
-    return n1.type as t1, 
-    n2.type as t2,
+    WITH n1, n2, prel, srel, drel,md1,md2
+    where n1 <> n2 //coalesce(prel.probability,0) > 0.4
+    return coalesce(md1.gender, n1.type) as t1, 
+    coalesce(md2.gender, n2.type) as t2,
     EXISTS((n1)-[:FRIENDS]->(n2)) as friends, 
     coalesce(prel.probability,0) as prob, 
     coalesce(drel.distance, Infinity) as dist,
@@ -240,7 +240,7 @@ export async function compareTypes(
 
   const length = result.records.length;
 
-  result.records.slice(0, -1).forEach((record, index) => {
+  result.records.slice(0, 2000).forEach((record, index) => {
     const value = length - index;
     const type1 = record.get(`t1`);
     const type2 = record.get(`t2`);
