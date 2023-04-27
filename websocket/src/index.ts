@@ -6,7 +6,7 @@
 
 // import { getServer } from './socketio_server';
 
-// import * as common from 'react-video-call-common';
+// import * as common from 'common';
 
 // const logger = common.getLogger();
 

@@ -1,4 +1,4 @@
-import { getLogger } from 'react-video-call-common';
+import { getLogger } from 'common';
 import { cleanAllSocketServer } from './management';
 import { getServer } from './socketio_server';
 

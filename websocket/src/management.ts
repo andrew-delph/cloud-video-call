@@ -1,7 +1,7 @@
-import { delay, getLogger } from 'react-video-call-common';
+import { delay, getLogger } from 'common';
 import { io, mainRedisClient, pubRedisClient } from './socketio_server';
 import { Socket } from 'socket.io';
-import * as common from 'react-video-call-common';
+import * as common from 'common';
 
 const logger = getLogger();
 

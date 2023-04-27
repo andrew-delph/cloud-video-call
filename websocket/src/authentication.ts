@@ -1,8 +1,8 @@
-import { getLogger, getUid } from 'react-video-call-common';
+import { getLogger, getUid } from 'common';
 import { Socket } from 'socket.io';
 import { mainRedisClient } from './socketio_server';
 
-import * as common from 'react-video-call-common';
+import * as common from 'common';
 import { cleanSocket, registerSocket } from './management';
 
 const logger = getLogger();

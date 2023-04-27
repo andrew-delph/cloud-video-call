@@ -68,6 +68,14 @@ const verifyIndexes = async () => {
     `CREATE INDEX  PREDICTION_probability IF NOT EXISTS  FOR ()-[r:PREDICTION]-() ON (r.probability);`,
   );
 
+  await session.run(
+    `CREATE INDEX  SIMILAR_probability IF NOT EXISTS  FOR ()-[r:SIMILAR]-() ON (r.score);`,
+  );
+
+  await session.run(
+    `CREATE INDEX  DISTANCE_probability IF NOT EXISTS  FOR ()-[r:DISTANCE]-() ON (r.distance);`,
+  );
+
   await session.close();
   const duration = (performance.now() - start_time) / 1000;
   if (duration > durationWarn) {
@@ -195,24 +203,39 @@ const getRelationshipScores = async (
   const session = driver.session();
   const result = await session.run(
     `
-        MATCH (a)-[rel:SIMILAR_TO]->(b) 
-        WHERE a.userId = $target
-        AND b.userId IN $otherUsers
-        RETURN a.userId as targetId, b.userId as otherId, rel.similarity as score
-        ORDER BY rel.score DESCENDING
-      `,
-    { target: userId, otherUsers },
+  UNWIND $otherUsers AS otherId
+    MATCH (n1:Person{userId: $target})
+    MATCH (n2:Person{userId: otherId})
+    OPTIONAL MATCH (n1)-[prel:PREDICTION]->(n2)
+    OPTIONAL MATCH (n1)-[srel:SIMILAR]->(n2)
+    OPTIONAL MATCH (n1)-[drel:DISTANCE]->(n2)
+    WITH n1, n2, prel, srel, drel
+    return n1.type as t1, 
+    n2.type as t2,
+    EXISTS((n1)-[:FRIENDS]->(n2)) as friends, 
+    coalesce(prel.probability,0) as prob, 
+    coalesce(drel.distance, Infinity) as dist,
+    round(coalesce(srel.score,0),3) as sim, 
+    // round(n1.priority,3) as p1, 
+    round(n2.priority,3) as p2,
+    // n1.community as c1, 
+    // n2.community as c2,
+    // round(gds.alpha.linkprediction.adamicAdar(n1, n2, {relationshipQuery: 'FRIENDS'}),3) AS score,
+    otherId
+    ORDER BY prob DESC, dist ASC, sim DESC, p2 DESC
+  `,
+    { target: userId, otherUsers: otherUsers },
   );
+
   await session.close();
 
   logger.debug(
     `found SIMILAR_TO relationships is ${result.records.length} requested: ${otherUsers.length}`,
   );
 
-  for (const record of result.records) {
-    reply
-      .getRelationshipScoresMap()
-      .set(record.get(`otherId`), record.get(`score`));
+  const length = result.records.length;
+  for (const [index, record] of result.records.entries()) {
+    reply.getRelationshipScoresMap().set(record.get(`otherId`), length - index);
   }
 
   const duration = (performance.now() - start_time) / 1000;

@@ -22,10 +22,10 @@
     "firebase-admin": "^11.4.1",
     "ioredis": "5.2.5",
     "lodash": "^4.17.21",
-    "neo4j-grpc-common": "^1.0.0",
-    "react-video-call-common": "^1.0.0",
     "socket.io": "4.6.1",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "neo4j-grpc-common": "link:../neo4j-grpc-common",
+    "common": "link:../common"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.1",
@@ -34,11 +34,5 @@
     "@types/uuid": "^9.0.0",
     "tsc-watch": "^6.0.0",
     "typescript": "^4.9.4"
-  },
-  "workspaces": {
-    "packages": [
-      "../common",
-      "../neo4j/neo4j-grpc-common"
-    ]
   }
 }

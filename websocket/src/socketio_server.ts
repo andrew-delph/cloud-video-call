@@ -5,7 +5,7 @@ import { createServer } from 'http';
 import Client from 'ioredis';
 import { Server, Socket } from 'socket.io';
 import { v4 as uuid } from 'uuid';
-import * as common from 'react-video-call-common';
+import * as common from 'common';
 import { initializeApp } from 'firebase-admin/app';
 import { throttle } from 'lodash';
 import amqp from 'amqplib';
@@ -20,7 +20,7 @@ import {
   CreateUserResponse,
   createNeo4jClient,
 } from 'neo4j-grpc-common';
-import { listenGlobalExceptions, ReadyMessage } from 'react-video-call-common';
+import { listenGlobalExceptions, ReadyMessage } from 'common';
 import { auth_middleware } from './authentication';
 import {
   cleanMySocketServer,

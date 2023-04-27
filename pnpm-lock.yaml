@@ -66,8 +66,8 @@ importers:
         specifier: 5.2.5
         version: 5.2.5
       neo4j-grpc-common:
-        specifier: link:../neo4j/neo4j-grpc-common
-        version: link:../neo4j/neo4j-grpc-common
+        specifier: link:../neo4j-grpc-common
+        version: link:../neo4j-grpc-common
       redlock:
         specifier: ^5.0.0-beta.2
         version: 5.0.0-beta.2
@@ -136,8 +136,8 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1
       neo4j-grpc-common:
-        specifier: link:../neo4j/neo4j-grpc-common
-        version: link:../neo4j/neo4j-grpc-common
+        specifier: link:../neo4j-grpc-common
+        version: link:../neo4j-grpc-common
       redlock:
         specifier: ^5.0.0-beta.2
         version: 5.0.0-beta.2
@@ -213,7 +213,7 @@ importers:
         specifier: ^4.9.5
         version: 4.9.5
 
-  neo4j/neo4j-grpc-common:
+  neo4j-grpc-common:
     dependencies:
       '@grpc/grpc-js':
         specifier: ^1.8.9
@@ -235,11 +235,11 @@ importers:
         specifier: ^4.4.4
         version: 4.9.4
 
-  neo4j/neo4j-grpc-server:
+  neo4j-grpc-server:
     dependencies:
       common:
-        specifier: link:../../common
-        version: link:../../common
+        specifier: link:../common
+        version: link:../common
       haversine-distance:
         specifier: ^1.2.1
         version: 1.2.1
@@ -260,11 +260,11 @@ importers:
         specifier: ^4.4.4
         version: 4.9.4
 
-  neo4j/neo4j-jobs:
+  neo4j-jobs:
     dependencies:
       common:
-        specifier: link:../../common
-        version: link:../../common
+        specifier: link:../common
+        version: link:../common
       ioredis:
         specifier: 5.2.5
         version: 5.2.5
@@ -275,8 +275,8 @@ importers:
         specifier: link:../neo4j-grpc-common
         version: link:../neo4j-grpc-common
       neo4jscripts:
-        specifier: link:../
-        version: link:..
+        specifier: link:../neo4j
+        version: link:../neo4j
       uuid:
         specifier: ^9.0.0
         version: 9.0.0
@@ -312,8 +312,8 @@ importers:
         specifier: ^5.5.0
         version: 5.5.0
       neo4j-grpc-common:
-        specifier: link:../neo4j/neo4j-grpc-common
-        version: link:../neo4j/neo4j-grpc-common
+        specifier: link:../neo4j-grpc-common
+        version: link:../neo4j-grpc-common
       omit-deep-lodash:
         specifier: ^1.1.7
         version: 1.1.7
@@ -342,6 +342,9 @@ importers:
       cluster:
         specifier: ^0.7.7
         version: 0.7.7
+      common:
+        specifier: link:../common
+        version: link:../common
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3
@@ -358,11 +361,8 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       neo4j-grpc-common:
-        specifier: ^1.0.0
-        version: link:../neo4j/neo4j-grpc-common
-      react-video-call-common:
-        specifier: ^1.0.0
-        version: link:../common
+        specifier: link:../neo4j-grpc-common
+        version: link:../neo4j-grpc-common
       socket.io:
         specifier: 4.6.1
         version: 4.6.1
@@ -5819,7 +5819,7 @@ packages:
     dependencies:
       neo4j-driver-bolt-connection: 5.7.0
       neo4j-driver-core: 5.7.0
-      rxjs: 7.8.0
+      rxjs: 7.8.1
     dev: false
 
   /next-tick@1.1.0:
@@ -6519,8 +6519,8 @@ packages:
     resolution: {integrity: sha512-PdhdWy89SiZogBLaw42zdeqtRJ//zFd2PgQavcICDUgJT5oW10QCRKbJ6bg4r0/UY2M6BWd5tkxuGFRvCkgfHQ==}
     dev: false
 
-  /rxjs@7.8.0:
-    resolution: {integrity: sha512-F2+gxDshqmIub1KdvZkaEfGDwLNpPvk9Fs6LD/MyQxNgMds/WH9OdDDXOmxUZpME+iSK3rQCctkL0DYyytUqMg==}
+  /rxjs@7.8.1:
+    resolution: {integrity: sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==}
     dependencies:
       tslib: 2.5.0
     dev: false

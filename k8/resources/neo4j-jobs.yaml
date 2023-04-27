@@ -8,6 +8,7 @@ spec:
   suspend: false
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 100
       template:
         spec:
           containers:
@@ -29,6 +30,7 @@ spec:
   suspend: false
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 100
       template:
         spec:
           containers:
