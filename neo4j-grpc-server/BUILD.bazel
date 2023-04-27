@@ -60,7 +60,7 @@ container_image(
     name = "image",
     architecture = "amd64",
     base = "@debian_amd64//image",
-    cmd = ["/app/neo4j/neo4j-grpc-server/neo4j-grpc-server"],
+    cmd = ["/app/neo4j-grpc-server/neo4j-grpc-server"],
     entrypoint = ["bash"],
     layers = [
         ":app_layer",
