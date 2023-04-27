@@ -198,6 +198,7 @@ export async function compareTypes(
   md1: string = ``,
   md2: string = ``,
 ): Promise<neo4j.QueryResult> {
+  const limit = 5000;
   console.log();
   console.log(`running compareTypes type1="${type1}" type2="${type2}"`);
 
@@ -236,6 +237,7 @@ export async function compareTypes(
     ORDER BY prob DESC, dist ASC, sim DESC, p2 DESC
     // WITH CASE WHEN prel IS NOT NULL THEN 1 ELSE 0 END as hasPrediction
     // RETURN sum(hasPrediction) as existingCount, sum(1 - hasPrediction) as nonExistingCount 
+    LIMIT ${limit}
   `,
   );
 
@@ -252,7 +254,7 @@ export async function compareTypes(
 
   const length = result.records.length;
 
-  result.records.slice(0, 5000).forEach((record, index) => {
+  result.records.slice(0, limit).forEach((record, index) => {
     const value = length - index;
     const type1 = record.get(`t1`);
     const type2 = record.get(`t2`);

@@ -203,6 +203,8 @@ export async function createRidgeLineChart(
     const item = data[key];
     const histogram = createHistogram(item.values);
 
+    console.log(`histogram length`, histogram.length);
+
     dataParsed.push({ key, values: histogram, colour: item.colour ?? `red` });
   }
 
