@@ -57,7 +57,7 @@ const verifyIndexes = async () => {
 
   const session = driver.session();
   await session.run(
-    `CREATE INDEX  Person_userId IF NOT EXISTS  FOR (n:Person) ON (n.userId);`,
+    `CREATE CONSTRAINT Person_userId IF NOT EXISTS FOR (p:Person) REQUIRE (p.userId) IS UNIQUE;`,
   );
 
   await session.run(
