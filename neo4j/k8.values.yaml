@@ -1,10 +1,11 @@
 neo4j:
   name: my-standalone
+  password: 'password'
+  # edition: 'enterprise'
+  # acceptLicenseAgreement: 'yes'
   resources:
     cpu: '0.5'
     memory: '2Gi'
-
-  password: 'password'
 
 env:
   NEO4J_PLUGINS: '["graph-data-science","apoc"]'

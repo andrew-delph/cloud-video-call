@@ -19,7 +19,7 @@ console.log(`Value of JOB:`, job);
   switch (job) {
     case `TRAIN`:
     case `COMPUTE`:
-      await funcs.createFriends();
+      // await funcs.createFriends();
       node_attributes = await funcs.getAttributeKeys();
       results = await funcs.createGraph(`myGraph`, node_attributes);
       funcs.printResults(results, print_num);

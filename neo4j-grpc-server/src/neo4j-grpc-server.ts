@@ -143,7 +143,10 @@ const createMatch = async (
   const matchResult = await session.run(
     `MATCH (a:Person), (b:Person) 
     WHERE a.userId = $userId1 AND b.userId = $userId2 
-    CREATE (a)-[r1:MATCHED]->(b) CREATE (b)-[r2:MATCHED]->(a)
+    CREATE (a)-[r1:MATCHED]->(b)
+    CREATE (b)-[r2:MATCHED]->(a)
+    set r1.other = id(r2)
+    set r2.other = id(r1)
     RETURN id(r1), id(r2)
     `,
     {
@@ -274,15 +277,13 @@ const createFeedback = async (
     `
       MATCH (n1:Person {userId: $userId})-[r:MATCHED]->(n2:Person)
       WHERE id(r) = $feedbackId
-      CREATE (n1)-[f:FEEDBACK {score: $score}]->(n2) return f
+      CREATE (n1)-[f:FEEDBACK {score: $score, feedbackId: $feedbackId, other: r.other}]->(n2) return f
     `,
     { score, userId, feedbackId },
   );
 
-  await session.close();
-
   if (feedback_rel.records.length != 1) {
-    logger.debug(
+    logger.error(
       `Failed to create feedback. returned rows: ${feedback_rel.records.length} `,
     );
     return callback({
@@ -290,6 +291,23 @@ const createFeedback = async (
       message: `Feedback not created.`,
     });
   }
+
+  // create friend
+  const friend_rel = await session.run(
+    `
+      MATCH (n1:Person)-[f1:FEEDBACK{feedbackId: $feedbackId}]->(n2:Person)
+      MATCH (n2:Person)-[f2:FEEDBACK{other: $feedbackId}]->(n1:Person)
+      WHERE f1.score > 0 AND f2.score > 0
+      MERGE (n1)-[r1:FRIENDS]-(n2)
+      MERGE (n2)-[r2:FRIENDS]-(n1)
+      return r1,r2
+    `,
+    { userId, feedbackId },
+  );
+
+  logger.debug(`Created friend ships: ${friend_rel.records.length} `);
+
+  await session.close();
 
   const duration = (performance.now() - start_time) / 1000;
 
