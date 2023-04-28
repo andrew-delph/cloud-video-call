@@ -42,7 +42,8 @@ export const calcScoreMap = new Map<
   [
     PersonType.Hot,
     (me: Person, otherPerson: Person) => {
-      if ((otherPerson.attributes.hot ?? -10) >= me.attributes.hot) return 10;
+      if ((otherPerson.attributes.hot ?? -10) >= me.attributes.hot - 1)
+        return 10;
       return -10;
     },
   ],
@@ -67,7 +68,7 @@ export const calcScoreMap = new Map<
 ]);
 
 export const createRandom = (auth: string): Person => {
-  const attributes = { hot: -5 };
+  const attributes = {};
 
   return new Person(PersonType.Random, auth, attributes);
 };
@@ -123,10 +124,10 @@ export const createNegative = (auth: string): Person => {
 let userFunctions: any[] = [];
 userFunctions.push(createFemale);
 userFunctions.push(createMale);
-userFunctions.push(createPositive);
-userFunctions.push(createNegative);
-userFunctions.push(createRandom);
-userFunctions.push(createHot);
+// userFunctions.push(createPositive);
+// userFunctions.push(createNegative);
+// userFunctions.push(createRandom);
+// userFunctions.push(createHot);
 
 function* getPersonGenerator() {
   let current = 0;

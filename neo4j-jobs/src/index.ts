@@ -39,7 +39,7 @@ console.log(`Value of JOB:`, job);
       results = await funcs.createPipeline();
       funcs.printResults(results, print_num);
 
-      results = await funcs.createGraph(`mlGraph`, node_attributes);
+      results = await funcs.createGraph(`myGraph`, node_attributes);
       funcs.printResults(results, print_num);
       break;
 

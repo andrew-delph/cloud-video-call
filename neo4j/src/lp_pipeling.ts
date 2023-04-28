@@ -32,7 +32,7 @@ export async function createPipeline(): Promise<neo4j.QueryResult> {
           embeddingDimension: 256,
           randomSeed: 42,
           contextNodeLabels: ['Person'],
-          contextRelationshipTypes: ['FRIENDS', 'FEEDBACK', 'NEGATIVE']
+          contextRelationshipTypes: ['FRIENDS', 'NEGATIVE']
         }
       )
     `,
@@ -40,7 +40,7 @@ export async function createPipeline(): Promise<neo4j.QueryResult> {
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'COSINE', {
-        nodeProperties: [ 'embedding1', 'values']
+        nodeProperties: [ 'embedding1', 'values', 'priority']
       }) YIELD featureSteps
     `,
   );
@@ -93,7 +93,7 @@ export async function train(): Promise<neo4j.QueryResult> {
 
   const training_result = await session.run(
     `
-      CALL gds.beta.pipeline.linkPrediction.train('mlGraph', {
+      CALL gds.beta.pipeline.linkPrediction.train('myGraph', {
         pipeline: 'lp-pipeline',
         modelName: 'lp-pipeline-model',
         metrics: ['AUCPR'],
@@ -122,7 +122,7 @@ export async function predict(): Promise<neo4j.QueryResult> {
   let result;
   result = await session.run(
     `
-      CALL gds.beta.pipeline.linkPrediction.predict.stream('mlGraph', {
+      CALL gds.beta.pipeline.linkPrediction.predict.stream('myGraph', {
         modelName: 'lp-pipeline-model',
         topN: 5000,
         threshold: 0
@@ -142,6 +142,7 @@ export async function predict(): Promise<neo4j.QueryResult> {
       `,
   );
 
+  console.log(`predicitons made: `, result.records.length);
   const end_time = performance.now();
   console.log(`predict:`, end_time - start_time);
 

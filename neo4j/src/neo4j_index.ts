@@ -52,17 +52,12 @@ export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
     let results;
-
-    // results = await funcs.compareTypes(
-    //   ``,
-    //   ``,
-    //   // `{gender:'male'}`,
-    //   // `{gender:'female'}`,
-    // );
-    // printResults(results, 20);
+    // results = await funcs.compareTypes();
+    // // results = await funcs.readGraph(`myGraph`, `priority`);
+    // printResults(results, 200);
     // return;
 
-    await funcs.createData({ deleteData: true, nodesNum: 1000, edgesNum: 30 });
+    await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 50 });
     await funcs.createFriends();
 
     results = await funcs.getFriends();
@@ -86,13 +81,14 @@ export const run = async () => {
     // printResults(results, 50);
 
     results = await lp.createPipeline();
-    results = await funcs.createGraph(`mlGraph`, node_attributes);
+    results = await funcs.createGraph(`myGraph`, node_attributes);
 
     const train_results = await lp.train();
-    await lp.predict();
+    results = await lp.predict();
+    printResults(results, 200);
 
     results = await funcs.compareTypes();
-    // printResults(results, 200);
+    printResults(results, 200);
 
     console.log(`graph_attributes`, node_attributes);
   } finally {

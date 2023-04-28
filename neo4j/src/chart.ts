@@ -184,15 +184,6 @@ export async function createRidgeLineChart(
   },
   filename: string,
 ) {
-  const options = {
-    width: 960 * 2,
-    height: 500 * 2,
-    margin: { top: 30, right: 30, bottom: 30, left: 30 },
-  };
-
-  var canvas = d3n.createCanvas(options.width, options.height);
-  var context = canvas.getContext(`2d`);
-
   const dataParsed: {
     key: string;
     values: [number, number][];
@@ -207,6 +198,16 @@ export async function createRidgeLineChart(
 
     dataParsed.push({ key, values: histogram, colour: item.colour ?? `red` });
   }
+
+  const rows = dataParsed.length;
+  const options = {
+    width: 960,
+    height: rows * 150,
+    margin: { top: 30, right: 30, bottom: 30, left: 30 },
+  };
+
+  var canvas = d3n.createCanvas(options.width, options.height);
+  var context = canvas.getContext(`2d`);
 
   const x_min = d3.min(dataParsed, (d) =>
     d3.min(d.values, (value) => value[0]),
@@ -239,10 +240,7 @@ export async function createRidgeLineChart(
       options.height / dataParsed.length - options.margin.bottom,
       options.margin.top,
     ])
-    .domain([
-      0,
-      d3.max(dataParsed, (d) => d3.max(d.values, (value) => value[1]))!,
-    ]);
+    .domain([0, y_max]);
 
   const ySpacing =
     (options.height - options.margin.top - options.margin.bottom) /

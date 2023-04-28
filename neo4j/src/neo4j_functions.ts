@@ -4,7 +4,7 @@ import { printResults } from './neo4j_index';
 import { Person, getPerson, indexToColor } from './person';
 import { createDotGraph, createRidgeLineChart } from './chart';
 import async from 'async';
-const maxRetryTimeMs = 120 * 1000;
+const maxRetryTimeMs = 15 * 1000;
 
 export let driver: neo4j.Driver;
 export let session: neo4j.Session;
@@ -83,7 +83,6 @@ export async function createData({
     edges.push({ a, b });
   }
 
-  const limit = 1;
   start_time = performance.now();
   // await async.eachLimit(nodes, limit, async (node, callback) => {
   //   await node.createNode();
@@ -146,19 +145,6 @@ export async function getUsers(): Promise<neo4j.QueryResult> {
     `length ${result.records.length}`,
   );
 
-  // const priority_vs_community: {
-  //   x: number;
-  //   y: number;
-  // }[] = [];
-
-  // result.records.forEach((record) => {
-  //   const x = parseFloat(record.get(`a.community`));
-  //   const y = parseFloat(record.get(`a.priority`));
-  //   priority_vs_community.push({ x, y });
-  // });
-
-  // createDotGraph(priority_vs_community, `priority_vs_community`);
-
   const community_data: {
     x: number;
     y: number;
@@ -198,9 +184,9 @@ export async function compareTypes(
   md1: string = ``,
   md2: string = ``,
 ): Promise<neo4j.QueryResult> {
-  const limit = 5000;
+  const limit = 50;
   console.log();
-  console.log(`running compareTypes type1="${type1}" type2="${type2}"`);
+  console.log(`Running compareTypes type1="${type1}" type2="${type2}"`);
 
   if (type1) {
     type1 = `{type:'${type1}'}`;
@@ -229,14 +215,8 @@ export async function compareTypes(
     coalesce(prel.probability,0) as prob, 
     coalesce(drel.distance, Infinity) as dist,
     round(coalesce(srel.score,0),3) as sim, 
-    // round(n1.priority,3) as p1, 
     round(n2.priority,3) as p2
-    // n1.community as c1, 
-    // n2.community as c2,
-    // round(gds.alpha.linkprediction.adamicAdar(n1, n2, {relationshipQuery: 'FRIENDS'}),3) AS score,
     ORDER BY prob DESC, dist ASC, sim DESC, p2 DESC
-    // WITH CASE WHEN prel IS NOT NULL THEN 1 ELSE 0 END as hasPrediction
-    // RETURN sum(hasPrediction) as existingCount, sum(1 - hasPrediction) as nonExistingCount 
     LIMIT ${limit}
   `,
   );
@@ -254,7 +234,7 @@ export async function compareTypes(
 
   const length = result.records.length;
 
-  result.records.slice(0, limit).forEach((record, index) => {
+  result.records.slice(0, -1).forEach((record, index) => {
     const value = length - index;
     const type1 = record.get(`t1`);
     const type2 = record.get(`t2`);
@@ -525,9 +505,13 @@ export async function createGraph(
         sourceNodeLabels: 'Person',
         targetNodeLabels: 'Person',
         sourceNodeProperties: source { 
+            priority: coalesce(source.priority, 0),
+            community: coalesce(source.community, 0),
             values: source_values ${getExtraNodeProperties(`source`)}
           },
         targetNodeProperties: target { 
+            priority: coalesce(target.priority, 0),
+            community: coalesce(target.community, 0),
             values: target_values ${getExtraNodeProperties(`target`)}
           }
       },
