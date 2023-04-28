@@ -42,7 +42,10 @@ export function retryFunction(func: any, retries: number, delay: number) {
   });
 }
 
-export async function run(query: string): Promise<neo4j.QueryResult> {
+export async function run(
+  query: string,
+  params: any = {},
+): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- run`);
 
@@ -50,7 +53,7 @@ export async function run(query: string): Promise<neo4j.QueryResult> {
 
   let result;
 
-  result = await session.run(query);
+  result = await session.run(query, params);
 
   const end_time = performance.now();
 
@@ -393,6 +396,38 @@ export async function createFriends(
 
   return result;
 }
+
+const collapseFriends = () => {
+  let results = await run(
+    `
+    CALL apoc.periodic.iterate(
+      "
+        MATCH(a:Person)-[:FRIENDS]-(b:Person)-[:FRIENDS]-(c:Person)
+        OPTIONAL MATCH (c)-[:FRIENDS]-(d:Person)
+        WHERE a.userId <> b.userId AND a.userId <> c.userId AND a.userId <> d.userId
+        AND b.userId <> c.userId AND b.userId <> d.userId
+        AND c.userId <> d.userId
+        return a, b, c, d
+      ",
+      "
+        MERGE(a)-[:CLOSE_FRIENDS{degree:1}]-(c)
+        WITH a,d
+        CALL apoc.do.when(
+          d IS NOT NULL,
+          'MERGE (a)-[r:CLOSE_FRIENDS{degree:2}]-(d) return 1 as r',
+          'return 1 as r',
+          {d:d}
+        ) YIELD value
+        return 1
+      ",
+        {batchSize:10, parallel:false}
+      )
+    `,
+    {},
+  );
+
+  return results;
+};
 
 export async function createAttributeFloat(): Promise<neo4j.QueryResult> {
   console.log(``);
