@@ -397,7 +397,7 @@ export async function createFriends(
   return result;
 }
 
-const collapseFriends = () => {
+const collapseFriends = async () => {
   let results = await run(
     `
     CALL apoc.periodic.iterate(
