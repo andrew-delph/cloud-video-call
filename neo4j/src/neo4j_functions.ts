@@ -42,6 +42,23 @@ export function retryFunction(func: any, retries: number, delay: number) {
   });
 }
 
+export async function run(query: string): Promise<neo4j.QueryResult> {
+  console.log(``);
+  console.log(`--- run`);
+
+  const start_time = performance.now();
+
+  let result;
+
+  result = await session.run(query);
+
+  const end_time = performance.now();
+
+  console.log(`run`, end_time - start_time);
+
+  return result;
+}
+
 export async function createData({
   nodesNum = 100,
   edgesNum = 7,
