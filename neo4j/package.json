@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsc-watch --onCompilationStarted \"echo 'watching neo4j'\"",
     "build": "tsc",
-    "run": "node dist/neo4j_index.js",
+    "run": "tsc && node dist/index.js",
     "watch": "nodemon -e ts -w src --exec 'clear && echo building... && time -p tsc && echo running... && npm run run'"
   },
   "author": "",
