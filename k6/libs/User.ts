@@ -30,14 +30,16 @@ export const createFemale = (auth: string): User => {
     constant: { gender: `female` },
     custom: { long: 1, lat: 1 },
   };
-  const filters = { constant: {} };
+  let filters = { constant: {} };
+  filters = { constant: { gender: `male` } };
 
   return new User(auth, attributes, filters, UserType.Female);
 };
 
 export const createMale = (auth: string): User => {
   const attributes = { constant: { gender: `male` } };
-  const filters = { constant: {} };
+  let filters = { constant: {} };
+  filters = { constant: { gender: `female` } };
 
   return new User(auth, attributes, filters, UserType.Male);
 };
