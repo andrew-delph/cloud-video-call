@@ -227,16 +227,18 @@ export async function compareTypes(
     OPTIONAL MATCH (n1)-[prel:PREDICTION]->(n2)
     OPTIONAL MATCH (n1)-[srel:SIMILAR]->(n2)
     OPTIONAL MATCH (n1)-[drel:DISTANCE]->(n2)
-    WITH n1, n2, prel, srel, drel,md1,md2
+    OPTIONAL MATCH (n1)-[:FRIENDS]-()-[:FRIENDS]-()-[:FRIENDS]-(n2)
+    WITH n1, n2, prel, srel, drel,md1,md2, count(*) as num_friends
     where n1 <> n2 //coalesce(prel.probability,0) > 0.4
-    return coalesce(md1.gender, n1.type) as t1, 
+    return 
+    num_friends,
+    coalesce(md1.gender, n1.type) as t1, 
     coalesce(md2.gender, n2.type) as t2,
-    EXISTS((n1)-[:FRIENDS]->(n2)) as friends, 
     coalesce(prel.probability,0) as prob, 
-    coalesce(drel.distance, Infinity) as dist,
+    EXISTS((n1)-[:FRIENDS]->(n2)) as friends, 
     round(coalesce(srel.score,0),3) as sim, 
     round(n2.priority,3) as p2
-    ORDER BY prob DESC, dist ASC, sim DESC, p2 DESC
+    ORDER BY num_friends DESC, prob DESC, p2 DESC
     LIMIT ${limit}
   `,
   );

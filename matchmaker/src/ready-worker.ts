@@ -39,8 +39,14 @@ let rabbitChannel: amqp.Channel;
 
 const connectRabbit = async () => {
   rabbitConnection = await amqp.connect(`amqp://rabbitmq`);
-
   rabbitChannel = await rabbitConnection.createChannel();
+  rabbitChannel.on(`error`, (err) => {
+    logger.error(`Publisher error: ${err.message}`);
+  });
+  rabbitConnection.on(`error`, (err) => {
+    logger.error(`Connection error: ${err.message}`);
+  });
+
   await rabbitChannel.assertQueue(common.matchQueueName, {
     durable: true,
   });
@@ -87,7 +93,7 @@ export const startReadyConsumer = async () => {
     maxPriority: 10,
   });
 
-  rabbitChannel.prefetch(5);
+  rabbitChannel.prefetch(1);
   logger.info(` [x] Awaiting RPC requests`);
 
   rabbitChannel.consume(

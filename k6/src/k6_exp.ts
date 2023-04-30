@@ -18,9 +18,9 @@ export const redisClient = new redis.Client({
   addrs: new Array(__ENV.REDIS || `localhost:6379`), // in the form of 'host:port', separated by commas
 });
 
-const authKeysNum = 300;
+const authKeysNum = 100;
 const vus = 50;
-const nukeData = true;
+const nukeData = false;
 
 export const options = {
   setupTimeout: `10m`,
@@ -28,26 +28,26 @@ export const options = {
   // iterations: authKeysNum * 10,
   // duration: `1h`,
   scenarios: {
-    matchTest: {
-      executor: `shared-iterations`,
-      vus: vus,
-      iterations: authKeysNum * 10,
-    },
     // matchTest: {
-    //   executor: `ramping-vus`,
-    //   startVUs: vus,
-    //   stages: [
-    //     { duration: `2h`, target: vus * 3 },
-    //     // { duration: `2h`, target: vus * 3 },
-    //     // { duration: `3m`, target: vus * 1 },
-    //   ],
+    //   executor: `shared-iterations`,
+    //   vus: vus,
+    //   iterations: authKeysNum * 100,
     // },
-    longConnection: {
+    matchTest: {
       executor: `ramping-vus`,
-      exec: `longWait`,
-      startVUs: 10,
-      stages: [{ duration: `10m`, target: 10 }],
+      startVUs: vus,
+      stages: [
+        { duration: `2h`, target: vus },
+        // { duration: `2h`, target: vus * 3 },
+        // { duration: `3m`, target: vus * 1 },
+      ],
     },
+    // longConnection: { // TODO fix this....
+    //   executor: `ramping-vus`,
+    //   exec: `longWait`,
+    //   startVUs: 10,
+    //   stages: [{ duration: `10m`, target: 10 }],
+    // },
   },
 };
 
