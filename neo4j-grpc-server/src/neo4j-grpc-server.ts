@@ -212,7 +212,8 @@ const getRelationshipScores = async (
     OPTIONAL MATCH (n1)-[prel:PREDICTION]->(n2)
     OPTIONAL MATCH (n1)-[srel:SIMILAR]->(n2)
     OPTIONAL MATCH (n1)-[drel:DISTANCE]->(n2)
-    WITH n1, n2, prel, srel, drel
+    OPTIONAL MATCH (n1)-[:FRIENDS]-()-[:FRIENDS]-()-[:FRIENDS]-(n2)
+    WITH n1, n2, prel, srel, drel, count(*) as num_friends
     return n1.type as t1, 
     n2.type as t2,
     EXISTS((n1)-[:FRIENDS]->(n2)) as friends, 
@@ -225,8 +226,9 @@ const getRelationshipScores = async (
     // n2.community as c2,
     // round(gds.alpha.linkprediction.adamicAdar(n1, n2, {relationshipQuery: 'FRIENDS'}),3) AS score,
     n1.userId as targetId,
-    n2.userId as otherId
-    ORDER BY prob DESC, dist ASC, sim DESC, p2 DESC
+    n2.userId as otherId,
+    num_friends
+    ORDER BY prob DESC, num_friends DESC, dist ASC, sim DESC, p2 DESC
   `,
     { target: userId, otherUsers: otherUsers },
   );
@@ -239,7 +241,15 @@ const getRelationshipScores = async (
 
   const length = result.records.length;
   for (const [index, record] of result.records.entries()) {
-    reply.getRelationshipScoresMap().set(record.get(`otherId`), length - index);
+    const prob = record.get(`prob`);
+    const num_friends = record.get(`num_friends`);
+    const otherId = record.get(`otherId`);
+    logger.info(
+      `otherId: ${otherId} score:${
+        length - index
+      } prob:${prob} num_friends:${num_friends} length:${length}`,
+    );
+    reply.getRelationshipScoresMap().set(otherId, length - index);
   }
 
   const duration = (performance.now() - start_time) / 1000;
@@ -308,42 +318,40 @@ const createFeedback = async (
   logger.debug(`Created friend ships: ${friend_rel.records.length}`);
   // ASSERT created friends in 0 or 1
 
-  if (friend_rel.records.length > 0) {
-    logger.info(`11: ${JSON.stringify(friend_rel)}`);
-    friend_rel = friend_rel.records[0];
-    const user1 = friend_rel.get(`n1.userId`);
-    const user2 = friend_rel.get(`n2.userId`);
-    logger.info(`22: user1 ${user1} user2 ${user2}`);
+  // if (friend_rel.records.length > 0) {
+  //   friend_rel = friend_rel.records[0];
+  //   const user1 = friend_rel.get(`n1.userId`);
+  //   const user2 = friend_rel.get(`n2.userId`);
 
-    logger.debug(`Running collapse Friends in Background`);
-    const collapse_friends = await session.run(
-      `
-        CALL apoc.periodic.iterate(
-        "
-          MATCH(a:Person{userId: '${user1}'})-[:FRIENDS]-(b:Person{userId: '${user2}'})-[:FRIENDS]-(c:Person)
-          OPTIONAL MATCH (c)-[:FRIENDS]-(d:Person)
-          WHERE a.userId <> b.userId AND a.userId <> c.userId AND a.userId <> d.userId
-          AND b.userId <> c.userId AND b.userId <> d.userId
-          AND c.userId <> d.userId
-          return a, b, c, d
-        ",
-        "
-          MERGE(a)-[:CLOSE_FRIENDS{degree:1}]-(c)
-          WITH a,d
-          CALL apoc.do.when(
-            d IS NOT NULL,
-            'MERGE (a)-[r:CLOSE_FRIENDS{degree:2}]-(d) return 1 as r',
-            'return 1 as r',
-            {d:d}
-          ) YIELD value
-          return 1
-        ",
-          {batchSize:10, parallel:false}
-        )
-      `,
-      {},
-    );
-  }
+  //   logger.debug(`Running collapse Friends in Background`);
+  //   // const collapse_friends = await session.run(
+  //   //   `
+  //   //     CALL apoc.periodic.iterate(
+  //   //     "
+  //   //       MATCH(a:Person{userId: '${user1}'})-[:FRIENDS]-(b:Person{userId: '${user2}'})-[:FRIENDS]-(c:Person)
+  //   //       OPTIONAL MATCH (c)-[:FRIENDS]-(d:Person)
+  //   //       WHERE a.userId <> b.userId AND a.userId <> c.userId AND a.userId <> d.userId
+  //   //       AND b.userId <> c.userId AND b.userId <> d.userId
+  //   //       AND c.userId <> d.userId
+  //   //       return a, b, c, d
+  //   //     ",
+  //   //     "
+  //   //       MERGE(a)-[:CLOSE_FRIENDS{degree:1}]-(c)
+  //   //       WITH a,d
+  //   //       CALL apoc.do.when(
+  //   //         d IS NOT NULL,
+  //   //         'MERGE (a)-[r:CLOSE_FRIENDS{degree:2}]-(d) return 1 as r',
+  //   //         'return 1 as r',
+  //   //         {d:d}
+  //   //       ) YIELD value
+  //   //       return 1
+  //   //     ",
+  //   //       {batchSize:10, parallel:false}
+  //   //     )
+  //   //   `,
+  //   //   {},
+  //   // );
+  // }
 
   await session.close();
 
@@ -404,17 +412,13 @@ const getRelationshipScoresLinkPrediction = async (
 
   const duration = (performance.now() - start_time) / 1000;
 
-  logger.info(
-    `getRelationshipScoresLinkPrediction duration: \t ${duration}s otherUsers.length: ${otherUsers.length}`,
-  );
-
   if (duration > durationWarn) {
     logger.warn(
-      `getRelationshipScoresLinkPrediction duration: \t ${duration}s`,
+      `getRelationshipScoresLinkPrediction duration: \t ${duration}s otherUsers.length: ${otherUsers.length}`,
     );
   } else {
     logger.debug(
-      `getRelationshipScoresLinkPrediction duration: \t ${duration}s`,
+      `getRelationshipScoresLinkPrediction duration: \t ${duration}s otherUsers.length: ${otherUsers.length}`,
     );
   }
 
@@ -462,14 +466,14 @@ const getRelationshipScoresCommunity = async (
 
   const duration = (performance.now() - start_time) / 1000;
 
-  logger.info(
-    `getRelationshipScoresCommunity duration: \t ${duration}s otherUsers.length: ${otherUsers.length}`,
-  );
-
   if (duration > durationWarn) {
-    logger.warn(`getRelationshipScoresCommunity duration: \t ${duration}s`);
+    logger.warn(
+      `getRelationshipScoresCommunity duration: \t ${duration}s otherUsers.length: ${otherUsers.length}`,
+    );
   } else {
-    logger.debug(`getRelationshipScoresCommunity duration: \t ${duration}s`);
+    logger.debug(
+      `getRelationshipScoresCommunity duration: \t ${duration}s otherUsers.length: ${otherUsers.length}`,
+    );
   }
 
   callback(null, reply);

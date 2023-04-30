@@ -38,13 +38,35 @@ const neo4jRpcClient = createNeo4jClient();
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
 
+const exchangeName = `my-delayed-exchange`;
+const routingKey = `my-routing-key`;
+const delay = 10000; // 10 seconds
+
 const connectRabbit = async () => {
   rabbitConnection = await amqp.connect(`amqp://rabbitmq`);
   rabbitChannel = await rabbitConnection.createChannel();
+  rabbitChannel.on(`error`, (err) => {
+    logger.error(`Publisher error: ${err.message}`);
+  });
+  rabbitConnection.on(`error`, (err) => {
+    logger.error(`Connection error: ${err.message}`);
+  });
+  await rabbitChannel.assertExchange(exchangeName, `x-delayed-message`, {
+    durable: true,
+    arguments: { 'x-delayed-type': `direct` },
+  });
+
   await rabbitChannel.assertQueue(common.readyQueueName, {
     durable: true,
     maxPriority: 10,
   });
+
+  await rabbitChannel.bindQueue(
+    common.readyQueueName,
+    exchangeName,
+    routingKey,
+  );
+
   logger.info(`rabbitmq connected`);
 };
 
@@ -112,13 +134,20 @@ io.on(`connection`, async (socket) => {
 
       const readyMesage: ReadyMessage = { userId: socket.data.auth };
 
-      await rabbitChannel.sendToQueue(
-        common.readyQueueName,
+      await rabbitChannel.publish(
+        exchangeName,
+        routingKey,
         Buffer.from(JSON.stringify(readyMesage)),
-        {
-          priority: priority * 10,
-        },
+        { headers: { 'x-delay': delay }, priority: priority * 10 },
       );
+
+      // await rabbitChannel.sendToQueue(
+      //   common.readyQueueName,
+      //   Buffer.from(JSON.stringify(readyMesage)),
+      //   {
+      //     priority: priority * 10,
+      //   },
+      // );
     } else {
       await unregisterSocketReady(socket);
     }
