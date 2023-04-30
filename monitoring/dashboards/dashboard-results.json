@@ -726,7 +726,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "avg(sum by() (rate(k6_score_gauge{testid=~\"$testid\"}[$__rate_interval])))",
+          "expr": "avg(sum by(testid) (rate(k6_score_gauge{testid=~\"$testid\"}[$__rate_interval]))) by(testid) ",
           "hide": false,
           "legendFormat": "score guage: {{testid}}",
           "range": true,
@@ -1997,7 +1997,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-blue"
+                "color": "dark-blue",
+                "value": null
               }
             ]
           },
@@ -2026,7 +2027,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.6",
+      "pluginVersion": "9.2.4",
       "targets": [
         {
           "datasource": {
