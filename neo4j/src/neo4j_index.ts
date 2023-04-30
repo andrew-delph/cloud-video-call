@@ -60,28 +60,32 @@ export const run = async () => {
     //   // `{gender:'female'}`,
     //   ();
 
-    results = await funcs.run(`
-    MATCH (n1:Person{userId:"k6_auth_8"})
-    MATCH (n2:Person{userId:"k6_auth_13"})
-    OPTIONAL MATCH (n1)-[prel:PREDICTION]->(n2)
-    OPTIONAL MATCH (n1)-[srel:SIMILAR]->(n2)
-    OPTIONAL MATCH (n1)-[drel:DISTANCE]->(n2)
-    OPTIONAL MATCH (n1)-[:FRIENDS]-()-[:FRIENDS]-()-[:FRIENDS]-(n2)
-    WITH n1, n2, prel, srel, drel, count(*) as num_friends
-    return n1.type as t1, 
-    n2.type as t2,
-    coalesce(prel.probability,0) as prob, 
-    // round(n1.priority,3) as p1, 
-    round(n2.priority,3) as p2,
-    // n1.community as c1, 
-    // n2.community as c2,
-    // round(gds.alpha.linkprediction.adamicAdar(n1, n2, {relationshipQuery: 'FRIENDS'}),3) AS score,
-    n1.userId as targetId,
-    n2.userId as otherId,
-    num_friends
-    ORDER BY prob DESC, num_friends DESC, p2 DESC
-    `);
-    printResults(results, 200);
+    const otherIds = [];
+    console.log(`...`);
+
+    for (let i = 0; i < 10; i++) {
+      otherIds.push(`k6_auth_${i}`);
+    }
+
+    results = await funcs.run(
+      `UNWIND $otherUsers AS otherId
+      MATCH (n1:Person{userId: $target})
+      MATCH (n2:Person{userId: otherId})
+      OPTIONAL MATCH (n1)-[prel:PREDICTION]->(n2)
+      OPTIONAL MATCH (n1)-[:FRIENDS]-()-[:FRIENDS]-()-[:FRIENDS]-(n2)
+      WITH n1, n2, prel, count(*) as num_friends
+      return
+      EXISTS((n1)-[:FRIENDS]->(n2)) as friends, 
+      coalesce(prel.probability,0) as prob, 
+      round(n2.priority,3) as p2,
+      n1.userId as targetId,
+      n2.userId as otherId,
+      num_friends
+      ORDER BY prob DESC, num_friends DESC, p2 DESC`,
+      { otherUsers: otherIds, target: `k6_auth_221` },
+    );
+
+    printResults(results, 20);
     return;
 
     await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 50 });

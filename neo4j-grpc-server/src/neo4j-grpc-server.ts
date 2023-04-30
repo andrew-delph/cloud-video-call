@@ -205,51 +205,42 @@ const getRelationshipScores = async (
 
   const session = driver.session();
   const result = await session.run(
-    `
-  UNWIND $otherUsers AS otherId
-    MATCH (n1:Person{userId: $target})
-    MATCH (n2:Person{userId: otherId})
-    OPTIONAL MATCH (n1)-[prel:PREDICTION]->(n2)
-    OPTIONAL MATCH (n1)-[srel:SIMILAR]->(n2)
-    OPTIONAL MATCH (n1)-[drel:DISTANCE]->(n2)
-    OPTIONAL MATCH (n1)-[:FRIENDS]-()-[:FRIENDS]-()-[:FRIENDS]-(n2)
-    WITH n1, n2, prel, srel, drel, count(*) as num_friends
-    return n1.type as t1, 
-    n2.type as t2,
-    EXISTS((n1)-[:FRIENDS]->(n2)) as friends, 
-    coalesce(prel.probability,0) as prob, 
-    coalesce(drel.distance, Infinity) as dist,
-    round(coalesce(srel.score,0),3) as sim, 
-    // round(n1.priority,3) as p1, 
-    round(n2.priority,3) as p2,
-    // n1.community as c1, 
-    // n2.community as c2,
-    // round(gds.alpha.linkprediction.adamicAdar(n1, n2, {relationshipQuery: 'FRIENDS'}),3) AS score,
-    n1.userId as targetId,
-    n2.userId as otherId,
-    num_friends
-    ORDER BY prob DESC, num_friends DESC, dist ASC, sim DESC, p2 DESC
-  `,
+    `UNWIND $otherUsers AS otherId
+      MATCH (n1:Person{userId: $target})
+      MATCH (n2:Person{userId: otherId})
+      OPTIONAL MATCH (n1)-[prel:PREDICTION]->(n2)
+      OPTIONAL MATCH (n1)-[:FRIENDS]-()-[:FRIENDS]-()-[:FRIENDS]-(n2)
+      WITH n1, n2, prel, count(*) as num_friends
+      return
+      EXISTS((n1)-[:FRIENDS]->(n2)) as friends, 
+      coalesce(prel.probability,0) as prob, 
+      round(n2.priority,3) as p2,
+      n1.userId as targetId,
+      n2.userId as otherId,
+      num_friends
+      ORDER BY prob DESC, num_friends DESC, p2 DESC`,
     { target: userId, otherUsers: otherUsers },
   );
 
   await session.close();
 
   logger.debug(
-    `found SIMILAR_TO relationships is ${result.records.length} requested: ${otherUsers.length}`,
+    `getRelationshipScores length:${result.records.length} requested: ${otherUsers.length}`,
   );
 
   const length = result.records.length;
-  for (const [index, record] of result.records.entries()) {
+  for (const [i, record] of result.records.entries()) {
     const prob = record.get(`prob`);
     const num_friends = record.get(`num_friends`);
     const otherId = record.get(`otherId`);
-    logger.info(
-      `otherId: ${otherId} score:${
-        length - index
-      } prob:${prob} num_friends:${num_friends} length:${length}`,
-    );
-    reply.getRelationshipScoresMap().set(otherId, length - index);
+    const index = length - i;
+    if (index == 1) {
+      logger.info(
+        `num_friends:${num_friends}  length:${length}  userId:${userId}  otherId:${otherId} prob:${prob}  length:${length}  score:${index}`,
+      );
+    }
+
+    reply.getRelationshipScoresMap().set(otherId, index);
   }
 
   const duration = (performance.now() - start_time) / 1000;
