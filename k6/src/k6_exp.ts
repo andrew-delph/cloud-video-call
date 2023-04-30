@@ -1,4 +1,4 @@
-import { Counter, Rate, Trend } from 'k6/metrics';
+import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 import { K6SocketIoExp } from '../libs/K6SocketIoExp';
 import redis from 'k6/experimental/redis';
 import { check, sleep } from 'k6';
@@ -18,9 +18,9 @@ export const redisClient = new redis.Client({
   addrs: new Array(__ENV.REDIS || `localhost:6379`), // in the form of 'host:port', separated by commas
 });
 
-const authKeysNum = 100;
+const authKeysNum = 300;
 const vus = 50;
-const nukeData = false;
+const nukeData = true;
 
 export const options = {
   setupTimeout: `10m`,
@@ -90,6 +90,8 @@ const error_counter = new Counter(`error_counter`);
 const success_counter = new Counter(`success_counter`);
 
 const other_parity = new Rate(`other_parity`);
+
+const myGauge = new Gauge(`my_gauge`);
 
 const prediction_score_trend = new Trend(`prediction_score_trend`);
 const score_trend = new Trend(`score_trend`);

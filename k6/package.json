@@ -36,6 +36,7 @@
   "author": "Mihail Stoykov",
   "license": "ISC",
   "dependencies": {
+    "@types/k6": "^0.44.1",
     "cheerio": "^1.0.0-rc.3",
     "faker": "^5.5.3",
     "xml2js": "^0.4.19"
