@@ -719,6 +719,18 @@
           "legendFormat": "score avg: {{testid}}",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg(sum by() (rate(k6_score_gauge{testid=~\"$testid\"}[$__rate_interval])))",
+          "hide": false,
+          "legendFormat": "score guage: {{testid}}",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "Score",
@@ -4089,8 +4101,8 @@
         "allValue": ".*",
         "current": {
           "selected": true,
-          "text": ["test-11-23-56"],
-          "value": ["test-11-23-56"]
+          "text": ["All"],
+          "value": ["$__all"]
         },
         "datasource": {
           "type": "prometheus",
@@ -4206,7 +4218,7 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},

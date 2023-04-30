@@ -91,10 +91,9 @@ const success_counter = new Counter(`success_counter`);
 
 const other_parity = new Rate(`other_parity`);
 
-const myGauge = new Gauge(`my_gauge`);
-
 const prediction_score_trend = new Trend(`prediction_score_trend`);
 const score_trend = new Trend(`score_trend`);
+const score_gauge = new Gauge(`score_gauge`);
 
 const getAuth = async () => {
   let auth: string | null = null;
@@ -203,6 +202,7 @@ export default async function () {
         });
 
         score_trend.add(score);
+        score_gauge.add(score);
 
         const r = http.post(
           `${options_url}/providefeedback`,
