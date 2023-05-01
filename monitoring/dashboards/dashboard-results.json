@@ -726,9 +726,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "builder",
-          "expr": "avg by(testid) (avg_over_time(k6_score_gauge{testid=~\"$testid\"}[$__interval]))",
+          "expr": "avg by(testid) (avg_over_time(k6_score_gauge{testid=~\"$testid\"}[1m]))",
           "hide": false,
-          "legendFormat": "score guage: {{testid}}",
+          "legendFormat": "score avg[1m] {{testid}}",
           "range": true,
           "refId": "B"
         }
