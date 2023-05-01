@@ -340,7 +340,7 @@ const neo4jCheckUserFiltersRequest = (
       reject(e);
     }
   }).catch((e) => {
-    logger.error(`neo4j grpc error: ${e}`);
+    logger.error(`neo4jCheckUserFiltersRequest:`, e);
     throw new RetryError(e);
   });
 };
@@ -439,12 +439,11 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
             },
           );
         } catch (e) {
-          logger.error(`getRelationshipScores error: ${e}`);
           reject(e);
         }
       },
     ).catch((e) => {
-      logger.error(`neo4j grpc error: ${e}`);
+      logger.error(`getRelationshipScores`, e);
       throw new RetryError(e);
     });
 
