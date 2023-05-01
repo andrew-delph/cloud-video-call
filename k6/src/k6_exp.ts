@@ -18,8 +18,8 @@ export const redisClient = new redis.Client({
   addrs: new Array(__ENV.REDIS || `localhost:6379`), // in the form of 'host:port', separated by commas
 });
 
-const authKeysNum = 300;
-const vus = 50;
+const authKeysNum = 20;
+const vus = 15;
 const nukeData = false;
 
 export const options = {
@@ -37,7 +37,7 @@ export const options = {
       executor: `ramping-vus`,
       startVUs: vus,
       stages: [
-        { duration: `2h`, target: vus },
+        { duration: `3h`, target: vus },
         // { duration: `2h`, target: vus * 3 },
         // { duration: `3m`, target: vus * 1 },
       ],
