@@ -206,6 +206,7 @@ app.get(`/preferences`, async (req, res) => {
                     response.getFiltersConstantMap().entries(),
                   ),
                 },
+                priority: response.getPriority(),
               },
               `type`,
             ),
