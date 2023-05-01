@@ -40,20 +40,9 @@ const delay = 10000; // 10 seconds
 const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
 
-  // await rabbitChannel.assertExchange(exchangeName, `x-delayed-message`, {
-  //   durable: true,
-  //   arguments: { 'x-delayed-type': `direct` },
-  // });
-
   await rabbitChannel.assertQueue(common.matchmakerQueueName, {
     durable: true,
   });
-
-  // await rabbitChannel.bindQueue(
-  //   common.matchmakerQueueName,
-  //   exchangeName,
-  //   routingKey,
-  // );
 
   logger.info(`rabbitmq connected`);
 };

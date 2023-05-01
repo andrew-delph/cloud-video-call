@@ -41,12 +41,6 @@ let rabbitChannel: Channel;
 
 export async function matchConsumer() {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
-  rabbitChannel.on(`error`, (err) => {
-    logger.error(`Publisher error: ${err.message}`);
-  });
-  rabbitConnection.on(`error`, (err) => {
-    logger.error(`Connection error: ${err.message}`);
-  });
 
   await rabbitChannel.assertQueue(common.matchQueueName, {
     durable: true,

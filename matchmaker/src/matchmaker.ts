@@ -36,6 +36,15 @@ const connectRabbit = async () => {
   await rabbitChannel.assertQueue(common.matchQueueName, {
     durable: true,
   });
+
+  await rabbitChannel.assertQueue(common.matchmakerQueueName, {
+    durable: true,
+  });
+
+  await rabbitChannel.assertQueue(common.readyQueueName, {
+    durable: true,
+    maxPriority: 10,
+  });
   logger.info(`rabbit connected`);
 };
 
@@ -50,15 +59,6 @@ export const startReadyConsumer = async () => {
   lockRedisClient = common.createRedisClient();
 
   await subRedisClient.psubscribe(`${matchmakerChannelPrefix}*`);
-
-  await rabbitChannel.assertQueue(common.matchmakerQueueName, {
-    durable: true,
-  });
-
-  await rabbitChannel.assertQueue(common.readyQueueName, {
-    durable: true,
-    maxPriority: 10,
-  });
 
   rabbitChannel.prefetch(1);
   logger.info(` [x] Awaiting RPC requests`);
