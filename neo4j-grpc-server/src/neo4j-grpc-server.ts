@@ -306,7 +306,9 @@ const createFeedback = async (
     { userId, feedbackId },
   );
 
-  logger.debug(`Created friend ships: ${friend_rel.records.length}`);
+  logger.debug(
+    `Created friend ships: ${friend_rel.records.length} with score: ${score}`,
+  );
   // ASSERT created friends in 0 or 1
 
   // if (friend_rel.records.length > 0) {
