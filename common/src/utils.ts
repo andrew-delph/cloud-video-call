@@ -1,6 +1,7 @@
 import { getLogger } from './logger';
 import { getAuth } from 'firebase-admin/auth';
 import Client from 'ioredis';
+import amqp from 'amqplib';
 
 const logger = getLogger();
 
@@ -30,4 +31,19 @@ export function createRedisClient(): Client {
   });
 
   return client;
+}
+
+export async function createRabbitMQClient(): Promise<
+  [amqp.Connection, amqp.Channel]
+> {
+  let rabbitConnection = await amqp.connect(`amqp://rabbitmq`);
+  let rabbitChannel = await rabbitConnection.createChannel();
+  rabbitChannel.on(`error`, (err) => {
+    logger.error(`Publisher error: ${err.message}`);
+  });
+  rabbitConnection.on(`error`, (err) => {
+    logger.error(`Connection error: ${err.message}`);
+  });
+
+  return [rabbitConnection, rabbitChannel];
 }

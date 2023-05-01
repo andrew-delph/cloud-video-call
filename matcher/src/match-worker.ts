@@ -40,8 +40,7 @@ let rabbitConnection: Connection;
 let rabbitChannel: Channel;
 
 export async function matchConsumer() {
-  rabbitConnection = await connect(`amqp://rabbitmq`);
-  rabbitChannel = await rabbitConnection.createChannel();
+  [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
   rabbitChannel.on(`error`, (err) => {
     logger.error(`Publisher error: ${err.message}`);
   });

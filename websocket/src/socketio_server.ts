@@ -43,14 +43,8 @@ const routingKey = `my-routing-key`;
 const delay = 10000; // 10 seconds
 
 const connectRabbit = async () => {
-  rabbitConnection = await amqp.connect(`amqp://rabbitmq`);
-  rabbitChannel = await rabbitConnection.createChannel();
-  rabbitChannel.on(`error`, (err) => {
-    logger.error(`Publisher error: ${err.message}`);
-  });
-  rabbitConnection.on(`error`, (err) => {
-    logger.error(`Connection error: ${err.message}`);
-  });
+  [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
+
   await rabbitChannel.assertExchange(exchangeName, `x-delayed-message`, {
     durable: true,
     arguments: { 'x-delayed-type': `direct` },

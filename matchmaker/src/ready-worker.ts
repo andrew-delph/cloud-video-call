@@ -38,14 +38,7 @@ let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
 
 const connectRabbit = async () => {
-  rabbitConnection = await amqp.connect(`amqp://rabbitmq`);
-  rabbitChannel = await rabbitConnection.createChannel();
-  rabbitChannel.on(`error`, (err) => {
-    logger.error(`Publisher error: ${err.message}`);
-  });
-  rabbitConnection.on(`error`, (err) => {
-    logger.error(`Connection error: ${err.message}`);
-  });
+  [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
 
   await rabbitChannel.assertQueue(common.matchQueueName, {
     durable: true,
