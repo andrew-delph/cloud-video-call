@@ -104,6 +104,18 @@ const createUser = async (
     },
   );
   await session.close();
+
+  if (result.records.length != 1) {
+    callback(
+      {
+        code: grpc.status.UNKNOWN,
+        details: `Failed to create/fetch user`,
+        metadata: new grpc.Metadata(),
+      },
+      null,
+    );
+    return;
+  }
   let priority;
   try {
     priority = result.records[0].get(`priority`);
@@ -156,8 +168,17 @@ const createMatch = async (
   );
   await session.close();
 
-  if (matchResult.records.length == 0) {
-    logger.error(`match doesnt exist?`);
+  if (matchResult.records.length != 1) {
+    logger.error(`matchResult.records.length != 1`);
+    callback(
+      {
+        code: grpc.status.UNKNOWN,
+        details: `matchResult.records.length != 1`,
+        metadata: new grpc.Metadata(),
+      },
+      null,
+    );
+    return;
   }
 
   try {
@@ -167,6 +188,15 @@ const createMatch = async (
     reply.setRelationshipId2(`${r2_id}`);
   } catch (e: any) {
     logger.error(`stupid get error: ${e}`);
+    callback(
+      {
+        code: grpc.status.UNKNOWN,
+        details: `stupid get error: ${e}`,
+        metadata: new grpc.Metadata(),
+      },
+      null,
+    );
+    return;
   }
 
   const duration = (performance.now() - start_time) / 1000;
@@ -309,42 +339,6 @@ const createFeedback = async (
   logger.debug(
     `Created friend ships: ${friend_rel.records.length} with score: ${score}`,
   );
-  // ASSERT created friends in 0 or 1
-
-  // if (friend_rel.records.length > 0) {
-  //   friend_rel = friend_rel.records[0];
-  //   const user1 = friend_rel.get(`n1.userId`);
-  //   const user2 = friend_rel.get(`n2.userId`);
-
-  //   logger.debug(`Running collapse Friends in Background`);
-  //   // const collapse_friends = await session.run(
-  //   //   `
-  //   //     CALL apoc.periodic.iterate(
-  //   //     "
-  //   //       MATCH(a:Person{userId: '${user1}'})-[:FRIENDS]-(b:Person{userId: '${user2}'})-[:FRIENDS]-(c:Person)
-  //   //       OPTIONAL MATCH (c)-[:FRIENDS]-(d:Person)
-  //   //       WHERE a.userId <> b.userId AND a.userId <> c.userId AND a.userId <> d.userId
-  //   //       AND b.userId <> c.userId AND b.userId <> d.userId
-  //   //       AND c.userId <> d.userId
-  //   //       return a, b, c, d
-  //   //     ",
-  //   //     "
-  //   //       MERGE(a)-[:CLOSE_FRIENDS{degree:1}]-(c)
-  //   //       WITH a,d
-  //   //       CALL apoc.do.when(
-  //   //         d IS NOT NULL,
-  //   //         'MERGE (a)-[r:CLOSE_FRIENDS{degree:2}]-(d) return 1 as r',
-  //   //         'return 1 as r',
-  //   //         {d:d}
-  //   //       ) YIELD value
-  //   //       return 1
-  //   //     ",
-  //   //       {batchSize:10, parallel:false}
-  //   //     )
-  //   //   `,
-  //   //   {},
-  //   // );
-  // }
 
   await session.close();
 
@@ -359,124 +353,10 @@ const createFeedback = async (
   callback(null, reply);
 };
 
-const getRelationshipScoresLinkPrediction = async (
-  call: grpc.ServerUnaryCall<
-    GetRelationshipScoresRequest,
-    GetRelationshipScoresResponse
-  >,
-  callback: grpc.sendUnaryData<GetRelationshipScoresResponse>,
-): Promise<void> => {
-  const start_time = performance.now();
-
-  const userId = call.request.getUserId();
-  const otherUsers = call.request.getOtherUsersList();
-  const reply = new GetRelationshipScoresResponse();
-
-  const session = driver.session();
-
-  for (const otherUser of otherUsers) {
-    const result = await session.run(
-      `
-      MATCH (p1:Person {userId: $target})
-      MATCH (p2:Person {userId: $otherUser})
-      RETURN gds.alpha.linkprediction.commonNeighbors(p1, p2) AS score
-        `,
-      { target: userId, otherUser },
-    );
-
-    reply
-      .getRelationshipScoresMap()
-      .set(otherUser, result.records[0].get(`score`));
-
-    logger.debug(
-      `score: ${result.records[0].get(
-        `score`,
-      )} target: ${userId} otherUser: ${otherUser}`,
-    );
-  }
-
-  await session.close();
-
-  // for (const record of result.records) {
-  //   reply
-  //     .getRelationshipScoresMap()
-  //     .set(record.get(`otherId`), record.get(`score`));
-  // }
-
-  const duration = (performance.now() - start_time) / 1000;
-
-  if (duration > durationWarn) {
-    logger.warn(
-      `getRelationshipScoresLinkPrediction duration: \t ${duration}s otherUsers.length: ${otherUsers.length}`,
-    );
-  } else {
-    logger.debug(
-      `getRelationshipScoresLinkPrediction duration: \t ${duration}s otherUsers.length: ${otherUsers.length}`,
-    );
-  }
-
-  callback(null, reply);
-};
-
-const getRelationshipScoresCommunity = async (
-  call: grpc.ServerUnaryCall<
-    GetRelationshipScoresRequest,
-    GetRelationshipScoresResponse
-  >,
-  callback: grpc.sendUnaryData<GetRelationshipScoresResponse>,
-): Promise<void> => {
-  const start_time = performance.now();
-
-  const userId = call.request.getUserId();
-  const otherUsers = call.request.getOtherUsersList();
-  const reply = new GetRelationshipScoresResponse();
-
-  const session = driver.session();
-
-  for (const otherUser of otherUsers) {
-    const result = await session.run(
-      `
-      MATCH (p1:Person {userId: $target})
-      MATCH (p2:Person {userId: $otherUser})
-      RETURN p1.community , p2.community
-        `,
-      { target: userId, otherUser },
-    );
-
-    try {
-      const c1 = result.records[0].get(`p1.community`);
-      const c2 = result.records[0].get(`p2.community`);
-
-      logger.info(`c1 ${c1} c2 ${c2} ... ${c1 == c2 ? 1 : 0}`);
-
-      reply.getRelationshipScoresMap().set(otherUser, c1 == c2 ? 1 : 0);
-    } catch (e) {
-      logger.warn(`fetching comminity error: ${e}`);
-    }
-  }
-
-  await session.close();
-
-  const duration = (performance.now() - start_time) / 1000;
-
-  if (duration > durationWarn) {
-    logger.warn(
-      `getRelationshipScoresCommunity duration: \t ${duration}s otherUsers.length: ${otherUsers.length}`,
-    );
-  } else {
-    logger.debug(
-      `getRelationshipScoresCommunity duration: \t ${duration}s otherUsers.length: ${otherUsers.length}`,
-    );
-  }
-
-  callback(null, reply);
-};
-
 const checkUserFilters = async (
   call: grpc.ServerUnaryCall<CheckUserFiltersRequest, CheckUserFiltersResponse>,
   callback: grpc.sendUnaryData<CheckUserFiltersResponse>,
 ): Promise<void> => {
-  // TODO try and cache the result
   const start_time = performance.now();
 
   const userId1 = call.request.getUserId1();
@@ -632,9 +512,7 @@ const putUserPerferences = async (
         f_custom[key] = value;
       });
   } catch (e) {
-    // TODO return error
-    reply.setMessage(String(e));
-    callback(null, reply);
+    callback({ message: String(e), code: grpc.status.INTERNAL }, null);
     return;
   }
 

@@ -18,9 +18,9 @@ export const redisClient = new redis.Client({
   addrs: new Array(__ENV.REDIS || `localhost:6379`), // in the form of 'host:port', separated by commas
 });
 
-const authKeysNum = 20;
+const authKeysNum = 200;
 const vus = 15;
-const nukeData = false;
+const nukeData = true;
 
 export const options = {
   setupTimeout: `10m`,
