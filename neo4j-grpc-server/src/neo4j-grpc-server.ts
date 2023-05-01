@@ -18,6 +18,7 @@ import {
   PutUserPerferencesRequest,
   CreateFeedbackRequest,
   StandardResponse,
+  Score,
 } from 'neo4j-grpc-common';
 
 import haversine from 'haversine-distance';
@@ -48,6 +49,7 @@ const logger = common.getLogger();
 export const driver = neo4j.driver(
   `bolt://neo4j:7687`,
   neo4j.auth.basic(`neo4j`, `password`),
+  { disableLosslessIntegers: true },
 );
 
 const durationWarn = 2;
@@ -271,7 +273,11 @@ const getRelationshipScores = async (
       );
     }
 
-    reply.getRelationshipScoresMap().set(otherId, index);
+    const score = new Score();
+    score.setProb(prob);
+    score.setNumbFriends(num_friends);
+
+    reply.getRelationshipScoresMap().set(otherId, score);
   }
 
   const duration = (performance.now() - start_time) / 1000;

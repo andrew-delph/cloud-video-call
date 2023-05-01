@@ -69,9 +69,13 @@ message GetRelationshipScoresRequest {
 message GetRelationshipScoresResponse {
   bool error = 1;
   string message = 2;
-  map<string, float> relationship_scores = 3;
+  map<string, Score> relationship_scores = 3;
 }
 
+message Score {
+  float prob = 1;
+  int32 numb_friends = 2;
+}
 
 message CheckUserFiltersRequest {
   string user_id1 = 1;

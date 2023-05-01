@@ -17,12 +17,14 @@ import {
   GetRelationshipScoresResponse,
   CheckUserFiltersRequest,
   CheckUserFiltersResponse,
+  Score,
 } from 'neo4j-grpc-common';
 import {
   delay,
   listenGlobalExceptions,
   MatchMessage,
   ReadyMessage,
+  RelationshipScoreType,
 } from 'common';
 
 const logger = common.getLogger();
@@ -221,22 +223,33 @@ const matchmakerFlow = async (
 
   // select the otherId
   let otherId: string;
-  let highestScore: number = -1;
-  let lowestScore: number = -1;
+  let highestScore: common.RelationshipScoreType = {
+    prob: -1,
+    num_friends: -1,
+  };
+
   if (relationShipScores.length == 0) {
     const randomIndex = Math.floor(Math.random() * readySet.size);
     otherId = Array.from(readySet)[randomIndex];
-    highestScore = -1;
+    logger.info(`select the otherId ... relationShipScores.length == 0`);
   } else {
-    const rel = relationShipScores.reduce((a, b) => (b[1] > a[1] ? b : a));
-    otherId = rel[0];
-    highestScore = rel[1];
-    lowestScore = relationShipScores.reduce((a, b) => (b[1] < a[1] ? b : a))[1];
+    relationShipScores.sort((a, b) => {
+      const a_score = a[1];
+      const b_score = b[1];
+      if (a_score.prob === b_score.prob) {
+        return b_score.num_friends - a_score.num_friends;
+      }
+      return b_score.prob - a_score.prob;
+    });
+    otherId = relationShipScores[0][0];
+    highestScore = relationShipScores[0][1];
+    const lowestScore: common.RelationshipScoreType =
+      relationShipScores[relationShipScores.length - 1][1];
+    logger.info(
+      `score highest:${highestScore} lowest:${lowestScore} otherId:${otherId} size: ${relationShipScores.length}`,
+    );
   }
 
-  logger.info(
-    `score highest:${highestScore} lowest:${lowestScore} otherId:${otherId} size: ${relationShipScores.length}`,
-  );
   // listen and publish on otherId
   registerSubscriptionListener(otherId);
   await notifyListeners(otherId);
@@ -371,16 +384,16 @@ const getRealtionshipScoreCacheKey = (userId: string, otherId: string) => {
 };
 
 const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
-  const relationshipScoresMap = new Map<string, number>();
+  const relationshipScoresMap = new Map<string, RelationshipScoreType>();
 
   // get values that are in cache
   // pop from the readySet if in cache
 
   for (const otherId of readyset.values()) {
-    const relationshipScore = parseFloat(
+    const relationshipScore: RelationshipScoreType = JSON.parse(
       (await mainRedisClient.get(
         getRealtionshipScoreCacheKey(userId, otherId),
-      )) as string,
+      )) || `0`,
     );
 
     if (!relationshipScore) continue;
@@ -397,28 +410,32 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
   getRelationshipScoresRequest.setUserId(userId);
   getRelationshipScoresRequest.setOtherUsersList(Array.from(readyset));
 
-  const getRelationshipScoresMap = await new Promise<any>(
-    async (resolve, reject) => {
-      try {
-        await neo4jRpcClient.getRelationshipScores(
-          getRelationshipScoresRequest,
-          (error: any, response: GetRelationshipScoresResponse) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve(response.getRelationshipScoresMap());
-            }
-          },
-        );
-      } catch (e) {
-        logger.error(`getRelationshipScores error: ${e}`);
-        reject(e);
-      }
-    },
-  ).catch((e) => {
-    logger.error(`neo4j grpc error: ${e}`);
-    throw new RetryError(e);
-  });
+  const getRelationshipScoresResponse =
+    await new Promise<GetRelationshipScoresResponse>(
+      async (resolve, reject) => {
+        try {
+          await neo4jRpcClient.getRelationshipScores(
+            getRelationshipScoresRequest,
+            (error: any, response: GetRelationshipScoresResponse) => {
+              if (error) {
+                reject(error);
+              } else {
+                resolve(response);
+              }
+            },
+          );
+        } catch (e) {
+          logger.error(`getRelationshipScores error: ${e}`);
+          reject(e);
+        }
+      },
+    ).catch((e) => {
+      logger.error(`neo4j grpc error: ${e}`);
+      throw new RetryError(e);
+    });
+
+  const getRelationshipScoresMap =
+    getRelationshipScoresResponse.getRelationshipScoresMap();
 
   logger.debug(
     `relationship scores requested:${
@@ -429,13 +446,21 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
   // write them to the cache
   // store them in map
   for (const scoreEntry of getRelationshipScoresMap.entries()) {
-    // await mainRedisClient.set(
-    //   getRealtionshipScoreCacheKey(userId, scoreEntry[0]),
-    //   scoreEntry[1],
-    //   `EX`,
-    //   60 * 5,
-    // );
-    relationshipScoresMap.set(scoreEntry[0], scoreEntry[1]);
+    const scoreId = scoreEntry[0];
+    const score = scoreEntry[1];
+    const prob = score.getProb();
+    const num_friends = score.getNumbFriends();
+
+    const score_obj = { prob, num_friends };
+
+    await mainRedisClient.set(
+      getRealtionshipScoreCacheKey(userId, scoreId),
+      JSON.stringify(score_obj),
+      `EX`,
+      60 * 5,
+    );
+
+    relationshipScoresMap.set(scoreId, score_obj);
   }
 
   return Array.from(relationshipScoresMap.entries());
