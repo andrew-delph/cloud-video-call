@@ -550,7 +550,7 @@ server.addService(Neo4jService, {
   createUser,
   createMatch,
   updateMatch,
-  getRelationshipScores: getRelationshipScores,
+  getRelationshipScores,
   checkUserFilters,
   getUserPerferences,
   putUserPerferences,
