@@ -23,9 +23,7 @@ const durationWarn = 2;
 const app = express();
 const port = 80;
 
-const mainRedisClient = new Client({
-  host: `${process.env.REDIS_HOST || `redis`}`,
-});
+const mainRedisClient = common.createRedisClient();
 
 app.use(express.json());
 app.use(cors());

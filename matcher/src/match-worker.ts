@@ -53,25 +53,10 @@ export async function matchConsumer() {
   });
   logger.info(`rabbitmq connected`);
 
-  mainRedisClient = new Client({
-    host: `${process.env.REDIS_HOST || `redis`}`,
-  });
-  pubRedisClient = new Client({
-    host: `${process.env.REDIS_HOST || `redis`}`,
-  });
-  subRedisClient = new Client({
-    host: `${process.env.REDIS_HOST || `redis`}`,
-  });
+  mainRedisClient = common.createRedisClient();
+  pubRedisClient = common.createRedisClient();
+  subRedisClient = common.createRedisClient();
 
-  mainRedisClient.on(`error`, (err) => {
-    throw `REDIS: FAILED`;
-  });
-  pubRedisClient.on(`error`, (err) => {
-    throw `REDIS: FAILED`;
-  });
-  subRedisClient.on(`error`, (err) => {
-    throw `REDIS: FAILED`;
-  });
   logger.info(`redis connected.`);
 
   io.adapter(createAdapter(pubRedisClient, subRedisClient));

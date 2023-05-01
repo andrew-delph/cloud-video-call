@@ -51,33 +51,10 @@ const matchmakerChannelPrefix = `matchmaker`;
 export const startReadyConsumer = async () => {
   await connectRabbit();
 
-  mainRedisClient = new Client({
-    host: `${process.env.REDIS_HOST || `redis`}`,
-  });
-
-  subRedisClient = new Client({
-    host: `${process.env.REDIS_HOST || `redis`}`,
-  });
-
-  pubRedisClient = new Client({
-    host: `${process.env.REDIS_HOST || `redis`}`,
-  });
-
-  lockRedisClient = new Client({
-    host: `${process.env.REDIS_HOST}`,
-  });
-  mainRedisClient.on(`error`, (err) => {
-    throw `REDIS: FAILED`;
-  });
-  pubRedisClient.on(`error`, (err) => {
-    throw `REDIS: FAILED`;
-  });
-  subRedisClient.on(`error`, (err) => {
-    throw `REDIS: FAILED`;
-  });
-  lockRedisClient.on(`error`, (err) => {
-    throw `REDIS: FAILED`;
-  });
+  mainRedisClient = common.createRedisClient();
+  subRedisClient = common.createRedisClient();
+  pubRedisClient = common.createRedisClient();
+  lockRedisClient = common.createRedisClient();
 
   await subRedisClient.psubscribe(`${matchmakerChannelPrefix}*`);
 
