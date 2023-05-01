@@ -580,8 +580,7 @@ proto.neo4j.CreateUserResponse.prototype.toObject = function(opt_includeInstance
 proto.neo4j.CreateUserResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
     error: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
-    message: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    priority: jspb.Message.getFieldWithDefault(msg, 3, "")
+    message: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -626,10 +625,6 @@ proto.neo4j.CreateUserResponse.deserializeBinaryFromReader = function(msg, reade
       var value = /** @type {string} */ (reader.readString());
       msg.setMessage(value);
       break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setPriority(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -673,13 +668,6 @@ proto.neo4j.CreateUserResponse.serializeBinaryToWriter = function(message, write
       f
     );
   }
-  f = message.getPriority();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
 };
 
 
@@ -716,24 +704,6 @@ proto.neo4j.CreateUserResponse.prototype.getMessage = function() {
  */
 proto.neo4j.CreateUserResponse.prototype.setMessage = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string priority = 3;
- * @return {string}
- */
-proto.neo4j.CreateUserResponse.prototype.getPriority = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.neo4j.CreateUserResponse} returns this
- */
-proto.neo4j.CreateUserResponse.prototype.setPriority = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -3006,7 +2976,8 @@ proto.neo4j.GetUserPerferencesResponse.toObject = function(includeInstance, msg)
     attributesConstantMap: (f = msg.getAttributesConstantMap()) ? f.toObject(includeInstance, undefined) : [],
     filtersConstantMap: (f = msg.getFiltersConstantMap()) ? f.toObject(includeInstance, undefined) : [],
     attributesCustomMap: (f = msg.getAttributesCustomMap()) ? f.toObject(includeInstance, undefined) : [],
-    filtersCustomMap: (f = msg.getFiltersCustomMap()) ? f.toObject(includeInstance, undefined) : []
+    filtersCustomMap: (f = msg.getFiltersCustomMap()) ? f.toObject(includeInstance, undefined) : [],
+    priority: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0)
   };
 
   if (includeInstance) {
@@ -3079,6 +3050,10 @@ proto.neo4j.GetUserPerferencesResponse.deserializeBinaryFromReader = function(ms
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readString, null, "", "");
          });
       break;
+    case 8:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setPriority(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3144,6 +3119,13 @@ proto.neo4j.GetUserPerferencesResponse.serializeBinaryToWriter = function(messag
   f = message.getFiltersCustomMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(7, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeString);
+  }
+  f = message.getPriority();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      8,
+      f
+    );
   }
 };
 
@@ -3288,6 +3270,24 @@ proto.neo4j.GetUserPerferencesResponse.prototype.getFiltersCustomMap = function(
 proto.neo4j.GetUserPerferencesResponse.prototype.clearFiltersCustomMap = function() {
   this.getFiltersCustomMap().clear();
   return this;};
+
+
+/**
+ * optional float priority = 8;
+ * @return {number}
+ */
+proto.neo4j.GetUserPerferencesResponse.prototype.getPriority = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 8, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.neo4j.GetUserPerferencesResponse} returns this
+ */
+proto.neo4j.GetUserPerferencesResponse.prototype.setPriority = function(value) {
+  return jspb.Message.setProto3FloatField(this, 8, value);
+};
 
 
 

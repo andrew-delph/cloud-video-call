@@ -119,14 +119,6 @@ const createUser = async (
     );
     return;
   }
-  let priority;
-  try {
-    priority = result.records[0].get(`priority`);
-  } catch (e) {
-    priority = 0;
-  }
-
-  reply.setPriority(`${priority}`);
 
   const duration = (performance.now() - start_time) / 1000;
 
@@ -473,8 +465,11 @@ const getUserPerferences = async (
     Object.entries(user1Data.f_custom || {}).forEach(([key, value]) => {
       reply.getFiltersCustomMap().set(String(key), String(value));
     });
+    reply.setPriority(user1Data.priority || 0);
   } catch (e) {
-    reply.setMessage(String(e));
+    logger.error(`getUserPerferences`, e);
+    callback({ code: grpc.status.INTERNAL, message: String(e) }, null);
+    return;
   }
 
   const duration = (performance.now() - start_time) / 1000;
@@ -540,16 +535,21 @@ const putUserPerferences = async (
     f_constant,
     a_custom,
     f_custom,
-  });
+    priority: 0,
+  })
+    .then(() => {
+      const duration = (performance.now() - start_time) / 1000;
+      if (duration > durationWarn) {
+        logger.warn(`putUserPerferences duration: \t ${duration}s`);
+      } else {
+        logger.debug(`putUserPerferences duration: \t ${duration}s`);
+      }
 
-  const duration = (performance.now() - start_time) / 1000;
-  if (duration > durationWarn) {
-    logger.warn(`putUserPerferences duration: \t ${duration}s`);
-  } else {
-    logger.debug(`putUserPerferences duration: \t ${duration}s`);
-  }
-
-  callback(null, reply);
+      callback(null, reply);
+    })
+    .catch((e) => {
+      callback({ code: grpc.status.INTERNAL, message: String(e) }, null);
+    });
 };
 
 server.addService(Neo4jService, {

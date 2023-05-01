@@ -34,9 +34,6 @@ export class CreateUserResponse extends jspb.Message {
     getMessage(): string;
     setMessage(value: string): CreateUserResponse;
 
-    getPriority(): string;
-    setPriority(value: string): CreateUserResponse;
-
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CreateUserResponse.AsObject;
@@ -52,7 +49,6 @@ export namespace CreateUserResponse {
     export type AsObject = {
         error: boolean,
         message: string,
-        priority: string,
     }
 }
 
@@ -430,6 +426,9 @@ export class GetUserPerferencesResponse extends jspb.Message {
     getFiltersCustomMap(): jspb.Map<string, string>;
     clearFiltersCustomMap(): void;
 
+    getPriority(): number;
+    setPriority(value: number): GetUserPerferencesResponse;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): GetUserPerferencesResponse.AsObject;
@@ -454,6 +453,7 @@ export namespace GetUserPerferencesResponse {
         attributesCustomMap: Array<[string, string]>,
 
         filtersCustomMap: Array<[string, string]>,
+        priority: number,
     }
 }
 

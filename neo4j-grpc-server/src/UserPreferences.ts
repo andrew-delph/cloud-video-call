@@ -5,6 +5,7 @@ export type UserPreferences = {
   f_constant: any;
   a_custom: any;
   f_custom: any;
+  priority: number;
 };
 const userPreferencesCacheEx = 3000;
 const getUserPreferencesCacheKey = (userId: string): string => {
@@ -20,9 +21,16 @@ function parseQueryUserPreferences(
       f_constant: results.records[0].get(`f_constant`)?.properties || {},
       a_custom: results.records[0].get(`a_custom`)?.properties || {},
       f_custom: results.records[0].get(`f_custom`)?.properties || {},
+      priority: results.records[0].get(`priority`) || 0,
     };
   }
-  return { a_constant: {}, f_constant: {}, a_custom: {}, f_custom: {} };
+  return {
+    a_constant: {},
+    f_constant: {},
+    a_custom: {},
+    f_custom: {},
+    priority: 0,
+  };
 }
 
 const queryMetadata = `
@@ -31,7 +39,7 @@ OPTIONAL MATCH (p1)-[r1:USER_ATTRIBUTES_CONSTANT]->(a_constant:MetaData)
 OPTIONAL MATCH (p1)-[r2:USER_FILTERS_CONSTANT]->(f_constant:MetaData)
 OPTIONAL MATCH (p1)-[r3:USER_ATTRIBUTES_CUSTOM]->(a_custom:MetaData)
 OPTIONAL MATCH (p1)-[r4:USER_FILTERS_CUSTOM]->(f_custom:MetaData)
-RETURN p1, a_constant, f_constant, a_custom, f_custom`;
+RETURN p1, a_constant, f_constant, a_custom, f_custom, coalesce(p1.priority,0) as priority`;
 
 export async function readUserPreferences(
   userId: string,
@@ -128,6 +136,20 @@ export async function writeUserPreferencesDatabase(
     `,
     { userId, custom: preferences.f_custom || {} },
   );
+
+  const result = await session.run(
+    `
+    MATCH (p:Person{userId: $userId})
+    RETURN coalesce(p.priority, 0) as priority
+    `,
+    { userId },
+  );
+
+  if (result.records.length != 1) {
+    throw `Incorrect results length for write user: ${result.records.length}`;
+  }
+
+  preferences.priority = result.records[0].get(`priority`);
 
   await redisClient.set(
     getUserPreferencesCacheKey(userId),

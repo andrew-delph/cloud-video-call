@@ -10,6 +10,10 @@ import {
   GetRelationshipScoresResponse,
   CheckUserFiltersRequest,
   CheckUserFiltersResponse,
+  CreateUserResponse,
+  CreateUserRequest,
+  GetUserPerferencesRequest,
+  GetUserPerferencesResponse,
 } from 'neo4j-grpc-common';
 import {
   listenGlobalExceptions,
@@ -34,6 +38,8 @@ const exchangeName = `my-delayed-exchange`;
 const routingKey = `my-routing-key`;
 const delay = 10000; // 10 seconds
 
+const maxPriority = 10;
+
 const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
 
@@ -43,7 +49,7 @@ const connectRabbit = async () => {
 
   await rabbitChannel.assertQueue(common.readyQueueName, {
     durable: true,
-    maxPriority: 10,
+    maxPriority: maxPriority,
   });
 
   await rabbitChannel.assertExchange(exchangeName, `x-delayed-message`, {
@@ -58,6 +64,27 @@ const connectRabbit = async () => {
   );
 
   logger.info(`rabbit connected`);
+};
+
+const neo4jGetUser = (userId: string) => {
+  const checkUserFiltersRequest = new GetUserPerferencesRequest();
+  checkUserFiltersRequest.setUserId(userId);
+  return new Promise<GetUserPerferencesResponse>(async (resolve, reject) => {
+    try {
+      neo4jRpcClient.getUserPerferences(
+        checkUserFiltersRequest,
+        (error: any, response: GetUserPerferencesResponse) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        },
+      );
+    } catch (e) {
+      reject(e);
+    }
+  });
 };
 
 const matchmakerChannelPrefix = `matchmaker`;
@@ -83,8 +110,17 @@ export const startReadyConsumer = async () => {
         return;
       }
 
+      const msgContent: ReadyMessage = JSON.parse(msg.content.toString());
+
+      const userId = msgContent.userId;
+
+      const userRepsonse = await neo4jGetUser(userId);
+
+      const priority = userRepsonse.getPriority() || 0;
+
       await rabbitChannel.publish(exchangeName, routingKey, msg.content, {
         headers: { 'x-delay': delay },
+        priority: maxPriority * priority,
       });
 
       rabbitChannel.ack(msg);
