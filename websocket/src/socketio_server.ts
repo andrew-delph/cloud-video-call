@@ -11,12 +11,7 @@ import { throttle } from 'lodash';
 import amqp from 'amqplib';
 
 import {
-  Neo4jClient,
-  grpc,
   CreateUserRequest,
-  CreateMatchRequest,
-  UpdateMatchRequest,
-  CreateMatchResponse,
   CreateUserResponse,
   createNeo4jClient,
 } from 'neo4j-grpc-common';
@@ -50,13 +45,13 @@ const connectRabbit = async () => {
     arguments: { 'x-delayed-type': `direct` },
   });
 
-  await rabbitChannel.assertQueue(common.readyQueueName, {
+  await rabbitChannel.assertQueue(common.matchmakerQueueName, {
     durable: true,
     maxPriority: 10,
   });
 
   await rabbitChannel.bindQueue(
-    common.readyQueueName,
+    common.matchmakerQueueName,
     exchangeName,
     routingKey,
   );
@@ -94,7 +89,6 @@ io.on(`error`, (err) => {
 });
 
 io.on(`connection`, async (socket) => {
-  let priority = 0;
   socket.emit(
     `message`,
     `I am ${process.env.HOSTNAME} and you are ${socket.data.auth}.`,
@@ -128,20 +122,18 @@ io.on(`connection`, async (socket) => {
 
       const readyMesage: ReadyMessage = { userId: socket.data.auth };
 
-      await rabbitChannel.publish(
-        exchangeName,
-        routingKey,
-        Buffer.from(JSON.stringify(readyMesage)),
-        { headers: { 'x-delay': delay }, priority: priority * 10 },
-      );
-
-      // await rabbitChannel.sendToQueue(
-      //   common.readyQueueName,
+      // await rabbitChannel.publish(
+      //   exchangeName,
+      //   routingKey,
       //   Buffer.from(JSON.stringify(readyMesage)),
-      //   {
-      //     priority: priority * 10,
-      //   },
+      //   { headers: { 'x-delay': delay } },
       // );
+
+      await rabbitChannel.sendToQueue(
+        common.matchmakerQueueName,
+        Buffer.from(JSON.stringify(readyMesage)),
+        {},
+      );
     } else {
       await unregisterSocketReady(socket);
     }
@@ -198,7 +190,6 @@ io.on(`connection`, async (socket) => {
       createUserRequest,
       (error: any, response: CreateUserResponse) => {
         if (!error) {
-          priority = parseFloat(response.getPriority()) || 0;
           logger.info(`created user.... ${socket.data.auth}`);
           socket.emit(`established`, `Connection established.`);
         } else {

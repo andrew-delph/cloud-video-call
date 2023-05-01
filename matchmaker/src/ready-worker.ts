@@ -5,22 +5,13 @@ import Redlock, { ResourceLockedError, ExecutionError } from 'redlock';
 import amqp from 'amqplib';
 
 import {
-  Neo4jClient,
-  grpc,
-  CreateUserRequest,
-  CreateMatchRequest,
-  UpdateMatchRequest,
-  CreateMatchResponse,
-  CreateUserResponse,
   createNeo4jClient,
   GetRelationshipScoresRequest,
   GetRelationshipScoresResponse,
   CheckUserFiltersRequest,
   CheckUserFiltersResponse,
-  Score,
 } from 'neo4j-grpc-common';
 import {
-  delay,
   listenGlobalExceptions,
   MatchMessage,
   ReadyMessage,
@@ -60,6 +51,10 @@ export const startReadyConsumer = async () => {
 
   await subRedisClient.psubscribe(`${matchmakerChannelPrefix}*`);
 
+  await rabbitChannel.assertQueue(common.matchmakerQueueName, {
+    durable: true,
+  });
+
   await rabbitChannel.assertQueue(common.readyQueueName, {
     durable: true,
     maxPriority: 10,
@@ -67,6 +62,23 @@ export const startReadyConsumer = async () => {
 
   rabbitChannel.prefetch(1);
   logger.info(` [x] Awaiting RPC requests`);
+
+  rabbitChannel.consume(
+    common.matchQueueName,
+    async (msg: ConsumeMessage | null) => {
+      if (msg == null) {
+        logger.error(`msg is null.`);
+        return;
+      }
+
+      await rabbitChannel.sendToQueue(common.readyQueueName, msg.content, {});
+
+      rabbitChannel.ack(msg);
+    },
+    {
+      noAck: false,
+    },
+  );
 
   rabbitChannel.consume(
     common.readyQueueName,

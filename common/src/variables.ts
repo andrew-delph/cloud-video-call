@@ -3,6 +3,8 @@ export const activeCountChannel = `activeCount`;
 
 export const readySetName = `readySet`;
 
+export const matchmakerQueueName = `matchmakerQueueName`;
+
 export const readyQueueName = `readyQueue`;
 
 export const matchQueueName = `matchQueue`;

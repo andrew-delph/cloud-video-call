@@ -87,14 +87,14 @@ export async function matchConsumer() {
           await mainRedisClient.sadd(common.readySetName, userId1);
 
           await rabbitChannel.sendToQueue(
-            common.readyQueueName,
+            common.matchmakerQueueName,
             Buffer.from(JSON.stringify({ userId: userId1 } as ReadyMessage)),
           );
         }
         if (await mainRedisClient.sismember(common.activeSetName, userId2)) {
           await mainRedisClient.sadd(common.readySetName, userId2);
           await rabbitChannel.sendToQueue(
-            common.readyQueueName,
+            common.matchmakerQueueName,
             Buffer.from(JSON.stringify({ userId: userId2 } as ReadyMessage)),
           );
         }
