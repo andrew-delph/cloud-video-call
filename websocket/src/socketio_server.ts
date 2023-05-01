@@ -33,10 +33,6 @@ const neo4jRpcClient = createNeo4jClient();
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
 
-const exchangeName = `my-delayed-exchange`;
-const routingKey = `my-routing-key`;
-const delay = 10000; // 10 seconds
-
 const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
 

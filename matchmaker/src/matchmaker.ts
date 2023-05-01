@@ -30,6 +30,10 @@ let lockRedisClient: Client;
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
 
+const exchangeName = `my-delayed-exchange`;
+const routingKey = `my-routing-key`;
+const delay = 10000; // 10 seconds
+
 const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
 
@@ -37,14 +41,22 @@ const connectRabbit = async () => {
     durable: true,
   });
 
-  await rabbitChannel.assertQueue(common.matchmakerQueueName, {
-    durable: true,
-  });
-
   await rabbitChannel.assertQueue(common.readyQueueName, {
     durable: true,
     maxPriority: 10,
   });
+
+  await rabbitChannel.assertExchange(exchangeName, `x-delayed-message`, {
+    durable: true,
+    arguments: { 'x-delayed-type': `direct` },
+  });
+
+  await rabbitChannel.bindQueue(
+    common.readyQueueName,
+    exchangeName,
+    routingKey,
+  );
+
   logger.info(`rabbit connected`);
 };
 
@@ -71,9 +83,9 @@ export const startReadyConsumer = async () => {
         return;
       }
 
-      logger.info(`got msg on matchmakerQueueName`);
-
-      await rabbitChannel.sendToQueue(common.readyQueueName, msg.content, {});
+      await rabbitChannel.publish(exchangeName, routingKey, msg.content, {
+        headers: { 'x-delay': delay },
+      });
 
       rabbitChannel.ack(msg);
     },
