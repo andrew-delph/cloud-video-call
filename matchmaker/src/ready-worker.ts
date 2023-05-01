@@ -251,23 +251,22 @@ const matchmakerFlow = async (
 
   // select the otherId
   let otherId: string;
-  let score: number;
+  let highestScore: number = -1;
+  let lowestScore: number = -1;
   if (relationShipScores.length == 0) {
     const randomIndex = Math.floor(Math.random() * readySet.size);
     otherId = Array.from(readySet)[randomIndex];
-    score = 0;
+    highestScore = -1;
   } else {
     const rel = relationShipScores.reduce((a, b) => (b[1] > a[1] ? b : a));
     otherId = rel[0];
-    score = rel[1];
-    logger.debug(
-      `score highest: ${
-        relationShipScores.reduce((a, b) => (b[1] > a[1] ? b : a))[1]
-      } lowest: ${
-        relationShipScores.reduce((a, b) => (b[1] < a[1] ? b : a))[1]
-      } size: ${relationShipScores.length}`,
-    );
+    highestScore = rel[1];
+    lowestScore = relationShipScores.reduce((a, b) => (b[1] < a[1] ? b : a))[1];
   }
+
+  logger.info(
+    `score highest:${highestScore} lowest:${lowestScore} otherId:${otherId} size: ${relationShipScores.length}`,
+  );
   // listen and publish on otherId
   registerSubscriptionListener(otherId);
   await notifyListeners(otherId);
@@ -306,7 +305,7 @@ const matchmakerFlow = async (
       const matchMessage: MatchMessage = {
         userId1: userId,
         userId2: otherId,
-        score: score,
+        score: highestScore,
       };
 
       await rabbitChannel.sendToQueue(

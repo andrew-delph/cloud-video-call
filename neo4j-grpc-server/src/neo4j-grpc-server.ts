@@ -236,7 +236,7 @@ const getRelationshipScores = async (
     const index = length - i;
     if (i == 0) {
       logger.info(
-        `prob:${prob} num_friends:${num_friends}  length:${length}  userId:${userId}  otherId:${otherId} length:${length} index:${index} otherUsers:${otherUsers}`,
+        `prob:${prob} num_friends:${num_friends}  length:${length} index:${index}  userId:${userId}  otherId:${otherId}  otherUsers:${otherUsers}`,
       );
     }
 
