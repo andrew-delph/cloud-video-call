@@ -1,4 +1,4 @@
-import { startReadyConsumer } from './ready-worker';
+import { startReadyConsumer } from './matchmaker';
 import cluster from 'cluster';
 import { cpus } from 'os';
 import { listenGlobalExceptions } from 'common';

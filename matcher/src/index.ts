@@ -1,4 +1,4 @@
-import { matchConsumer } from './match-worker';
+import { matchConsumer } from './matcher';
 
 import cluster from 'cluster';
 import { cpus } from 'os';

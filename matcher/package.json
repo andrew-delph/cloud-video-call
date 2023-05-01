@@ -8,7 +8,7 @@
     "dev": "nodemon --delay 1000ms --ignore dist --watch ./src  --ext ts --exec 'npm run k8-restart'",
     "docker": "bazel run image_push",
     "k8-restart": "npm run docker && kubectl rollout restart deployment/matcher && kubectl rollout status deployment/matcher --watch=true --timeout=60s  && date",
-    "prod": "node ./dist/match-worker.js"
+    "prod": "node ./dist/matcher.js"
   },
   "engines": {
     "node": "16"

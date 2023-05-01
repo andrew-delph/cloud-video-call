@@ -19,7 +19,7 @@ ts_project(
 js_binary(
     name = "matcher",
     data = [":ts"],
-    entry_point = "src/match-worker.js",
+    entry_point = "src/matcher.js",
 )
 
 

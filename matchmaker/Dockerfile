@@ -29,4 +29,4 @@ RUN cd matchmaker && npm run build
 
 WORKDIR /usr/src/app/matchmaker
 # # Run the web service on container startup.
-CMD [ "node", "./dist/ready-worker.js" ]
+CMD [ "node", "./dist/matchmaker.js" ]

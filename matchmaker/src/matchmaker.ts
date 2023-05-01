@@ -64,12 +64,14 @@ export const startReadyConsumer = async () => {
   logger.info(` [x] Awaiting RPC requests`);
 
   rabbitChannel.consume(
-    common.matchQueueName,
+    common.matchmakerQueueName,
     async (msg: ConsumeMessage | null) => {
       if (msg == null) {
         logger.error(`msg is null.`);
         return;
       }
+
+      logger.info(`got msg on matchmakerQueueName`);
 
       await rabbitChannel.sendToQueue(common.readyQueueName, msg.content, {});
 
@@ -480,7 +482,7 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
 
 if (require.main === module) {
   listenGlobalExceptions(async () => {
-    logger.debug(`clean up ready-worker`);
+    logger.debug(`clean up matchmaker`);
   });
   startReadyConsumer();
 }

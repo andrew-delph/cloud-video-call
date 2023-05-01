@@ -25,4 +25,4 @@ RUN cd matcher && npm run build
 
 WORKDIR /usr/src/app/matcher
 # # Run the web service on container startup.
-CMD [ "node", "./dist/match-worker.js"]
+CMD [ "node", "./dist/matcher.js"]
