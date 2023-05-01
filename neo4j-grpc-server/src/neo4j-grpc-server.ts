@@ -106,6 +106,7 @@ const createUser = async (
   await session.close();
 
   if (result.records.length != 1) {
+    logger.error(`createUser result.records.length != 1`);
     callback(
       {
         code: grpc.status.UNKNOWN,
@@ -265,7 +266,7 @@ const getRelationshipScores = async (
     const otherId = record.get(`otherId`);
     const index = length - i;
     if (i == 0) {
-      logger.info(
+      logger.debug(
         `prob:${prob} num_friends:${num_friends}  length:${length} index:${index}  userId:${userId}  otherId:${otherId}  otherUsers:${otherUsers}`,
       );
     }
@@ -294,7 +295,7 @@ const createFeedback = async (
   const reply = new StandardResponse();
 
   if (!userId || !feedbackId) {
-    logger.debug(`! userId || !feedbackId`);
+    logger.error(`! userId || !feedbackId`);
     return callback({
       code: 2,
       message: `! userId || !feedbackId`,
@@ -336,8 +337,20 @@ const createFeedback = async (
     { userId, feedbackId },
   );
 
+  let negative_rel: any = await session.run(
+    `
+      MATCH (n1:Person)-[f1:FEEDBACK{feedbackId: $feedbackId}]->(n2:Person)
+      MATCH (n2:Person)-[f2:FEEDBACK{other: $feedbackId}]->(n1:Person)
+      WHERE f1.score <= 0 OR f2.score <= 0 
+      MERGE (n1)-[r1:NEGATIVE]-(n2)
+      MERGE (n2)-[r2:NEGATIVE]-(n1)
+      return r1,r2, n1.userId, n2.userId
+    `,
+    { userId, feedbackId },
+  );
+
   logger.debug(
-    `Created friend ships: ${friend_rel.records.length} with score: ${score}`,
+    `Created FRIENDS:${friend_rel.records.length} NEGATIVE:${negative_rel.records.length} with score: ${score}`,
   );
 
   await session.close();
