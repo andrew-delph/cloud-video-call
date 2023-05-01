@@ -234,9 +234,9 @@ const getRelationshipScores = async (
     const num_friends = record.get(`num_friends`);
     const otherId = record.get(`otherId`);
     const index = length - i;
-    if (index == 1) {
+    if (i == 0) {
       logger.info(
-        `prob:${prob} num_friends:${num_friends}  length:${length}  userId:${userId}  otherId:${otherId} length:${length} index:${index}`,
+        `prob:${prob} num_friends:${num_friends}  length:${length}  userId:${userId}  otherId:${otherId} length:${length} index:${index} otherUsers:${otherUsers}`,
       );
     }
 
