@@ -12,9 +12,7 @@ pexporter:
 
 apply:
 	kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
-	# helm upgrade --install kube-stack --namespace=monitoring prometheus-community/kube-prometheus-stack -f kube-stack.values.yaml
-	# helm upgrade --install grafana --namespace=monitoring grafana/grafana -f grafana.values.yaml
-	helm upgrade --install prometheus-operator-crds --namespace=monitoring prometheus-community/prometheus-operator-crds
+	# helm upgrade --install prometheus-operator-crds --namespace=monitoring prometheus-community/prometheus-operator-crds
 	helm upgrade --install loki --namespace=monitoring grafana/loki-stack -f loki-stack.values.yaml
 	helm upgrade --install prometheus-rabbitmq-exporter --namespace=monitoring prometheus-community/prometheus-rabbitmq-exporter -f prometheus-rabbitmq-exporter.values.yaml
 	helm upgrade --install prometheus-adapter --namespace=monitoring prometheus-community/prometheus-adapter -f prometheus-adapter.values.yaml
