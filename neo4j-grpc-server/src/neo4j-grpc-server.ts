@@ -27,10 +27,10 @@ import * as common from 'common';
 import { v4 } from 'uuid';
 import {
   UserPreferences,
+  compareUserFilters,
   readUserPreferences,
   writeUserPreferencesDatabase,
 } from './UserPreferences';
-import { compareUserFilters } from './UserFilters';
 
 var server = new grpc.Server();
 
