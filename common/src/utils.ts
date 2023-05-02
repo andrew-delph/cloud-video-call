@@ -47,3 +47,23 @@ export async function createRabbitMQClient(): Promise<
 
   return [rabbitConnection, rabbitChannel];
 }
+
+export const redisScanKeys = async (
+  redisClient: Client,
+  prefix = ``,
+): Promise<Set<string>> => {
+  let stream = redisClient.scanStream({
+    match: prefix,
+  });
+  return new Promise((res, rej) => {
+    let keysSet = new Set<string>();
+    stream.on(`data`, async (keys: string[] = []) => {
+      for (const key of keys) {
+        keysSet.add(key);
+      }
+    });
+    stream.on(`end`, () => {
+      res(keysSet);
+    });
+  });
+};

@@ -73,40 +73,27 @@ export const cleanMySocketServer = async () => {
 
 export const cleanAllSocketServer = async () => {
   logger.info(`cleanAllSocketServer`);
-  scanKeys(heartbeatPrefix + `*`).then(async (heartbeat_ids) => {
-    for (const heartbeat_id of heartbeat_ids) {
-      const time = (await mainRedisClient.time())[0];
-      const heartbeat_time = await mainRedisClient.get(heartbeat_id);
-      if (heartbeat_time == null) {
-        continue;
-      }
+  common
+    .redisScanKeys(mainRedisClient, heartbeatPrefix + `*`)
+    .then(async (heartbeat_ids) => {
+      for (const heartbeat_id of heartbeat_ids) {
+        const time = (await mainRedisClient.time())[0];
+        const heartbeat_time = await mainRedisClient.get(heartbeat_id);
+        if (heartbeat_time == null) {
+          continue;
+        }
 
-      if (time - parseFloat(heartbeat_time) > 60) {
-        logger.error(
-          `cleanAllSocketServer ${heartbeat_id} : ${
-            time - parseFloat(heartbeat_time)
-          }`,
-        );
-        await cleanSocketServer(heartbeat_id.substring(heartbeatPrefix.length));
+        if (time - parseFloat(heartbeat_time) > 60) {
+          logger.error(
+            `cleanAllSocketServer ${heartbeat_id} : ${
+              time - parseFloat(heartbeat_time)
+            }`,
+          );
+          await cleanSocketServer(
+            heartbeat_id.substring(heartbeatPrefix.length),
+          );
+        }
       }
-    }
-    logger.info(`cleanAllSocketServer completed`);
-  });
-};
-
-const scanKeys = async (prefix = ``): Promise<Set<string>> => {
-  let stream = mainRedisClient.scanStream({
-    match: prefix,
-  });
-  return new Promise((res, rej) => {
-    let keysSet = new Set<string>();
-    stream.on(`data`, async (keys: string[] = []) => {
-      for (const key of keys) {
-        keysSet.add(key);
-      }
+      logger.info(`cleanAllSocketServer completed`);
     });
-    stream.on(`end`, () => {
-      res(keysSet);
-    });
-  });
 };
