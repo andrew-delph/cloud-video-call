@@ -432,7 +432,7 @@ const applyReadySetFilters = async (
       getRelationshipFilterCacheKey(userId, idToRequest),
       passed ? `1` : 0,
       `EX`,
-      30,
+      60 * 2,
     );
     if (passed) {
       approved.add(idToRequest);
