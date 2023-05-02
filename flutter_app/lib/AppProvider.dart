@@ -211,7 +211,7 @@ class AppProvider extends ChangeNotifier {
     });
     mySocket.onDisconnect((details) {
       if (socketMachine.current != null) {
-        socketMachine.current = SocketStates.connecting;
+        socketMachine.current = SocketStates.error;
       }
     });
 
