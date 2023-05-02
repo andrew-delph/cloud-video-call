@@ -34,8 +34,8 @@ let lockRedisClient: Client;
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
 
-const exchangeName = `my-delayed-exchange`;
-const routingKey = `my-routing-key`;
+const delayExchange = `my-delayed-exchange`;
+const readyRoutingKey = `ready-routing-key`;
 const delay = 10000; // 10 seconds
 
 const maxPriority = 10;
@@ -52,15 +52,15 @@ const connectRabbit = async () => {
     maxPriority: maxPriority,
   });
 
-  await rabbitChannel.assertExchange(exchangeName, `x-delayed-message`, {
+  await rabbitChannel.assertExchange(delayExchange, `x-delayed-message`, {
     durable: true,
     arguments: { 'x-delayed-type': `direct` },
   });
 
   await rabbitChannel.bindQueue(
     common.readyQueueName,
-    exchangeName,
-    routingKey,
+    delayExchange,
+    readyRoutingKey,
   );
 
   logger.info(`rabbit connected`);
@@ -118,7 +118,7 @@ export const startReadyConsumer = async () => {
 
       const priority = userRepsonse.getPriority() || 0;
 
-      await rabbitChannel.publish(exchangeName, routingKey, msg.content, {
+      await rabbitChannel.publish(delayExchange, readyRoutingKey, msg.content, {
         headers: { 'x-delay': delay },
         priority: maxPriority * priority,
       });
