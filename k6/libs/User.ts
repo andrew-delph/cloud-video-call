@@ -3,7 +3,7 @@ const domain = __ENV.HOST || `localhost:8888`;
 
 import http from 'k6/http';
 import { check, sleep } from 'k6';
-import { options_url, redisClient } from '../src/k6_exp';
+import { options_url, redisClient } from '../src/k6';
 
 import {
   randomString,
