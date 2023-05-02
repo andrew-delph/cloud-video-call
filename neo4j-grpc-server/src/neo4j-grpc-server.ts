@@ -296,7 +296,7 @@ const createFeedback = async (
   if (!userId || !feedbackId) {
     logger.error(`! userId || !feedbackId`);
     return callback({
-      code: 2,
+      code: grpc.status.INVALID_ARGUMENT,
       message: `! userId || !feedbackId`,
     });
   }
@@ -308,7 +308,8 @@ const createFeedback = async (
     `
       MATCH (n1:Person {userId: $userId})-[r:MATCHED]->(n2:Person)
       WHERE id(r) = $feedbackId
-      CREATE (n1)-[f:FEEDBACK {score: $score, feedbackId: $feedbackId, other: r.other}]->(n2) return f
+      CREATE (n1)-[f:FEEDBACK {score: $score, feedbackId: $feedbackId, other: r.other}]->(n2) 
+      return f
     `,
     { score, userId, feedbackId },
   );
@@ -318,7 +319,7 @@ const createFeedback = async (
       `Failed to create feedback. returned rows: ${feedback_rel.records.length} `,
     );
     return callback({
-      code: 2,
+      code: grpc.status.UNKNOWN,
       message: `Feedback not created.`,
     });
   }

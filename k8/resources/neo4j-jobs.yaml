@@ -5,10 +5,10 @@ metadata:
 spec:
   concurrencyPolicy: Forbid
   schedule: '0 0 * * *'
+  successfulJobsHistoryLimit: 1
   suspend: false
   jobTemplate:
     spec:
-      ttlSecondsAfterFinished: 300
       template:
         spec:
           containers:
@@ -27,10 +27,10 @@ metadata:
 spec:
   concurrencyPolicy: Forbid
   schedule: '0 1-23 * * *'
+  successfulJobsHistoryLimit: 1
   suspend: false
   jobTemplate:
     spec:
-      ttlSecondsAfterFinished: 300
       template:
         spec:
           containers:
