@@ -40,6 +40,9 @@ const delay = 10000; // 10 seconds
 
 const maxPriority = 10;
 
+const relationshipFilterCacheEx = 60 * 2;
+const realtionshipScoreCacheEx = 60 * 2;
+
 const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
 
@@ -432,7 +435,7 @@ const applyReadySetFilters = async (
       getRelationshipFilterCacheKey(userId, idToRequest),
       passed ? `1` : 0,
       `EX`,
-      60 * 2,
+      relationshipFilterCacheEx,
     );
     if (passed) {
       approved.add(idToRequest);
@@ -520,7 +523,7 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
       getRealtionshipScoreCacheKey(userId, scoreId),
       JSON.stringify(score_obj),
       `EX`,
-      60 * 5,
+      realtionshipScoreCacheEx,
     );
 
     relationshipScoresMap.set(scoreId, score_obj);

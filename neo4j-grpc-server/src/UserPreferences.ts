@@ -1,5 +1,10 @@
 import { driver, redisClient } from './neo4j-grpc-server';
 import * as neo4j from 'neo4j-driver';
+import * as common from 'common';
+import haversine from 'haversine-distance';
+
+const logger = common.getLogger();
+
 export type UserPreferences = {
   a_constant: any;
   f_constant: any;
@@ -8,6 +13,8 @@ export type UserPreferences = {
   priority: number;
 };
 const userPreferencesCacheEx = 60 * 60 * 2;
+const compareUserFiltersCacheEx = 60 * 60 * 2;
+
 const getUserPreferencesCacheKey = (userId: string): string => {
   return `UserPreferences-${userId}`;
 };
@@ -163,9 +170,37 @@ export async function writeUserPreferencesDatabase(
   session.close();
 }
 
-import haversine from 'haversine-distance';
+const getCompareUserFiltersCacheKey = (
+  userId1: string,
+  userId2: string,
+): string => {
+  return `CompareUserFilters-${userId1}-${userId2}`;
+};
 
-export const compareUserFilters = async (userId1: string, userId2: string) => {
+async function readCompareUserFiltersCache(
+  userId1: string,
+  userId2: string,
+): Promise<boolean | null> {
+  const compareUserFiltersString = await redisClient.get(
+    getCompareUserFiltersCacheKey(userId1, userId2),
+  );
+  if (compareUserFiltersString) {
+    return JSON.parse(compareUserFiltersString);
+  } else {
+    return null;
+  }
+}
+
+export const compareUserFilters = async (
+  userId1: string,
+  userId2: string,
+): Promise<boolean> => {
+  const cacheResult = await readCompareUserFiltersCache(userId1, userId2);
+
+  if (cacheResult != null) {
+    return cacheResult;
+  }
+
   const user1Data = await readUserPreferences(userId1);
   const user2Data = await readUserPreferences(userId2);
 
@@ -214,6 +249,13 @@ export const compareUserFilters = async (userId1: string, userId2: string) => {
 
   valid = valid && filterDistance(user1Data, user2Data);
   valid = valid && filterDistance(user2Data, user1Data);
+
+  await redisClient.set(
+    getCompareUserFiltersCacheKey(userId1, userId2),
+    JSON.stringify(valid),
+    `EX`,
+    compareUserFiltersCacheEx,
+  );
 
   return valid;
 };
