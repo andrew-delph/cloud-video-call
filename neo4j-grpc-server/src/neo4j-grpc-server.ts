@@ -30,6 +30,7 @@ import {
   readUserPreferences,
   writeUserPreferencesDatabase,
 } from './UserPreferences';
+import { compareUserFilters } from './UserFilters';
 
 var server = new grpc.Server();
 
@@ -374,61 +375,10 @@ const checkUserFilters = async (
 
   const userId1 = call.request.getUserId1();
   const userId2 = call.request.getUserId2();
+
+  const valid = await compareUserFilters(userId1, userId2);
+
   const reply = new CheckUserFiltersResponse();
-
-  const session = driver.session();
-
-  const user1Data = await readUserPreferences(userId1);
-  const user2Data = await readUserPreferences(userId2);
-
-  await session.close();
-
-  const filterConstants = (
-    userDataA: UserPreferences,
-    userDataB: UserPreferences,
-  ) => {
-    let inner_valid = true;
-    Object.entries(userDataA.f_constant).forEach((entry) => {
-      const key = entry[0].toString();
-      const value = entry[1] != null ? entry[1].toString() : null;
-      if (key == `type` || value == null) return;
-      if (userDataB.a_constant[key] != value) {
-        inner_valid = false;
-      }
-    });
-    return inner_valid;
-  };
-
-  let valid = true;
-
-  valid = valid && filterConstants(user1Data, user2Data);
-  valid = valid && filterConstants(user2Data, user1Data);
-
-  const filterDistance = (
-    userDataA: UserPreferences,
-    userDataB: UserPreferences,
-  ) => {
-    const aDistance = userDataA.f_custom.distance;
-    const aLong = userDataA.a_custom.long;
-    const aLat = userDataA.a_custom.lat;
-
-    const bLong = userDataB.a_custom.long;
-    const bLat = userDataB.a_custom.lat;
-
-    if (aDistance && aLong && aLat) {
-      if (!bLong || !bLat) return false;
-      const aCord = { lat: aLat, lng: aLong };
-      const bCord = { lat: bLat, lng: bLong };
-      const dist = haversine(aCord, bCord);
-
-      if (dist > aDistance) return false;
-    }
-    return true;
-  };
-
-  valid = valid && filterDistance(user1Data, user2Data);
-  valid = valid && filterDistance(user2Data, user1Data);
-
   reply.setPassed(valid);
 
   const duration = (performance.now() - start_time) / 1000;
