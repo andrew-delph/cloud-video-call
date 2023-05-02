@@ -1,9 +1,3 @@
-
-pnginx:
-	while true; do \
-        kubectl port-forward svc/nginx-lb 8888:80 || true; \
-        sleep 1; \
-    done
 	
 
 pneo4j:
