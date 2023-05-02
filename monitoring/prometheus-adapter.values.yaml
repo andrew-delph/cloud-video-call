@@ -1,6 +1,6 @@
 prometheus:
-  url: http://prometheus-operated.monitoring.svc
-  port: 9090
+  url: http://loki-prometheus-server.monitoring
+  port: 80
 rules:
   custom:
     - seriesQuery: 'rabbitmq_queue_messages_ready'

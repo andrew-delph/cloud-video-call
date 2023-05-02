@@ -13,8 +13,13 @@ rabbitmq:
   timeout: 30
   max_queues: 0
   excludeMetrics: ''
-prometheus:
-  monitor:
-    enabled: true
-    additionalLabels:
-      release: kube-stack # this has to be the same name as the kube-prometheus-stack name
+
+annotations:
+  prometheus.io/scrape: 'true'
+  prometheus.io/path: /metrics
+  prometheus.io/port: '9419'
+# prometheus:
+#   monitor:
+#     enabled: true
+#     additionalLabels:
+#       release: loki # this has to be the same name as the kube-prometheus-stack name
