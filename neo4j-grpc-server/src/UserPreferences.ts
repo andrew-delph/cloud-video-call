@@ -7,7 +7,7 @@ export type UserPreferences = {
   f_custom: any;
   priority: number;
 };
-const userPreferencesCacheEx = 3000;
+const userPreferencesCacheEx = 60 * 60;
 const getUserPreferencesCacheKey = (userId: string): string => {
   return `UserPreferences-${userId}`;
 };
