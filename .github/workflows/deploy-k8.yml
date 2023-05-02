@@ -25,9 +25,13 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: make apply
+      - name: deploy default services
         run: |
           cd k8
+          make apply
+      - name: deploy monitoring services
+        run: |
+          cd monitoring
           make apply
       - name: Run deploy.sh
         run: ./deploy.sh
