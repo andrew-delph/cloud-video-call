@@ -19,6 +19,46 @@ const getUserPreferencesCacheKey = (userId: string): string => {
   return `UserPreferences-${userId}`;
 };
 
+async function readUserPreferencesCache(
+  userId: string,
+): Promise<UserPreferences | null> {
+  const userPreferencesString = await redisClient.get(
+    getUserPreferencesCacheKey(userId),
+  );
+  if (userPreferencesString) {
+    return JSON.parse(userPreferencesString);
+  } else {
+    return null;
+  }
+}
+const CompareUserFiltersPrefix = `CompareUserFilters-`;
+
+const getCompareUserFiltersCacheKey = (
+  userId1: string,
+  userId2: string,
+): string => {
+  if (userId1 > userId2) return getCompareUserFiltersCacheKey(userId2, userId1);
+  return `${CompareUserFiltersPrefix}${userId1}-${userId2}`;
+};
+
+const getCompareUserFiltersPatternCacheKey = (userId: string): string => {
+  return `${CompareUserFiltersPrefix}*${userId}*`;
+};
+
+async function readCompareUserFiltersCache(
+  userId1: string,
+  userId2: string,
+): Promise<boolean | null> {
+  const compareUserFiltersString = await redisClient.get(
+    getCompareUserFiltersCacheKey(userId1, userId2),
+  );
+  if (compareUserFiltersString) {
+    return JSON.parse(compareUserFiltersString);
+  } else {
+    return null;
+  }
+}
+
 function parseQueryUserPreferences(
   results: neo4j.QueryResult,
 ): UserPreferences {
@@ -56,19 +96,6 @@ export async function readUserPreferences(
     return cacheData;
   }
   return readUserPreferencesDatabase(userId);
-}
-
-async function readUserPreferencesCache(
-  userId: string,
-): Promise<UserPreferences | null> {
-  const userPreferencesString = await redisClient.get(
-    getUserPreferencesCacheKey(userId),
-  );
-  if (userPreferencesString) {
-    return JSON.parse(userPreferencesString);
-  } else {
-    return null;
-  }
 }
 
 async function readUserPreferencesDatabase(
@@ -165,30 +192,18 @@ export async function writeUserPreferencesDatabase(
     userPreferencesCacheEx,
   );
 
-  await session.close();
-
-  session.close();
-}
-
-const getCompareUserFiltersCacheKey = (
-  userId1: string,
-  userId2: string,
-): string => {
-  return `CompareUserFilters-${userId1}-${userId2}`;
-};
-
-async function readCompareUserFiltersCache(
-  userId1: string,
-  userId2: string,
-): Promise<boolean | null> {
-  const compareUserFiltersString = await redisClient.get(
-    getCompareUserFiltersCacheKey(userId1, userId2),
+  const userFilterKeys = await common.redisScanKeys(
+    redisClient,
+    getCompareUserFiltersPatternCacheKey(userId),
   );
-  if (compareUserFiltersString) {
-    return JSON.parse(compareUserFiltersString);
-  } else {
-    return null;
-  }
+
+  const keysDeleted = await redisClient.del(Array.from(userFilterKeys));
+
+  logger.debug(
+    `CompareUserFilters for ${userId} size:${userFilterKeys.size} keysDeleted:${keysDeleted}`,
+  );
+
+  await session.close();
 }
 
 export const compareUserFilters = async (
