@@ -182,39 +182,38 @@ app.get(`/preferences`, async (req, res) => {
       checkUserFiltersRequest,
       (error: any, response: neo4j_common.GetUserPerferencesResponse) => {
         if (error) {
+          logger.error(`getUserPerferences`, error);
           res.status(401).json({
             error: JSON.stringify(error),
             message: `Failed checkUserFiltersRequest`,
           });
         } else {
           res.status(200).json(
-            omitDeep(
-              {
-                attributes: {
-                  custom: Object.fromEntries(
-                    response.getAttributesCustomMap().entries(),
-                  ),
-                  constant: Object.fromEntries(
-                    response.getAttributesConstantMap().entries(),
-                  ),
-                },
-                filters: {
-                  custom: Object.fromEntries(
-                    response.getFiltersCustomMap().entries(),
-                  ),
-                  constant: Object.fromEntries(
-                    response.getFiltersConstantMap().entries(),
-                  ),
-                },
-                priority: response.getPriority(),
+            omitDeep({
+              attributes: {
+                custom: Object.fromEntries(
+                  response.getAttributesCustomMap().entries(),
+                ),
+                constant: Object.fromEntries(
+                  response.getAttributesConstantMap().entries(),
+                ),
               },
-              `type`,
-            ),
+              filters: {
+                custom: Object.fromEntries(
+                  response.getFiltersCustomMap().entries(),
+                ),
+                constant: Object.fromEntries(
+                  response.getFiltersConstantMap().entries(),
+                ),
+              },
+              priority: response.getPriority(),
+            }),
           );
         }
       },
     );
   } catch (error) {
+    logger.error(`getUserPerferences`, error);
     res.status(401).json({
       error: JSON.stringify(error),
       message: `failed checkUserFiltersRequest`,

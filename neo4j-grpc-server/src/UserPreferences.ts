@@ -130,9 +130,8 @@ export async function writeUserPreferencesDatabase(
   await session.run(
     `
     MERGE (p:Person{userId: $userId})
-    MERGE (p)-[r:USER_ATTRIBUTES_CONSTANT]->(md:MetaData{type:"USER_ATTRIBUTES_CONSTANT"})
+    MERGE (p)-[r:USER_ATTRIBUTES_CONSTANT]->(md:MetaData)
     SET md = $constant
-    SET md.type = "USER_ATTRIBUTES_CONSTANT"
     RETURN p, md
     `,
     { userId, constant: preferences.a_constant || {} },
@@ -141,9 +140,8 @@ export async function writeUserPreferencesDatabase(
   await session.run(
     `
     MERGE (p:Person{userId: $userId})
-    MERGE (p)-[r:USER_ATTRIBUTES_CUSTOM]->(md:MetaData{type:"USER_ATTRIBUTES_CUSTOM"})
+    MERGE (p)-[r:USER_ATTRIBUTES_CUSTOM]->(md:MetaData)
     SET md = $custom
-    SET md.type = "USER_ATTRIBUTES_CUSTOM"
     RETURN p, md
     `,
     { userId, custom: preferences.a_custom || {} },
@@ -152,9 +150,8 @@ export async function writeUserPreferencesDatabase(
   await session.run(
     `
     MERGE (p:Person{userId: $userId})
-    MERGE (p)-[r:USER_FILTERS_CONSTANT]->(md:MetaData{type:"USER_FILTERS_CONSTANT"})
+    MERGE (p)-[r:USER_FILTERS_CONSTANT]->(md:MetaData)
     SET md = $constant
-    SET md.type = "USER_FILTERS_CONSTANT"
     RETURN p, md
     `,
     { userId, constant: preferences.f_constant || {} },
@@ -163,9 +160,8 @@ export async function writeUserPreferencesDatabase(
   await session.run(
     `
     MERGE (p:Person{userId: $userId})
-    MERGE (p)-[r:USER_FILTERS_CUSTOM]->(md:MetaData{type:"USER_FILTERS_CUSTOM"})
+    MERGE (p)-[r:USER_FILTERS_CUSTOM]->(md:MetaData)
     SET md = $custom
-    SET md.type = "USER_FILTERS_CUSTOM"
     RETURN p, md
     `,
     { userId, custom: preferences.f_custom || {} },
@@ -227,7 +223,6 @@ export const compareUserFilters = async (
     Object.entries(userDataA.f_constant).forEach((entry) => {
       const key = entry[0].toString();
       const value = entry[1] != null ? entry[1].toString() : null;
-      if (key == `type` || value == null) return;
       if (userDataB.a_constant[key] != value) {
         inner_valid = false;
       }
