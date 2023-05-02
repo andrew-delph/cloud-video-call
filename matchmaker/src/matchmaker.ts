@@ -67,12 +67,12 @@ const connectRabbit = async () => {
 };
 
 const neo4jGetUser = (userId: string) => {
-  const checkUserFiltersRequest = new GetUserPerferencesRequest();
-  checkUserFiltersRequest.setUserId(userId);
+  const getUserPerferencesRequest = new GetUserPerferencesRequest();
+  getUserPerferencesRequest.setUserId(userId);
   return new Promise<GetUserPerferencesResponse>(async (resolve, reject) => {
     try {
       neo4jRpcClient.getUserPerferences(
-        checkUserFiltersRequest,
+        getUserPerferencesRequest,
         (error: any, response: GetUserPerferencesResponse) => {
           if (error) {
             reject(error);
