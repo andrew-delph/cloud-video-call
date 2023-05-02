@@ -82,9 +82,9 @@ const verifyIndexes = async () => {
   await session.close();
   const duration = (performance.now() - start_time) / 1000;
   if (duration > durationWarn) {
-    logger.warn(`verifyIndexes duration: \t ${duration}s`);
+    logger.warn(`verifyIndexes duration:  ${duration}s`);
   } else {
-    logger.debug(`verifyIndexes duration: \t ${duration}s`);
+    logger.debug(`verifyIndexes duration:  ${duration}s`);
   }
 };
 
@@ -124,10 +124,10 @@ const createUser = async (
   const duration = (performance.now() - start_time) / 1000;
 
   if (duration > durationWarn) {
-    logger.warn(`createUser duration: \t ${duration}s`);
+    logger.warn(`createUser duration:  ${duration}s`);
   } else {
     logger.debug(
-      `createUser duration: \t ${duration}s hostname: ${process.env.HOSTNAME}`,
+      `createUser duration:  ${duration}s hostname: ${process.env.HOSTNAME}`,
     );
   }
 
@@ -198,9 +198,9 @@ const createMatch = async (
   const duration = (performance.now() - start_time) / 1000;
 
   if (duration > durationWarn) {
-    logger.warn(`createMatch duration: \t ${duration}s`);
+    logger.warn(`createMatch duration:  ${duration}s`);
   } else {
-    logger.debug(`createMatch duration: \t ${duration}s`);
+    logger.debug(`createMatch duration:  ${duration}s`);
   }
 
   callback(null, reply);
@@ -277,9 +277,9 @@ const getRelationshipScores = async (
   const duration = (performance.now() - start_time) / 1000;
 
   if (duration > durationWarn) {
-    logger.warn(`getRelationshipScores duration: \t ${duration}s`);
+    logger.warn(`getRelationshipScores duration:  ${duration}s`);
   } else {
-    logger.debug(`getRelationshipScores duration: \t ${duration}s`);
+    logger.debug(`getRelationshipScores duration:  ${duration}s`);
   }
 
   callback(null, reply);
@@ -359,9 +359,9 @@ const createFeedback = async (
   const duration = (performance.now() - start_time) / 1000;
 
   if (duration > durationWarn) {
-    logger.warn(`createFeedback duration: \t ${duration}s`);
+    logger.warn(`createFeedback duration:  ${duration}s`);
   } else {
-    logger.debug(`createFeedback duration: \t ${duration}s`);
+    logger.debug(`createFeedback duration:  ${duration}s`);
   }
 
   callback(null, reply);
@@ -383,9 +383,9 @@ const checkUserFilters = async (
 
   const duration = (performance.now() - start_time) / 1000;
   if (duration > durationWarn) {
-    logger.warn(`checkUserFilters duration: \t ${duration}s`);
+    logger.warn(`checkUserFilters duration:  ${duration}s`);
   } else {
-    logger.debug(`checkUserFilters duration: \t ${duration}s`);
+    logger.debug(`checkUserFilters duration:  ${duration}s`);
   }
 
   callback(null, reply);
@@ -426,9 +426,9 @@ const getUserPerferences = async (
 
   const duration = (performance.now() - start_time) / 1000;
   if (duration > durationWarn) {
-    logger.warn(`getUserPerferences duration: \t ${duration}s`);
+    logger.warn(`getUserPerferences duration:  ${duration}s`);
   } else {
-    logger.debug(`getUserPerferences duration: \t ${duration}s`);
+    logger.debug(`getUserPerferences duration:  ${duration}s`);
   }
 
   callback(null, reply);
@@ -492,9 +492,9 @@ const putUserPerferences = async (
     .then(() => {
       const duration = (performance.now() - start_time) / 1000;
       if (duration > durationWarn) {
-        logger.warn(`putUserPerferences duration: \t ${duration}s`);
+        logger.warn(`putUserPerferences duration:  ${duration}s`);
       } else {
-        logger.debug(`putUserPerferences duration: \t ${duration}s`);
+        logger.debug(`putUserPerferences duration:  ${duration}s`);
       }
 
       callback(null, reply);
