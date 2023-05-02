@@ -243,7 +243,8 @@ const getRelationshipScores = async (
       n1.userId as targetId,
       n2.userId as otherId,
       num_friends
-      ORDER BY prob DESC, num_friends DESC, p2 DESC`,
+      ORDER BY prob DESC, num_friends DESC, p2 DESC
+      LIMIT 5`,
     { target: userId, otherUsers: otherUsers },
   );
 
