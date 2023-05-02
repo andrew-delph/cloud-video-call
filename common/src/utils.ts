@@ -50,10 +50,10 @@ export async function createRabbitMQClient(): Promise<
 
 export const redisScanKeys = async (
   redisClient: Client,
-  prefix = ``,
+  pattern = ``,
 ): Promise<Set<string>> => {
   let stream = redisClient.scanStream({
-    match: prefix,
+    match: pattern,
   });
   return new Promise((res, rej) => {
     let keysSet = new Set<string>();
