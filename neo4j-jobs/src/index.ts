@@ -46,10 +46,6 @@ logger.info(`Value of JOB: ${job}`);
       results = await funcs.createGraph(`myGraph`, node_attributes);
       funcs.printResults(results, print_num);
       break;
-
-    default:
-      console.error(`Unknown JOB: ${job}`);
-      process.exit(1);
   }
   switch (job) {
     case `TRAIN`:
@@ -63,7 +59,6 @@ logger.info(`Value of JOB: ${job}`);
 
       results = await funcs.compareTypes();
       funcs.printResults(results, print_num);
-
       break;
   }
   logger.info(`complted ${job}`);

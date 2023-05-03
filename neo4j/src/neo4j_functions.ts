@@ -578,57 +578,6 @@ export async function createGraph(
     RETURN g.graphName AS graph, g.nodeCount AS nodes, g.relationshipCount AS rels`,
   );
 
-  // result = await session.run(
-  //   `MATCH (source:Person)-[r:FRIENDS]-(target:Person),
-  //   (source)-[:USER_ATTRIBUTES_CONSTANT]->(source_md:MetaData),
-  //   (target)-[:USER_ATTRIBUTES_CONSTANT]->(target_md:MetaData)
-
-  //   return ${createValues(`source`)},${createValues(`target`)}`,
-  // );
-
-  // result = await session.run(
-  //   `CALL gds.graph.project.cypher(
-  //     '${graphName}',
-  //     'MATCH (p:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(n:MetaData)
-  //     WITH p, n, apoc.map.fromPairs([key IN ${JSON.stringify(
-  //       node_attributes,
-  //     )} |
-  //       [key,
-  //       CASE
-  //           WHEN n[key] IS NULL THEN NaN
-  //           WHEN toString(n[key]) = n[key]
-  //           THEN reduce(total = 0.0, value IN apoc.text.bytes(n[key]) | total + value)
-  //           ELSE toFloat(n[key])
-  //       END
-  //       ]
-  //     ]) as attributes
-  //   RETURN id(p) AS id, labels(p) AS labels, apoc.map.values(attributes, ${JSON.stringify(
-  //     node_attributes,
-  //   )}) AS values',
-  //     'MATCH (n)-[r:FRIENDS]->(m) RETURN id(n) AS source, id(m) AS target, type(r) AS type')
-  //   YIELD
-  //     graphName AS graph, nodeQuery, nodeCount AS nodes, relationshipCount AS rels`,
-  // );
-
-  // result = await session.run(
-  //   `CALL gds.graph.project(
-  //       '${graphName}',
-  //       {
-  //         Person:{
-  //           properties: {}
-  //         },
-  //         MetaDataGraph:{
-  //           properties: ${JSON.stringify(node_attributes)}
-  //         }
-  //       },
-  //       {
-  //         FRIENDS:{orientation:'UNDIRECTED'}, USER_ATTRIBUTES_GRAPH: {}
-  //       },
-  //       {
-
-  //       }
-  //   );`,
-  // );
   const end_time = performance.now();
   console.log(`createGraph`, end_time - start_time);
 
