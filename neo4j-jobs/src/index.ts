@@ -1,8 +1,9 @@
 import * as common from 'common';
 import * as funcs from 'neo4jscripts';
-console.log(funcs.callAlgo);
 
 common.listenGlobalExceptions();
+
+const logger = common.getLogger();
 
 funcs.setDriver(`bolt://neo4j:7687`); // `bolt://127.0.0.1:7687`
 
@@ -14,9 +15,12 @@ let node_attributes: string[];
 const print_num = 5;
 
 let results;
-console.log(`Value of JOB:`, job);
+logger.info(`Value of JOB: ${job}`);
 (async () => {
   switch (job) {
+    case `SHORT_PREDICT`:
+      logger.info(`SHORT_PREDICT`);
+      break;
     case `TRAIN`:
     case `COMPUTE`:
       // await funcs.createFriends();
@@ -62,6 +66,6 @@ console.log(`Value of JOB:`, job);
 
       break;
   }
-  console.log(`complted ${job}`);
+  logger.info(`complted ${job}`);
   process.exit(0);
 })();
