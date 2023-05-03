@@ -14,6 +14,7 @@ done <<< "${targets}"
 
 echo "All image_push targets executed successfully."
 
+kn version
 
 kubectl rollout restart deployment/matcher
 kubectl rollout restart deployment/matchmaker
