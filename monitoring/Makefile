@@ -16,7 +16,7 @@ apply:
 	kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
 	# helm upgrade --install prometheus-operator-crds --namespace=monitoring prometheus-community/prometheus-operator-crds
 	helm upgrade --install loki --namespace=monitoring grafana/loki-stack -f loki-stack.values.yaml
-	helm upgrade --install prometheus-rabbitmq-exporter --namespace=monitoring prometheus-community/prometheus-rabbitmq-exporter -f prometheus-rabbitmq-exporter.values.yaml
+	helm upgrade --install prometheus-rabbitmq-exporter prometheus-community/prometheus-rabbitmq-exporter -f prometheus-rabbitmq-exporter.values.yaml
 	helm upgrade --install prometheus-adapter --namespace=monitoring prometheus-community/prometheus-adapter -f prometheus-adapter.values.yaml
 	bash ./create_dashboards.sh
 
@@ -27,5 +27,12 @@ watch:
 	watch kubectl get pods -n monitoring
 
 query_metrics:
-	@kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/namespaces/default/services/prometheus-rabbitmq-exporter/matchQueue | jq  | grep value ; echo "matchQueue"
-	@kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/namespaces/default/services/prometheus-rabbitmq-exporter/readyQueue | jq | grep value ; echo "readyQueue" 
+	@#kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/" | jq
+	@echo 1 ; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/pod/*/readyQueue" | jq | grep value ; echo
+	@echo 2 ; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/monitoring/pod/*/readyQueue" | jq | grep value  ; echo
+	@echo 3 ; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/metrics/readyQueue" | jq | grep value  ; echo
+	@echo 4 ; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/monitoring/metrics/readyQueue" | jq | grep value  ; echo
+	@#echo ---
+	@#echo 5; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/monitoring/metrics/matchQueue" | jq | grep value ; echo 
+	@#kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/namespaces/monitorin/services/prometheus-rabbitmq-exporter/matchQueue | jq  | grep value ; echo "matchQueue"
+	@#kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/namespaces/default/services/prometheus-rabbitmq-exporter/readyQueue | jq | grep value ; echo "readyQueue" 

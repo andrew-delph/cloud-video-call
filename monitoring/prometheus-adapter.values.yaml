@@ -2,6 +2,7 @@ prometheus:
   url: http://loki-prometheus-server.monitoring
   port: 80
 rules:
+  default: false
   custom:
     - seriesQuery: 'rabbitmq_queue_messages_ready'
       name:
