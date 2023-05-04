@@ -34,12 +34,20 @@ logger.info(`Value of JOB: ${job}`);
 
       results = await funcs.predict(false, `shortPredictGraph`);
 
-      results.records.forEach((record) => {
+      for (let record of results.records) {
         const userId1: string = record.get(`person1.userId`);
         const userId2: string = record.get(`person2.userId`);
         const probability: number = record.get(`probability`);
-        console.log(userId1, userId2, probability);
-      });
+        await common.writeRedisRelationshipProbability(
+          redisClient,
+          userId1,
+          userId2,
+          probability,
+        );
+        logger.info(
+          `writeRedisRelationshipProbability users: [${userId1},${userId2}] probability:${probability}`,
+        );
+      }
 
       funcs.printResults(results, print_num);
       break;

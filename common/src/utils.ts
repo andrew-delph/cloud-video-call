@@ -74,3 +74,32 @@ export const getActiveUsers = async (
 ): Promise<string[]> => {
   return await redisClient.smembers(activeSetName);
 };
+
+function relationshipProbabilityKey(userId1: string, userId2: string): string {
+  if (userId1 > userId2) return relationshipProbabilityKey(userId2, userId1);
+  return `relationshipProbability-${userId1}-${userId2}`;
+}
+
+export const getRedisRelationshipProbability = async (
+  redisClient: Client,
+  userId1: string,
+  userId2: string,
+): Promise<number> => {
+  const val = await redisClient.get(
+    relationshipProbabilityKey(userId1, userId2),
+  );
+  if (val) parseFloat(val);
+  return -1;
+};
+
+export const writeRedisRelationshipProbability = async (
+  redisClient: Client,
+  userId1: string,
+  userId2: string,
+  probability: number,
+): Promise<void> => {
+  await redisClient.set(
+    relationshipProbabilityKey(userId1, userId2),
+    probability,
+  );
+};
