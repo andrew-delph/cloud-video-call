@@ -21,9 +21,9 @@ logger.info(`Value of JOB: ${job}`);
 (async () => {
   switch (job) {
     case `SHORT_PREDICT`:
-      logger.info(`SHORT_PREDICT`);
-
       const activeUsers = await common.getActiveUsers(redisClient);
+
+      logger.info(`activeUsers: ${activeUsers.length}`);
 
       results = await funcs.createGraph(
         `shortPredictGraph`,
