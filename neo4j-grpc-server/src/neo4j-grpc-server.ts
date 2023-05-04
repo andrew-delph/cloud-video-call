@@ -21,7 +21,6 @@ import {
   Score,
 } from 'neo4j-grpc-common';
 
-import haversine from 'haversine-distance';
 import * as neo4j from 'neo4j-driver';
 import * as common from 'common';
 import { v4 } from 'uuid';
