@@ -49,12 +49,12 @@ metadata:
 spec:
   concurrencyPolicy: Forbid
   schedule: '* * * * *'
-  successfulJobsHistoryLimit: 1
   suspend: false
   jobTemplate:
     spec:
       template:
         spec:
+          terminationGracePeriodSeconds: 300
           containers:
             - name: neo4j-jobs
               image: andrewdelph/video-call-neo4j-jobs:latest

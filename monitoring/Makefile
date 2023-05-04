@@ -10,6 +10,9 @@ pprometheus:
 pexporter:
 	kubectl --namespace monitoring port-forward svc/prometheus-rabbitmq-exporter 3002:9419
 
+ploki:
+	kubectl --namespace monitoring port-forward svc/loki 3003:3100
+
 apply:
 	helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 	helm repo add grafana https://grafana.github.io/helm-charts
