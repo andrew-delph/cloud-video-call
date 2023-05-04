@@ -157,7 +157,7 @@
             "uid": "Loki"
           },
           "editorMode": "code",
-          "expr": "{app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"} | json | line_format `{{.app}} [{{ upper .level}}] {{.message}}`",
+          "expr": "{app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"} | line_format `{{.app}} [{{ .level | default \"unknown\" | upper }}] {{ $json := fromJson __line__ }} {{ $json.message | default __line__ }}`",
           "key": "Q-3e372365-9fa7-4447-8019-d543a1f51e4e-0",
           "queryType": "range",
           "refId": "A"
@@ -273,6 +273,6 @@
   "timezone": "",
   "title": "Logs",
   "uid": "VzlEPu1Vz",
-  "version": 2,
+  "version": 4,
   "weekStart": ""
 }
