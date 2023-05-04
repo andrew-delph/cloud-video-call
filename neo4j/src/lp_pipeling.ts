@@ -146,7 +146,8 @@ export async function predict(
           (person2:Person)-[]->(g2:MetaDataGraph) 
         OPTIONAL MATCH (person1)-[f:FRIENDS]-(person2)
         RETURN (person1.userId+"-"+person2.userId) as nodes, probability,
-        person1.type, person2.type
+        person1.type, person2.type,
+        person1.userId, person2.userId
         ORDER BY probability DESC
       `,
   );
