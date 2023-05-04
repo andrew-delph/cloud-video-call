@@ -31,13 +31,13 @@ import {
   writeUserPreferencesDatabase,
 } from './UserPreferences';
 
-var server = new grpc.Server();
-
 common.listenGlobalExceptions(async () => {
   await server.tryShutdown(() => {
     logger.info(`try shutdown completed`);
   });
 });
+
+var server = new grpc.Server();
 
 type Client = ReturnType<typeof common.createRedisClient>;
 export const redisClient: Client = common.createRedisClient();
