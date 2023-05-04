@@ -33,6 +33,14 @@ logger.info(`Value of JOB: ${job}`);
       funcs.printResults(results, print_num);
 
       results = await funcs.predict(false, `shortPredictGraph`);
+
+      results.records.forEach((record) => {
+        const userId1: string = record.get(`person1.userId`);
+        const userId2: string = record.get(`person2.userId`);
+        const probability: number = record.get(`probability`);
+        console.log(userId1, userId2, probability);
+      });
+
       funcs.printResults(results, print_num);
       break;
     case `TRAIN`:

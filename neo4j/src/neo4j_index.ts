@@ -3,7 +3,7 @@ import * as lp from './lp_pipeling';
 import * as funcs from './neo4j_functions';
 
 console.log(`starting neo4j_index`);
-let result: neo4j.QueryResult;
+let results: neo4j.QueryResult;
 
 export function printResults(result: neo4j.QueryResult, limit: number = 10) {
   console.log(``);
@@ -51,7 +51,6 @@ const start_time = performance.now();
 export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
-    let results;
     // results = await funcs
     //   .compareTypes
     //   // ``,
@@ -63,9 +62,9 @@ export const run = async () => {
     const otherIds: string[] = [];
     console.log(`...`);
 
-    for (let i = 0; i < 30; i++) {
-      otherIds.push(`node${i}`);
-    }
+    // for (let i = 0; i < 30; i++) {
+    //   otherIds.push(`node${i}`);
+    // }
 
     results = await funcs.createGraph(
       `test`,
@@ -75,7 +74,13 @@ export const run = async () => {
 
     results = await lp.predict(false, `test`);
 
-    printResults(results, 100);
+    results.records.forEach((record) => {
+      const userId1: string = record.get(`person1.userId`);
+      const userId2: string = record.get(`person2.userId`);
+      const probability: number = record.get(`probability`);
+      console.log(userId1, userId2, probability);
+    });
+
     return;
 
     await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 50 });

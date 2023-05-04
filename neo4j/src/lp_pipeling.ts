@@ -134,6 +134,7 @@ export async function predict(
       })
         YIELD node1, node2, probability
         WITH gds.util.asNode(node1) AS person1, gds.util.asNode(node2) AS person2, probability
+        WHERE probability > 0
         ${
           merge
             ? `MERGE (person1)-[:PREDICTION{probability:probability}]->(person2)`
