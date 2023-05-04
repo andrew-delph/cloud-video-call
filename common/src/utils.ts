@@ -2,6 +2,7 @@ import { getLogger } from './logger';
 import { getAuth } from 'firebase-admin/auth';
 import Client from 'ioredis';
 import amqp from 'amqplib';
+import { activeSetName } from './variables';
 
 const logger = getLogger();
 
@@ -66,4 +67,10 @@ export const redisScanKeys = async (
       res(keysSet);
     });
   });
+};
+
+export const getActiveUsers = async (
+  redisClient: Client,
+): Promise<string[]> => {
+  return await redisClient.smembers(activeSetName);
 };

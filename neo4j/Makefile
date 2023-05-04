@@ -5,7 +5,7 @@ debug:
 make apply:
 	kubectl label node minikube vke.vultr.com/node-pool=video-call || echo not local
 	helm upgrade --install neo4j neo4j/neo4j -f k8.values.yaml
-	# kubectl apply -f ./resources/.
+	kubectl rollout status --watch --timeout=600s statefulset/neo4j
 
 make delete:
 	helm uninstall neo4j

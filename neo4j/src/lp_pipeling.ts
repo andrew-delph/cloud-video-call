@@ -80,7 +80,9 @@ export async function createPipeline(): Promise<neo4j.QueryResult> {
   return result;
 }
 
-export async function train(): Promise<neo4j.QueryResult> {
+export async function train(
+  graphName: string = `myGraph`,
+): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- train`);
   let start_time = performance.now();
@@ -93,7 +95,7 @@ export async function train(): Promise<neo4j.QueryResult> {
 
   const training_result = await session.run(
     `
-      CALL gds.beta.pipeline.linkPrediction.train('myGraph', {
+      CALL gds.beta.pipeline.linkPrediction.train('${graphName}', {
         pipeline: 'lp-pipeline',
         modelName: 'lp-pipeline-model',
         metrics: ['AUCPR'],
@@ -115,21 +117,28 @@ export async function train(): Promise<neo4j.QueryResult> {
   return training_result;
 }
 
-export async function predict(): Promise<neo4j.QueryResult> {
+export async function predict(
+  merge: boolean = false,
+  graphName: string = `myGraph`,
+): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- predict`);
   let start_time = performance.now();
   let result;
   result = await session.run(
     `
-      CALL gds.beta.pipeline.linkPrediction.predict.stream('myGraph', {
+      CALL gds.beta.pipeline.linkPrediction.predict.stream('${graphName}', {
         modelName: 'lp-pipeline-model',
         topN: 5000,
         threshold: 0
       })
         YIELD node1, node2, probability
         WITH gds.util.asNode(node1) AS person1, gds.util.asNode(node2) AS person2, probability
-        MERGE (person1)-[:PREDICTION{probability:probability}]->(person2)
+        ${
+          merge
+            ? `MERGE (person1)-[:PREDICTION{probability:probability}]->(person2)`
+            : ``
+        }
         WITH person1, person2, probability
         OPTIONAL MATCH (person1:Person)-[r1:USER_ATTRIBUTES_CONSTANT]->(md1:MetaData), 
           (person2:Person)-[r2:USER_ATTRIBUTES_CONSTANT]->(md2:MetaData) 

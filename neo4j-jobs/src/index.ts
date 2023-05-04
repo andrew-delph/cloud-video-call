@@ -14,12 +14,26 @@ let node_attributes: string[];
 
 const print_num = 5;
 
+const redisClient = common.createRedisClient();
+
 let results;
 logger.info(`Value of JOB: ${job}`);
 (async () => {
   switch (job) {
     case `SHORT_PREDICT`:
       logger.info(`SHORT_PREDICT`);
+
+      const activeUsers = await common.getActiveUsers(redisClient);
+
+      results = await funcs.createGraph(
+        `shortPredictGraph`,
+        await funcs.getAttributeKeys(),
+        activeUsers,
+      );
+      funcs.printResults(results, print_num);
+
+      results = await funcs.predict(false, `shortPredictGraph`);
+      funcs.printResults(results, print_num);
       break;
     case `TRAIN`:
     case `COMPUTE`:
@@ -54,7 +68,7 @@ logger.info(`Value of JOB: ${job}`);
 
     case `TRAIN`:
     case `COMPUTE`:
-      results = await funcs.predict();
+      results = await funcs.predict(true, `myGraph`);
       funcs.printResults(results, print_num);
 
       results = await funcs.compareTypes();

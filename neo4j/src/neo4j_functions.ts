@@ -504,6 +504,7 @@ export async function getFriends(): Promise<neo4j.QueryResult> {
 export async function createGraph(
   graphName: string = `myGraph`,
   node_attributes: string[] = [],
+  userList: string[] = [],
 ): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(
@@ -544,12 +545,22 @@ export async function createGraph(
     return extra_node_properties;
   };
 
+  let whereString = ``;
+  if (userList.length > 0) {
+    whereString = `WHERE source.userId IN 
+    ${JSON.stringify(userList)} AND 
+    target.userId IN ${JSON.stringify(userList)}`;
+
+    console.log(`whereString  for ${userList.length}`);
+  }
+
   result = await session.run(
     `MATCH (source:Person)-[r:FRIENDS|FEEDBACK|NEGATIVE]->(target:Person),
     (source)-[:USER_ATTRIBUTES_CONSTANT]->(source_md:MetaData),
     (target)-[:USER_ATTRIBUTES_CONSTANT]->(target_md:MetaData)
-    WITH source, target, r,  
-    ${createValues(`source`)} AS source_values, 
+    ${whereString}
+    WITH source, target, r,
+    ${createValues(`source`)} AS source_values,
     ${createValues(`target`)} AS target_values
       WITH gds.alpha.graph.project(
       '${graphName}',
@@ -558,12 +569,12 @@ export async function createGraph(
       {
         sourceNodeLabels: 'Person',
         targetNodeLabels: 'Person',
-        sourceNodeProperties: source { 
+        sourceNodeProperties: source {
             priority: coalesce(source.priority, 0),
             community: coalesce(source.community, 0),
             values: source_values ${getExtraNodeProperties(`source`)}
           },
-        targetNodeProperties: target { 
+        targetNodeProperties: target {
             priority: coalesce(target.priority, 0),
             community: coalesce(target.community, 0),
             values: target_values ${getExtraNodeProperties(`target`)}
