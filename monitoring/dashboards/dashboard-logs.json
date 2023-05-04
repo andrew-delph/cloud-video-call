@@ -131,7 +131,7 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "Loki"
+        "uid": "P8E80F9AEF21F6940"
       },
       "gridPos": {
         "h": 15,
@@ -156,8 +156,8 @@
             "type": "loki",
             "uid": "Loki"
           },
-          "editorMode": "builder",
-          "expr": "{app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"}",
+          "editorMode": "code",
+          "expr": "{app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"} | json | line_format `{{.app}} [{{ upper .level}}] {{.message}}`",
           "key": "Q-3e372365-9fa7-4447-8019-d543a1f51e4e-0",
           "queryType": "range",
           "refId": "A"
@@ -169,7 +169,7 @@
   ],
   "refresh": "10s",
   "revision": 1,
-  "schemaVersion": 38,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -266,13 +266,13 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Logs",
   "uid": "VzlEPu1Vz",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
