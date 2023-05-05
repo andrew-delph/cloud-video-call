@@ -100,5 +100,7 @@ export const writeRedisRelationshipProbability = async (
   await redisClient.set(
     relationshipProbabilityKey(userId1, userId2),
     probability,
+    `EX`,
+    60 * 3,
   );
 };
