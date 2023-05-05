@@ -568,8 +568,7 @@ const getMatchHistory = async (
     const match = new Match();
     match.setUserId1(userId);
     match.setUserId2(record.get(`n2.userId`));
-    match.setCreateTime(record.get(`r1.createDate`));
-
+    match.setCreateTime(`${record.get(`r1.createDate`)}`);
     reply.addMatchHistory(match);
   }
 
