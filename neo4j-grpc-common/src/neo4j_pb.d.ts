@@ -555,3 +555,84 @@ export namespace CreateFeedbackRequest {
         score: number,
     }
 }
+
+export class MatchHistoryRequest extends jspb.Message { 
+    getUserId(): string;
+    setUserId(value: string): MatchHistoryRequest;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): MatchHistoryRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: MatchHistoryRequest): MatchHistoryRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: MatchHistoryRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): MatchHistoryRequest;
+    static deserializeBinaryFromReader(message: MatchHistoryRequest, reader: jspb.BinaryReader): MatchHistoryRequest;
+}
+
+export namespace MatchHistoryRequest {
+    export type AsObject = {
+        userId: string,
+    }
+}
+
+export class MatchHistoryResponse extends jspb.Message { 
+    clearMatchHistoryList(): void;
+    getMatchHistoryList(): Array<Match>;
+    setMatchHistoryList(value: Array<Match>): MatchHistoryResponse;
+    addMatchHistory(value?: Match, index?: number): Match;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): MatchHistoryResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: MatchHistoryResponse): MatchHistoryResponse.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: MatchHistoryResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): MatchHistoryResponse;
+    static deserializeBinaryFromReader(message: MatchHistoryResponse, reader: jspb.BinaryReader): MatchHistoryResponse;
+}
+
+export namespace MatchHistoryResponse {
+    export type AsObject = {
+        matchHistoryList: Array<Match.AsObject>,
+    }
+}
+
+export class Match extends jspb.Message { 
+    getUserId1(): string;
+    setUserId1(value: string): Match;
+
+    getUserId2(): string;
+    setUserId2(value: string): Match;
+
+    getCreateTime(): string;
+    setCreateTime(value: string): Match;
+
+    getUserId1Score(): number;
+    setUserId1Score(value: number): Match;
+
+    getUserId2Score(): number;
+    setUserId2Score(value: number): Match;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): Match.AsObject;
+    static toObject(includeInstance: boolean, msg: Match): Match.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: Match, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): Match;
+    static deserializeBinaryFromReader(message: Match, reader: jspb.BinaryReader): Match;
+}
+
+export namespace Match {
+    export type AsObject = {
+        userId1: string,
+        userId2: string,
+        createTime: string,
+        userId1Score: number,
+        userId2Score: number,
+    }
+}

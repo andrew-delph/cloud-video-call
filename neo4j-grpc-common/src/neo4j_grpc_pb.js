@@ -125,6 +125,28 @@ function deserialize_neo4j_GetUserPerferencesResponse(buffer_arg) {
   return neo4j_pb.GetUserPerferencesResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_neo4j_MatchHistoryRequest(arg) {
+  if (!(arg instanceof neo4j_pb.MatchHistoryRequest)) {
+    throw new Error('Expected argument of type neo4j.MatchHistoryRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_neo4j_MatchHistoryRequest(buffer_arg) {
+  return neo4j_pb.MatchHistoryRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_neo4j_MatchHistoryResponse(arg) {
+  if (!(arg instanceof neo4j_pb.MatchHistoryResponse)) {
+    throw new Error('Expected argument of type neo4j.MatchHistoryResponse');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_neo4j_MatchHistoryResponse(buffer_arg) {
+  return neo4j_pb.MatchHistoryResponse.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_neo4j_PutUserPerferencesRequest(arg) {
   if (!(arg instanceof neo4j_pb.PutUserPerferencesRequest)) {
     throw new Error('Expected argument of type neo4j.PutUserPerferencesRequest');
@@ -293,6 +315,17 @@ createUser: {
     requestDeserialize: deserialize_neo4j_PutUserPerferencesRequest,
     responseSerialize: serialize_neo4j_PutUserPerferencesResponse,
     responseDeserialize: deserialize_neo4j_PutUserPerferencesResponse,
+  },
+  getMatchHistory: {
+    path: '/neo4j.Neo4j/GetMatchHistory',
+    requestStream: false,
+    responseStream: false,
+    requestType: neo4j_pb.MatchHistoryRequest,
+    responseType: neo4j_pb.MatchHistoryResponse,
+    requestSerialize: serialize_neo4j_MatchHistoryRequest,
+    requestDeserialize: deserialize_neo4j_MatchHistoryRequest,
+    responseSerialize: serialize_neo4j_MatchHistoryResponse,
+    responseDeserialize: deserialize_neo4j_MatchHistoryResponse,
   },
 };
 

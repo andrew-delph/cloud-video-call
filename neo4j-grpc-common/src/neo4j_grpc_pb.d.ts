@@ -18,6 +18,7 @@ interface INeo4jService extends grpc.ServiceDefinition<grpc.UntypedServiceImplem
     updatePerferences: INeo4jService_IUpdatePerferences;
     getUserPerferences: INeo4jService_IGetUserPerferences;
     putUserPerferences: INeo4jService_IPutUserPerferences;
+    getMatchHistory: INeo4jService_IGetMatchHistory;
 }
 
 interface INeo4jService_ICreateUser extends grpc.MethodDefinition<neo4j_pb.CreateUserRequest, neo4j_pb.CreateUserResponse> {
@@ -101,6 +102,15 @@ interface INeo4jService_IPutUserPerferences extends grpc.MethodDefinition<neo4j_
     responseSerialize: grpc.serialize<neo4j_pb.PutUserPerferencesResponse>;
     responseDeserialize: grpc.deserialize<neo4j_pb.PutUserPerferencesResponse>;
 }
+interface INeo4jService_IGetMatchHistory extends grpc.MethodDefinition<neo4j_pb.MatchHistoryRequest, neo4j_pb.MatchHistoryResponse> {
+    path: "/neo4j.Neo4j/GetMatchHistory";
+    requestStream: false;
+    responseStream: false;
+    requestSerialize: grpc.serialize<neo4j_pb.MatchHistoryRequest>;
+    requestDeserialize: grpc.deserialize<neo4j_pb.MatchHistoryRequest>;
+    responseSerialize: grpc.serialize<neo4j_pb.MatchHistoryResponse>;
+    responseDeserialize: grpc.deserialize<neo4j_pb.MatchHistoryResponse>;
+}
 
 export const Neo4jService: INeo4jService;
 
@@ -114,6 +124,7 @@ export interface INeo4jServer {
     updatePerferences: grpc.handleUnaryCall<neo4j_pb.UpdatePerferencesRequest, neo4j_pb.StandardResponse>;
     getUserPerferences: grpc.handleUnaryCall<neo4j_pb.GetUserPerferencesRequest, neo4j_pb.GetUserPerferencesResponse>;
     putUserPerferences: grpc.handleUnaryCall<neo4j_pb.PutUserPerferencesRequest, neo4j_pb.PutUserPerferencesResponse>;
+    getMatchHistory: grpc.handleUnaryCall<neo4j_pb.MatchHistoryRequest, neo4j_pb.MatchHistoryResponse>;
 }
 
 export interface INeo4jClient {
@@ -144,6 +155,9 @@ export interface INeo4jClient {
     putUserPerferences(request: neo4j_pb.PutUserPerferencesRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.PutUserPerferencesResponse) => void): grpc.ClientUnaryCall;
     putUserPerferences(request: neo4j_pb.PutUserPerferencesRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.PutUserPerferencesResponse) => void): grpc.ClientUnaryCall;
     putUserPerferences(request: neo4j_pb.PutUserPerferencesRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.PutUserPerferencesResponse) => void): grpc.ClientUnaryCall;
+    getMatchHistory(request: neo4j_pb.MatchHistoryRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.MatchHistoryResponse) => void): grpc.ClientUnaryCall;
+    getMatchHistory(request: neo4j_pb.MatchHistoryRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.MatchHistoryResponse) => void): grpc.ClientUnaryCall;
+    getMatchHistory(request: neo4j_pb.MatchHistoryRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.MatchHistoryResponse) => void): grpc.ClientUnaryCall;
 }
 
 export class Neo4jClient extends grpc.Client implements INeo4jClient {
@@ -175,4 +189,7 @@ export class Neo4jClient extends grpc.Client implements INeo4jClient {
     public putUserPerferences(request: neo4j_pb.PutUserPerferencesRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.PutUserPerferencesResponse) => void): grpc.ClientUnaryCall;
     public putUserPerferences(request: neo4j_pb.PutUserPerferencesRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.PutUserPerferencesResponse) => void): grpc.ClientUnaryCall;
     public putUserPerferences(request: neo4j_pb.PutUserPerferencesRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.PutUserPerferencesResponse) => void): grpc.ClientUnaryCall;
+    public getMatchHistory(request: neo4j_pb.MatchHistoryRequest, callback: (error: grpc.ServiceError | null, response: neo4j_pb.MatchHistoryResponse) => void): grpc.ClientUnaryCall;
+    public getMatchHistory(request: neo4j_pb.MatchHistoryRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neo4j_pb.MatchHistoryResponse) => void): grpc.ClientUnaryCall;
+    public getMatchHistory(request: neo4j_pb.MatchHistoryRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neo4j_pb.MatchHistoryResponse) => void): grpc.ClientUnaryCall;
 }

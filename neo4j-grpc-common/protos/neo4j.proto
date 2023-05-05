@@ -22,6 +22,8 @@ service Neo4j {
   rpc GetUserPerferences(GetUserPerferencesRequest) returns (GetUserPerferencesResponse) {}
 
   rpc PutUserPerferences(PutUserPerferencesRequest) returns (PutUserPerferencesResponse) {}
+
+  rpc GetMatchHistory(MatchHistoryRequest) returns (MatchHistoryResponse) {}
 }
 
 message CreateUserRequest {
@@ -137,3 +139,18 @@ message CreateFeedbackRequest {
   float score = 3;
 }
 
+message MatchHistoryRequest {
+  string user_id = 1;
+}
+
+message MatchHistoryResponse {
+  repeated Match match_history = 1;
+}
+
+message Match {
+  string user_id1 = 1;
+  string user_id2 = 2;
+  string create_time = 3;
+  float user_id1_score = 4;
+  float user_id2_score = 5;
+}
