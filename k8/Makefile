@@ -29,7 +29,7 @@ pods:
 watch:
 	watch 'kubectl get pods -n default && kubectl get hpa && kubectl get pods -n monitoring && kubectl get pods -n knative-serving'
 
-resources:
+top:
 	watch 'kubectl top pod -A --sum && kubectl top node && kubectl resource-capacity'
 
 services:
