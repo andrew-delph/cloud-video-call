@@ -18,7 +18,7 @@ export const redisClient = new redis.Client({
   addrs: new Array(__ENV.REDIS || `localhost:6379`), // in the form of 'host:port', separated by commas
 });
 
-const authKeysNum = 100;
+const authKeysNum = 1000;
 const vus = 30;
 const nukeData = true;
 
