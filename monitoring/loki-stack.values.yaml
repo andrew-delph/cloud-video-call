@@ -48,6 +48,10 @@ prometheus:
       - enable-feature=remote-write-receiver
       # - web.enable-remote-write-receiver
       # - log.level=debug
+    persistentVolume:
+      enabled: false
+  alertmanager:
+    enabled: false
 
 loki:
   enabled: true
