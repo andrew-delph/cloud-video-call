@@ -19,6 +19,9 @@ import {
   CreateFeedbackRequest,
   StandardResponse,
   Score,
+  MatchHistoryResponse,
+  MatchHistoryRequest,
+  Match,
 } from 'neo4j-grpc-common';
 
 import * as neo4j from 'neo4j-driver';
@@ -541,6 +544,45 @@ const putUserPerferences = async (
     });
 };
 
+const getMatchHistory = async (
+  call: grpc.ServerUnaryCall<MatchHistoryRequest, MatchHistoryResponse>,
+  callback: grpc.sendUnaryData<MatchHistoryResponse>,
+): Promise<void> => {
+  const start_time = performance.now();
+  const session = driver.session();
+  const userId = call.request.getUserId();
+  const reply = new MatchHistoryResponse();
+
+  const result: any = await session.run(
+    `
+      MATCH (n1:Person{userId: $userId})-[r1:MATCHED]->(n2:Person)
+      return n1.userId, n2.userId, r1.createDate
+      ORDER by r1.createDate DESC
+    `,
+    { userId },
+  );
+
+  await session.close();
+
+  for (const record of result.records) {
+    const match = new Match();
+    match.setUserId1(userId);
+    match.setUserId2(record.get(`n2.userId`));
+    match.setCreateTime(record.get(`r1.createDate`));
+
+    reply.addMatchHistory(match);
+  }
+
+  const duration = (performance.now() - start_time) / 1000;
+  if (duration > durationWarn) {
+    logger.warn(`getUserPerferences duration:  ${duration}s`);
+  } else {
+    logger.debug(`getUserPerferences duration:  ${duration}s`);
+  }
+
+  callback(null, reply);
+};
+
 server.addService(Neo4jService, {
   createUser,
   createMatch,
@@ -550,6 +592,7 @@ server.addService(Neo4jService, {
   getUserPerferences,
   putUserPerferences,
   createFeedback,
+  getMatchHistory,
 });
 
 server.addService(HealthService, {

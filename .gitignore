@@ -37,3 +37,5 @@ ui-debug.log*
 bazel-*
 flutter_app/android/fastlane/report.xml
 neo4j/*.png
+
+neo4j-grpc-common/src/test.js

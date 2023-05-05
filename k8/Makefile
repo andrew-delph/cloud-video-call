@@ -6,6 +6,9 @@ pneo4j:
 predis:
 	kubectl port-forward svc/redis 6379:6379
 
+pkourier:
+	kubectl port-forward svc/kourier -n knative-serving 8080:80
+
 apply:
 	kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml --wait
 	kubectl create namespace knative-serving || echo "namespace already exists"

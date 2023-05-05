@@ -225,6 +225,49 @@ app.get(`/preferences`, async (req, res) => {
   return;
 });
 
+app.get(`/history`, async (req, res) => {
+  const auth = req.headers.authorization;
+
+  if (!auth) {
+    logger.debug(`Missing Authorization`);
+    res.status(401).json({ error: `Missing Authorization` });
+    return;
+  }
+
+  let uid: string = await getUid(auth).catch((error) => {
+    logger.debug(`getUid error: ${error}`);
+    res.status(401).send(`failed authentication`);
+    return;
+  });
+
+  const matchHistoryRequest = new neo4j_common.MatchHistoryRequest();
+  matchHistoryRequest.setUserId(uid);
+
+  try {
+    await neo4jRpcClient.getMatchHistory(
+      matchHistoryRequest,
+      (error: any, response: neo4j_common.MatchHistoryResponse) => {
+        if (error) {
+          logger.error(`getMatchHistory`, error);
+          res.status(401).json({
+            error: JSON.stringify(error),
+            message: `Failed getMatchHistory`,
+          });
+        } else {
+          res.status(200).json(response.toObject());
+        }
+      },
+    );
+  } catch (error) {
+    logger.error(`getMatchHistory`, error);
+    res.status(401).json({
+      error: JSON.stringify(error),
+      message: `failed getMatchHistory`,
+    });
+  }
+  return;
+});
+
 app.post(`/nukedata`, async (req, res) => {
   // TODO REMOVE THIS LOL WHAT THE HECK?
 
