@@ -71,6 +71,8 @@ class OptionsScreenState extends State<OptionsScreen> {
   final MapNotifier customAttributes = MapNotifier();
   final MapNotifier customFilters = MapNotifier();
 
+  double priority = 0;
+
   bool loading = true;
   bool unsavedChanges = false;
 
@@ -155,6 +157,10 @@ class OptionsScreenState extends State<OptionsScreen> {
         customFilters.addEntries(temp.entries.map((e) =>
             MapEntry<String, String>(e.key.toString(), e.value.toString())));
       }
+
+      setState(() {
+        priority = data["priority"];
+      });
     }).whenComplete(() {
       setState(() {
         unsavedChanges = false;
@@ -191,7 +197,9 @@ class OptionsScreenState extends State<OptionsScreen> {
                     ),
                   ),
                   const Divider(),
-                  const UserProfileWidget(),
+                  UserProfileWidget(
+                    priority: priority,
+                  ),
                   const Divider(),
                   Container(
                     padding: const EdgeInsets.all(20),
@@ -739,7 +747,9 @@ class DropDownPreference extends StatelessWidget {
 }
 
 class UserProfileWidget extends StatelessWidget {
-  const UserProfileWidget({super.key});
+  UserProfileWidget({super.key, required this.priority});
+
+  double priority;
 
   @override
   Widget build(BuildContext context) {
@@ -758,23 +768,28 @@ class UserProfileWidget extends StatelessWidget {
     //     email = (email ?? "") + element.email!;
     //   }
     // }
-    return user.isAnonymous
-        ? Row(
-            children: const [Text("This user is Anonymous.")],
-          )
-        : Column(
-            children: [
-              Row(
-                children: [
-                  const Text("Display Name: "),
-                  Text(displayName ?? "No display name")
-                ],
-              ),
-              Row(
-                children: [const Text("Email: "), Text(email ?? "No email")],
+    return Column(
+      children: [
+        user.isAnonymous
+            ? Row(
+                children: const [Text("This user is Anonymous.")],
               )
-            ],
-          );
+            : Column(children: [
+                Row(
+                  children: [
+                    const Text("Display Name: "),
+                    Text(displayName ?? "No display name")
+                  ],
+                ),
+                Row(
+                  children: [const Text("Email: "), Text(email ?? "No email")],
+                ),
+              ]),
+        Row(
+          children: [const Text("Priority: "), Text("$priority")],
+        )
+      ],
+    );
   }
 }
 
