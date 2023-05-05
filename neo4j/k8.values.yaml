@@ -17,6 +17,10 @@ config:
 
 podSpec:
   priorityClassName: 'high-priority'
+services:
+  # A LoadBalancer Service for external Neo4j driver applications and Neo4j Browser
+  neo4j:
+    enabled: false
 
 volumes:
   data:
