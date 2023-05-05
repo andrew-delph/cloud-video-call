@@ -78,6 +78,14 @@ const verifyIndexes = async () => {
     `CREATE INDEX DISTANCE_probability IF NOT EXISTS  FOR ()-[r:DISTANCE]-() ON (r.distance);`,
   );
 
+  await session.run(
+    `CREATE INDEX MATCHED_createDate IF NOT EXISTS FOR ()-[r:MATCHED]-() ON (r.createDate)`,
+  );
+
+  await session.run(
+    `CREATE INDEX FEEDBACK_createDate IF NOT EXISTS FOR ()-[r:FEEDBACK]-() ON (r.createDate)`,
+  );
+
   await session.close();
   const duration = (performance.now() - start_time) / 1000;
   if (duration > durationWarn) {
@@ -150,8 +158,8 @@ const createMatch = async (
   const matchResult = await session.run(
     `MATCH (a:Person), (b:Person) 
     WHERE a.userId = $userId1 AND b.userId = $userId2 
-    CREATE (a)-[r1:MATCHED]->(b)
-    CREATE (b)-[r2:MATCHED]->(a)
+    CREATE (a)-[r1:MATCHED{createDate: datetime()}]->(b)
+    CREATE (b)-[r2:MATCHED{createDate: datetime()}]->(a)
     set r1.other = id(r2)
     set r2.other = id(r1)
     RETURN id(r1), id(r2)
@@ -336,7 +344,7 @@ const createFeedback = async (
     `
       MATCH (n1:Person {userId: $userId})-[r:MATCHED]->(n2:Person)
       WHERE id(r) = $feedbackId
-      CREATE (n1)-[f:FEEDBACK {score: $score, feedbackId: $feedbackId, other: r.other}]->(n2) 
+      CREATE (n1)-[f:FEEDBACK {createDate: datetime(), score: $score, feedbackId: $feedbackId, other: r.other}]->(n2) 
       return f
     `,
     { score, userId, feedbackId },
