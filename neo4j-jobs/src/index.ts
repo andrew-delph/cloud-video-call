@@ -23,12 +23,16 @@ logger.info(`Value of JOB: ${job}`);
     case `SHORT_PREDICT`:
       const activeUsers = await common.getActiveUsers(redisClient);
 
-      logger.info(`activeUsers: ${activeUsers.length}`);
+      if (activeUsers.length < 5) {
+        logger.info(`activeUsers.length is too small : ${activeUsers.length}`);
+        break;
+      } else {
+        logger.info(`activeUsers: ${activeUsers.length}`);
+      }
 
       results = await funcs.createGraph(
         `shortPredictGraph`,
         await funcs.getAttributeKeys(),
-        activeUsers,
       );
       funcs.printResults(results, print_num);
 
@@ -44,10 +48,11 @@ logger.info(`Value of JOB: ${job}`);
           userId2,
           probability,
         );
-        logger.info(
-          `writeRedisRelationshipProbability users: [${userId1},${userId2}] probability:${probability}`,
-        );
       }
+
+      logger.info(
+        `writeRedisRelationshipProbability: ${results.records.length}`,
+      );
 
       funcs.printResults(results, print_num);
       break;

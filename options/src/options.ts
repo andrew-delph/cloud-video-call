@@ -142,6 +142,7 @@ app.put(`/preferences`, async (req, res) => {
       putUserFiltersRequest,
       (error: any, response: neo4j_common.PutUserPerferencesResponse) => {
         if (error) {
+          logger.error(`putUserPerferences`, error);
           res.status(401).json({
             error: JSON.stringify(error),
             message: `Failed checkUserFiltersRequest`,
@@ -152,6 +153,7 @@ app.put(`/preferences`, async (req, res) => {
       },
     );
   } catch (error) {
+    logger.error(`putUserPerferences`, error);
     res.status(401).json({
       error: JSON.stringify(error),
       message: `failed checkUserFiltersRequest`,

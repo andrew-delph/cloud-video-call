@@ -193,11 +193,13 @@ export async function writeUserPreferencesDatabase(
     getCompareUserFiltersPatternCacheKey(userId),
   );
 
-  const keysDeleted = await redisClient.del(Array.from(userFilterKeys));
+  if (userFilterKeys.size > 0) {
+    const keysDeleted = await redisClient.del(Array.from(userFilterKeys));
 
-  logger.debug(
-    `CompareUserFilters for ${userId} size:${userFilterKeys.size} keysDeleted:${keysDeleted}`,
-  );
+    logger.debug(
+      `CompareUserFilters for ${userId} size:${userFilterKeys.size} keysDeleted:${keysDeleted}`,
+    );
+  }
 
   await session.close();
 }

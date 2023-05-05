@@ -41,7 +41,7 @@ const delay = 10000; // 10 seconds
 const maxPriority = 10;
 
 const relationshipFilterCacheEx = 60 * 2;
-const realtionshipScoreCacheEx = 60 * 2;
+const realtionshipScoreCacheEx = 60 * 1;
 
 const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();

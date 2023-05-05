@@ -225,8 +225,36 @@ const getRelationshipScores = async (
   const start_time = performance.now();
 
   const userId = call.request.getUserId();
-  const otherUsers = call.request.getOtherUsersList();
+  let otherUsers = call.request.getOtherUsersList();
   const reply = new GetRelationshipScoresResponse();
+
+  const before = otherUsers.length;
+
+  // check for relationships on redis
+  for (let otherId of otherUsers) {
+    const redisScore = await common.getRedisRelationshipProbability(
+      redisClient,
+      userId,
+      otherId,
+    );
+
+    if (redisScore > 0) {
+      const score = new Score();
+      score.setProb(redisScore);
+      reply.getRelationshipScoresMap().set(otherId, score);
+    }
+  }
+
+  // if already in the reply remove...
+  otherUsers = otherUsers.filter((otherId) => {
+    const inReply = reply.getRelationshipScoresMap().has(otherId);
+    return !inReply;
+  });
+
+  if (before != otherUsers.length)
+    logger.debug(
+      `relationship's read from redis: ${before - otherUsers.length}`,
+    );
 
   const session = driver.session();
   const result = await session.run(
@@ -477,6 +505,7 @@ const putUserPerferences = async (
         f_custom[key] = value;
       });
   } catch (e) {
+    logger.error(`putUserPerferences`, e);
     callback({ message: String(e), code: grpc.status.INTERNAL }, null);
     return;
   }
@@ -499,6 +528,7 @@ const putUserPerferences = async (
       callback(null, reply);
     })
     .catch((e) => {
+      logger.error(`putUserPerferences`, e);
       callback({ code: grpc.status.INTERNAL, message: String(e) }, null);
     });
 };
