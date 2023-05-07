@@ -7,7 +7,7 @@ import '../services/AppProvider.dart';
 import '../utils/utils.dart';
 import '../widgets/LoadingWidget.dart';
 import '../widgets/SwipeDetector.dart';
-import 'FeedbackScreen.dart';
+import 'feedback_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});

@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/ChatScreen.dart';
+import 'package:flutter_app/screens/chat_screen.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 import '../services/AppProvider.dart';
-import 'OptionsScreen.dart';
+import 'options_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
