@@ -4,7 +4,7 @@ import 'package:flutter_app/screens/chat_screen.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
-import '../services/app_provider.dart';
+import '../services/app_service.dart';
 import 'options_screen.dart';
 
 class MainScreen extends StatefulWidget {

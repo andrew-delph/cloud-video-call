@@ -3,7 +3,7 @@ import 'package:flutter_app/utils/state_machines.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:provider/provider.dart';
 
-import '../services/app_provider.dart';
+import '../services/app_service.dart';
 import '../utils/utils.dart';
 import '../widgets/LoadingWidget.dart';
 import '../widgets/SwipeDetector.dart';
