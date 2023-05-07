@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import '../../AppProvider.dart';
 import '../../MapNotifier.dart';
 import '../../location.dart';
-import '../../preferences_service.dart';
+import '../../services/preferences_service.dart';
 import '../LoadingWidget.dart';
 import '../map/map_widget.dart';
 

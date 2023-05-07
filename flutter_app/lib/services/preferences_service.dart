@@ -5,7 +5,7 @@ import 'package:flutter_app/utils.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-import 'Factory.dart';
+import '../Factory.dart';
 
 class PreferencesService extends GetxController {
   final RxMap<String, String> constantAttributes = <String, String>{}.obs;
