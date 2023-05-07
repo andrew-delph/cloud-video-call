@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/services/AppProvider.dart';
 import 'package:flutter_app/screens/LoginScreen.dart';
 import 'package:flutter_app/screens/MainScreen.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 import 'utils/firebase_options.dart';

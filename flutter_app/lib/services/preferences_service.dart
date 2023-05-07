@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_app/utils/utils.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:http/http.dart' as http;
 
 import '../utils/Factory.dart';
@@ -45,7 +46,7 @@ class PreferencesService extends GetxController {
     print("update to ${flag} ... ${unsavedChanges}");
   }
 
-  Future<void> loadAttributes() {
+  Future<void> loadAttributes() async {
     return FirebaseAuth.instance.currentUser!.getIdToken().then((token) {
       var url = Uri.parse("${Factory.getOptionsHost()}/preferences");
       final headers = {
