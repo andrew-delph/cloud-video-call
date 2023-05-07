@@ -20,23 +20,18 @@ class PreferencesService extends GetxController {
 
   PreferencesService() {
     constantAttributes.listen((p0) {
-      print("constantAttributes change");
       updateChanges(true);
     });
     constantFilters.listen((p0) {
-      print("constantFilters change");
       updateChanges(true);
     });
     customAttributes.listen((p0) {
-      print("customAttributes change");
       updateChanges(true);
     });
     customFilters.listen((p0) {
-      print("customFilters change");
       updateChanges(true);
     });
     priority.listen((p0) {
-      print("priority change");
       updateChanges(true);
     });
   }
