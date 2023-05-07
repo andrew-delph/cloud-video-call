@@ -44,8 +44,6 @@ class PreferencesService extends GetxController {
   void updateChanges(bool flag) {
     unsavedChanges.value = flag;
     unsavedChanges.refresh();
-
-    print("update to ${flag} ... ${unsavedChanges}");
   }
 
   Future<void> loadAttributes() async {
