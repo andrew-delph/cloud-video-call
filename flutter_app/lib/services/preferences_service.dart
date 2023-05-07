@@ -6,9 +6,11 @@ import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:http/http.dart' as http;
 
+import '../provider/options_provider.dart';
 import '../utils/Factory.dart';
 
 class PreferencesService extends GetxController {
+  final OptionsProvider optionsProvider = OptionsProvider();
   final RxMap<String, String> constantAttributes = <String, String>{}.obs;
   final RxMap<String, String> constantFilters = <String, String>{}.obs;
   final RxMap<String, String> customAttributes = <String, String>{}.obs;
@@ -47,15 +49,7 @@ class PreferencesService extends GetxController {
   }
 
   Future<void> loadAttributes() async {
-    return FirebaseAuth.instance.currentUser!.getIdToken().then((token) {
-      var url = Uri.parse("${Factory.getOptionsHost()}/preferences");
-      final headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-        'authorization': token.toString()
-      };
-      return http.get(url, headers: headers);
-    }).then((response) {
+    return optionsProvider.getPreferences().then((response) {
       dynamic data = jsonDecode(response.body);
       if (validStatusCode(response.statusCode)) {
       } else {

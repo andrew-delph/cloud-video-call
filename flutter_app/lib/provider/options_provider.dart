@@ -7,6 +7,7 @@ import '../utils/Factory.dart';
 class OptionsProvider extends GetConnect {
   OptionsProvider() {
     httpClient.baseUrl = Factory.getOptionsHost();
+
     httpClient.addAuthenticator((Request request) async {
       final token = await FirebaseAuth.instance.currentUser!.getIdToken();
       // Set the header
@@ -14,10 +15,10 @@ class OptionsProvider extends GetConnect {
       return request;
     });
 
-    //Autenticator will be called 3 times if HttpStatus is
-    //HttpStatus.unauthorized
     httpClient.maxAuthRetries = 3;
   }
 
   Future<Response> health() => get('/health');
+
+  Future<Response> getPreferences() => get('/preferences');
 }

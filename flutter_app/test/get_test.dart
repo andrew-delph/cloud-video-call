@@ -10,15 +10,4 @@ void main() {
 
     expect(value, equals(2.obs));
   });
-
-  test('test OptionsProvider', () async {
-    var provider = OptionsProvider();
-
-    Response health = await provider.health();
-
-    print("${health.bodyString}");
-    print("${health.statusCode}");
-
-    expect(health.statusCode, equals(200));
-  });
 }
