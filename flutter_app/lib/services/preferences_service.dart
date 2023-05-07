@@ -43,38 +43,19 @@ class PreferencesService extends GetxController {
 
   Future<void> loadAttributes() async {
     return optionsProvider.getPreferences().then((response) {
-      dynamic data = response.body;
-      if (validStatusCode(response.statusCode)) {
+      Preferences? preferences = response.body;
+
+      if (validStatusCode(response.statusCode) && preferences != null) {
       } else {
-        String errorMsg =
-            (data['message'] ?? 'Failed to load preferences data.').toString();
+        String errorMsg = ('Failed to load preferences data.').toString();
         throw Exception(errorMsg);
       }
-      return data;
-    }).then((data) {
-      if (data["attributes"] is Map && data["attributes"]["constant"] is Map) {
-        var temp = data["attributes"]["constant"] as Map;
-        constantAttributes.addEntries(temp.entries.map((e) =>
-            MapEntry<String, String>(e.key.toString(), e.value.toString())));
-      }
-      if (data["filters"] is Map && data["filters"]["constant"] is Map) {
-        var temp = data["filters"]["constant"] as Map;
-        constantFilters.addEntries(temp.entries.map((e) =>
-            MapEntry<String, String>(e.key.toString(), e.value.toString())));
-      }
 
-      if (data["attributes"] is Map && data["attributes"]["custom"] is Map) {
-        var temp = data["attributes"]["custom"] as Map;
-        customAttributes.addEntries(temp.entries.map((e) =>
-            MapEntry<String, String>(e.key.toString(), e.value.toString())));
-      }
-      if (data["filters"] is Map && data["filters"]["custom"] is Map) {
-        var temp = data["filters"]["custom"] as Map;
-        customFilters.addEntries(temp.entries.map((e) =>
-            MapEntry<String, String>(e.key.toString(), e.value.toString())));
-      }
-
-      priority.value = data["priority"] as double;
+      constantAttributes.addAll(preferences.constantAttributes);
+      constantFilters.addAll(preferences.constantFilters);
+      customAttributes.addAll(preferences.customAttributes);
+      customFilters.addAll(preferences.customFilters);
+      priority.value = preferences.priority;
 
       updateChanges(false);
     });
