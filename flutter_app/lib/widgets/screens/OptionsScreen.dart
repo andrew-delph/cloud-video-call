@@ -25,7 +25,6 @@ class OptionsScreen extends StatelessWidget {
   final PreferencesService preferencesService = PreferencesService();
 
   bool loading = false;
-  bool unsavedChanges = false;
 
   OptionsScreen({super.key});
 
@@ -276,7 +275,7 @@ class OptionsScreen extends StatelessWidget {
 
     return WillPopScope(
         onWillPop: () async {
-          if (!unsavedChanges) return true;
+          if (!preferencesService.unsavedChanges.value) return true;
           bool confirm = await showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -488,14 +487,6 @@ class UserProfileWidget extends StatelessWidget {
     String? displayName = user.displayName;
     String? email = user.email;
 
-    // for (var element in user.providerData) {
-    //   if (element.displayName != null) {
-    //     displayName = (displayName ?? "") + element.displayName!;
-    //   }
-    //   if (element.email != null) {
-    //     email = (email ?? "") + element.email!;
-    //   }
-    // }
     return Column(
       children: [
         user.isAnonymous
