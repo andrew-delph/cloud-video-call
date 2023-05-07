@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/widgets/screens/ChatScreen.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 import '../../AppProvider.dart';
@@ -31,7 +32,7 @@ class MainScreenState extends State<MainScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const OptionsScreen()),
+                MaterialPageRoute(builder: (context) => OptionsScreen()),
               );
             },
           ),

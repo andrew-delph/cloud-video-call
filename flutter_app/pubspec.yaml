@@ -8,6 +8,7 @@ dependencies:
   flutter_native_splash: ^2.0.4
   flutter_webrtc: ^0.9.19
   geolocator: ^9.0.2
+  get: ^4.6.5
   google_maps: ^6.2.0
   google_maps_flutter: ^2.2.5
   http: ^0.13.5

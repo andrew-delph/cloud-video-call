@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/utils.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -13,124 +15,26 @@ import '../../AppProvider.dart';
 import '../../Factory.dart';
 import '../../MapNotifier.dart';
 import '../../location.dart';
+import '../../preferences_service.dart';
 import '../LoadingWidget.dart';
 import '../map/map_widget.dart';
 
-class OptionsScreen extends StatefulWidget {
-  const OptionsScreen({super.key});
-
-  @override
-  OptionsScreenState createState() => OptionsScreenState();
-}
-
-class OptionsScreenState extends State<OptionsScreen> {
-  final MapNotifier constantAttributes = MapNotifier();
-  final MapNotifier constantFilters = MapNotifier();
-
-  final MapNotifier customAttributes = MapNotifier();
-  final MapNotifier customFilters = MapNotifier();
-
+class OptionsScreen extends StatelessWidget {
   double priority = 0;
 
-  bool loading = true;
+  final PreferencesService preferencesService = PreferencesService();
+
+  bool loading = false;
   bool unsavedChanges = false;
 
-  @override
-  void initState() {
-    super.initState();
-    constantAttributes.addListener(() {
-      if (!mounted) return;
-      setState(() {
-        unsavedChanges = true;
-      });
-    });
-    constantFilters.addListener(() {
-      if (!mounted) return;
-      setState(() {
-        unsavedChanges = true;
-      });
-    });
-
-    customAttributes.addListener(() {
-      if (!mounted) return;
-      setState(() {
-        unsavedChanges = true;
-      });
-    });
-    customFilters.addListener(() {
-      if (!mounted) return;
-      setState(() {
-        unsavedChanges = true;
-      });
-    });
-    loadAttributes();
-  }
-
-  void loadAttributes() {
-    setState(() {
-      loading = true;
-    });
-    FirebaseAuth.instance.currentUser!.getIdToken().then((token) {
-      var url = Uri.parse("${Factory.getOptionsHost()}/preferences");
-      final headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-        'authorization': token.toString()
-      };
-      return http.get(url, headers: headers);
-    }).then((response) {
-      dynamic data = jsonDecode(response.body);
-      if (validStatusCode(response.statusCode)) {
-      } else {
-        String errorMsg =
-            (data['message'] ?? 'Failed to load preferences data.').toString();
-        SnackBar snackBar = SnackBar(
-          content: Text(errorMsg),
-        );
-
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        Navigator.of(context).pop();
-        throw Exception(errorMsg);
-      }
-      return data;
-    }).then((data) {
-      if (data["attributes"] is Map && data["attributes"]["constant"] is Map) {
-        var temp = data["attributes"]["constant"] as Map;
-        constantAttributes.addEntries(temp.entries.map((e) =>
-            MapEntry<String, String>(e.key.toString(), e.value.toString())));
-      }
-      if (data["filters"] is Map && data["filters"]["constant"] is Map) {
-        var temp = data["filters"]["constant"] as Map;
-        constantFilters.addEntries(temp.entries.map((e) =>
-            MapEntry<String, String>(e.key.toString(), e.value.toString())));
-      }
-
-      if (data["attributes"] is Map && data["attributes"]["custom"] is Map) {
-        var temp = data["attributes"]["custom"] as Map;
-        customAttributes.addEntries(temp.entries.map((e) =>
-            MapEntry<String, String>(e.key.toString(), e.value.toString())));
-      }
-      if (data["filters"] is Map && data["filters"]["custom"] is Map) {
-        var temp = data["filters"]["custom"] as Map;
-        print("loaded temp... ${temp.toString()}");
-        customFilters.addEntries(temp.entries.map((e) =>
-            MapEntry<String, String>(e.key.toString(), e.value.toString())));
-      }
-
-      setState(() {
-        priority = data["priority"];
-      });
-    }).whenComplete(() {
-      setState(() {
-        unsavedChanges = false;
-        loading = false;
-      });
-    });
-  }
+  OptionsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     AppProvider appProvider = Provider.of<AppProvider>(context);
+
+    preferencesService.loadAttributes();
+
     Widget profile = Container(
         alignment: Alignment.topCenter,
         decoration: BoxDecoration(
@@ -175,7 +79,7 @@ class OptionsScreenState extends State<OptionsScreen> {
                         DropDownPreference(
                           label: 'Gender',
                           options: const [naValue, "Male", "Female", "Other"],
-                          preferenceMap: constantAttributes,
+                          preferenceMap: preferencesService.constantAttributes,
                           mapKey: 'gender',
                         ),
                         DropDownPreference(
@@ -186,7 +90,7 @@ class OptionsScreenState extends State<OptionsScreen> {
                             "French",
                             "Other"
                           ],
-                          preferenceMap: constantAttributes,
+                          preferenceMap: preferencesService.constantAttributes,
                           mapKey: 'language',
                         ),
                       ],
@@ -208,7 +112,7 @@ class OptionsScreenState extends State<OptionsScreen> {
                         DropDownPreference(
                           label: 'Gender',
                           options: const [naValue, "Male", "Female", "Other"],
-                          preferenceMap: constantFilters,
+                          preferenceMap: preferencesService.constantFilters,
                           mapKey: 'gender',
                         ),
                         DropDownPreference(
@@ -219,7 +123,7 @@ class OptionsScreenState extends State<OptionsScreen> {
                             "French",
                             "Other"
                           ],
-                          preferenceMap: constantFilters,
+                          preferenceMap: preferencesService.constantFilters,
                           mapKey: 'language',
                         ),
                       ],
@@ -239,62 +143,27 @@ class OptionsScreenState extends State<OptionsScreen> {
                           ),
                         ),
                         LocationOptionsWidget(
-                            customAttributes: customAttributes,
-                            customFilters: customFilters),
+                            customAttributes:
+                                preferencesService.customAttributes,
+                            customFilters: preferencesService.customFilters),
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 50,
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: !unsavedChanges
-                          ? null
-                          : () async {
-                              setState(() {
-                                loading = true;
-                              });
-                              var url = Uri.parse(
-                                  "${Factory.getOptionsHost()}/preferences");
-                              final headers = {
-                                'Access-Control-Allow-Origin': '*',
-                                'Content-Type': 'application/json',
-                                'authorization': await FirebaseAuth
-                                    .instance.currentUser!
-                                    .getIdToken()
-                              };
-                              final body = {
-                                'attributes': {
-                                  'constant': constantAttributes.map,
-                                  'custom': customAttributes.map
-                                },
-                                'filters': {
-                                  'constant': constantFilters.map,
-                                  'custom': customFilters.map,
-                                }
-                              };
-                              http
-                                  .put(url,
-                                      headers: headers, body: json.encode(body))
-                                  .then((response) {
-                                if (validStatusCode(response.statusCode)) {
-                                } else {
-                                  const String errorMsg =
-                                      'Failed to update preferences.';
-                                  const snackBar = SnackBar(
-                                    content: Text(errorMsg),
-                                  );
-
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar);
-                                  Navigator.of(context).pop();
-                                }
-                                loadAttributes();
-                              });
-                            },
-                      child: const Text('Submit'),
-                    ),
-                  )
+                  Obx(() {
+                    return SizedBox(
+                      height: 50,
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: !preferencesService
+                                .unsavedChanges.value //!unsavedChanges
+                            ? null
+                            : () async {
+                                preferencesService.updateAttributes();
+                              },
+                        child: const Text('Submit'),
+                      ),
+                    );
+                  })
                 ],
               ));
 
@@ -350,7 +219,6 @@ class OptionsScreenState extends State<OptionsScreen> {
                   value: confirmFeedbackPopup,
                   onChanged: (bool newValue) async {
                     await snapshot.data?.setConfirmFeedbackPopup(newValue);
-                    setState(() {});
                   },
                 )
               ],
@@ -362,7 +230,6 @@ class OptionsScreenState extends State<OptionsScreen> {
                   value: autoQueue,
                   onChanged: (bool newValue) async {
                     await snapshot.data?.setAutoQueue(newValue);
-                    setState(() {});
                   },
                 )
               ],
@@ -443,125 +310,27 @@ class OptionsScreenState extends State<OptionsScreen> {
   }
 }
 
-class KeyValueListWidget extends StatelessWidget {
-  final MapNotifier model; // Define a Map to store key-value pairs
-  final keyController =
-      TextEditingController(); // Controller for the key text field
-  final valueController =
-      TextEditingController(); // Controller for the value text field
-
-  KeyValueListWidget({super.key, required this.model});
-
-  void _addKeyValue() {
-    model.add(keyController.text, valueController.text);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ListView.separated(
-          shrinkWrap: true,
-          itemCount: model.map.length,
-          separatorBuilder: (_, __) => const Divider(),
-          itemBuilder: (context, int index) {
-            final key = model.map.keys.elementAt(index);
-            final value = model.map[key];
-            if (value == null) return const SizedBox();
-            return OptionTile(
-              k: key,
-              v: value,
-              onDelete: () {
-                model.deleteKey(key);
-              },
-            );
-          },
-        ),
-        const Divider(),
-        Row(
-            // mainAxisSize: MainAxisSize.max,
-            // mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: keyController,
-                  maxLines: 1,
-                  decoration: const InputDecoration(
-                    labelText: 'Key',
-                  ),
-                ),
-              ),
-              Expanded(
-                child: TextField(
-                  controller: valueController,
-                  maxLines: 1,
-                  decoration: const InputDecoration(
-                    labelText: 'Value',
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: _addKeyValue,
-                child: const Text('Add'),
-              )
-            ]),
-      ],
-    );
-  }
-}
-
-class OptionTile extends StatelessWidget {
-  final String k;
-  final String v;
-
-  final VoidCallback onDelete;
-
-  const OptionTile(
-      {super.key, required this.k, required this.v, required this.onDelete});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(children: [
-      Expanded(
-        child: Text(k),
-      ),
-      Expanded(
-        child: Text(v),
-      ),
-      ElevatedButton(
-        onPressed: () {
-          onDelete();
-        },
-        child: const Text('Delete'),
-      )
-    ]);
-  }
-}
-
 class LocationOptionsWidget extends StatelessWidget {
-  final MapNotifier customAttributes;
-  final MapNotifier customFilters;
+  final Map<String, String> customAttributes;
+  final Map<String, String> customFilters;
 
   final valueController =
       TextEditingController(); // Controller for the value text field
 
   isValid() {
-    return customAttributes.get("long") != null &&
-        customAttributes.get("lat") != null;
+    return customAttributes["long"] != null && customAttributes["lat"] != null;
   }
 
   canReset() {
-    return customAttributes.get("long") != null ||
-        customAttributes.get("lat") != null ||
-        customFilters.get("dist") != null;
+    return customAttributes["long"] != null ||
+        customAttributes["lat"] != null ||
+        customFilters["dist"] != null;
   }
 
   reset() {
-    customAttributes.deleteKey('long');
-    customAttributes.deleteKey('lat');
-    customFilters.deleteKey('dist');
+    customAttributes.remove('long');
+    customAttributes.remove('lat');
+    customFilters.remove('dist');
   }
 
   updateLocation(context) async {
@@ -574,8 +343,8 @@ class LocationOptionsWidget extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       throw onError;
     });
-    customAttributes.add("long", pos.latitude.toString());
-    customAttributes.add("lat", pos.longitude.toString());
+    customAttributes["long"] = pos.latitude.toString();
+    customAttributes["lat"] = pos.longitude.toString();
     print("pos $pos ${pos.latitude} ${pos.longitude}");
 
     String msg = "Latitude: ${pos.latitude} Longitude: ${pos.longitude}";
@@ -593,8 +362,8 @@ class LocationOptionsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     Pair<double, double>? posPair;
 
-    String? lat = customAttributes.get("lat");
-    String? long = customAttributes.get("long");
+    String? lat = customAttributes["lat"];
+    String? long = customAttributes["long"];
 
     if (long != null && lat != null) {
       try {
@@ -607,12 +376,12 @@ class LocationOptionsWidget extends StatelessWidget {
 
     double dist = -1;
 
-    valueController.text = customFilters.get('dist') ?? 'None';
+    valueController.text = customFilters["dist"] ?? 'None';
 
-    if (customFilters.get('dist') != null) {
-      print("customFilters.get('dist') is ${customFilters.get('dist')}");
+    if (customFilters["dist"] != null) {
+      print("customFilters.get('dist') is ${customFilters["dist"]}");
       try {
-        dist = double.parse(customFilters.get('dist')!);
+        dist = double.parse(customFilters["dist"]!);
       } catch (e) {
         print('Error: Invalid format for conversion');
         posPair = null;
@@ -645,7 +414,7 @@ class LocationOptionsWidget extends StatelessWidget {
               height: 300,
               child: MapWidget(posPair, dist, true, (double eventDist) {
                 print("updating dist value $eventDist");
-                customFilters.add('dist', eventDist.toString(), notify: true);
+                customFilters["dist"] = eventDist.toString();
               }),
             )
           : Container(),
@@ -657,7 +426,7 @@ class DropDownPreference extends StatelessWidget {
   final String label;
   final String mapKey;
   final List<String> options;
-  final MapNotifier preferenceMap;
+  final Map<String, String> preferenceMap;
 
   const DropDownPreference(
       {super.key,
@@ -668,7 +437,7 @@ class DropDownPreference extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Obx(() => SizedBox(
         width: 400,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -676,7 +445,7 @@ class DropDownPreference extends StatelessWidget {
             Text("$label:"),
             SizedBox(
                 child: DropdownButton<String>(
-              value: preferenceMap.get(mapKey) ?? naValue,
+              value: preferenceMap[mapKey] ?? naValue,
               icon: const Icon(Icons.arrow_drop_down),
               elevation: 16,
               style: const TextStyle(color: Colors.purple),
@@ -685,7 +454,7 @@ class DropDownPreference extends StatelessWidget {
                 color: Colors.purpleAccent,
               ),
               onChanged: (String? value) {
-                preferenceMap.add(mapKey, value!);
+                preferenceMap[mapKey] = value!;
               },
               items: options.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
@@ -701,7 +470,7 @@ class DropDownPreference extends StatelessWidget {
               }).toList(),
             ))
           ],
-        ));
+        )));
   }
 }
 
