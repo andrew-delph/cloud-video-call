@@ -1,4 +1,4 @@
-import '../../utils.dart';
+import '../../utils/utils.dart';
 import 'map_widget.dart';
 
 //the error is shown in case of wrong version loaded on wrong platform

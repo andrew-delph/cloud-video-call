@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps/google_maps.dart';
 import 'package:google_maps/google_maps_geometry.dart';
 
-import '../../utils.dart';
+import '../../utils/utils.dart';
 import 'map_widget.dart';
 
 MapWidget getMapWidget(Pair<double, double> posPair, double dist,

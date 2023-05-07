@@ -3,15 +3,15 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/state_machines.dart';
-import 'package:flutter_app/utils.dart';
+import 'package:flutter_app/utils/state_machines.dart';
+import 'package:flutter_app/utils/utils.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:statemachine/statemachine.dart';
 
-import 'Factory.dart';
+import '../utils/Factory.dart';
 
 class AppProvider extends ChangeNotifier {
   MediaStream? _localMediaStream;

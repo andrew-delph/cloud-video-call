@@ -1,12 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/AppProvider.dart';
-import 'package:flutter_app/widgets/screens/LoginScreen.dart';
-import 'package:flutter_app/widgets/screens/MainScreen.dart';
+import 'package:flutter_app/services/AppProvider.dart';
+import 'package:flutter_app/screens/LoginScreen.dart';
+import 'package:flutter_app/screens/MainScreen.dart';
 import 'package:provider/provider.dart';
 
-import 'firebase_options.dart';
+import 'utils/firebase_options.dart';
 
 void main() async {
   print("Start main...");

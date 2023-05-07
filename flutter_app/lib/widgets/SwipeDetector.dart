@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/utils.dart';
+import 'package:flutter_app/utils/utils.dart';
 
 class SwipeDetector extends StatefulWidget {
   final Widget child;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/state_machines.dart';
+import 'package:flutter_app/utils/state_machines.dart';
 
-import '../../AppProvider.dart';
-import '../SwipeDetector.dart';
+import '../services/AppProvider.dart';
+import '../widgets/SwipeDetector.dart';
 
 class FeedbackScreen extends StatefulWidget {
   final String label;

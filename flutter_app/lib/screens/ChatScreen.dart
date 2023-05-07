@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/state_machines.dart';
+import 'package:flutter_app/utils/state_machines.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:provider/provider.dart';
 
-import '../../AppProvider.dart';
-import '../../utils.dart';
-import '../LoadingWidget.dart';
-import '../SwipeDetector.dart';
+import '../services/AppProvider.dart';
+import '../utils/utils.dart';
+import '../widgets/LoadingWidget.dart';
+import '../widgets/SwipeDetector.dart';
 import 'FeedbackScreen.dart';
 
 class ChatScreen extends StatefulWidget {

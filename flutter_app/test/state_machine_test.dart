@@ -1,4 +1,4 @@
-import 'package:flutter_app/state_machines.dart';
+import 'package:flutter_app/utils/state_machines.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:statemachine/statemachine.dart';
 

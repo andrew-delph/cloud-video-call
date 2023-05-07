@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../utils.dart';
+import '../../utils/utils.dart';
 import 'map_widget_stub.dart'
     if (dart.library.html) 'web_map_widget.dart'
     if (dart.library.io) 'mobile_map_widget.dart';

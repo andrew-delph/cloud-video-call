@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/utils.dart';
+import 'package:flutter_app/utils/utils.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -8,12 +8,13 @@ import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
-import '../../AppProvider.dart';
-import '../../MapNotifier.dart';
-import '../../location.dart';
-import '../../services/preferences_service.dart';
-import '../LoadingWidget.dart';
-import '../map/map_widget.dart';
+import '../services/AppProvider.dart';
+import '../utils/location.dart';
+import '../services/preferences_service.dart';
+import '../widgets/LoadingWidget.dart';
+import '../widgets/map/map_widget.dart';
+
+const String naValue = "Skip";
 
 class OptionsScreen extends StatelessWidget {
   double priority = 0;
