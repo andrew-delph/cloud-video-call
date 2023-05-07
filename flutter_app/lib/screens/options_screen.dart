@@ -8,7 +8,7 @@ import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
-import '../services/AppProvider.dart';
+import '../services/app_provider.dart';
 import '../utils/location.dart';
 import '../services/preferences_service.dart';
 import '../widgets/LoadingWidget.dart';
