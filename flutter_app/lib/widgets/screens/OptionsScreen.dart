@@ -149,8 +149,7 @@ class OptionsScreen extends StatelessWidget {
                       height: 50,
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: !preferencesService
-                                .unsavedChanges.value //!unsavedChanges
+                        onPressed: !preferencesService.unsavedChanges.value
                             ? null
                             : () async {
                                 preferencesService.updateAttributes();
