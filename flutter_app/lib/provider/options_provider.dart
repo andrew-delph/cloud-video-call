@@ -20,5 +20,9 @@ class OptionsProvider extends GetConnect {
 
   Future<Response> health() => get('/health');
 
-  Future<Response> getPreferences() => get('/preferences');
+  Future<Response> getPreferences() =>
+      get('/preferences', contentType: 'application/json');
+
+  Future<Response> updatePreferences(dynamic body) =>
+      put('/preferences', body, contentType: 'application/json');
 }

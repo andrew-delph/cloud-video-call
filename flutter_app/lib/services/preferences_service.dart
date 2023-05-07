@@ -50,7 +50,7 @@ class PreferencesService extends GetxController {
 
   Future<void> loadAttributes() async {
     return optionsProvider.getPreferences().then((response) {
-      dynamic data = jsonDecode(response.body);
+      dynamic data = response.body;
       if (validStatusCode(response.statusCode)) {
       } else {
         String errorMsg =
@@ -88,25 +88,17 @@ class PreferencesService extends GetxController {
   }
 
   Future<void> updateAttributes() {
-    return FirebaseAuth.instance.currentUser!.getIdToken().then((token) {
-      var url = Uri.parse("${Factory.getOptionsHost()}/preferences");
-      final headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-        'authorization': token
-      };
-      final body = {
-        'attributes': {
-          'constant': constantAttributes,
-          'custom': customAttributes
-        },
-        'filters': {
-          'constant': constantFilters,
-          'custom': customFilters,
-        }
-      };
-      return http.put(url, headers: headers, body: json.encode(body));
-    }).then((response) {
+    final body = {
+      'attributes': {
+        'constant': constantAttributes,
+        'custom': customAttributes
+      },
+      'filters': {
+        'constant': constantFilters,
+        'custom': customFilters,
+      }
+    };
+    return optionsProvider.updatePreferences(body).then((response) {
       if (validStatusCode(response.statusCode)) {
       } else {
         const String errorMsg = 'Failed to update preferences.';
