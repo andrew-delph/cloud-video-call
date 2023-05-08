@@ -239,8 +239,6 @@ const getRelationshipScores = async (
   let otherUsers = call.request.getOtherUsersList();
   const reply = new GetRelationshipScoresResponse();
 
-  const before = otherUsers.length;
-
   // check for relationships on redis
   for (let otherId of otherUsers) {
     const redisScore = await common.getRedisRelationshipProbability(
@@ -262,10 +260,11 @@ const getRelationshipScores = async (
     return !inReply;
   });
 
-  if (before != otherUsers.length)
-    logger.debug(
-      `relationship's read from redis: ${before - otherUsers.length}`,
-    );
+  logger.info(
+    `relationship's read from redis: ${reply
+      .getRelationshipScoresMap()
+      .getLength()}`,
+  );
 
   const session = driver.session();
   const result = await session.run(
