@@ -6,6 +6,9 @@ neo4j:
   resources:
     cpu: '0.5'
     memory: '2Gi'
+    limits: 
+      cpu: '1'
+      memory: '3Gi'
 
 env:
   NEO4J_PLUGINS: '["graph-data-science","apoc"]'

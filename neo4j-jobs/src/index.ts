@@ -87,7 +87,6 @@ logger.info(`Value of JOB: ${job}`);
       results = await funcs.train();
       funcs.printResults(results, print_num);
 
-    case `TRAIN`:
     case `COMPUTE`:
       results = await funcs.predict(true, `myGraph`);
       funcs.printResults(results, print_num);
