@@ -260,11 +260,19 @@ const getRelationshipScores = async (
     return !inReply;
   });
 
-  logger.info(
-    `relationship's read from redis: ${reply
-      .getRelationshipScoresMap()
-      .getLength()}`,
-  );
+  if (reply.getRelationshipScoresMap().getLength() == 0) {
+    logger.debug(
+      `relationship's read from redis: ${reply
+        .getRelationshipScoresMap()
+        .getLength()}`,
+    );
+  } else {
+    logger.info(
+      `relationship's read from redis: ${reply
+        .getRelationshipScoresMap()
+        .getLength()}`,
+    );
+  }
 
   const session = driver.session();
   const result = await session.run(
