@@ -10,7 +10,8 @@ import 'package:provider/provider.dart';
 import '../services/app_service.dart';
 import '../services/preferences_service.dart';
 import '../widgets/LoadingWidget.dart';
-import '../widgets/dropdown_preference.dart';
+import '../widgets/dropdown_preference_widget.dart';
+import '../widgets/history_widget.dart';
 import '../widgets/location_options.dart';
 
 class OptionsScreen extends StatelessWidget {
@@ -156,6 +157,35 @@ class OptionsScreen extends StatelessWidget {
                       ),
                     );
                   })
+                ],
+              ));
+
+    Widget history = Container(
+        alignment: Alignment.topCenter,
+        decoration: BoxDecoration(
+          color: Colors.teal,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.all(20),
+        constraints: const BoxConstraints(
+          maxWidth: 1000,
+        ),
+        child: loading
+            ? connectingWidget
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: const [
+                  Text(
+                    "History",
+                    style: TextStyle(
+                      fontSize: 35.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Divider(),
+                  HistoryWidget()
                 ],
               ));
 
