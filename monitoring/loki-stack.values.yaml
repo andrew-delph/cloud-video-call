@@ -94,9 +94,9 @@ promtail:
         - drop:
             source: 'namespace'
             expression: '(kube-public|kube-system)'
-        - drop:
-            older_than: 1h
-            drop_counter_reason: 'line_too_old'
+        # - drop:
+        #     older_than: 1h
+        #     drop_counter_reason: 'line_too_old'
         - cri:
         - docker:
         - json:
