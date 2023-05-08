@@ -47,6 +47,7 @@ export const cleanSocket = async (
     io.in(socket_id).emit(`closing`, `cleanSocket`);
     io.in(socket_id).disconnectSockets();
   }
+  await common.updateRecentlyActiveUser(mainRedisClient, auth);
   await mainRedisClient.hdel(common.connectedAuthMapName, auth);
   await mainRedisClient.srem(common.activeSetName, auth);
   await mainRedisClient.srem(common.readySetName, auth);

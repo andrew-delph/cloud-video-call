@@ -21,13 +21,13 @@ logger.info(`Value of JOB: ${job}`);
 (async () => {
   switch (job) {
     case `SHORT_PREDICT`:
-      const activeUsers = await common.getActiveUsers(redisClient);
+      const activeUsers = await common.getRecentlyActiveUsers(redisClient, 1);
 
       if (activeUsers.length < 5) {
         logger.info(`activeUsers.length is too small : ${activeUsers.length}`);
         break;
       } else {
-        logger.info(`activeUsers: ${activeUsers.length}`);
+        logger.info(`Recently Active Users: ${activeUsers.length}`);
       }
 
       results = await funcs.createGraph(

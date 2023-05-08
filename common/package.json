@@ -19,8 +19,9 @@
   },
   "dependencies": {
     "amqplib": "^0.10.3",
-    "ioredis": "5.2.5",
     "firebase-admin": "^11.4.1",
+    "ioredis": "5.2.5",
+    "moment": "^2.29.4",
     "uuid": "^9.0.0",
     "winston": "^3.8.2"
   }

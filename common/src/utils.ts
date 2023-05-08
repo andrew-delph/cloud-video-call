@@ -2,7 +2,8 @@ import { getLogger } from './logger';
 import { getAuth } from 'firebase-admin/auth';
 import Client from 'ioredis';
 import amqp from 'amqplib';
-import { activeSetName } from './variables';
+import { activeSetName, recentlyActiveUserSet } from './variables';
+import moment from 'moment';
 
 const logger = getLogger();
 
@@ -103,4 +104,31 @@ export const writeRedisRelationshipProbability = async (
     `EX`,
     60 * 3,
   );
+};
+
+export const updateRecentlyActiveUser = async (
+  redisClient: Client,
+  userId: string,
+) => {
+  await redisClient.zadd(recentlyActiveUserSet, moment().valueOf(), userId);
+};
+
+export const getRecentlyActiveUsers = async (
+  redisClient: Client,
+  minutes: number,
+  includeActive: boolean = true,
+) => {
+  const fiveMinutesAgo = moment().subtract(minutes, `minutes`).valueOf();
+
+  const recentlyActiveList = await redisClient.zrangebyscore(
+    recentlyActiveUserSet,
+    fiveMinutesAgo,
+    `+inf`,
+  );
+
+  if (includeActive) {
+    recentlyActiveList.push(...(await getActiveUsers(redisClient)));
+  }
+
+  return [...new Set(recentlyActiveList)];
 };

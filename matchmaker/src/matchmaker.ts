@@ -34,9 +34,11 @@ let lockRedisClient: Client;
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
 
+const prefetch = 10;
+
 const delayExchange = `my-delayed-exchange`;
 const readyRoutingKey = `ready-routing-key`;
-const delay = 10000; // 10 seconds
+const delay = 1000; // 1 seconds
 
 const maxPriority = 10;
 
@@ -102,7 +104,7 @@ export const startReadyConsumer = async () => {
 
   await subRedisClient.psubscribe(`${matchmakerChannelPrefix}*`);
 
-  rabbitChannel.prefetch(5);
+  rabbitChannel.prefetch(prefetch);
   logger.info(` [x] Awaiting RPC requests`);
 
   rabbitChannel.consume(
