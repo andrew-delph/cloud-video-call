@@ -28,7 +28,9 @@ class HistoryWidget extends StatelessWidget {
       }).toList();
 
       // remove the last divider
-      historyList.removeLast();
+      if (historyList.isNotEmpty) {
+        historyList.removeLast();
+      }
 
       return Column(children: historyList);
     });
