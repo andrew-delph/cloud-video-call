@@ -98,8 +98,8 @@ class HistoryItemModel {
   String? userId1;
   String? userId2;
   String? createTime;
-  int? userId1Score;
-  int? userId2Score;
+  double? userId1Score;
+  double? userId2Score;
 
   HistoryItemModel(
       {this.userId1,

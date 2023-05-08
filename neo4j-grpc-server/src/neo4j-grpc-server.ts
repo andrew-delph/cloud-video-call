@@ -555,9 +555,11 @@ const getMatchHistory = async (
 
   const result: any = await session.run(
     `
-      MATCH (n1:Person{userId: $userId})-[r1:MATCHED]->(n2:Person)
-      return n1.userId, n2.userId, r1.createDate
-      ORDER by r1.createDate DESC
+    MATCH (n1:Person)-[r1:MATCHED]->(n2:Person)
+    OPTIONAL MATCH (n1:Person)-[r2:FEEDBACK{feedbackId:id(r1)}]->(n2:Person)
+    OPTIONAL MATCH (n2:Person)-[r3:FEEDBACK{feedbackId:r1.other}]->(n1:Person)
+    return n1.userId, n2.userId, r1.createDate, r2.score, r3.score
+    ORDER by r1.createDate DESC
     `,
     { userId },
   );
@@ -569,6 +571,8 @@ const getMatchHistory = async (
     match.setUserId1(userId);
     match.setUserId2(record.get(`n2.userId`));
     match.setCreateTime(`${record.get(`r1.createDate`)}`);
+    match.setUserId1Score(record.get(`r2.score`));
+    match.setUserId2Score(record.get(`r3.score`));
     reply.addMatchHistory(match);
   }
 
