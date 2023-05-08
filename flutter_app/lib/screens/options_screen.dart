@@ -2,19 +2,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/utils.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import '../services/app_service.dart';
-import '../utils/location.dart';
 import '../services/preferences_service.dart';
 import '../widgets/LoadingWidget.dart';
-import '../widgets/map/map_widget.dart';
-
-const String naValue = "Skip";
+import '../widgets/dropdown_preference.dart';
+import '../widgets/location_options.dart';
 
 class OptionsScreen extends StatelessWidget {
   double priority = 0;
@@ -302,170 +299,6 @@ class OptionsScreen extends StatelessWidget {
                     child: Column(
               children: [profile, settings, const AppDetailsWidget()],
             )))));
-  }
-}
-
-class LocationOptionsWidget extends StatelessWidget {
-  final Map<String, String> customAttributes;
-  final Map<String, String> customFilters;
-
-  final valueController =
-      TextEditingController(); // Controller for the value text field
-
-  isValid() {
-    return customAttributes["long"] != null && customAttributes["lat"] != null;
-  }
-
-  canReset() {
-    return customAttributes["long"] != null ||
-        customAttributes["lat"] != null ||
-        customFilters["dist"] != null;
-  }
-
-  reset() {
-    customAttributes.remove('long');
-    customAttributes.remove('lat');
-    customFilters.remove('dist');
-  }
-
-  updateLocation(context) async {
-    Position pos = await getLocation().catchError((onError) {
-      String errorMsg = onError.toString();
-      SnackBar snackBar = SnackBar(
-        content: Text(errorMsg),
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      throw onError;
-    });
-    customAttributes["long"] = pos.latitude.toString();
-    customAttributes["lat"] = pos.longitude.toString();
-    print("pos $pos ${pos.latitude} ${pos.longitude}");
-
-    String msg = "Latitude: ${pos.latitude} Longitude: ${pos.longitude}";
-    SnackBar snackBar = SnackBar(
-      content: Text(msg),
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  LocationOptionsWidget(
-      {super.key, required this.customAttributes, required this.customFilters});
-
-  @override
-  Widget build(BuildContext context) {
-    Pair<double, double>? posPair;
-
-    String? lat = customAttributes["lat"];
-    String? long = customAttributes["long"];
-
-    if (long != null && lat != null) {
-      try {
-        posPair = Pair(double.parse(long), double.parse(lat));
-      } catch (e) {
-        print('Error: Invalid format for conversion');
-        posPair = null;
-      }
-    }
-
-    double dist = -1;
-
-    valueController.text = customFilters["dist"] ?? 'None';
-
-    if (customFilters["dist"] != null) {
-      print("customFilters.get('dist') is ${customFilters["dist"]}");
-      try {
-        dist = double.parse(customFilters["dist"]!);
-      } catch (e) {
-        print('Error: Invalid format for conversion');
-        posPair = null;
-      }
-    } else {
-      print("customFilters.get('dist') == null");
-    }
-
-    return Column(children: [
-      Wrap(
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              updateLocation(context);
-            },
-            child: const Text('Update Location'),
-          ),
-          ElevatedButton(
-            onPressed: canReset() ? reset : null,
-            child: const Text('Clear'),
-          ),
-          isValid()
-              ? Text('Max Distance Km: ${dist < 0 ? 'None' : dist.toInt()}')
-              : Container()
-        ],
-      ),
-      posPair != null
-          ? SizedBox(
-              width: 300,
-              height: 300,
-              child: MapWidget(posPair, dist, true, (double eventDist) {
-                print("updating dist value $eventDist");
-                customFilters["dist"] = eventDist.toString();
-              }),
-            )
-          : Container(),
-    ]);
-  }
-}
-
-class DropDownPreference extends StatelessWidget {
-  final String label;
-  final String mapKey;
-  final List<String> options;
-  final Map<String, String> preferenceMap;
-
-  const DropDownPreference(
-      {super.key,
-      required this.label,
-      required this.options,
-      required this.preferenceMap,
-      required this.mapKey});
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() => SizedBox(
-        width: 400,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("$label:"),
-            SizedBox(
-                child: DropdownButton<String>(
-              value: preferenceMap[mapKey] ?? naValue,
-              icon: const Icon(Icons.arrow_drop_down),
-              elevation: 16,
-              style: const TextStyle(color: Colors.purple),
-              underline: Container(
-                height: 2,
-                color: Colors.purpleAccent,
-              ),
-              onChanged: (String? value) {
-                preferenceMap[mapKey] = value!;
-              },
-              items: options.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                    value: value,
-                    child: SizedBox(
-                      width: 70,
-                      child: Text(
-                        value,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ));
-              }).toList(),
-            ))
-          ],
-        )));
   }
 }
 
