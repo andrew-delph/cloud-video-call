@@ -33,6 +33,9 @@ run:
 	make setup
 	./run-kube.sh resources/k6-output-grafana-cloud.yaml
 
+run_prod:
+	make setup
+	./run-kube.sh resources/k6-output-grafana-cloud.yaml --external
 
 watch:
 	watch kubectl get pods -n k6

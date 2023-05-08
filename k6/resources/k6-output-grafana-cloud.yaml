@@ -9,7 +9,7 @@ kind: K6
 metadata:
   name: k6-output-grafana-cloud
 spec:
-  parallelism: 5
+  parallelism: 1
   script:
     configMap:
       # Remember...we created the 'test-scripts' ConfigMap with the available scripts inside.
@@ -28,9 +28,9 @@ spec:
       - name: K6_PROMETHEUS_RW_TREND_STATS
         value: 'avg,p(90),p(99),min,max'
       - name: WS_HOST
-        value: 'ws://websocket.default.svc.cluster.local/socket.io/?EIO=4&transport=websocket'
+        value: 'WS_HOST_VALUE'
       - name: OPTIONS_HOST
-        value: 'http://options.default.svc.cluster.local'
+        value: 'OPTIONS_HOST_VALUE'
       - name: REDIS
         value: 'redis.default.svc.cluster.local:6379'
       - name: K6_PROMETHEUS_RW_SERVER_URL
