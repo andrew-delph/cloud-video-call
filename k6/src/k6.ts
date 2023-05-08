@@ -18,7 +18,7 @@ export const redisClient = new redis.Client({
   addrs: new Array(__ENV.REDIS || `localhost:6379`), // in the form of 'host:port', separated by commas
 });
 
-const authKeysNum = 1000;
+const authKeysNum = 100;
 const vus = 30;
 const nukeData = true;
 
@@ -68,10 +68,12 @@ export function setup() {
     })
     .then(async () => {
       console.log(`post delete authKeysName`);
-      for (let auth of authKeys) {
-        let user = users.getUser(auth);
-        await user.updatePreferences();
-        console.log(`post updatePreferences ${auth}`);
+      if (nukeData) {
+        for (let auth of authKeys) {
+          let user = users.getUser(auth);
+          await user.updatePreferences();
+          console.log(`post updatePreferences ${auth}`);
+        }
       }
 
       await redisClient.lpush(authKeysName, ...authKeys);
