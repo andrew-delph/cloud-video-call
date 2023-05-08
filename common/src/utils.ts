@@ -102,7 +102,7 @@ export const writeRedisRelationshipProbability = async (
     relationshipProbabilityKey(userId1, userId2),
     probability,
     `EX`,
-    60 * 10,
+    60 * 30,
   );
 };
 
