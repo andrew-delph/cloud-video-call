@@ -21,7 +21,7 @@ logger.info(`Value of JOB: ${job}`);
 (async () => {
   switch (job) {
     case `SHORT_PREDICT`:
-      const activeUsers = await common.getRecentlyActiveUsers(redisClient, 1);
+      const activeUsers = await common.getRecentlyActiveUsers(redisClient, 5);
 
       if (activeUsers.length < 5) {
         logger.info(`activeUsers.length is too small : ${activeUsers.length}`);
