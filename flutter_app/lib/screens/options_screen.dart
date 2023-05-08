@@ -175,8 +175,8 @@ class OptionsScreen extends StatelessWidget {
             ? connectingWidget
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: const [
-                  Text(
+                children: [
+                  const Text(
                     "History",
                     style: TextStyle(
                       fontSize: 35.0,
@@ -184,8 +184,8 @@ class OptionsScreen extends StatelessWidget {
                       color: Colors.black,
                     ),
                   ),
-                  Divider(),
-                  // HistoryWidget()
+                  const Divider(),
+                  HistoryWidget()
                 ],
               ));
 
