@@ -12,7 +12,7 @@ export const listenGlobalExceptions = (clean_up?: () => Promise<void>) => {
         logger.error(err.stack);
         if (clean_up != null) await clean_up();
 
-        process.exit(0);
+        process.exit(1);
       } catch (e) {
         logger.error(`clean_up error: ${e}`);
         process.exit(1);
