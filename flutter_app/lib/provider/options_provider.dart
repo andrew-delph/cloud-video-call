@@ -27,8 +27,8 @@ class OptionsProvider extends GetConnect {
   Future<Response> updatePreferences(dynamic body) =>
       put('/preferences', body, contentType: 'application/json');
 
-  Future<Response<History>> getHistory() => get('/history',
-      contentType: 'application/json', decoder: History.fromJson);
+  Future<Response<HistoryModel>> getHistory() => get('/history',
+      contentType: 'application/json', decoder: HistoryModel.fromJson);
 }
 
 class Preferences {
@@ -72,16 +72,16 @@ class Preferences {
   }
 }
 
-class History {
-  List<HistoryItem> matchHistoryList = [];
+class HistoryModel {
+  List<HistoryItemModel> matchHistoryList = [];
 
-  History();
+  HistoryModel();
 
-  factory History.fromJson(dynamic json) {
-    History history = History();
+  factory HistoryModel.fromJson(dynamic json) {
+    HistoryModel history = HistoryModel();
     if (json['matchHistoryList'] != null) {
       json['matchHistoryList'].forEach((v) {
-        history.matchHistoryList.add(HistoryItem.fromJson(v));
+        history.matchHistoryList.add(HistoryItemModel.fromJson(v));
       });
     }
     return history;
@@ -94,21 +94,21 @@ class History {
   }
 }
 
-class HistoryItem {
+class HistoryItemModel {
   String? userId1;
   String? userId2;
   String? createTime;
   int? userId1Score;
   int? userId2Score;
 
-  HistoryItem(
+  HistoryItemModel(
       {this.userId1,
       this.userId2,
       this.createTime,
       this.userId1Score,
       this.userId2Score});
 
-  HistoryItem.fromJson(Map<String, dynamic> json) {
+  HistoryItemModel.fromJson(Map<String, dynamic> json) {
     userId1 = json['userId1'];
     userId2 = json['userId2'];
     createTime = json['createTime'];

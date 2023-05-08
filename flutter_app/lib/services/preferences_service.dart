@@ -1,13 +1,7 @@
-import 'dart:convert';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_app/utils/utils.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/request/request.dart';
-import 'package:http/http.dart' as http;
 
 import '../provider/options_provider.dart';
-import '../utils/Factory.dart';
 
 class PreferencesService extends GetxController {
   final OptionsProvider optionsProvider = OptionsProvider();

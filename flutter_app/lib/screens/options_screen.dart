@@ -185,7 +185,7 @@ class OptionsScreen extends StatelessWidget {
                     ),
                   ),
                   Divider(),
-                  HistoryWidget()
+                  // HistoryWidget()
                 ],
               ));
 
@@ -327,7 +327,7 @@ class OptionsScreen extends StatelessWidget {
             body: Center(
                 child: SingleChildScrollView(
                     child: Column(
-              children: [profile, settings, const AppDetailsWidget()],
+              children: [profile, history, settings, const AppDetailsWidget()],
             )))));
   }
 }
