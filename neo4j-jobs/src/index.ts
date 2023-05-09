@@ -54,6 +54,15 @@ logger.info(`Value of JOB: ${job}`);
         `writeRedisRelationshipProbability: ${results.records.length}`,
       );
 
+      // log the lowest probability found
+      if (results.records.length > 1) {
+        logger.info(
+          `lowest probability found: ${results.records[
+            results.records.length - 1
+          ].get(`probability`)}`,
+        );
+      }
+
       funcs.printResults(results, print_num);
       break;
     case `TRAIN`:
