@@ -5,7 +5,6 @@
 /* eslint-disable */
 
 import * as grpc from "@grpc/grpc-js";
-import {handleClientStreamingCall} from "@grpc/grpc-js/build/src/server-call";
 import * as neo4j_pb from "./neo4j_pb";
 
 interface INeo4jService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
@@ -114,7 +113,7 @@ interface INeo4jService_IGetMatchHistory extends grpc.MethodDefinition<neo4j_pb.
 
 export const Neo4jService: INeo4jService;
 
-export interface INeo4jServer {
+export interface INeo4jServer extends grpc.UntypedServiceImplementation {
     createUser: grpc.handleUnaryCall<neo4j_pb.CreateUserRequest, neo4j_pb.CreateUserResponse>;
     createMatch: grpc.handleUnaryCall<neo4j_pb.CreateMatchRequest, neo4j_pb.CreateMatchResponse>;
     updateMatch: grpc.handleUnaryCall<neo4j_pb.UpdateMatchRequest, neo4j_pb.UpdateMatchResponse>;

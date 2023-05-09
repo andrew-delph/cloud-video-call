@@ -10,7 +10,6 @@ export class HealthCheckRequest extends jspb.Message {
     getService(): string;
     setService(value: string): HealthCheckRequest;
 
-
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): HealthCheckRequest.AsObject;
     static toObject(includeInstance: boolean, msg: HealthCheckRequest): HealthCheckRequest.AsObject;
@@ -30,7 +29,6 @@ export namespace HealthCheckRequest {
 export class HealthCheckResponse extends jspb.Message { 
     getStatus(): HealthCheckResponse.ServingStatus;
     setStatus(value: HealthCheckResponse.ServingStatus): HealthCheckResponse;
-
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): HealthCheckResponse.AsObject;

@@ -39,17 +39,6 @@ var HealthService = exports.HealthService = {
     responseSerialize: serialize_grpc_health_v1_HealthCheckResponse,
     responseDeserialize: deserialize_grpc_health_v1_HealthCheckResponse,
   },
-  watch: {
-    path: '/grpc.health.v1.Health/Watch',
-    requestStream: false,
-    responseStream: true,
-    requestType: health_pb.HealthCheckRequest,
-    responseType: health_pb.HealthCheckResponse,
-    requestSerialize: serialize_grpc_health_v1_HealthCheckRequest,
-    requestDeserialize: deserialize_grpc_health_v1_HealthCheckRequest,
-    responseSerialize: serialize_grpc_health_v1_HealthCheckResponse,
-    responseDeserialize: deserialize_grpc_health_v1_HealthCheckResponse,
-  },
 };
 
 exports.HealthClient = grpc.makeGenericClientConstructor(HealthService);
