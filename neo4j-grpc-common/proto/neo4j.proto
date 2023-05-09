@@ -9,10 +9,6 @@ package neo4j;
 service Neo4j {
   // Sends a greeting
   rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {
-       option (google.api.http) = {
-            get: "/v1/example/echo"
-            body: "*"
-          };
   }
 
   rpc CreateMatch (CreateMatchRequest) returns (CreateMatchResponse) {}
@@ -31,7 +27,12 @@ service Neo4j {
 
   rpc PutUserPerferences(PutUserPerferencesRequest) returns (PutUserPerferencesResponse) {}
 
-  rpc GetMatchHistory(MatchHistoryRequest) returns (MatchHistoryResponse) {}
+  rpc GetMatchHistory(MatchHistoryRequest) returns (MatchHistoryResponse) {
+    option (google.api.http) = {
+      post: "/v1/history"
+      body: "*"
+    };
+  }
 }
 
 message CreateUserRequest {
