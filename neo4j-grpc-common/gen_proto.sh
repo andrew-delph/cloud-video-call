@@ -2,7 +2,6 @@
 
 # Exit the script if any command fails
 set -e
-buf build -o image.json
 buf generate
 
 # npx grpc_tools_node_protoc \
