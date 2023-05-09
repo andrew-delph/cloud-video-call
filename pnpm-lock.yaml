@@ -252,9 +252,6 @@ importers:
 
   neo4j-grpc-server:
     dependencies:
-      '@grpc/grpc-js':
-        specifier: ^1.8.9
-        version: 1.8.9
       common:
         specifier: link:../common
         version: link:../common

@@ -20,8 +20,8 @@ import {
   MatchHistoryResponse,
   MatchHistoryRequest,
   Match,
+  grpc,
 } from 'neo4j-grpc-common';
-import * as grpc from '@grpc/grpc-js';
 import * as neo4j from 'neo4j-driver';
 import * as common from 'common';
 import { v4 } from 'uuid';

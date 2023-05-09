@@ -13,7 +13,6 @@
     "k8-restart": "npm run docker && kn service update neo4j-grpc-server --image=andrewdelph/video-call-neo4j-grpc-server:latest --wait && date"
   },
   "dependencies": {
-    "@grpc/grpc-js": "^1.8.9",
     "common": "link:../common",
     "haversine-distance": "^1.2.1",
     "neo4j-driver": "^5.5.0",
