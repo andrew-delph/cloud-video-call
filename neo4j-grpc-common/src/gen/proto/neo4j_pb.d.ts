@@ -1,5 +1,5 @@
 // package: neo4j
-// file: neo4j.proto
+// file: proto/neo4j.proto
 
 /* tslint:disable */
 /* eslint-disable */
@@ -9,6 +9,7 @@ import * as jspb from "google-protobuf";
 export class CreateUserRequest extends jspb.Message { 
     getUserId(): string;
     setUserId(value: string): CreateUserRequest;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CreateUserRequest.AsObject;
@@ -29,8 +30,10 @@ export namespace CreateUserRequest {
 export class CreateUserResponse extends jspb.Message { 
     getError(): boolean;
     setError(value: boolean): CreateUserResponse;
+
     getMessage(): string;
     setMessage(value: string): CreateUserResponse;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CreateUserResponse.AsObject;
@@ -52,8 +55,10 @@ export namespace CreateUserResponse {
 export class CreateMatchRequest extends jspb.Message { 
     getUserId1(): string;
     setUserId1(value: string): CreateMatchRequest;
+
     getUserId2(): string;
     setUserId2(value: string): CreateMatchRequest;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CreateMatchRequest.AsObject;
@@ -75,16 +80,22 @@ export namespace CreateMatchRequest {
 export class CreateMatchResponse extends jspb.Message { 
     getError(): boolean;
     setError(value: boolean): CreateMatchResponse;
+
     getMessage(): string;
     setMessage(value: string): CreateMatchResponse;
+
     getUserId1(): string;
     setUserId1(value: string): CreateMatchResponse;
+
     getUserId2(): string;
     setUserId2(value: string): CreateMatchResponse;
+
     getRelationshipId1(): string;
     setRelationshipId1(value: string): CreateMatchResponse;
+
     getRelationshipId2(): string;
     setRelationshipId2(value: string): CreateMatchResponse;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CreateMatchResponse.AsObject;
@@ -110,10 +121,13 @@ export namespace CreateMatchResponse {
 export class UpdateMatchRequest extends jspb.Message { 
     getRelationshipId(): string;
     setRelationshipId(value: string): UpdateMatchRequest;
+
     getKey(): string;
     setKey(value: string): UpdateMatchRequest;
+
     getValue(): string;
     setValue(value: string): UpdateMatchRequest;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): UpdateMatchRequest.AsObject;
@@ -136,8 +150,10 @@ export namespace UpdateMatchRequest {
 export class UpdateMatchResponse extends jspb.Message { 
     getError(): boolean;
     setError(value: boolean): UpdateMatchResponse;
+
     getMessage(): string;
     setMessage(value: string): UpdateMatchResponse;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): UpdateMatchResponse.AsObject;
@@ -159,10 +175,12 @@ export namespace UpdateMatchResponse {
 export class GetRelationshipScoresRequest extends jspb.Message { 
     getUserId(): string;
     setUserId(value: string): GetRelationshipScoresRequest;
+
     clearOtherUsersList(): void;
     getOtherUsersList(): Array<string>;
     setOtherUsersList(value: Array<string>): GetRelationshipScoresRequest;
     addOtherUsers(value: string, index?: number): string;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): GetRelationshipScoresRequest.AsObject;
@@ -184,11 +202,14 @@ export namespace GetRelationshipScoresRequest {
 export class GetRelationshipScoresResponse extends jspb.Message { 
     getError(): boolean;
     setError(value: boolean): GetRelationshipScoresResponse;
+
     getMessage(): string;
     setMessage(value: string): GetRelationshipScoresResponse;
 
+
     getRelationshipScoresMap(): jspb.Map<string, Score>;
     clearRelationshipScoresMap(): void;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): GetRelationshipScoresResponse.AsObject;
@@ -212,8 +233,10 @@ export namespace GetRelationshipScoresResponse {
 export class Score extends jspb.Message { 
     getProb(): number;
     setProb(value: number): Score;
+
     getNumbFriends(): number;
     setNumbFriends(value: number): Score;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Score.AsObject;
@@ -235,8 +258,10 @@ export namespace Score {
 export class CheckUserFiltersRequest extends jspb.Message { 
     getUserId1(): string;
     setUserId1(value: string): CheckUserFiltersRequest;
+
     getUserId2(): string;
     setUserId2(value: string): CheckUserFiltersRequest;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CheckUserFiltersRequest.AsObject;
@@ -258,10 +283,13 @@ export namespace CheckUserFiltersRequest {
 export class CheckUserFiltersResponse extends jspb.Message { 
     getError(): boolean;
     setError(value: boolean): CheckUserFiltersResponse;
+
     getMessage(): string;
     setMessage(value: string): CheckUserFiltersResponse;
+
     getPassed(): boolean;
     setPassed(value: boolean): CheckUserFiltersResponse;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CheckUserFiltersResponse.AsObject;
@@ -284,8 +312,10 @@ export namespace CheckUserFiltersResponse {
 export class StandardResponse extends jspb.Message { 
     getError(): boolean;
     setError(value: boolean): StandardResponse;
+
     getMessage(): string;
     setMessage(value: string): StandardResponse;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): StandardResponse.AsObject;
@@ -308,17 +338,22 @@ export class UpdatePerferencesRequest extends jspb.Message {
     getUserId(): string;
     setUserId(value: string): UpdatePerferencesRequest;
 
+
     getAttributesConstantMap(): jspb.Map<string, string>;
     clearAttributesConstantMap(): void;
+
 
     getFiltersConstantMap(): jspb.Map<string, string>;
     clearFiltersConstantMap(): void;
 
+
     getAttributesCustomMap(): jspb.Map<string, string>;
     clearAttributesCustomMap(): void;
 
+
     getFiltersCustomMap(): jspb.Map<string, string>;
     clearFiltersCustomMap(): void;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): UpdatePerferencesRequest.AsObject;
@@ -348,6 +383,7 @@ export class GetUserPerferencesRequest extends jspb.Message {
     getUserId(): string;
     setUserId(value: string): GetUserPerferencesRequest;
 
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): GetUserPerferencesRequest.AsObject;
     static toObject(includeInstance: boolean, msg: GetUserPerferencesRequest): GetUserPerferencesRequest.AsObject;
@@ -367,24 +403,32 @@ export namespace GetUserPerferencesRequest {
 export class GetUserPerferencesResponse extends jspb.Message { 
     getError(): boolean;
     setError(value: boolean): GetUserPerferencesResponse;
+
     getMessage(): string;
     setMessage(value: string): GetUserPerferencesResponse;
+
     getUserId(): string;
     setUserId(value: string): GetUserPerferencesResponse;
+
 
     getAttributesConstantMap(): jspb.Map<string, string>;
     clearAttributesConstantMap(): void;
 
+
     getFiltersConstantMap(): jspb.Map<string, string>;
     clearFiltersConstantMap(): void;
+
 
     getAttributesCustomMap(): jspb.Map<string, string>;
     clearAttributesCustomMap(): void;
 
+
     getFiltersCustomMap(): jspb.Map<string, string>;
     clearFiltersCustomMap(): void;
+
     getPriority(): number;
     setPriority(value: number): GetUserPerferencesResponse;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): GetUserPerferencesResponse.AsObject;
@@ -417,17 +461,22 @@ export class PutUserPerferencesRequest extends jspb.Message {
     getUserId(): string;
     setUserId(value: string): PutUserPerferencesRequest;
 
+
     getAttributesConstantMap(): jspb.Map<string, string>;
     clearAttributesConstantMap(): void;
+
 
     getFiltersConstantMap(): jspb.Map<string, string>;
     clearFiltersConstantMap(): void;
 
+
     getAttributesCustomMap(): jspb.Map<string, string>;
     clearAttributesCustomMap(): void;
 
+
     getFiltersCustomMap(): jspb.Map<string, string>;
     clearFiltersCustomMap(): void;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): PutUserPerferencesRequest.AsObject;
@@ -456,8 +505,10 @@ export namespace PutUserPerferencesRequest {
 export class PutUserPerferencesResponse extends jspb.Message { 
     getError(): boolean;
     setError(value: boolean): PutUserPerferencesResponse;
+
     getMessage(): string;
     setMessage(value: string): PutUserPerferencesResponse;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): PutUserPerferencesResponse.AsObject;
@@ -479,10 +530,13 @@ export namespace PutUserPerferencesResponse {
 export class CreateFeedbackRequest extends jspb.Message { 
     getUserId(): string;
     setUserId(value: string): CreateFeedbackRequest;
+
     getFeedbackId(): number;
     setFeedbackId(value: number): CreateFeedbackRequest;
+
     getScore(): number;
     setScore(value: number): CreateFeedbackRequest;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CreateFeedbackRequest.AsObject;
@@ -506,6 +560,7 @@ export class MatchHistoryRequest extends jspb.Message {
     getUserId(): string;
     setUserId(value: string): MatchHistoryRequest;
 
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): MatchHistoryRequest.AsObject;
     static toObject(includeInstance: boolean, msg: MatchHistoryRequest): MatchHistoryRequest.AsObject;
@@ -528,6 +583,7 @@ export class MatchHistoryResponse extends jspb.Message {
     setMatchHistoryList(value: Array<Match>): MatchHistoryResponse;
     addMatchHistory(value?: Match, index?: number): Match;
 
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): MatchHistoryResponse.AsObject;
     static toObject(includeInstance: boolean, msg: MatchHistoryResponse): MatchHistoryResponse.AsObject;
@@ -547,14 +603,19 @@ export namespace MatchHistoryResponse {
 export class Match extends jspb.Message { 
     getUserId1(): string;
     setUserId1(value: string): Match;
+
     getUserId2(): string;
     setUserId2(value: string): Match;
+
     getCreateTime(): string;
     setCreateTime(value: string): Match;
+
     getUserId1Score(): number;
     setUserId1Score(value: number): Match;
+
     getUserId2Score(): number;
     setUserId2Score(value: number): Match;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Match.AsObject;
