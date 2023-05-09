@@ -1,4 +1,4 @@
-// source: neo4j.proto
+// source: proto/neo4j.proto
 /**
  * @fileoverview
  * @enhanceable
@@ -13,13 +13,13 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = (function() {
-  if (this) { return this; }
-  if (typeof window !== 'undefined') { return window; }
-  if (typeof global !== 'undefined') { return global; }
-  if (typeof self !== 'undefined') { return self; }
-  return Function('return this')();
-}.call(null));
+var global =
+    (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof global !== 'undefined' && global) ||
+    (typeof self !== 'undefined' && self) ||
+    (function () { return this; }).call(null) ||
+    Function('return this')();
 
 goog.exportSymbol('proto.neo4j.CheckUserFiltersRequest', null, global);
 goog.exportSymbol('proto.neo4j.CheckUserFiltersResponse', null, global);
@@ -1939,7 +1939,8 @@ proto.neo4j.GetRelationshipScoresResponse.prototype.getRelationshipScoresMap = f
  */
 proto.neo4j.GetRelationshipScoresResponse.prototype.clearRelationshipScoresMap = function() {
   this.getRelationshipScoresMap().clear();
-  return this;};
+  return this;
+};
 
 
 
@@ -2805,7 +2806,8 @@ proto.neo4j.UpdatePerferencesRequest.prototype.getAttributesConstantMap = functi
  */
 proto.neo4j.UpdatePerferencesRequest.prototype.clearAttributesConstantMap = function() {
   this.getAttributesConstantMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -2827,7 +2829,8 @@ proto.neo4j.UpdatePerferencesRequest.prototype.getFiltersConstantMap = function(
  */
 proto.neo4j.UpdatePerferencesRequest.prototype.clearFiltersConstantMap = function() {
   this.getFiltersConstantMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -2849,7 +2852,8 @@ proto.neo4j.UpdatePerferencesRequest.prototype.getAttributesCustomMap = function
  */
 proto.neo4j.UpdatePerferencesRequest.prototype.clearAttributesCustomMap = function() {
   this.getAttributesCustomMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -2871,7 +2875,8 @@ proto.neo4j.UpdatePerferencesRequest.prototype.getFiltersCustomMap = function(op
  */
 proto.neo4j.UpdatePerferencesRequest.prototype.clearFiltersCustomMap = function() {
   this.getFiltersCustomMap().clear();
-  return this;};
+  return this;
+};
 
 
 
@@ -3269,7 +3274,8 @@ proto.neo4j.GetUserPerferencesResponse.prototype.getAttributesConstantMap = func
  */
 proto.neo4j.GetUserPerferencesResponse.prototype.clearAttributesConstantMap = function() {
   this.getAttributesConstantMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -3291,7 +3297,8 @@ proto.neo4j.GetUserPerferencesResponse.prototype.getFiltersConstantMap = functio
  */
 proto.neo4j.GetUserPerferencesResponse.prototype.clearFiltersConstantMap = function() {
   this.getFiltersConstantMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -3313,7 +3320,8 @@ proto.neo4j.GetUserPerferencesResponse.prototype.getAttributesCustomMap = functi
  */
 proto.neo4j.GetUserPerferencesResponse.prototype.clearAttributesCustomMap = function() {
   this.getAttributesCustomMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -3335,7 +3343,8 @@ proto.neo4j.GetUserPerferencesResponse.prototype.getFiltersCustomMap = function(
  */
 proto.neo4j.GetUserPerferencesResponse.prototype.clearFiltersCustomMap = function() {
   this.getFiltersCustomMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -3549,7 +3558,8 @@ proto.neo4j.PutUserPerferencesRequest.prototype.getAttributesConstantMap = funct
  */
 proto.neo4j.PutUserPerferencesRequest.prototype.clearAttributesConstantMap = function() {
   this.getAttributesConstantMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -3571,7 +3581,8 @@ proto.neo4j.PutUserPerferencesRequest.prototype.getFiltersConstantMap = function
  */
 proto.neo4j.PutUserPerferencesRequest.prototype.clearFiltersConstantMap = function() {
   this.getFiltersConstantMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -3593,7 +3604,8 @@ proto.neo4j.PutUserPerferencesRequest.prototype.getAttributesCustomMap = functio
  */
 proto.neo4j.PutUserPerferencesRequest.prototype.clearAttributesCustomMap = function() {
   this.getAttributesCustomMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -3615,7 +3627,8 @@ proto.neo4j.PutUserPerferencesRequest.prototype.getFiltersCustomMap = function(o
  */
 proto.neo4j.PutUserPerferencesRequest.prototype.clearFiltersCustomMap = function() {
   this.getFiltersCustomMap().clear();
-  return this;};
+  return this;
+};
 
 
 

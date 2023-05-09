@@ -5,11 +5,9 @@ import {
   CreateUserResponse,
   GetRelationshipScoresRequest,
   GetRelationshipScoresResponse,
-  grpc,
   Neo4jService,
   UpdateMatchRequest,
   UpdateMatchResponse,
-  HealthService,
   CheckUserFiltersResponse,
   CheckUserFiltersRequest,
   GetUserPerferencesRequest,
@@ -22,8 +20,8 @@ import {
   MatchHistoryResponse,
   MatchHistoryRequest,
   Match,
+  grpc,
 } from 'neo4j-grpc-common';
-
 import * as neo4j from 'neo4j-driver';
 import * as common from 'common';
 import { v4 } from 'uuid';
@@ -603,10 +601,6 @@ server.addService(Neo4jService, {
   putUserPerferences,
   createFeedback,
   getMatchHistory,
-});
-
-server.addService(HealthService, {
-  Check: (_call: any, callback: any) => callback(null, { status: `SERVING` }),
 });
 
 const addr = `0.0.0.0:${process.env.PORT || 80}`;

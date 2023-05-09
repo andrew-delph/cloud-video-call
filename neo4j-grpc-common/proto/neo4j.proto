@@ -1,11 +1,15 @@
 syntax = "proto3";
 
+
+// import "google/api/annotations.proto";
+
 package neo4j;
 
 // The greeting service definition.
 service Neo4j {
   // Sends a greeting
-  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {}
+  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {
+  }
 
   rpc CreateMatch (CreateMatchRequest) returns (CreateMatchResponse) {}
 
@@ -23,7 +27,11 @@ service Neo4j {
 
   rpc PutUserPerferences(PutUserPerferencesRequest) returns (PutUserPerferencesResponse) {}
 
-  rpc GetMatchHistory(MatchHistoryRequest) returns (MatchHistoryResponse) {}
+  rpc GetMatchHistory(MatchHistoryRequest) returns (MatchHistoryResponse) {
+    // option (google.api.http) = {
+    //   post: "/v1/history"
+    // };
+  }
 }
 
 message CreateUserRequest {

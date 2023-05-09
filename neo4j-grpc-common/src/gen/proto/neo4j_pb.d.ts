@@ -1,5 +1,5 @@
 // package: neo4j
-// file: neo4j.proto
+// file: proto/neo4j.proto
 
 /* tslint:disable */
 /* eslint-disable */
