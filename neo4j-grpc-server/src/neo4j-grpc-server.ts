@@ -248,7 +248,6 @@ const getRelationshipScores = async (
     );
 
     if (redisScore > 0) {
-      logger.info(`redisScore: ${redisScore}`);
       const score = new Score();
       score.setProb(redisScore);
       reply.getRelationshipScoresMap().set(otherId, score);
@@ -281,7 +280,7 @@ const getRelationshipScores = async (
       MATCH (n1:Person{userId: $target})
       MATCH (n2:Person{userId: otherId})
       OPTIONAL MATCH (n1)-[prel:PREDICTION]->(n2)
-      OPTIONAL MATCH (n1)-[:FRIENDS]-()-[:FRIENDS]-()-[:FRIENDS]-(n2)
+      OPTIONAL MATCH (n1)-[:FRIENDS]-(:Person)-[:FRIENDS]-(:Person)-[:FRIENDS]-(n2)
       WITH n1, n2, prel, count(*) as num_friends
       return
       EXISTS((n1)-[:FRIENDS]->(n2)) as friends, 

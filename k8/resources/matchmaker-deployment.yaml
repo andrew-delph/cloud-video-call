@@ -71,20 +71,20 @@ spec:
     #     target:
     #       type: Utilization
     #       averageUtilization: 80
----
-apiVersion: v1
-kind: Service
-metadata:
-  creationTimestamp: null
-  labels:
-    app: matchmaker
-  name: matchmaker
-spec:
-  ports:
-    - name: '4000'
-      port: 4000
-      targetPort: 4000
-  selector:
-    app: matchmaker
-status:
-  loadBalancer: {}
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   creationTimestamp: null
+#   labels:
+#     app: matchmaker
+#   name: matchmaker
+# spec:
+#   ports:
+#     - name: '4000'
+#       port: 4000
+#       targetPort: 4000
+#   selector:
+#     app: matchmaker
+# status:
+#   loadBalancer: {}
