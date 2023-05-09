@@ -228,7 +228,11 @@ createUser: {
     responseSerialize: serialize_neo4j_CreateUserResponse,
     responseDeserialize: deserialize_neo4j_CreateUserResponse,
   },
-  createMatch: {
+  //  option (google.api.http) = {
+//       post: "/v1/example/echo"
+//       body: "*"
+//     };
+createMatch: {
     path: '/neo4j.Neo4j/CreateMatch',
     requestStream: false,
     responseStream: false,
