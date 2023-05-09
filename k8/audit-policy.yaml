@@ -1,0 +1,12 @@
+# this can be used to view changes to a configmap for debugging
+
+# https://minikube.sigs.k8s.io/docs/tutorials/audit-policy/
+
+apiVersion: audit.k8s.io/v1
+kind: Policy
+rules:
+  - level: Request
+    resources:
+      - group: ''
+        resources: ['configmaps']
+    verbs: ['create', 'delete', 'deletecollection', 'patch', 'update']
