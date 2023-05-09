@@ -129,8 +129,8 @@ export async function predict(
     `
       CALL gds.beta.pipeline.linkPrediction.predict.stream('${graphName}', {
         modelName: 'lp-pipeline-model',
-        topN: 5000,
-        threshold: 0
+        topN: 30000,
+        threshold: 0.1
       })
         YIELD node1, node2, probability
         WITH gds.util.asNode(node1) AS person1, gds.util.asNode(node2) AS person2, probability

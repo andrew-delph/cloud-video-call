@@ -47,6 +47,7 @@ logger.info(`Value of JOB: ${job}`);
           userId1,
           userId2,
           probability,
+          60 * 30,
         );
       }
 
@@ -57,9 +58,11 @@ logger.info(`Value of JOB: ${job}`);
       // log the lowest probability found
       if (results.records.length > 1) {
         logger.info(
-          `lowest probability found: ${results.records[
-            results.records.length - 1
-          ].get(`probability`)}`,
+          `probability found: highest ${results.records[0].get(
+            `probability`,
+          )} lowest : ${results.records[results.records.length - 1].get(
+            `probability`,
+          )} of ${results.records.length} records.`,
         );
       }
 
@@ -100,8 +103,8 @@ logger.info(`Value of JOB: ${job}`);
       results = await funcs.predict(true, `myGraph`);
       funcs.printResults(results, print_num);
 
-      results = await funcs.compareTypes();
-      funcs.printResults(results, print_num);
+      // results = await funcs.compareTypes();
+      // funcs.printResults(results, print_num);
       break;
   }
   logger.info(`complted ${job}`);

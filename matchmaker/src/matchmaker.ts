@@ -43,7 +43,7 @@ const delay = 1000; // 1 seconds
 const maxPriority = 10;
 
 const relationshipFilterCacheEx = 60 * 2;
-const realtionshipScoreCacheEx = 60 * 1;
+const realtionshipScoreCacheEx = 1;
 
 const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
@@ -312,7 +312,7 @@ const matchmakerFlow = async (
     highestScore = relationShipScores[0][1];
     const lowestScore: common.RelationshipScoreType =
       relationShipScores[relationShipScores.length - 1][1];
-    logger.info(
+    logger.debug(
       `score highest:${JSON.stringify(highestScore)} lowest:${JSON.stringify(
         lowestScore,
       )} otherId:${otherId} size: ${relationShipScores.length}`,
@@ -470,7 +470,11 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
     relationshipScoresMap.set(otherId, relationshipScore);
   }
 
-  logger.debug(`relationship scores in cache: ${relationshipScoresMap.size}`);
+  if (relationshipScoresMap.size > 0) {
+    logger.info(`relationship scores in cache: ${relationshipScoresMap.size}`);
+  } else {
+    logger.debug(`relationship scores in cache: ${relationshipScoresMap.size}`);
+  }
 
   if (readyset.size == 0) return Array.from(relationshipScoresMap.entries());
 

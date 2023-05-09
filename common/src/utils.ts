@@ -97,12 +97,13 @@ export const writeRedisRelationshipProbability = async (
   userId1: string,
   userId2: string,
   probability: number,
+  expire: number,
 ): Promise<void> => {
   await redisClient.set(
     relationshipProbabilityKey(userId1, userId2),
     probability,
     `EX`,
-    60 * 30,
+    expire,
   );
 };
 

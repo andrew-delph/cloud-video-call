@@ -20,7 +20,7 @@ export const redisClient = new redis.Client({
 
 const authKeysNum = 2000;
 const vus = 100;
-const nukeData = true;
+const nukeData = false;
 
 export const options = {
   setupTimeout: `10m`,

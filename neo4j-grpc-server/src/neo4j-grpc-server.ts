@@ -248,6 +248,7 @@ const getRelationshipScores = async (
     );
 
     if (redisScore > 0) {
+      logger.info(`redisScore: ${redisScore}`);
       const score = new Score();
       score.setProb(redisScore);
       reply.getRelationshipScoresMap().set(otherId, score);
@@ -264,13 +265,13 @@ const getRelationshipScores = async (
     logger.debug(
       `relationship's read from redis: ${reply
         .getRelationshipScoresMap()
-        .getLength()}`,
+        .getLength()} of ${otherUsers.length}`,
     );
   } else {
     logger.info(
       `relationship's read from redis: ${reply
         .getRelationshipScoresMap()
-        .getLength()}`,
+        .getLength()} of ${otherUsers.length}`,
     );
   }
 

@@ -6,6 +6,9 @@ pneo4j:
 predis:
 	kubectl port-forward svc/redis 6379:6379
 
+predisc:
+	kubectl port-forward svc/redis-commander-svc 8081:8081
+
 pkourier:
 	kubectl port-forward svc/kourier -n knative-serving 8080:80
 
