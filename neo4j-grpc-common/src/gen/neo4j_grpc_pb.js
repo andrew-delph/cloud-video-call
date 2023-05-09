@@ -3,6 +3,7 @@
 'use strict';
 var grpc = require('@grpc/grpc-js');
 var neo4j_pb = require('./neo4j_pb.js');
+var google_api_annotations_pb = require('./google/api/annotations_pb.js');
 
 function serialize_neo4j_CheckUserFiltersRequest(arg) {
   if (!(arg instanceof neo4j_pb.CheckUserFiltersRequest)) {
@@ -228,11 +229,7 @@ createUser: {
     responseSerialize: serialize_neo4j_CreateUserResponse,
     responseDeserialize: deserialize_neo4j_CreateUserResponse,
   },
-  //  option (google.api.http) = {
-//       post: "/v1/example/echo"
-//       body: "*"
-//     };
-createMatch: {
+  createMatch: {
     path: '/neo4j.Neo4j/CreateMatch',
     requestStream: false,
     responseStream: false,
