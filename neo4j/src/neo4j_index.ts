@@ -61,21 +61,21 @@ export const run = async () => {
     const test_attributes: string[] = await funcs.getAttributeKeys();
     results = await funcs.createGraph(`myGraph`, test_attributes);
 
-    results = await funcs.run(
-      `
-      CALL gds.fastRP.write('myGraph',
-      {
-        nodeLabels: ['Person'],
-        relationshipTypes: ['FRIENDS', 'NEGATIVE'],
-        featureProperties: ['values'],
-        embeddingDimension: 256,
-        writeProperty: 'embedding'
-      }
-      )
-    `,
-    );
+    // results = await funcs.run(
+    //   `
+    //   CALL gds.fastRP.write('myGraph',
+    //   {
+    //     nodeLabels: ['Person'],
+    //     relationshipTypes: ['FRIENDS', 'NEGATIVE'],
+    //     featureProperties: ['values'],
+    //     embeddingDimension: 256,
+    //     writeProperty: 'embedding'
+    //   }
+    //   )
+    // `,
+    // );
 
-    // SIMILAR2 mutate
+    // SIMILAR1 mutate
     results = await funcs.run(
       `
       CALL gds.nodeSimilarity.mutate('myGraph', {
@@ -88,20 +88,20 @@ export const run = async () => {
     `,
     );
 
-    // SIMILAR2 write
+    // SIMILAR2 mutate
     results = await funcs.run(
       `
-      CALL gds.nodeSimilarity.write('myGraph', {
+      CALL gds.nodeSimilarity.mutate('myGraph', {
         nodeLabels: ['Person'],
         relationshipTypes: ['FRIENDS', 'SIMILAR1'],
-        writeRelationshipType: 'SIMILAR2',
-        writeProperty: 'score'
+        mutateRelationshipType: 'SIMILAR2',
+        mutateProperty: 'score'
       })
       YIELD nodesCompared, relationshipsWritten
     `,
     );
 
-    // SIMILAR4 mutate
+    // SIMILAR3 mutate
     results = await funcs.run(
       `
           CALL gds.nodeSimilarity.mutate('myGraph', {
@@ -114,68 +114,73 @@ export const run = async () => {
         `,
     );
 
-    // SIMILAR4 write
+    // SIMILAR4 mutate
     results = await funcs.run(
       `
-      CALL gds.nodeSimilarity.write('myGraph', {
-        nodeLabels: ['Person'],
-        relationshipTypes: ['NEGATIVE','SIMILAR3'],
-        writeRelationshipType: 'SIMILAR4',
-        writeProperty: 'score'
-      })
-      YIELD nodesCompared, relationshipsWritten
-    `,
+          CALL gds.nodeSimilarity.mutate('myGraph', {
+            nodeLabels: ['Person'],
+            relationshipTypes: ['NEGATIVE', 'SIMILAR3'],
+            mutateRelationshipType: 'SIMILAR4',
+            mutateProperty: 'score'
+          })
+          YIELD nodesCompared, relationshipsWritten
+        `,
     );
 
     results = await funcs.run(
       `
-      MATCH (n1:Person)-[:USER_ATTRIBUTES_CONSTANT]->(md1:MetaData)
-      MATCH (n2:Person)-[:USER_ATTRIBUTES_CONSTANT]->(md2:MetaData)
-      OPTIONAL MATCH (n1)-[srel0:SIMILAR0]->(n2)
-      OPTIONAL MATCH (n1)-[srel1:SIMILAR1]->(n2)
-      OPTIONAL MATCH (n1)-[srel2:SIMILAR2]->(n2)
-      OPTIONAL MATCH (n1)-[srel3:SIMILAR3]->(n2)
-      OPTIONAL MATCH (n1)-[srel4:SIMILAR4]->(n2)
-      WITH n1, n2, md1, md2,
-      gds.similarity.cosine(
-        n1.embedding,
-        n2.embedding
-      ) AS cosineSimilarity,
-      gds.alpha.linkprediction.adamicAdar(n1, n2, {
-        relationshipQuery: 'NEGATIVE'
-      }) AS negative,
-      gds.alpha.linkprediction.adamicAdar(n1, n2, {
-        relationshipQuery: 'FRIENDS'
-      }) AS friends,
-      coalesce(md1.gender, n1.type) as t1, 
-      coalesce(md2.gender, n2.type) as t2,
-      coalesce(srel0.score, 0) as sim0,
-      coalesce(srel1.score, 0) as sim1,
-      coalesce(srel2.score, 0) as sim2,
-      coalesce(srel3.score, 0) as sim3,
-      coalesce(srel4.score, 0) as sim4
-      WHERE n1 <> n2
-      RETURN 
-      // n1.userId as u1,
-      // n2.userId as u2,
-      t1,
-      t2,
-      // t1 <> t2 as diff,
-      // cosineSimilarity as c,
-      round(sim0,3) as sim0,
-      round(sim1,3) as sim1,
-      round(sim2,3) as sim2,
-      round(sim3,3) as sim3,
-      round(sim4,3) as sim4,
-      // ,
-      // negative as n,
-      // friends as f,
-      sim2 - sim4 as score
-      ORDER BY score DESC
+      CALL gds.graph.relationshipProperty.stream(
+        'myGraph',                  
+        'score',
+        ['SIMILAR2','SIMILAR4']                              
+      )
+      YIELD
+        sourceNodeId, targetNodeId, relationshipType, propertyValue
+      RETURN
+        gds.util.asNode(sourceNodeId).userId as source, gds.util.asNode(targetNodeId).userId as target, relationshipType, propertyValue
+      ORDER BY source ASC, target ASC
     `,
     );
 
-    printResults(results, 100);
+    const getKey = (user1: string, user2: string) => {
+      return `key-${user1}-${user2}`;
+    };
+
+    const convertScore = (relationshipType: string, score: number): number => {
+      if (relationshipType == `SIMILAR2`) {
+        return score;
+      } else if ((relationshipType = `SIMILAR4`)) {
+        return -score;
+      } else {
+        throw `relationshipType ${relationshipType} does not exist`;
+      }
+    };
+
+    const data: Map<String, number> = new Map();
+
+    for (let record of results.records) {
+      const user1 = record.get(`source`);
+      const user2 = record.get(`target`);
+      const relationshipType = record.get(`relationshipType`);
+      const propertyValue = record.get(`propertyValue`);
+
+      const score = convertScore(relationshipType, propertyValue);
+      const key = getKey(user1, user2);
+
+      data.set(key, (data.get(key) || 0) + score);
+    }
+
+    let entries = [...data.entries()];
+
+    entries.sort((a, b) => {
+      return b[1] - a[1];
+    });
+
+    entries = entries.slice(0, 50);
+
+    for (const entry of entries) {
+      console.log(entry[0] + ` : ` + entry[1]);
+    }
 
     return;
 

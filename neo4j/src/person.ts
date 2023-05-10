@@ -152,7 +152,7 @@ export class Person {
 
   constructor(type: PersonType, userId: string, attributes: any) {
     this.type = type;
-    this.userId = userId;
+    this.userId = type.valueOf() + `:` + userId;
     this.attributes = attributes;
   }
 

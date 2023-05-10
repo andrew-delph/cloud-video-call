@@ -88,7 +88,7 @@ export async function createData({
   const edges = [];
 
   for (var i = 0; i < nodesNum; i++) {
-    const person = getPerson(`node${i}`);
+    const person = getPerson(`${i}`);
     // console.log(`person.type`, person.type.valueOf());
     nodes.push(person);
   }
