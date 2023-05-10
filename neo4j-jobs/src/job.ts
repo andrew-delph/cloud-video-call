@@ -31,6 +31,8 @@ logger.info(`Value of JOB: ${job}`);
         logger.info(`Recently Active Users: ${activeUsers.length}`);
       }
 
+      const topk = activeUsers.length;
+
       results = await funcs.createGraph(
         `shortPredictGraph`,
         await funcs.getAttributeKeys(),
@@ -43,7 +45,7 @@ logger.info(`Value of JOB: ${job}`);
           nodeLabels: ['Person'],
           relationshipTypes: ['FRIENDS'],
           mutateRelationshipType: 'SIMILAR1',
-          topK: 20,
+          topK: ${topk},
           mutateProperty: 'score'
         })
         YIELD nodesCompared, relationshipsWritten
@@ -57,7 +59,7 @@ logger.info(`Value of JOB: ${job}`);
           nodeLabels: ['Person'],
           relationshipTypes: ['FRIENDS', 'SIMILAR1'],
           mutateRelationshipType: 'SIMILAR2',
-          topK: 20,
+          topK: ${topk},
           mutateProperty: 'score'
         })
         YIELD nodesCompared, relationshipsWritten
@@ -71,7 +73,7 @@ logger.info(`Value of JOB: ${job}`);
               nodeLabels: ['Person'],
               relationshipTypes: ['NEGATIVE'],
               mutateRelationshipType: 'SIMILAR3',
-              topK: 20,
+              topK: ${topk},
               mutateProperty: 'score'
             })
             YIELD nodesCompared, relationshipsWritten
@@ -85,7 +87,7 @@ logger.info(`Value of JOB: ${job}`);
               nodeLabels: ['Person'],
               relationshipTypes: ['NEGATIVE', 'SIMILAR3'],
               mutateRelationshipType: 'SIMILAR4',
-              topK: 20,
+              topK: ${topk},
               mutateProperty: 'score'
             })
             YIELD nodesCompared, relationshipsWritten
