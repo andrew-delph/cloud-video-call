@@ -75,33 +75,7 @@ export const run = async () => {
     `,
     );
 
-    // SIMILAR0 write
-    results = await funcs.run(
-      `
-      CALL gds.nodeSimilarity.write('myGraph', {
-        nodeLabels: ['Person'],
-        relationshipTypes: ['FRIENDS','NEGATIVE'],
-        writeRelationshipType: 'SIMILAR0',
-        writeProperty: 'score'
-      })
-      YIELD nodesCompared, relationshipsWritten
-    `,
-    );
-
-    // SIMILAR1 write
-    results = await funcs.run(
-      `
-      CALL gds.nodeSimilarity.write('myGraph', {
-        nodeLabels: ['Person'],
-        relationshipTypes: ['FRIENDS'],
-        writeRelationshipType: 'SIMILAR1',
-        writeProperty: 'score'
-      })
-      YIELD nodesCompared, relationshipsWritten
-    `,
-    );
-
-    // SIMILAR1 mutate
+    // SIMILAR2 mutate
     results = await funcs.run(
       `
       CALL gds.nodeSimilarity.mutate('myGraph', {
@@ -127,30 +101,17 @@ export const run = async () => {
     `,
     );
 
-    // SIMILAR3 mutate
+    // SIMILAR4 mutate
     results = await funcs.run(
       `
-      CALL gds.nodeSimilarity.mutate('myGraph', {
-        nodeLabels: ['Person'],
-        relationshipTypes: ['NEGATIVE'],
-        mutateRelationshipType: 'SIMILAR3',
-        mutateProperty: 'score'
-      })
-      YIELD nodesCompared, relationshipsWritten
-    `,
-    );
-
-    // SIMILAR3 write
-    results = await funcs.run(
-      `
-      CALL gds.nodeSimilarity.write('myGraph', {
-        nodeLabels: ['Person'],
-        relationshipTypes: ['NEGATIVE'],
-        writeRelationshipType: 'SIMILAR3',
-        writeProperty: 'score'
-      })
-      YIELD nodesCompared, relationshipsWritten
-    `,
+          CALL gds.nodeSimilarity.mutate('myGraph', {
+            nodeLabels: ['Person'],
+            relationshipTypes: ['NEGATIVE'],
+            mutateRelationshipType: 'SIMILAR3',
+            mutateProperty: 'score'
+          })
+          YIELD nodesCompared, relationshipsWritten
+        `,
     );
 
     // SIMILAR4 write
