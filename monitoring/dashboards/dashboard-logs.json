@@ -99,7 +99,7 @@
       "interval": "10s",
       "options": {
         "legend": {
-          "calcs": ["count", "sum"],
+          "calcs": ["sum"],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
@@ -117,7 +117,7 @@
             "uid": "Loki"
           },
           "editorMode": "builder",
-          "expr": "sum by(app, level) (rate({app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"} [$__interval]))",
+          "expr": "sum by(level, app) (count_over_time({app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"} [$__interval]))",
           "key": "Q-9d84741e-216e-44cc-a49d-281b07e3ad48-0",
           "legendFormat": "{{app}} : {{level}}",
           "queryType": "range",
@@ -273,6 +273,6 @@
   "timezone": "",
   "title": "Logs",
   "uid": "VzlEPu1Vz",
-  "version": 4,
+  "version": 6,
   "weekStart": ""
 }
