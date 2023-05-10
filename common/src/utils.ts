@@ -88,11 +88,11 @@ export const getRedisRelationshipProbability = async (
   redisClient: Client,
   userId1: string,
   userId2: string,
-): Promise<number> => {
+): Promise<number | null> => {
   const val = await redisClient.get(
     relationshipProbabilityKey(userId1, userId2),
   );
-  return val != null ? parseFloat(val) : -1;
+  return val != null ? parseFloat(val) : null;
 };
 
 export const writeRedisRelationshipProbability = async (

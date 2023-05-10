@@ -245,7 +245,7 @@ const getRelationshipScores = async (
       otherId,
     );
 
-    if (redisScore > 0) {
+    if (redisScore != null) {
       const score = new Score();
       score.setProb(redisScore);
       reply.getRelationshipScoresMap().set(otherId, score);
