@@ -146,6 +146,8 @@ logger.info(`Value of JOB: ${job}`);
         );
       }
 
+      logger.info(`wrote ${entries.length} relationships to redis`);
+
       break;
     case `TRAIN`:
     case `COMPUTE`:
