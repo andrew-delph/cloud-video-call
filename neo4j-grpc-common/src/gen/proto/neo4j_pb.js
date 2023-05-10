@@ -1976,7 +1976,8 @@ proto.neo4j.Score.prototype.toObject = function(opt_includeInstance) {
 proto.neo4j.Score.toObject = function(includeInstance, msg) {
   var f, obj = {
     prob: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
-    numbFriends: jspb.Message.getFieldWithDefault(msg, 2, 0)
+    score: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    numbFriends: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -2018,6 +2019,10 @@ proto.neo4j.Score.deserializeBinaryFromReader = function(msg, reader) {
       msg.setProb(value);
       break;
     case 2:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setScore(value);
+      break;
+    case 3:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setNumbFriends(value);
       break;
@@ -2057,10 +2062,17 @@ proto.neo4j.Score.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getScore();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      2,
+      f
+    );
+  }
   f = message.getNumbFriends();
   if (f !== 0) {
     writer.writeInt32(
-      2,
+      3,
       f
     );
   }
@@ -2086,11 +2098,29 @@ proto.neo4j.Score.prototype.setProb = function(value) {
 
 
 /**
- * optional int32 numb_friends = 2;
+ * optional float score = 2;
+ * @return {number}
+ */
+proto.neo4j.Score.prototype.getScore = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.neo4j.Score} returns this
+ */
+proto.neo4j.Score.prototype.setScore = function(value) {
+  return jspb.Message.setProto3FloatField(this, 2, value);
+};
+
+
+/**
+ * optional int32 numb_friends = 3;
  * @return {number}
  */
 proto.neo4j.Score.prototype.getNumbFriends = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -2099,7 +2129,7 @@ proto.neo4j.Score.prototype.getNumbFriends = function() {
  * @return {!proto.neo4j.Score} returns this
  */
 proto.neo4j.Score.prototype.setNumbFriends = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 

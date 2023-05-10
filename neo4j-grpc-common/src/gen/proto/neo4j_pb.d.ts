@@ -234,6 +234,9 @@ export class Score extends jspb.Message {
     getProb(): number;
     setProb(value: number): Score;
 
+    getScore(): number;
+    setScore(value: number): Score;
+
     getNumbFriends(): number;
     setNumbFriends(value: number): Score;
 
@@ -251,6 +254,7 @@ export class Score extends jspb.Message {
 export namespace Score {
     export type AsObject = {
         prob: number,
+        score: number,
         numbFriends: number,
     }
 }

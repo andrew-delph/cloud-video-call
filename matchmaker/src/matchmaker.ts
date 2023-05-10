@@ -293,6 +293,7 @@ const matchmakerFlow = async (
   let highestScore: common.RelationshipScoreType = {
     prob: -1,
     num_friends: -1,
+    score: -1,
   };
 
   if (relationShipScores.length == 0) {
@@ -303,10 +304,13 @@ const matchmakerFlow = async (
     relationShipScores.sort((a, b) => {
       const a_score = a[1];
       const b_score = b[1];
-      if (a_score.prob === b_score.prob) {
-        return b_score.num_friends - a_score.num_friends;
+      if (a_score.prob != b_score.prob) {
+        return b_score.prob - a_score.prob;
       }
-      return b_score.prob - a_score.prob;
+      if (a_score.score != b_score.score) {
+        return b_score.score - a_score.score;
+      }
+      return b_score.num_friends - a_score.num_friends;
     });
     otherId = relationShipScores[0][0];
     highestScore = relationShipScores[0][1];
@@ -521,9 +525,10 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
     const scoreId = scoreEntry[0];
     const score = scoreEntry[1];
     const prob = score.getProb();
+    const scoreVal = score.getScore();
     const num_friends = score.getNumbFriends();
 
-    const score_obj = { prob, num_friends };
+    const score_obj = { prob, score: scoreVal, num_friends };
 
     await mainRedisClient.set(
       getRealtionshipScoreCacheKey(userId, scoreId),

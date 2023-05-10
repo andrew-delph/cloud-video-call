@@ -247,16 +247,16 @@ const getRelationshipScores = async (
 
     if (redisScore != null) {
       const score = new Score();
-      score.setProb(redisScore);
+      score.setScore(redisScore);
       reply.getRelationshipScoresMap().set(otherId, score);
     }
   }
 
   // if already in the reply remove...
-  otherUsers = otherUsers.filter((otherId) => {
-    const inReply = reply.getRelationshipScoresMap().has(otherId);
-    return !inReply;
-  });
+  // otherUsers = otherUsers.filter((otherId) => {
+  //   const inReply = reply.getRelationshipScoresMap().has(otherId);
+  //   return !inReply;
+  // });
 
   if (reply.getRelationshipScoresMap().getLength() == 0) {
     logger.debug(
