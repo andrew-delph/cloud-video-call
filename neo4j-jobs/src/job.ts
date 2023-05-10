@@ -43,6 +43,7 @@ logger.info(`Value of JOB: ${job}`);
           nodeLabels: ['Person'],
           relationshipTypes: ['FRIENDS'],
           mutateRelationshipType: 'SIMILAR1',
+          topK: 20,
           mutateProperty: 'score'
         })
         YIELD nodesCompared, relationshipsWritten
@@ -56,6 +57,7 @@ logger.info(`Value of JOB: ${job}`);
           nodeLabels: ['Person'],
           relationshipTypes: ['FRIENDS', 'SIMILAR1'],
           mutateRelationshipType: 'SIMILAR2',
+          topK: 20,
           mutateProperty: 'score'
         })
         YIELD nodesCompared, relationshipsWritten
@@ -69,6 +71,7 @@ logger.info(`Value of JOB: ${job}`);
               nodeLabels: ['Person'],
               relationshipTypes: ['NEGATIVE'],
               mutateRelationshipType: 'SIMILAR3',
+              topK: 20,
               mutateProperty: 'score'
             })
             YIELD nodesCompared, relationshipsWritten
@@ -82,6 +85,7 @@ logger.info(`Value of JOB: ${job}`);
               nodeLabels: ['Person'],
               relationshipTypes: ['NEGATIVE', 'SIMILAR3'],
               mutateRelationshipType: 'SIMILAR4',
+              topK: 20,
               mutateProperty: 'score'
             })
             YIELD nodesCompared, relationshipsWritten
