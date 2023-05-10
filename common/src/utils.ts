@@ -76,7 +76,10 @@ export const getActiveUsers = async (
   return await redisClient.smembers(activeSetName);
 };
 
-function relationshipProbabilityKey(userId1: string, userId2: string): string {
+export function relationshipProbabilityKey(
+  userId1: string,
+  userId2: string,
+): string {
   if (userId1 > userId2) return relationshipProbabilityKey(userId2, userId1);
   return `relationshipProbability-${userId1}-${userId2}`;
 }
@@ -94,17 +97,11 @@ export const getRedisRelationshipProbability = async (
 
 export const writeRedisRelationshipProbability = async (
   redisClient: Client,
-  userId1: string,
-  userId2: string,
+  key: string,
   probability: number,
   expire: number,
 ): Promise<void> => {
-  await redisClient.set(
-    relationshipProbabilityKey(userId1, userId2),
-    probability,
-    `EX`,
-    expire,
-  );
+  await redisClient.set(key, probability, `EX`, expire);
 };
 
 export const updateRecentlyActiveUser = async (

@@ -176,9 +176,7 @@ export const run = async () => {
       return b[1] - a[1];
     });
 
-    entries = entries.slice(0, 50);
-
-    for (const entry of entries) {
+    for (const entry of entries.slice(0, 50)) {
       console.log(entry[0] + ` : ` + entry[1]);
     }
 
