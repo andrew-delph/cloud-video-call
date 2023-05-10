@@ -17,6 +17,7 @@ const print_num = 5;
 const redisClient = common.createRedisClient();
 
 let results;
+const start_time = performance.now();
 logger.info(`Value of JOB: ${job}`);
 (async () => {
   switch (job) {
@@ -107,6 +108,14 @@ logger.info(`Value of JOB: ${job}`);
       // funcs.printResults(results, print_num);
       break;
   }
-  logger.info(`complted ${job}`);
+
+  const end_time = performance.now();
+  logger.info(
+    `complted ${job} in ${((end_time - start_time) / 1000).toFixed(1)}secs ${(
+      (end_time - start_time) /
+      1000 /
+      60
+    ).toFixed(1)}mins`,
+  );
   process.exit(0);
 })();

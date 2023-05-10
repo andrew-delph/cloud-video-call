@@ -19,7 +19,7 @@ ts_project(
 js_binary(
     name = "index",
     data = [":ts"],
-    entry_point = "src/index.js",
+    entry_point = "src/job.js",
 )
 
 
