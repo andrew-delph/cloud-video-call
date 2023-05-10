@@ -316,7 +316,7 @@ const matchmakerFlow = async (
     highestScore = relationShipScores[0][1];
     const lowestScore: common.RelationshipScoreType =
       relationShipScores[relationShipScores.length - 1][1];
-    logger.debug(
+    logger.info(
       `score highest:${JSON.stringify(highestScore)} lowest:${JSON.stringify(
         lowestScore,
       )} otherId:${otherId} size: ${relationShipScores.length}`,
