@@ -185,11 +185,15 @@ const generateEmbedding = async (perm: number[]) => {
     `
       MATCH (n:Person),(m:Person)
       WHERE n <> m
-      with n, m, 
-      gds.similarity.cosine(
+      CALL {
+        WITH n, m
+        RETURN gds.similarity.cosine(
           n.embedding,
           m.embedding
-        ) AS cosineSimilarity,
+        ) AS cosineSimilarity
+      } IN TRANSACTIONS
+        OF 2 ROWS
+      with n, m, cosineSimilarity,
       n.type <> m.type as diff
       return 
       cosineSimilarity,
@@ -202,7 +206,7 @@ const generateEmbedding = async (perm: number[]) => {
 
   printResults(results, 30, 20);
 
-  const avg = calcAvg(results, 30);
+  const avg = calcAvg(results, 50);
 
   console.log(`the avg is : ${avg}`);
 
