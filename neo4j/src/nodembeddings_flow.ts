@@ -88,9 +88,9 @@ export const nodeembeddings = async (permutations: any = false) => {
 
   userFunctions.push(createFemale);
   userFunctions.push(createMale);
-  // userFunctions.push(createGroupA);
-  // userFunctions.push(createGroupB);
-  // userFunctions.push(createRandom);
+  userFunctions.push(createGroupA);
+  userFunctions.push(createGroupB);
+  userFunctions.push(createRandom);
 
   await funcs.createData({
     deleteData: true,
@@ -213,7 +213,7 @@ const generateEmbedding = async (perm: number[]) => {
 
   printResults(results, 50, 20);
 
-  const avg = calcAvg(results, -1);
+  const avg = calcAvg(results, 100);
 
   console.log(`the avg is : ${avg}`);
 
@@ -221,7 +221,7 @@ const generateEmbedding = async (perm: number[]) => {
 };
 
 export const main = async () => {
-  const resultsList = await nodeembeddings(); // [[1, 0.5]]
+  const resultsList = await nodeembeddings([[1, 0.5]]);
 
   // const resultsListOther = await nodeembeddings(
   //   !gender,
