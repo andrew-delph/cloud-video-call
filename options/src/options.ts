@@ -282,7 +282,7 @@ app.post(`/nukedata`, async (req, res) => {
 
   await session.close();
 
-  // await mainRedisClient.flushall();
+  await mainRedisClient.flushall();
 
   res.status(200).send(`ITS DONE.`);
 });
