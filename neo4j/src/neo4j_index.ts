@@ -58,7 +58,7 @@ export const run = async () => {
 
     await funcs.createData({
       deleteData: true,
-      nodesNum: 10,
+      nodesNum: 100,
       edgesNum: 20,
     });
     results = await funcs.createFriends();
@@ -92,14 +92,15 @@ export const run = async () => {
       return 
       cosineSimilarity,
       n.typeIndex as n, m.typeIndex as m,
-      diff, n.embedding as ne, m.embedding as me
+      diff 
+      //, n.embedding as ne, m.embedding as me
       ORDER by cosineSimilarity DESC
     `,
     );
 
-    results = await funcs.getFriends();
+    // results = await funcs.getFriends();
 
-    printResults(results, 10, 10);
+    printResults(results, 200, 10);
 
     return;
 
