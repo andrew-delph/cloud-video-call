@@ -48,7 +48,7 @@ export async function run(
 ): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- run`);
-  console.log(`"""${query.slice(0, 45).replace(/\s+/g, ` `).trim()}"""`);
+  console.log(`"""${query.slice(0, 60).replace(/\s+/g, ` `).trim()}"""`);
 
   const start_time = performance.now();
 
