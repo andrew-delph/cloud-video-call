@@ -20,8 +20,11 @@ let results;
 const start_time = performance.now();
 logger.info(`Value of JOB: ${job}`);
 (async () => {
-  process.exit(0);
-  return;
+  if (1 + 1 == 2) {
+    process.exit(0);
+    return;
+  }
+
   switch (job) {
     case `SHORT_PREDICT`:
       const activeUsers = await common.getRecentlyActiveUsers(redisClient, 5);

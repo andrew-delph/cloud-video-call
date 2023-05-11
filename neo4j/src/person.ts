@@ -29,30 +29,20 @@ function areListsEqual(list1: string[], list2: string[]) {
 
 export const validFriends = (ntype: string, mtype: string): boolean => {
   const testList = [ntype, mtype];
-  if (
-    areListsEqual(testList, [
-      PersonType.Male.valueOf(),
-      PersonType.Female.valueOf(),
-    ])
-  ) {
-    return true;
+
+  const validLists = [
+    [PersonType.Male.valueOf(), PersonType.Female.valueOf()],
+    [PersonType.GroupA.valueOf(), PersonType.GroupA.valueOf()],
+    [PersonType.GroupB.valueOf(), PersonType.GroupB.valueOf()],
+    [PersonType.Random.valueOf(), PersonType.Random.valueOf()],
+  ];
+
+  for (let check of validLists) {
+    if (areListsEqual(testList, check)) {
+      return true;
+    }
   }
-  if (
-    areListsEqual(testList, [
-      PersonType.GroupA.valueOf(),
-      PersonType.GroupA.valueOf(),
-    ])
-  ) {
-    return true;
-  }
-  if (
-    areListsEqual(testList, [
-      PersonType.GroupB.valueOf(),
-      PersonType.GroupB.valueOf(),
-    ])
-  ) {
-    return true;
-  }
+
   return false;
 };
 

@@ -6,6 +6,7 @@ import {
   createGroupA,
   createGroupB,
   validFriends,
+  createRandom,
 } from './person';
 
 import * as funcs from './neo4j_functions';
@@ -14,18 +15,29 @@ import * as neo4j from 'neo4j-driver';
 let results: neo4j.QueryResult;
 
 const calcAvg = (result: neo4j.QueryResult, topLimit: number = 10) => {
-  const records = result.records;
+  let records = result.records;
 
-  const length = records.slice(0, topLimit).length;
+  if (topLimit > 0) {
+    records = records.slice(0, topLimit);
+  }
 
+  let length = 0;
   let total = 0;
 
-  records.slice(0, topLimit).forEach((record, index) => {
+  for (let record of records) {
     const ntype = record.get(`m.type`);
     const mtype = record.get(`n.type`);
+    const cosineSimilarity = record.get(`cosineSimilarity`);
+
+    if (cosineSimilarity <= 0) {
+      break;
+    }
 
     if (validFriends(ntype, mtype)) total += 1;
-  });
+    length += 1;
+  }
+
+  records.slice(0, topLimit).forEach((record, index) => {});
 
   return total / length;
 };
@@ -71,18 +83,14 @@ function generateLists(elements: number[], maxSize: any) {
   return lists;
 }
 
-export const nodeembeddings = async (
-  gender: boolean,
-  permutations: any = false,
-) => {
+export const nodeembeddings = async (permutations: any = false) => {
   userFunctions.length = 0;
-  if (gender) {
-    userFunctions.push(createFemale);
-    userFunctions.push(createMale);
-  } else {
-    userFunctions.push(createGroupA);
-    userFunctions.push(createGroupB);
-  }
+
+  userFunctions.push(createFemale);
+  userFunctions.push(createMale);
+  // userFunctions.push(createGroupA);
+  // userFunctions.push(createGroupB);
+  // userFunctions.push(createRandom);
 
   await funcs.createData({
     deleteData: true,
@@ -91,7 +99,7 @@ export const nodeembeddings = async (
   });
   results = await funcs.createFriends();
   const test_attributes: string[] = await funcs.getAttributeKeys();
-  results = await funcs.createGraph(`myGraph`, test_attributes);
+  results = await funcs.createGraph(`myGraph`, []);
 
   if (permutations == false) {
     permutations = generatePermutations([0, 1, 0.5], 3);
@@ -182,7 +190,7 @@ const generateEmbedding = async (perm: number[]) => {
   results = await funcs.run(
     `
       MATCH (n:Person),(m:Person)
-      WHERE id(n) < id(m)
+      WHERE id(n) < id(m) // AND (n.type = "Male" or m.type = "Male")
       CALL {
         WITH n, m
         RETURN gds.similarity.cosine(
@@ -203,9 +211,9 @@ const generateEmbedding = async (perm: number[]) => {
     `,
   );
 
-  printResults(results, 30, 20);
+  printResults(results, 50, 20);
 
-  const avg = calcAvg(results, 50);
+  const avg = calcAvg(results, -1);
 
   console.log(`the avg is : ${avg}`);
 
@@ -213,24 +221,22 @@ const generateEmbedding = async (perm: number[]) => {
 };
 
 export const main = async () => {
-  let gender = true;
+  const resultsList = await nodeembeddings(); // [[1, 0.5]]
 
-  const resultsList = await nodeembeddings(gender);
+  // const resultsListOther = await nodeembeddings(
+  //   !gender,
+  //   resultsList.slice(-3).map((val) => val.perm),
+  // );
+  // console.log();
+  // console.log();
 
-  const resultsListOther = await nodeembeddings(
-    !gender,
-    resultsList.slice(-3).map((val) => val.perm),
-  );
-  console.log();
-  console.log();
+  // console.log(`resultsList`);
+  // for (let result of resultsList.slice(-3)) {
+  //   console.log(`avg: ${result.avg} for ${JSON.stringify(result.perm)}`);
+  // }
 
-  console.log(`resultsList`);
-  for (let result of resultsList.slice(-3)) {
-    console.log(`avg: ${result.avg} for ${JSON.stringify(result.perm)}`);
-  }
-
-  console.log(`resultsListOther`);
-  for (let result of resultsListOther) {
-    console.log(`avg: ${result.avg} for ${JSON.stringify(result.perm)}`);
-  }
+  // console.log(`resultsListOther`);
+  // for (let result of resultsListOther) {
+  //   console.log(`avg: ${result.avg} for ${JSON.stringify(result.perm)}`);
+  // }
 };
