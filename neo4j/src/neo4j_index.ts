@@ -101,7 +101,7 @@ export const run = async () => {
     funcs.setDriver(`bolt://localhost:7687`);
 
     let gender = true;
-    gender = false;
+    // gender = false;
 
     if (gender) {
       userFunctions.push(createFemale);
@@ -120,10 +120,10 @@ export const run = async () => {
     const test_attributes: string[] = await funcs.getAttributeKeys();
     results = await funcs.createGraph(`myGraph`, test_attributes);
 
-    const permutations = generatePermutations([0, 1], 1);
+    const permutations = generatePermutations([0, 1, 0.5], 4);
     console.log(`permutations: ${JSON.stringify(permutations)}`);
 
-    const resultList: string[] = [];
+    const resultList: any[] = [];
 
     for (let perm of permutations) {
       console.log(`perm: ${JSON.stringify(perm)}`);
@@ -173,16 +173,18 @@ export const run = async () => {
 
       printResults(results, 20, 10);
 
-      const avg = calcAvg(results, 10);
+      const avg = calcAvg(results, 30);
 
       console.log(`the avg is : ${avg}`);
 
-      resultList.push(`${JSON.stringify(perm)} is avg: ${avg}`);
+      resultList.push({ avg, perm });
     }
+
+    resultList.sort((item1, item2) => item1.avg - item2.avg);
 
     console.log();
     for (let result of resultList) {
-      console.log(result);
+      console.log(`avg: ${result.avg} for ${JSON.stringify(result.perm)}`);
     }
 
     return;
