@@ -76,11 +76,11 @@ const calcAvg = (result: neo4j.QueryResult, topLimit: number = 10) => {
 
 function generatePermutations(values: number[], length: number) {
   // const values = [0, 0.5, 1];
-  const permutations: number[] = [];
+  const permutations: number[][] = [];
 
   function generateHelper(current: number[]) {
     if (current.length === length) {
-      permutations.push(...current);
+      permutations.push(current);
       return;
     }
 
@@ -103,27 +103,37 @@ export const run = async () => {
     let gender = true;
     gender = false;
 
-    const permutations = generatePermutations([0, 1], 2);
+    if (gender) {
+      userFunctions.push(createFemale);
+      userFunctions.push(createMale);
+    } else {
+      userFunctions.push(createGroupA);
+      userFunctions.push(createGroupB);
+    }
+
+    await funcs.createData({
+      deleteData: true,
+      nodesNum: 100,
+      edgesNum: 20,
+    });
+    results = await funcs.createFriends();
+    const test_attributes: string[] = await funcs.getAttributeKeys();
+    results = await funcs.createGraph(`myGraph`, test_attributes);
+
+    const permutations = generatePermutations([0, 1], 1);
+    console.log(`permutations: ${JSON.stringify(permutations)}`);
 
     const resultList: string[] = [];
 
     for (let perm of permutations) {
-      if (gender) {
-        userFunctions.push(createFemale);
-        userFunctions.push(createMale);
-      } else {
-        userFunctions.push(createGroupA);
-        userFunctions.push(createGroupB);
-      }
+      console.log(`perm: ${JSON.stringify(perm)}`);
 
-      await funcs.createData({
-        deleteData: true,
-        nodesNum: 100,
-        edgesNum: 20,
-      });
-      results = await funcs.createFriends();
-      const test_attributes: string[] = await funcs.getAttributeKeys();
-      results = await funcs.createGraph(`myGraph`, test_attributes);
+      results = await funcs.run(
+        `
+        MATCH (n)
+        REMOVE n.embedding
+        `,
+      );
 
       results = await funcs.run(
         `
@@ -168,6 +178,11 @@ export const run = async () => {
       console.log(`the avg is : ${avg}`);
 
       resultList.push(`${JSON.stringify(perm)} is avg: ${avg}`);
+    }
+
+    console.log();
+    for (let result of resultList) {
+      console.log(result);
     }
 
     return;
