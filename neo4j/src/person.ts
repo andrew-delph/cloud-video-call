@@ -8,6 +8,8 @@ export enum PersonType {
   Hot = `Hot`,
   Positive = `Positive`,
   Negative = `Negative`,
+  GroupA = `GroupA`,
+  GroupB = `GroupB`,
 }
 
 export const indexToColor: { [key: number]: string } = {
@@ -56,6 +58,20 @@ export const calcScoreMap = new Map<
   [
     PersonType.Negative,
     (me: Person, otherPerson: Person) => {
+      return -10;
+    },
+  ],
+  [
+    PersonType.GroupA,
+    (me: Person, otherPerson: Person) => {
+      if (otherPerson.type == PersonType.GroupA) return 10;
+      return -10;
+    },
+  ],
+  [
+    PersonType.GroupB,
+    (me: Person, otherPerson: Person) => {
+      if (otherPerson.type == PersonType.GroupB) return 10;
       return -10;
     },
   ],
@@ -109,6 +125,20 @@ export const createNegative = (auth: string): Person => {
   return new Person(PersonType.Negative, auth, attributes);
 };
 
+export const createGroupA = (auth: string): Person => {
+  let attributes = {};
+  attributes = { group: `A` };
+
+  return new Person(PersonType.GroupA, auth, attributes);
+};
+
+export const createGroupB = (auth: string): Person => {
+  let attributes = {};
+  attributes = { group: `B` };
+
+  return new Person(PersonType.GroupB, auth, attributes);
+};
+
 // export const createLocationBound = (auth: string): Person => {
 //   let attributes;
 //   if (Math.random() > 0.5) {
@@ -122,8 +152,12 @@ export const createNegative = (auth: string): Person => {
 // };
 
 let userFunctions: any[] = [];
-userFunctions.push(createFemale);
-userFunctions.push(createMale);
+// userFunctions.push(createFemale);
+// userFunctions.push(createMale);
+
+userFunctions.push(createGroupA);
+userFunctions.push(createGroupB);
+
 // userFunctions.push(createPositive);
 // userFunctions.push(createNegative);
 // userFunctions.push(createRandom);
