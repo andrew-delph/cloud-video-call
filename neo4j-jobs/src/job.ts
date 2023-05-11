@@ -31,7 +31,8 @@ logger.info(`Value of JOB: ${job}`);
         logger.info(`Recently Active Users: ${activeUsers.length}`);
       }
 
-      const topk = activeUsers.length;
+      const topk = 40;
+      // activeUsers.length;
 
       results = await funcs.createGraph(
         `shortPredictGraph`,
