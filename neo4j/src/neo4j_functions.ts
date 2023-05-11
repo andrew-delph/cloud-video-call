@@ -95,12 +95,12 @@ export async function createData({
 
   edgesNum = nodesNum * edgesNum;
   for (var i = 0; i < edgesNum; i++) {
-    const a = nodes[Math.floor(Math.random() * nodesNum)];
-    let b = nodes[Math.floor(Math.random() * nodesNum)];
+    const a = i % nodesNum;
+    let b = Math.floor(Math.random() * nodesNum);
     while (a === b) {
-      b = nodes[Math.floor(Math.random() * nodesNum)];
+      b = Math.floor(Math.random() * nodesNum);
     }
-    edges.push({ a, b });
+    edges.push({ a: nodes[a], b: nodes[b] });
   }
 
   start_time = performance.now();
@@ -568,13 +568,13 @@ export async function createGraph(
         sourceNodeLabels: 'Person',
         targetNodeLabels: 'Person',
         sourceNodeProperties: source {
-            priority: coalesce(source.priority, 0),
-            community: coalesce(source.community, 0),
+            // priority: coalesce(source.priority, 0),
+            // community: coalesce(source.community, 0),
             values: source_values ${getExtraNodeProperties(`source`)}
           },
         targetNodeProperties: target {
-            priority: coalesce(target.priority, 0),
-            community: coalesce(target.community, 0),
+            // priority: coalesce(target.priority, 0),
+            // community: coalesce(target.community, 0),
             values: target_values ${getExtraNodeProperties(`target`)}
           }
       },
