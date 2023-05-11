@@ -69,10 +69,10 @@ function generateLists(elements: number[], maxSize: any) {
   return lists;
 }
 
-export const nodeembeddings = async () => {
-  let gender = true;
-  //   gender = false;
-
+export const nodeembeddings = async (
+  gender: boolean,
+  permutations: any = false,
+) => {
   userFunctions.length = 0;
   if (gender) {
     userFunctions.push(createFemale);
@@ -82,16 +82,18 @@ export const nodeembeddings = async () => {
     userFunctions.push(createGroupB);
   }
 
-  //   await funcs.createData({
-  //     deleteData: true,
-  //     nodesNum: 100,
-  //     edgesNum: 20,
-  //   });
-  //   results = await funcs.createFriends();
+  await funcs.createData({
+    deleteData: true,
+    nodesNum: 100,
+    edgesNum: 20,
+  });
+  results = await funcs.createFriends();
   const test_attributes: string[] = await funcs.getAttributeKeys();
   results = await funcs.createGraph(`myGraph`, test_attributes);
 
-  const permutations = generatePermutations([0, 1, 0.5], 3);
+  if (permutations == false) {
+    permutations = generatePermutations([0, 1, 0.5], 3);
+  }
   console.log(`permutations: ${JSON.stringify(permutations)}`);
 
   results = await funcs.run(
@@ -145,6 +147,8 @@ export const nodeembeddings = async () => {
     console.log(`avg: ${result.avg} for ${JSON.stringify(result.perm)}`);
   }
   console.log(`permutations.length: ${permutations.length}`);
+
+  return resultList;
 };
 
 const generateEmbedding = async (perm: number[]) => {

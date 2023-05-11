@@ -2,7 +2,7 @@ import * as neo4j from 'neo4j-driver';
 import * as lp from './lp_pipeling';
 import * as funcs from './neo4j_functions';
 
-import * as flow from './flow';
+import * as nodembeddings_flow from './nodembeddings_flow';
 import {
   userFunctions,
   createFemale,
@@ -66,7 +66,27 @@ export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
 
-    await flow.nodeembeddings();
+    let gender = true;
+    //   gender = false;
+
+    const resultsList = await nodembeddings_flow.nodeembeddings(gender);
+
+    const resultsListOther = await nodembeddings_flow.nodeembeddings(
+      !gender,
+      resultsList.slice(-3).map((val) => val.perm),
+    );
+    console.log();
+    console.log();
+
+    console.log(`resultsList`);
+    for (let result of resultsList.slice(-3)) {
+      console.log(`avg: ${result.avg} for ${JSON.stringify(result.perm)}`);
+    }
+
+    console.log(`resultsListOther`);
+    for (let result of resultsListOther) {
+      console.log(`avg: ${result.avg} for ${JSON.stringify(result.perm)}`);
+    }
 
     return;
 
