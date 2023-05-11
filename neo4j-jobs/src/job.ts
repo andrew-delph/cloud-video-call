@@ -20,6 +20,7 @@ let results;
 const start_time = performance.now();
 logger.info(`Value of JOB: ${job}`);
 (async () => {
+  return;
   switch (job) {
     case `SHORT_PREDICT`:
       const activeUsers = await common.getRecentlyActiveUsers(redisClient, 5);

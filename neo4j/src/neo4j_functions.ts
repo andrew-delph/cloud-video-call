@@ -490,9 +490,7 @@ export async function getFriends(): Promise<neo4j.QueryResult> {
   result = await session.run(
     `
       MATCH (a:Person)-[r:FRIENDS]->(b:Person)
-      MATCH (a)-[rel1:USER_ATTRIBUTES_CONSTANT]->(ad:MetaData)
-      MATCH (b)-[rel2:USER_ATTRIBUTES_CONSTANT]->(bd:MetaData)
-      return ad.gender, bd.gender
+      return a.type, b.type
   `,
   );
 
