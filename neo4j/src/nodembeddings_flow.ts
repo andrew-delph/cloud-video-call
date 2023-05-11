@@ -5,6 +5,7 @@ import {
   createMale,
   createGroupA,
   createGroupB,
+  validFriends,
 } from './person';
 
 import * as funcs from './neo4j_functions';
@@ -20,9 +21,10 @@ const calcAvg = (result: neo4j.QueryResult, topLimit: number = 10) => {
   let total = 0;
 
   records.slice(0, topLimit).forEach((record, index) => {
-    const diff = record.get(`diff`);
+    const ntype = record.get(`m.type`);
+    const mtype = record.get(`n.type`);
 
-    if (diff) total += 1;
+    if (validFriends(ntype, mtype)) total += 1;
   });
 
   return total / length;
@@ -84,7 +86,7 @@ export const nodeembeddings = async (
 
   await funcs.createData({
     deleteData: true,
-    nodesNum: 100,
+    nodesNum: 200,
     edgesNum: 20,
   });
   results = await funcs.createFriends();
@@ -128,11 +130,7 @@ export const nodeembeddings = async (
   }
 
   resultList.sort((item1, item2) => {
-    if (gender) {
-      return item1.avg - item2.avg;
-    } else {
-      return item2.avg - item1.avg;
-    }
+    return item1.avg - item2.avg;
   });
 
   const winner = resultList[resultList.length - 1].perm;
@@ -184,7 +182,7 @@ const generateEmbedding = async (perm: number[]) => {
   results = await funcs.run(
     `
       MATCH (n:Person),(m:Person)
-      WHERE n <> m
+      WHERE id(n) < id(m)
       CALL {
         WITH n, m
         RETURN gds.similarity.cosine(
@@ -192,10 +190,11 @@ const generateEmbedding = async (perm: number[]) => {
           m.embedding
         ) AS cosineSimilarity
       } IN TRANSACTIONS
-        OF 2 ROWS
+        OF 10 ROWS
       with n, m, cosineSimilarity,
       n.type <> m.type as diff
       return 
+      m.type, n.type,
       cosineSimilarity,
       n.typeIndex as n, m.typeIndex as m,
       diff

@@ -17,6 +17,37 @@ export const indexToColor: { [key: number]: string } = {
   2: `Blue`,
 };
 
+function areListsEqual(list1: string[], list2: string[]) {
+  const sortedList1 = list1.slice().sort();
+  const sortedList2 = list2.slice().sort();
+
+  return (
+    sortedList1.length === sortedList2.length &&
+    sortedList1.every((element, index) => element === sortedList2[index])
+  );
+}
+
+export const validFriends = (ntype: string, mtype: string): boolean => {
+  const testList = [ntype, mtype];
+  if (
+    areListsEqual(testList, [
+      PersonType.Male.valueOf(),
+      PersonType.Female.valueOf(),
+    ])
+  ) {
+    return true;
+  }
+  if (
+    areListsEqual(testList, [
+      PersonType.GroupA.valueOf(),
+      PersonType.GroupB.valueOf(),
+    ])
+  ) {
+    return true;
+  }
+  return false;
+};
+
 export const calcScoreMap = new Map<
   PersonType,
   (me: Person, otherPerson: Person) => number
