@@ -14,6 +14,8 @@ spec:
     kourier:
       enabled: true
   config:
+    features:
+      kubernetes.podspec-priorityclassname: 'enabled'
     network:
       ingress-class: 'kourier.ingress.networking.knative.dev'
       auto-tls: Enabled
@@ -56,14 +58,14 @@ metadata:
   namespace: knative-serving
 data:
   max-revision-timeout-seconds: '3600'
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: config-features
-  namespace: knative-serving
-data:
-  kubernetes.podspec-priorityclassname: 'enabled'
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: config-features
+#   namespace: knative-serving
+# data:
+#   kubernetes.podspec-priorityclassname: 'enabled'
 ---
 apiVersion: v1
 kind: ConfigMap

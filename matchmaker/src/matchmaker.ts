@@ -300,6 +300,7 @@ const matchmakerFlow = async (
     const randomIndex = Math.floor(Math.random() * readySet.size);
     otherId = Array.from(readySet)[randomIndex];
     logger.info(`select the otherId ... relationShipScores.length == 0`);
+    throw new RetryError(`relationShipScores.length == 0`);
   } else {
     relationShipScores.sort((a, b) => {
       const a_score = a[1];
