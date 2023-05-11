@@ -151,12 +151,18 @@ export const createGroupB = (auth: string): Person => {
 //   return new Person(auth, attributes, filters, PersonType.LocationBound);
 // };
 
-let userFunctions: any[] = [];
-// userFunctions.push(createFemale);
-// userFunctions.push(createMale);
+export let userFunctions: any[] = [];
 
-userFunctions.push(createGroupA);
-userFunctions.push(createGroupB);
+// let friends = true;
+// // friends = false;
+
+// if (friends) {
+//   userFunctions.push(createFemale);
+//   userFunctions.push(createMale);
+// } else {
+//   userFunctions.push(createGroupA);
+//   userFunctions.push(createGroupB);
+// }
 
 // userFunctions.push(createPositive);
 // userFunctions.push(createNegative);

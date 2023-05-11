@@ -1,6 +1,13 @@
 import * as neo4j from 'neo4j-driver';
 import * as lp from './lp_pipeling';
 import * as funcs from './neo4j_functions';
+import {
+  userFunctions,
+  createFemale,
+  createMale,
+  createGroupA,
+  createGroupB,
+} from './person';
 
 console.log(`starting neo4j_index`);
 let results: neo4j.QueryResult;
@@ -50,37 +57,93 @@ export function printResults(
 
   console.log(`records.length:`, records.length);
 }
+
+const calcAvg = (result: neo4j.QueryResult, topLimit: number = 10) => {
+  const records = result.records;
+
+  const length = records.slice(0, topLimit).length;
+
+  let total = 0;
+
+  records.slice(0, topLimit).forEach((record, index) => {
+    const diff = record.get(`diff`);
+
+    if (diff) total += 1;
+  });
+
+  return total / length;
+};
+
+function generatePermutations(values: number[], length: number) {
+  // const values = [0, 0.5, 1];
+  const permutations: number[] = [];
+
+  function generateHelper(current: number[]) {
+    if (current.length === length) {
+      permutations.push(...current);
+      return;
+    }
+
+    for (let i = 0; i < values.length; i++) {
+      generateHelper([...current, values[i]]);
+    }
+  }
+
+  generateHelper([]);
+
+  return permutations;
+}
+
 const start_time = performance.now();
 
 export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
 
-    await funcs.createData({
-      deleteData: true,
-      nodesNum: 100,
-      edgesNum: 20,
-    });
-    results = await funcs.createFriends();
-    const test_attributes: string[] = await funcs.getAttributeKeys();
-    results = await funcs.createGraph(`myGraph`, test_attributes);
+    let gender = true;
+    gender = false;
 
-    results = await funcs.run(
-      `
+    const permutations = generatePermutations([0, 1], 2);
+
+    const resultList: string[] = [];
+
+    for (let perm of permutations) {
+      if (gender) {
+        userFunctions.push(createFemale);
+        userFunctions.push(createMale);
+      } else {
+        userFunctions.push(createGroupA);
+        userFunctions.push(createGroupB);
+      }
+
+      await funcs.createData({
+        deleteData: true,
+        nodesNum: 100,
+        edgesNum: 20,
+      });
+      results = await funcs.createFriends();
+      const test_attributes: string[] = await funcs.getAttributeKeys();
+      results = await funcs.createGraph(`myGraph`, test_attributes);
+
+      results = await funcs.run(
+        `
       CALL gds.fastRP.write('myGraph',
       {
         nodeLabels: ['Person'],
-        relationshipTypes: ['FRIENDS'],
+        relationshipTypes: ['FEEDBACK'],
+        relationshipWeightProperty: 'score',
         featureProperties: ['values'],
-        embeddingDimension: 3,
+        embeddingDimension: 20,
+        randomSeed: 42,
+        iterationWeights: ${JSON.stringify(perm)},
         writeProperty: 'embedding'
       }
       )
     `,
-    );
+      );
 
-    results = await funcs.run(
-      `
+      results = await funcs.run(
+        `
       MATCH (n:Person),(m:Person)
       WHERE n <> m
       with n, m, 
@@ -92,15 +155,20 @@ export const run = async () => {
       return 
       cosineSimilarity,
       n.typeIndex as n, m.typeIndex as m,
-      diff 
-      //, n.embedding as ne, m.embedding as me
+      diff
+      // , n.embedding as ne, m.embedding as me
       ORDER by cosineSimilarity DESC
     `,
-    );
+      );
 
-    // results = await funcs.getFriends();
+      printResults(results, 20, 10);
 
-    printResults(results, 200, 10);
+      const avg = calcAvg(results, 10);
+
+      console.log(`the avg is : ${avg}`);
+
+      resultList.push(`${JSON.stringify(perm)} is avg: ${avg}`);
+    }
 
     return;
 
