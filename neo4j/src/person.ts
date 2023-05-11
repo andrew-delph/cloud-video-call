@@ -40,6 +40,14 @@ export const validFriends = (ntype: string, mtype: string): boolean => {
   if (
     areListsEqual(testList, [
       PersonType.GroupA.valueOf(),
+      PersonType.GroupA.valueOf(),
+    ])
+  ) {
+    return true;
+  }
+  if (
+    areListsEqual(testList, [
+      PersonType.GroupB.valueOf(),
       PersonType.GroupB.valueOf(),
     ])
   ) {
