@@ -15,6 +15,7 @@
   "dependencies": {
     "common": "link:../common",
     "haversine-distance": "^1.2.1",
+    "mathjs": "^11.8.0",
     "neo4j-driver": "^5.5.0",
     "neo4j-grpc-common": "link:../neo4j-grpc-common",
     "uuid": "^9.0.0"

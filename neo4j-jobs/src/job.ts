@@ -20,13 +20,12 @@ let results;
 const start_time = performance.now();
 logger.info(`Value of JOB: ${job}`);
 (async () => {
-  if (1 + 1 == 2) {
-    process.exit(0);
-    return;
-  }
-
   switch (job) {
     case `SHORT_PREDICT`:
+      /*
+        graph name shortPredictGraph
+      */
+
       const activeUsers = await common.getRecentlyActiveUsers(redisClient, 5);
 
       if (activeUsers.length < 5) {
@@ -36,133 +35,73 @@ logger.info(`Value of JOB: ${job}`);
         logger.info(`Recently Active Users: ${activeUsers.length}`);
       }
 
-      const topk = 40;
-      // activeUsers.length;
-
-      results = await funcs.createGraph(
-        `shortPredictGraph`,
-        await funcs.getAttributeKeys(),
-      );
-      funcs.printResults(results, print_num);
+      const test_attributes: string[] = await funcs.getAttributeKeys();
+      results = await funcs.createGraph(`shortPredictGraph`, test_attributes);
 
       results = await funcs.run(
         `
-        CALL gds.nodeSimilarity.mutate('shortPredictGraph', {
-          nodeLabels: ['Person'],
-          relationshipTypes: ['FRIENDS'],
-          mutateRelationshipType: 'SIMILAR1',
-          topK: ${topk},
-          mutateProperty: 'score'
-        })
-        YIELD nodesCompared, relationshipsWritten
-      `,
-      );
-
-      // SIMILAR2 mutate
-      results = await funcs.run(
-        `
-        CALL gds.nodeSimilarity.mutate('shortPredictGraph', {
-          nodeLabels: ['Person'],
-          relationshipTypes: ['FRIENDS', 'SIMILAR1'],
-          mutateRelationshipType: 'SIMILAR2',
-          topK: ${topk},
-          mutateProperty: 'score'
-        })
-        YIELD nodesCompared, relationshipsWritten
-      `,
-      );
-
-      // SIMILAR3 mutate
-      results = await funcs.run(
-        `
-            CALL gds.nodeSimilarity.mutate('shortPredictGraph', {
+          CALL gds.articleRank.mutate('shortPredictGraph', {  
+              scaler: "MinMax",
               nodeLabels: ['Person'],
-              relationshipTypes: ['NEGATIVE'],
-              mutateRelationshipType: 'SIMILAR3',
-              topK: ${topk},
-              mutateProperty: 'score'
-            })
-            YIELD nodesCompared, relationshipsWritten
-          `,
-      );
-
-      // SIMILAR4 mutate
-      results = await funcs.run(
-        `
-            CALL gds.nodeSimilarity.mutate('shortPredictGraph', {
-              nodeLabels: ['Person'],
-              relationshipTypes: ['NEGATIVE', 'SIMILAR3'],
-              mutateRelationshipType: 'SIMILAR4',
-              topK: ${topk},
-              mutateProperty: 'score'
-            })
-            YIELD nodesCompared, relationshipsWritten
-          `,
+              relationshipTypes: ['FRIENDS'],
+              mutateProperty: 'priority' 
+            }
+          )
+          YIELD nodePropertiesWritten, ranIterations
+        `,
       );
 
       results = await funcs.run(
         `
-        CALL gds.graph.relationshipProperty.stream(
-          'shortPredictGraph',                  
-          'score',
-          ['SIMILAR2','SIMILAR4']                              
-        )
-        YIELD
-          sourceNodeId, targetNodeId, relationshipType, propertyValue
-        RETURN
-          gds.util.asNode(sourceNodeId).userId as source, gds.util.asNode(targetNodeId).userId as target, relationshipType, propertyValue
-        ORDER BY source ASC, target ASC
-      `,
+          CALL gds.louvain.mutate('shortPredictGraph', 
+          {  
+            nodeLabels: ['Person'],
+            relationshipTypes: ['FRIENDS'],
+            mutateProperty: 'community' 
+          }
+          )
+        `,
       );
 
-      const convertScore = (
-        relationshipType: string,
-        score: number,
-      ): number => {
-        if (relationshipType == `SIMILAR2`) {
-          return score;
-        } else if ((relationshipType = `SIMILAR4`)) {
-          return -score;
-        } else {
-          throw `relationshipType ${relationshipType} does not exist`;
-        }
-      };
+      results = await funcs.run(
+        `
+          CALL gds.fastRP.mutate('shortPredictGraph',
+          {
+            nodeLabels: ['Person'],
+            relationshipTypes: ['FEEDBACK'],
+            relationshipWeightProperty: 'score',
+            featureProperties: ['values','priority','community'],
+            propertyRatio: 0.0,
+            nodeSelfInfluence: 1.0,
+            embeddingDimension: 128,
+            randomSeed: 42,
+            iterationWeights: ${JSON.stringify([1, 0.5])},
+            mutateProperty: 'embedding'
+          }
+          )
+        `,
+      );
 
-      const data: Map<string, number> = new Map();
+      results = await funcs.run(
+        `
+        CALL gds.graph.nodeProperty.stream('shortPredictGraph', 'embedding', ['Person'])
+        YIELD nodeId, propertyValue
+        RETURN gds.util.asNode(nodeId).userId AS userId, propertyValue AS embedding
+        `,
+      );
 
       for (let record of results.records) {
-        const user1 = record.get(`source`);
-        const user2 = record.get(`target`);
-        const relationshipType = record.get(`relationshipType`);
-        const propertyValue = record.get(`propertyValue`);
-
-        const score = convertScore(relationshipType, propertyValue);
-        const key = common.relationshipProbabilityKey(user1, user2);
-
-        data.set(key, (data.get(key) || 0) + score);
+        const userId: string = record.get(`userId`);
+        const embedding = record.get(`embedding`);
+        await common.writeRedisUserEmbeddings(redisClient, userId, embedding);
       }
 
-      const entries = [...data.entries()];
-
-      entries.sort((a, b) => {
-        return b[1] - a[1];
-      });
-
-      for (const entry of entries) {
-        logger.debug(entry[0] + ` : ` + entry[1]);
-        await common.writeRedisRelationshipProbability(
-          redisClient,
-          entry[0],
-          entry[1],
-          60 * 30,
-        );
-      }
-
-      logger.info(`wrote ${entries.length} relationships to redis`);
+      logger.info(`wrote ${results.records.length} embeddings to redis`);
 
       break;
     case `TRAIN`:
     case `COMPUTE`:
+      return;
       // await funcs.createFriends();
       node_attributes = await funcs.getAttributeKeys();
       results = await funcs.createGraph(`myGraph`, node_attributes);

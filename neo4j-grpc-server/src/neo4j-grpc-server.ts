@@ -32,6 +32,16 @@ import {
   writeUserPreferencesDatabase,
 } from './UserPreferences';
 
+import * as math from 'mathjs';
+
+function cosineSimilarity(vectorA: number[], vectorB: number[]): number {
+  const dotProduct = math.dot(vectorA, vectorB);
+  const magnitudeA = math.norm(vectorA);
+  const magnitudeB = math.norm(vectorB);
+
+  return Number(math.divide(dotProduct, math.multiply(magnitudeA, magnitudeB)));
+}
+
 common.listenGlobalExceptions(async () => {
   await server.tryShutdown(() => {
     logger.info(`try shutdown completed`);
@@ -238,35 +248,41 @@ const getRelationshipScores = async (
   const reply = new GetRelationshipScoresResponse();
 
   // check for relationships on redis
-  for (let otherId of otherUsers) {
-    const redisScore = await common.getRedisRelationshipProbability(
-      redisClient,
-      userId,
-      otherId,
-    );
 
-    if (redisScore != null) {
-      const score = new Score();
-      score.setScore(redisScore);
-      reply.getRelationshipScoresMap().set(otherId, score);
+  const userEmbddings = await common.getRedisUserEmbeddings(
+    redisClient,
+    userId,
+  );
+
+  if (userEmbddings != null) {
+    for (let otherId of otherUsers) {
+      const otherEmbddings = await common.getRedisUserEmbeddings(
+        redisClient,
+        otherId,
+      );
+
+      if (otherEmbddings != null) {
+        const score = new Score();
+        const redisScore = cosineSimilarity(userEmbddings, otherEmbddings);
+
+        logger.info(
+          `cosineSimilarity score is ${redisScore} for ${userId} and ${otherId}`,
+        );
+        score.setScore(redisScore);
+        reply.getRelationshipScoresMap().set(otherId, score);
+      }
     }
   }
 
-  // if already in the reply remove...
-  otherUsers = otherUsers.filter((otherId) => {
-    const inReply = reply.getRelationshipScoresMap().has(otherId);
-    return !inReply;
-  });
-
   if (reply.getRelationshipScoresMap().getLength() == 0) {
     logger.debug(
-      `relationship's read from redis: ${reply
+      `scores's read from redis: ${reply
         .getRelationshipScoresMap()
         .getLength()} of ${otherUsers.length}`,
     );
   } else {
     logger.info(
-      `relationship's read from redis: ${reply
+      `scores's read from redis: ${reply
         .getRelationshipScoresMap()
         .getLength()} of ${otherUsers.length}`,
     );
@@ -310,7 +326,8 @@ const getRelationshipScores = async (
       );
     }
 
-    const score = new Score();
+    const score = reply.getRelationshipScoresMap().get(userId) ?? new Score();
+
     score.setProb(prob);
     score.setNumbFriends(num_friends);
 

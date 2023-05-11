@@ -76,6 +76,7 @@ export const getActiveUsers = async (
   return await redisClient.smembers(activeSetName);
 };
 
+// depredicated
 export function relationshipProbabilityKey(
   userId1: string,
   userId2: string,
@@ -84,6 +85,7 @@ export function relationshipProbabilityKey(
   return `relationshipProbability-${userId1}-${userId2}`;
 }
 
+// depredicated
 export const getRedisRelationshipProbability = async (
   redisClient: Client,
   userId1: string,
@@ -95,6 +97,7 @@ export const getRedisRelationshipProbability = async (
   return val != null ? parseFloat(val) : null;
 };
 
+// depredicated
 export const writeRedisRelationshipProbability = async (
   redisClient: Client,
   key: string,
@@ -129,4 +132,25 @@ export const getRecentlyActiveUsers = async (
   }
 
   return [...new Set(recentlyActiveList)];
+};
+
+export function userEmbeddingsKey(userId: string): string {
+  return `userIdEmbeddingsKey-${userId}`;
+}
+
+export const getRedisUserEmbeddings = async (
+  redisClient: Client,
+  userId: string,
+): Promise<number[] | null> => {
+  const val = await redisClient.get(userEmbeddingsKey(userId));
+  return val != null ? JSON.parse(val) : null;
+};
+
+export const writeRedisUserEmbeddings = async (
+  redisClient: Client,
+  userId: string,
+  embedding: any,
+  expire: number = 60 * 10,
+): Promise<void> => {
+  await redisClient.set(userEmbeddingsKey(userId), embedding, `EX`, expire);
 };

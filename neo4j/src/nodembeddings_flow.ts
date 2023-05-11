@@ -99,7 +99,7 @@ export const nodeembeddings = async (permutations: any = false) => {
   });
   results = await funcs.createFriends();
   const test_attributes: string[] = await funcs.getAttributeKeys();
-  results = await funcs.createGraph(`myGraph`, []);
+  results = await funcs.createGraph(`myGraph`, test_attributes);
 
   if (permutations == false) {
     permutations = generatePermutations([0, 1, 0.5], 3);
