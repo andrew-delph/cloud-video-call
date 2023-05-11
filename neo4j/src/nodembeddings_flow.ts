@@ -208,3 +208,26 @@ const generateEmbedding = async (perm: number[]) => {
 
   return { avg, perm };
 };
+
+export const main = async () => {
+  let gender = true;
+
+  const resultsList = await nodeembeddings(gender);
+
+  const resultsListOther = await nodeembeddings(
+    !gender,
+    resultsList.slice(-3).map((val) => val.perm),
+  );
+  console.log();
+  console.log();
+
+  console.log(`resultsList`);
+  for (let result of resultsList.slice(-3)) {
+    console.log(`avg: ${result.avg} for ${JSON.stringify(result.perm)}`);
+  }
+
+  console.log(`resultsListOther`);
+  for (let result of resultsListOther) {
+    console.log(`avg: ${result.avg} for ${JSON.stringify(result.perm)}`);
+  }
+};
