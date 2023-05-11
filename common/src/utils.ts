@@ -149,8 +149,13 @@ export const getRedisUserEmbeddings = async (
 export const writeRedisUserEmbeddings = async (
   redisClient: Client,
   userId: string,
-  embedding: any,
+  embedding: number[],
   expire: number = 60 * 10,
 ): Promise<void> => {
-  await redisClient.set(userEmbeddingsKey(userId), embedding, `EX`, expire);
+  await redisClient.set(
+    userEmbeddingsKey(userId),
+    JSON.stringify(embedding),
+    `EX`,
+    expire,
+  );
 };
