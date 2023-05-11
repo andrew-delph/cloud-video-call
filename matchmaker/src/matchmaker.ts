@@ -164,10 +164,10 @@ export const startReadyConsumer = async () => {
         rabbitChannel.ack(msg);
       } catch (e: any) {
         if (e instanceof CompleteError) {
-          // logger.debug(`CompleteError ${userId} ${e}`);
+          logger.debug(`CompleteError ${userId} ${e}`);
           rabbitChannel.ack(msg);
         } else if (e instanceof RetryError) {
-          // logger.debug(`RetryError ${userId} ${e}`);
+          logger.debug(`RetryError ${userId} ${e}`);
           rabbitChannel.nack(msg);
         } else {
           logger.error(`Unknown error: ${e}`);
