@@ -371,7 +371,7 @@ async function matchmakerFlow(
           readyMessage,
         );
       } else {
-        logger.debug(
+        logger.info(
           `User no related scores: priority=${readyMessage.getPriority()} cooldownAttempts=${readyMessage.getCooldownAttempts()}`,
         );
       }
