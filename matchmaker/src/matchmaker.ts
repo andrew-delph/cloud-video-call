@@ -14,6 +14,9 @@ import {
   CreateUserRequest,
   GetUserPerferencesRequest,
   GetUserPerferencesResponse,
+  readyQueueName,
+  matchQueueName,
+  matchmakerQueueName,
 } from 'common-messaging';
 import {
   listenGlobalExceptions,
@@ -48,11 +51,11 @@ const realtionshipScoreCacheEx = 1;
 const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
 
-  await rabbitChannel.assertQueue(common.matchQueueName, {
+  await rabbitChannel.assertQueue(matchQueueName, {
     durable: true,
   });
 
-  await rabbitChannel.assertQueue(common.readyQueueName, {
+  await rabbitChannel.assertQueue(readyQueueName, {
     durable: true,
     maxPriority: maxPriority,
   });
@@ -62,11 +65,7 @@ const connectRabbit = async () => {
     arguments: { 'x-delayed-type': `direct` },
   });
 
-  await rabbitChannel.bindQueue(
-    common.readyQueueName,
-    delayExchange,
-    readyRoutingKey,
-  );
+  await rabbitChannel.bindQueue(readyQueueName, delayExchange, readyRoutingKey);
 
   logger.info(`rabbit connected`);
 };
@@ -119,7 +118,7 @@ export const startReadyConsumer = async () => {
   logger.info(` [x] Awaiting RPC requests`);
 
   rabbitChannel.consume(
-    common.matchmakerQueueName,
+    matchmakerQueueName,
     async (msg: ConsumeMessage | null) => {
       if (msg == null) {
         logger.error(`msg is null.`);
@@ -144,7 +143,7 @@ export const startReadyConsumer = async () => {
   );
 
   rabbitChannel.consume(
-    common.readyQueueName,
+    readyQueueName,
     async (msg: ConsumeMessage | null) => {
       if (msg == null) {
         logger.error(`msg is null.`);
@@ -374,7 +373,7 @@ const matchmakerFlow = async (
       };
 
       await rabbitChannel.sendToQueue(
-        common.matchQueueName,
+        matchQueueName,
         Buffer.from(JSON.stringify(matchMessage)),
       );
     })

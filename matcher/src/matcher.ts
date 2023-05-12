@@ -16,6 +16,8 @@ import {
   CreateMatchResponse,
   CreateUserResponse,
   createNeo4jClient,
+  matchQueueName,
+  matchmakerQueueName,
 } from 'common-messaging';
 
 const logger = common.getLogger();
@@ -42,7 +44,7 @@ let rabbitChannel: Channel;
 export async function matchConsumer() {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
 
-  await rabbitChannel.assertQueue(common.matchQueueName, {
+  await rabbitChannel.assertQueue(matchQueueName, {
     durable: true,
   });
   logger.info(`rabbitmq connected`);
@@ -59,7 +61,7 @@ export async function matchConsumer() {
 
   rabbitChannel.prefetch(40);
   rabbitChannel.consume(
-    common.matchQueueName,
+    matchQueueName,
     async (msg: ConsumeMessage | null) => {
       if (msg == null) {
         logger.error(`msg is null.`);
@@ -81,14 +83,14 @@ export async function matchConsumer() {
           await mainRedisClient.sadd(common.readySetName, userId1);
 
           await rabbitChannel.sendToQueue(
-            common.matchmakerQueueName,
+            matchmakerQueueName,
             Buffer.from(JSON.stringify({ userId: userId1 } as ReadyMessage)),
           );
         }
         if (await mainRedisClient.sismember(common.activeSetName, userId2)) {
           await mainRedisClient.sadd(common.readySetName, userId2);
           await rabbitChannel.sendToQueue(
-            common.matchmakerQueueName,
+            matchmakerQueueName,
             Buffer.from(JSON.stringify({ userId: userId2 } as ReadyMessage)),
           );
         }

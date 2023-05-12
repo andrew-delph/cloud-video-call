@@ -14,6 +14,7 @@ import {
   CreateUserRequest,
   CreateUserResponse,
   createNeo4jClient,
+  matchmakerQueueName,
 } from 'common-messaging';
 import { listenGlobalExceptions, ReadyMessage } from 'common';
 import { auth_middleware } from './authentication';
@@ -36,7 +37,7 @@ let rabbitChannel: amqp.Channel;
 const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
 
-  await rabbitChannel.assertQueue(common.matchmakerQueueName, {
+  await rabbitChannel.assertQueue(matchmakerQueueName, {
     durable: true,
   });
 
@@ -114,7 +115,7 @@ io.on(`connection`, async (socket) => {
       // );
 
       await rabbitChannel.sendToQueue(
-        common.matchmakerQueueName,
+        matchmakerQueueName,
         Buffer.from(JSON.stringify(readyMesage)),
         {},
       );

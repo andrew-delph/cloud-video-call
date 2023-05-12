@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 
-// import "google/api/annotations.proto";
 
 package neo4j;
 
@@ -28,9 +27,6 @@ service Neo4j {
   rpc PutUserPerferences(PutUserPerferencesRequest) returns (PutUserPerferencesResponse) {}
 
   rpc GetMatchHistory(MatchHistoryRequest) returns (MatchHistoryResponse) {
-    // option (google.api.http) = {
-    //   post: "/v1/history"
-    // };
   }
 }
 
