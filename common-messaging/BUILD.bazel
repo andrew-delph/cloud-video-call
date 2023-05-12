@@ -36,7 +36,7 @@ js_library(
 )
 
 npm_package(
-    name = "neo4j-grpc-common",
+    name = "common-messaging",
     srcs = [":lib"],
     visibility = ["//visibility:public"],
 )

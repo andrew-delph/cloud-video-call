@@ -5,7 +5,7 @@ import * as neo4j from 'neo4j-driver';
 import Client from 'ioredis';
 import { initializeApp } from 'firebase-admin/app';
 
-import * as neo4j_common from 'neo4j-grpc-common';
+import * as neo4j_common from 'common-messaging';
 
 var cors = require(`cors`);
 const omitDeep = require(`omit-deep-lodash`);

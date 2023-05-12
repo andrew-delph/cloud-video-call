@@ -1,5 +1,5 @@
 {
-  "name": "neo4j-grpc-common",
+  "name": "common-messaging",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",

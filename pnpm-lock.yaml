@@ -48,6 +48,31 @@ importers:
         specifier: 4.9.4
         version: 4.9.4
 
+  common-messaging:
+    dependencies:
+      '@grpc/grpc-js':
+        specifier: ^1.8.9
+        version: 1.8.9
+      google-protobuf:
+        specifier: ^3.21.2
+        version: 3.21.2
+    devDependencies:
+      '@types/google-protobuf':
+        specifier: ^3.15.6
+        version: 3.15.6
+      '@types/node':
+        specifier: ^20.1.1
+        version: 20.1.1
+      grpc_tools_node_protoc_ts:
+        specifier: ^5.0.0
+        version: 5.0.0
+      nodemon:
+        specifier: ^2.0.20
+        version: 2.0.20
+      typescript:
+        specifier: ^4.4.4
+        version: 4.9.4
+
   matcher:
     dependencies:
       '@socket.io/redis-adapter':
@@ -62,6 +87,9 @@ importers:
       common:
         specifier: link:../common
         version: link:../common
+      common-messaging:
+        specifier: link:../common-messaging
+        version: link:../common-messaging
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3
@@ -74,9 +102,6 @@ importers:
       ioredis:
         specifier: 5.2.5
         version: 5.2.5
-      neo4j-grpc-common:
-        specifier: link:../neo4j-grpc-common
-        version: link:../neo4j-grpc-common
       redlock:
         specifier: ^5.0.0-beta.2
         version: 5.0.0-beta.2
@@ -135,6 +160,9 @@ importers:
       common:
         specifier: link:../common
         version: link:../common
+      common-messaging:
+        specifier: link:../common-messaging
+        version: link:../common-messaging
       ioredis:
         specifier: 5.2.5
         version: 5.2.5
@@ -144,9 +172,6 @@ importers:
       lodash.throttle:
         specifier: ^4.1.1
         version: 4.1.1
-      neo4j-grpc-common:
-        specifier: link:../neo4j-grpc-common
-        version: link:../neo4j-grpc-common
       redlock:
         specifier: ^5.0.0-beta.2
         version: 5.0.0-beta.2
@@ -225,36 +250,14 @@ importers:
         specifier: ^4.9.5
         version: 4.9.5
 
-  neo4j-grpc-common:
-    dependencies:
-      '@grpc/grpc-js':
-        specifier: ^1.8.9
-        version: 1.8.9
-      google-protobuf:
-        specifier: ^3.21.2
-        version: 3.21.2
-    devDependencies:
-      '@types/google-protobuf':
-        specifier: ^3.15.6
-        version: 3.15.6
-      '@types/node':
-        specifier: ^20.1.1
-        version: 20.1.1
-      grpc_tools_node_protoc_ts:
-        specifier: ^5.0.0
-        version: 5.0.0
-      nodemon:
-        specifier: ^2.0.20
-        version: 2.0.20
-      typescript:
-        specifier: ^4.4.4
-        version: 4.9.4
-
   neo4j-grpc-server:
     dependencies:
       common:
         specifier: link:../common
         version: link:../common
+      common-messaging:
+        specifier: link:../common-messaging
+        version: link:../common-messaging
       haversine-distance:
         specifier: ^1.2.1
         version: 1.2.1
@@ -267,9 +270,6 @@ importers:
       neo4j-driver:
         specifier: ^5.5.0
         version: 5.5.0
-      neo4j-grpc-common:
-        specifier: link:../neo4j-grpc-common
-        version: link:../neo4j-grpc-common
       uuid:
         specifier: ^9.0.0
         version: 9.0.0
@@ -301,15 +301,15 @@ importers:
       common:
         specifier: link:../common
         version: link:../common
+      common-messaging:
+        specifier: link:../common-messaging
+        version: link:../common-messaging
       ioredis:
         specifier: 5.2.5
         version: 5.2.5
       neo4j-driver:
         specifier: ^5.5.0
         version: 5.5.0
-      neo4j-grpc-common:
-        specifier: link:../neo4j-grpc-common
-        version: link:../neo4j-grpc-common
       neo4jscripts:
         specifier: link:../neo4j
         version: link:../neo4j
@@ -332,6 +332,9 @@ importers:
       common:
         specifier: link:../common
         version: link:../common
+      common-messaging:
+        specifier: link:../common-messaging
+        version: link:../common-messaging
       cors:
         specifier: ^2.8.5
         version: 2.8.5
@@ -347,9 +350,6 @@ importers:
       neo4j-driver:
         specifier: ^5.5.0
         version: 5.5.0
-      neo4j-grpc-common:
-        specifier: link:../neo4j-grpc-common
-        version: link:../neo4j-grpc-common
       omit-deep-lodash:
         specifier: ^1.1.7
         version: 1.1.7
@@ -381,6 +381,9 @@ importers:
       common:
         specifier: link:../common
         version: link:../common
+      common-messaging:
+        specifier: link:../common-messaging
+        version: link:../common-messaging
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3
@@ -396,9 +399,6 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
-      neo4j-grpc-common:
-        specifier: link:../neo4j-grpc-common
-        version: link:../neo4j-grpc-common
       socket.io:
         specifier: 4.6.1
         version: 4.6.1

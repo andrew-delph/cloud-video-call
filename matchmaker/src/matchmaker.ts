@@ -14,7 +14,7 @@ import {
   CreateUserRequest,
   GetUserPerferencesRequest,
   GetUserPerferencesResponse,
-} from 'neo4j-grpc-common';
+} from 'common-messaging';
 import {
   listenGlobalExceptions,
   MatchMessage,

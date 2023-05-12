@@ -18,7 +18,7 @@
     "ioredis": "5.2.5",
     "neo4j-driver": "^5.5.0",
     "common": "link:../common",
-    "neo4j-grpc-common": "link:../neo4j-grpc-common",
+    "common-messaging": "link:../common-messaging",
     "neo4jscripts": "link:../neo4j"
   },
   "devDependencies": {

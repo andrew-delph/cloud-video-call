@@ -14,7 +14,7 @@ import {
   CreateUserRequest,
   CreateUserResponse,
   createNeo4jClient,
-} from 'neo4j-grpc-common';
+} from 'common-messaging';
 import { listenGlobalExceptions, ReadyMessage } from 'common';
 import { auth_middleware } from './authentication';
 import {

@@ -21,7 +21,7 @@ import {
   MatchHistoryRequest,
   Match,
   grpc,
-} from 'neo4j-grpc-common';
+} from 'common-messaging';
 import * as neo4j from 'neo4j-driver';
 import * as common from 'common';
 import { v4 } from 'uuid';

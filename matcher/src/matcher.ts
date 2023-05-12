@@ -16,7 +16,7 @@ import {
   CreateMatchResponse,
   CreateUserResponse,
   createNeo4jClient,
-} from 'neo4j-grpc-common';
+} from 'common-messaging';
 
 const logger = common.getLogger();
 

@@ -10,12 +10,12 @@ WORKDIR /usr/src/app
 RUN npm i -g grpc-tools
 
 COPY common/package*.json ./common/
-COPY neo4j/neo4j-grpc-common/package*.json ./neo4j/neo4j-grpc-common/
+COPY neo4j/common-messaging/package*.json ./neo4j/common-messaging/
 COPY websocket/package*.json ./websocket/
 
 # Install production dependencies.
 RUN cd common && npm install
-RUN cd neo4j/neo4j-grpc-common && npm install
+RUN cd neo4j/common-messaging && npm install
 RUN cd websocket && npm install
 
 # Copy local code to the container image.
@@ -23,8 +23,8 @@ RUN cd websocket && npm install
 COPY common common
 RUN cd common && npm run build
 
-COPY neo4j/neo4j-grpc-common neo4j/neo4j-grpc-common
-RUN cd neo4j/neo4j-grpc-common && npm run build
+COPY neo4j/common-messaging neo4j/common-messaging
+RUN cd neo4j/common-messaging && npm run build
 
 COPY websocket websocket
 RUN cd websocket && npm run build

@@ -18,7 +18,7 @@
     "lodash": "^4.17.21",
     "mathjs": "^11.8.0",
     "neo4j-driver": "^5.5.0",
-    "neo4j-grpc-common": "link:../neo4j-grpc-common",
+    "common-messaging": "link:../common-messaging",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

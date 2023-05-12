@@ -15,8 +15,8 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.4.13 && \
 COPY common/package*.json ./common/
 RUN cd common && npm install
 
-COPY neo4j/neo4j-grpc-common/package*.json ./neo4j/neo4j-grpc-common/
-RUN cd neo4j/neo4j-grpc-common && npm install
+COPY neo4j/common-messaging/package*.json ./neo4j/common-messaging/
+RUN cd neo4j/common-messaging && npm install
 
 COPY neo4j/neo4j-jobs/package*.json ./neo4j/neo4j-jobs/
 RUN cd neo4j/neo4j-jobs && npm install
@@ -25,8 +25,8 @@ RUN cd neo4j/neo4j-jobs && npm install
 COPY common common
 RUN cd common && npm run build
 
-COPY neo4j/neo4j-grpc-common neo4j/neo4j-grpc-common
-RUN cd neo4j/neo4j-grpc-common && npm run build
+COPY neo4j/common-messaging neo4j/common-messaging
+RUN cd neo4j/common-messaging && npm run build
 
 COPY neo4j/neo4j-jobs neo4j/neo4j-jobs
 RUN cd neo4j/neo4j-jobs && npm run build
