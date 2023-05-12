@@ -123,8 +123,8 @@ export const startReadyConsumer = async () => {
       const userRepsonse = await neo4jGetUser(userId);
 
       const priority =
-        (await common.getRedisUserPriority(mainRedisClient, userId)) ||
         userRepsonse.getPriority() ||
+        (await common.getRedisUserPriority(mainRedisClient, userId)) ||
         0;
 
       const delay = matchmakerMessage.getCooldownAttempts() * 1000;
