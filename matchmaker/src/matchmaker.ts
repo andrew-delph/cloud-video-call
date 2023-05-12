@@ -357,13 +357,6 @@ async function matchmakerFlow(
     });
     otherId = relationShipScores[0][0];
     highestScore = relationShipScores[0][1];
-    const lowestScore: common.RelationshipScoreType =
-      relationShipScores[relationShipScores.length - 1][1];
-    logger.debug(
-      `score highest:${JSON.stringify(highestScore)} lowest:${JSON.stringify(
-        lowestScore,
-      )} otherId:${otherId} size: ${relationShipScores.length}`,
-    );
 
     if (highestScore.prob <= 0 && highestScore.score <= 0) {
       if (
@@ -380,6 +373,7 @@ async function matchmakerFlow(
         );
       }
     }
+    logger.info(`highestScore=${JSON.stringify(highestScore)}`);
   }
 
   // listen and publish on otherId
