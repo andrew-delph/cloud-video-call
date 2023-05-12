@@ -39,14 +39,15 @@ export async function sendReadyQueue(
   priority: number,
   delay: number,
 ) {
-  const readyMesage: ReadyMessage = new ReadyMessage();
+  const readyMessage: ReadyMessage = new ReadyMessage();
 
-  readyMesage.setUserId(userId);
+  readyMessage.setUserId(userId);
+  readyMessage.setPriority(priority);
 
   await rabbitChannel.publish(
     delayExchange,
     readyRoutingKey,
-    messageToBuffer(readyMesage),
+    messageToBuffer(readyMessage),
     {
       headers: { 'x-delay': delay },
       priority: maxPriority * priority,

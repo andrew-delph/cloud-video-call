@@ -8,7 +8,7 @@ import { nuke } from '../libs/utils';
 import exec from 'k6/execution';
 
 const vus = 20;
-const authKeysNum = 200; // number of users created for each parallel instance running
+const authKeysNum = 30; // number of users created for each parallel instance running
 const nukeData = false; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 

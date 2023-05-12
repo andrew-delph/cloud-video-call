@@ -249,7 +249,8 @@ proto.rabbitmq.ReadyMessage.prototype.toObject = function(opt_includeInstance) {
  */
 proto.rabbitmq.ReadyMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, "")
+    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    priority: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0)
   };
 
   if (includeInstance) {
@@ -290,6 +291,10 @@ proto.rabbitmq.ReadyMessage.deserializeBinaryFromReader = function(msg, reader) 
       var value = /** @type {string} */ (reader.readString());
       msg.setUserId(value);
       break;
+    case 2:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setPriority(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -326,6 +331,13 @@ proto.rabbitmq.ReadyMessage.serializeBinaryToWriter = function(message, writer) 
       f
     );
   }
+  f = message.getPriority();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -344,6 +356,24 @@ proto.rabbitmq.ReadyMessage.prototype.getUserId = function() {
  */
 proto.rabbitmq.ReadyMessage.prototype.setUserId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional float priority = 2;
+ * @return {number}
+ */
+proto.rabbitmq.ReadyMessage.prototype.getPriority = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.rabbitmq.ReadyMessage} returns this
+ */
+proto.rabbitmq.ReadyMessage.prototype.setPriority = function(value) {
+  return jspb.Message.setProto3FloatField(this, 2, value);
 };
 
 

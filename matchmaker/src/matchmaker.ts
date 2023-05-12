@@ -151,13 +151,9 @@ export const startReadyConsumer = async () => {
         return;
       }
 
-      if (msg.properties.priority == null) {
-        logger.warn(`msg.properties.priority == null`);
-      }
+      const readyMessage = parseReadyMessage(msg.content);
 
-      const readyMesage = parseReadyMessage(msg.content);
-
-      const userId = readyMesage.getUserId();
+      const userId = readyMessage.getUserId();
 
       logger.debug(`matching: ${userId}`);
       if (!userId) {
@@ -168,7 +164,7 @@ export const startReadyConsumer = async () => {
 
       const cleanup: (() => void)[] = [];
       try {
-        await matchmakerFlow(userId, msg.properties.priority || 0, cleanup);
+        await matchmakerFlow(readyMessage, cleanup);
         rabbitChannel.ack(msg);
       } catch (e: any) {
         if (e instanceof CompleteError) {
@@ -221,21 +217,30 @@ const getSocketChannel = (userId: string) => {
   return `${matchmakerChannelPrefix}${userId}`;
 };
 
-const matchmakerFlow = async (
-  userId: string,
-  priority: number,
+async function matchmakerFlow(
+  readyMessage: ReadyMessage,
   cleanup: (() => void)[],
-) => {
+) {
   // TODO publish messages
 
   const retrySignal = new RetrySignal();
 
-  if (!(await mainRedisClient.smismember(common.readySetName, userId))[0]) {
-    throw new CompleteError(`no longer ready: ${userId}`);
+  if (
+    !(
+      await mainRedisClient.smismember(
+        common.readySetName,
+        readyMessage.getUserId(),
+      )
+    )[0]
+  ) {
+    throw new CompleteError(`no longer ready: ${readyMessage.getUserId()}`);
   }
 
   const notifyListeners = async (targetId: string) => {
-    const msg = { priority, owner: userId };
+    const msg = {
+      priority: readyMessage.getPriority(),
+      owner: readyMessage.getUserId(),
+    };
     await pubRedisClient.publish(
       getSocketChannel(targetId),
       JSON.stringify(msg),
@@ -263,12 +268,15 @@ const matchmakerFlow = async (
           return;
         }
 
-        if (msg.owner == userId) {
+        if (msg.owner == readyMessage.getUserId()) {
           // ignore messages from outself
           return;
-        } else if (msg.priority > priority) {
+        } else if (msg.priority > readyMessage.getPriority()) {
           retrySignal.setSignal(`higher priority for ${targetId}`);
-        } else if (msg.priority == priority && msg.owner > userId) {
+        } else if (
+          msg.priority == readyMessage.getPriority() &&
+          msg.owner > readyMessage.getUserId()
+        ) {
           retrySignal.setSignal(`higher priority for ${targetId}`);
         } else {
           await notifyListeners(targetId);
@@ -283,18 +291,21 @@ const matchmakerFlow = async (
   };
 
   // listen and publish on userId
-  registerSubscriptionListener(userId);
-  await notifyListeners(userId);
+  registerSubscriptionListener(readyMessage.getUserId());
+  await notifyListeners(readyMessage.getUserId());
 
   let readySet = new Set(await mainRedisClient.smembers(common.readySetName));
 
-  readySet.delete(userId);
+  readySet.delete(readyMessage.getUserId());
 
-  readySet = await applyReadySetFilters(userId, readySet);
+  readySet = await applyReadySetFilters(readyMessage.getUserId(), readySet);
 
   if (readySet.size == 0) throw new RetryError(`ready set is 0`);
 
-  const relationShipScores = await getRelationshipScores(userId, readySet);
+  const relationShipScores = await getRelationshipScores(
+    readyMessage.getUserId(),
+    readySet,
+  );
 
   // select the otherId
   let otherId: string;
@@ -351,9 +362,16 @@ const matchmakerFlow = async (
   };
 
   await redlock
-    .using([userId, otherId], 5000, async (signal) => {
+    .using([readyMessage.getUserId(), otherId], 5000, async (signal) => {
       // make sure both are in the set
-      if (!(await mainRedisClient.smismember(common.readySetName, userId))[0]) {
+      if (
+        !(
+          await mainRedisClient.smismember(
+            common.readySetName,
+            readyMessage.getUserId(),
+          )
+        )[0]
+      ) {
         throw new CompleteError(`userId is no longer ready`);
       }
       if (
@@ -363,13 +381,13 @@ const matchmakerFlow = async (
       }
 
       // remove both from ready set
-      await mainRedisClient.srem(common.readySetName, userId);
+      await mainRedisClient.srem(common.readySetName, readyMessage.getUserId());
       await mainRedisClient.srem(common.readySetName, otherId);
 
-      await sendMatchQueue(rabbitChannel, userId, otherId, 1);
+      await sendMatchQueue(rabbitChannel, readyMessage.getUserId(), otherId, 1);
     })
     .catch(onError);
-};
+}
 const getRelationshipFilterCacheKey = (
   userId1: string,
   userId2: string,

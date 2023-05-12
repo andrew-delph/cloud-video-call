@@ -31,6 +31,9 @@ export class ReadyMessage extends jspb.Message {
     getUserId(): string;
     setUserId(value: string): ReadyMessage;
 
+    getPriority(): number;
+    setPriority(value: number): ReadyMessage;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ReadyMessage.AsObject;
@@ -45,6 +48,7 @@ export class ReadyMessage extends jspb.Message {
 export namespace ReadyMessage {
     export type AsObject = {
         userId: string,
+        priority: number,
     }
 }
 

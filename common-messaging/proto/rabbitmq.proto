@@ -9,6 +9,7 @@ message MatchmakerMessage {
 
 message ReadyMessage {
   string user_id = 1;
+  float priority = 2;
 }
 
 message MatchMessage {
