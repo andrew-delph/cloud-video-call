@@ -29,7 +29,7 @@ const updateAuthVars = () => {
 };
 
 export const options = {
-  setupTimeout: `10m`,
+  setupTimeout: `20m`,
   vus: vus,
   duration: `10h`,
   // scenarios: {
