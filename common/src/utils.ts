@@ -167,7 +167,7 @@ export function userPriorityKey(userId: string): string {
 export const getRedisUserPriority = async (
   redisClient: Client,
   userId: string,
-): Promise<number[] | null> => {
+): Promise<number | null> => {
   const val = await redisClient.get(userPriorityKey(userId));
   return val != null ? JSON.parse(val) : null;
 };
