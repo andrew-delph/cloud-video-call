@@ -29,7 +29,7 @@ export const listenGlobalExceptions = (clean_up?: () => Promise<void>) => {
         logger.warn(`signalTraps ${type} args: ${JSON.stringify(args)}`);
         if (clean_up != null) {
           await clean_up();
-          logger.error(`clean_up complete.`);
+          logger.warn(`clean_up complete.`);
         }
       } catch (e) {
         logger.error(`clean_up error: ${e}`);
