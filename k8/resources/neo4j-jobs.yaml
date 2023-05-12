@@ -6,7 +6,7 @@ spec:
   concurrencyPolicy: Forbid
   schedule: '0 0 * * *'
   successfulJobsHistoryLimit: 1
-  suspend: false
+  suspend: true
   jobTemplate:
     spec:
       template:
@@ -28,7 +28,7 @@ spec:
   concurrencyPolicy: Forbid
   schedule: '0 1-23 * * *'
   successfulJobsHistoryLimit: 1
-  suspend: false
+  suspend: true
   jobTemplate:
     spec:
       template:
