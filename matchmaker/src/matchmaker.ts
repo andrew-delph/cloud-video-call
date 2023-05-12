@@ -132,7 +132,9 @@ export const startReadyConsumer = async () => {
       const delaySeconds = matchmakerMessage.getCooldownAttempts() ** 1.25;
 
       logger.info(
-        `userId=${userId} priority=${priority} cooldownAttempts=${cooldownAttempts} delaySeconds=${delaySeconds.toFixed(
+        `userId=${userId} priority=${priority.toFixed(
+          1,
+        )} cooldownAttempts=${cooldownAttempts} delaySeconds=${delaySeconds.toFixed(
           1,
         )}`,
       );
