@@ -54,6 +54,7 @@ export abstract class K6SocketIoBase {
     let max_time_timeout: number;
     if (this.max_time != 0) {
       max_time_timeout = setTimeout(() => {
+        console.error(`max_time_timeout reached of ${this.max_time}`);
         this.close();
       }, this.max_time);
     }

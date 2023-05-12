@@ -9,6 +9,15 @@ grafana:
   adminPassword: password
   image:
     tag: ''
+  service:
+    annotations: {}
+    appProtocol: ''
+    enabled: true
+    labels: {}
+    port: 80
+    portName: service
+    targetPort: 3000
+    type: NodePort
   sidecar:
     dashboards:
       enabled: true

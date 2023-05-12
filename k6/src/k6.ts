@@ -24,31 +24,31 @@ const nukeData = false;
 
 export const options = {
   setupTimeout: `10m`,
-  // vus: 5,
+  vus: vus,
   // iterations: authKeysNum * 10,
-  // duration: `1h`,
-  scenarios: {
-    // matchTest: {
-    //   executor: `shared-iterations`,
-    //   vus: vus,
-    //   iterations: authKeysNum * 100,
-    // },
-    matchTest: {
-      executor: `ramping-vus`,
-      startVUs: vus,
-      stages: [
-        { duration: `3h`, target: vus },
-        // { duration: `2h`, target: vus * 3 },
-        // { duration: `3m`, target: vus * 1 },
-      ],
-    },
-    // longConnection: { // TODO fix this....
-    //   executor: `ramping-vus`,
-    //   exec: `longWait`,
-    //   startVUs: 10,
-    //   stages: [{ duration: `10m`, target: 10 }],
-    // },
-  },
+  duration: `10h`,
+  // scenarios: {
+  //   // matchTest: {
+  //   //   executor: `shared-iterations`,
+  //   //   vus: vus,
+  //   //   iterations: authKeysNum * 100,
+  //   // },
+  //   matchTest: {
+  //     executor: `ramping-vus`,
+  //     startVUs: vus,
+  //     stages: [
+  //       { duration: `3h`, target: vus },
+  //       // { duration: `2h`, target: vus * 3 },
+  //       // { duration: `3m`, target: vus * 1 },
+  //     ],
+  //   },
+  // longConnection: { // TODO fix this....
+  //   executor: `ramping-vus`,
+  //   exec: `longWait`,
+  //   startVUs: 10,
+  //   stages: [{ duration: `10m`, target: 10 }],
+  // },
+  // },
 };
 
 const authKeysName = `authKeysName`;
@@ -68,12 +68,10 @@ export function setup() {
     })
     .then(async () => {
       console.log(`post delete authKeysName`);
-      if (nukeData) {
-        for (let auth of authKeys) {
-          let user = users.getUser(auth);
-          await user.updatePreferences();
-          console.log(`post updatePreferences ${auth}`);
-        }
+      for (let auth of authKeys) {
+        let user = users.getUser(auth);
+        await user.updatePreferences();
+        console.log(`post updatePreferences ${auth}`);
       }
 
       await redisClient.lpush(authKeysName, ...authKeys);
@@ -119,7 +117,7 @@ const getAuth = async () => {
       auth = await popAuth();
     }
   } catch (e) {
-    console.log(`error with getting auth: ${e}`);
+    console.error(`error with getting auth: ${e}`);
     sleep(10);
     throw e;
   }
@@ -128,7 +126,14 @@ const getAuth = async () => {
 };
 
 export default async function () {
-  const auth = await getAuth();
+  let auth: string;
+  try {
+    auth = await getAuth();
+  } catch (e) {
+    console.error(e);
+    return;
+  }
+
   console.log(`auth`, auth);
 
   const myUser = await users.fromRedis(auth);
@@ -196,7 +201,7 @@ export default async function () {
         return data.data;
       })
       .then(async (data: any) => {
-        prediction_score_trend.add(data.score);
+        // prediction_score_trend.add(data.score);
 
         let score = await myUser.getScore(data.other).catch((e) => {
           console.error(`error getting score: ${e}`);

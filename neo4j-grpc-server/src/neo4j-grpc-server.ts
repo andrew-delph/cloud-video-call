@@ -296,14 +296,13 @@ const getRelationshipScores = async (
         logger.info(
           `cosineSimilarity score is ${redisScore} for ${userId} and ${otherId}`,
         );
+
+        if (redisScore < 0.3) continue;
         score.setScore(redisScore);
         reply.getRelationshipScoresMap().set(otherId, score);
       }
     }
   }
-
-  callback(null, reply);
-  return;
 
   if (reply.getRelationshipScoresMap().getLength() == 0) {
     logger.debug(

@@ -10,7 +10,10 @@ export const listenGlobalExceptions = (clean_up?: () => Promise<void>) => {
       try {
         logger.error(`Uncaught Exception: ${err.message}`);
         logger.error(err.stack);
-        if (clean_up != null) await clean_up();
+        if (clean_up != null) {
+          await clean_up();
+          logger.error(`clean_up complete.`);
+        }
 
         process.exit(1);
       } catch (e) {
@@ -24,7 +27,10 @@ export const listenGlobalExceptions = (clean_up?: () => Promise<void>) => {
     process.once(type, async (...args) => {
       try {
         logger.warn(`signalTraps ${type} args: ${JSON.stringify(args)}`);
-        if (clean_up != null) await clean_up();
+        if (clean_up != null) {
+          await clean_up();
+          logger.error(`clean_up complete.`);
+        }
       } catch (e) {
         logger.error(`clean_up error: ${e}`);
       } finally {

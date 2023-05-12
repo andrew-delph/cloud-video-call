@@ -34,7 +34,7 @@ let lockRedisClient: Client;
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
 
-const prefetch = 10;
+const prefetch = 2;
 
 const delayExchange = `my-delayed-exchange`;
 const readyRoutingKey = `ready-routing-key`;
