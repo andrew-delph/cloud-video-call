@@ -103,7 +103,6 @@ logger.info(`Value of JOB: ${job}`);
         CALL gds.graph.nodeProperty.stream('shortPredictGraph', 'priority', 'Person')
           YIELD nodeId, propertyValue
           RETURN gds.util.asNode(nodeId).userId AS userId, propertyValue AS priority
-          ORDER BY score DESC
         `,
       );
 
