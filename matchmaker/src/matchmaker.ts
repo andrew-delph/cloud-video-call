@@ -373,7 +373,13 @@ async function matchmakerFlow(
         );
       }
     }
-    logger.info(`highestScore=${JSON.stringify(highestScore)}`);
+    logger.info(
+      `highestScore=${JSON.stringify(
+        highestScore,
+      )} lowestScore=${JSON.stringify(
+        relationShipScores[relationShipScores.length - 1][1],
+      )} of possible ${relationShipScores.length}`,
+    );
   }
 
   // listen and publish on otherId
