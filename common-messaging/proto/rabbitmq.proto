@@ -3,10 +3,16 @@ syntax = "proto3";
 
 package rabbitmq;
 
+message MatchmakerMessage {
+  string user_id = 1;
+}
+
 message ReadyMessage {
   string user_id = 1;
 }
 
-message MatchmakerMessage {
-  string user_id = 1;
+message MatchMessage {
+  string user_id1 = 1;
+  string user_id2 = 2;
+  float score = 3;
 }

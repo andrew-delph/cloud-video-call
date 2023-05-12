@@ -26,6 +26,7 @@ import { listenGlobalExceptions, RelationshipScoreType } from 'common';
 import {
   parseMatchmakerMessage,
   parseReadyMessage,
+  sendMatchQueue,
   sendReadyQueue,
 } from 'common-messaging/src/message_helper';
 
@@ -365,17 +366,7 @@ const matchmakerFlow = async (
       await mainRedisClient.srem(common.readySetName, userId);
       await mainRedisClient.srem(common.readySetName, otherId);
 
-      // send to matcher
-      const matchMessage = {
-        userId1: userId,
-        userId2: otherId,
-        score: highestScore,
-      };
-
-      await rabbitChannel.sendToQueue(
-        matchQueueName,
-        Buffer.from(JSON.stringify(matchMessage)),
-      );
+      await sendMatchQueue(rabbitChannel, userId, otherId, 1);
     })
     .catch(onError);
 };

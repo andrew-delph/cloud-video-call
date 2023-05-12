@@ -18,6 +18,7 @@ import {
   createNeo4jClient,
   matchQueueName,
   matchmakerQueueName,
+  MatchMessage,
 } from 'common-messaging';
 
 const logger = common.getLogger();
@@ -25,7 +26,10 @@ const logger = common.getLogger();
 const neo4jRpcClient = createNeo4jClient();
 
 import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
-import { sendReadyQueue } from 'common-messaging/src/message_helper';
+import {
+  parseMatchMessage,
+  sendReadyQueue,
+} from 'common-messaging/src/message_helper';
 
 dotenv.config();
 
@@ -72,9 +76,9 @@ export async function matchConsumer() {
       let userId2: string = ``;
 
       try {
-        const msgContent = JSON.parse(msg.content.toString());
-        userId1 = msgContent.userId1;
-        userId2 = msgContent.userId2;
+        const msgContent = parseMatchMessage(msg.content);
+        userId1 = msgContent.getUserId1();
+        userId2 = msgContent.getUserId2();
 
         await match(msgContent);
       } catch (e) {
@@ -99,14 +103,18 @@ export async function matchConsumer() {
   );
 }
 
-export const match = async (msgContent: any) => {
-  if (!msgContent.userId1 || !msgContent.userId2 || msgContent.score == null) {
+export const match = async (msgContent: MatchMessage) => {
+  if (
+    !msgContent.getUserId1() ||
+    !msgContent.getUserId2() ||
+    msgContent.getScore() == null
+  ) {
     logger.error(`MatchMessage is missing data ${JSON.stringify(msgContent)}`);
     throw Error(`MatchMessage is missing data ${JSON.stringify(msgContent)}`);
   }
-  const userId1 = msgContent.userId1;
-  const userId2 = msgContent.userId2;
-  const score = msgContent.score;
+  const userId1 = msgContent.getUserId1();
+  const userId2 = msgContent.getUserId2();
+  const score = msgContent.getScore();
   logger.debug(`matching users: [${userId1}, ${userId2}] score: ${score}`);
 
   const socket1 = await mainRedisClient.hget(
@@ -132,7 +140,7 @@ export const match = async (msgContent: any) => {
   io.in(socket1).emit(`message`, `1pairing with ${socket2}`);
   io.in(socket2).emit(`message`, `2pairing with ${socket1}`);
 
-  const matchPromiseChain = async (): Promise<any> => {
+  const matchPromiseChain = async (): Promise<void> => {
     const request = new CreateMatchRequest();
 
     request.setUserId1(userId1);

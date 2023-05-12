@@ -1,7 +1,12 @@
 import amqp from 'amqplib';
-import { ReadyMessage, MatchmakerMessage } from './gen/proto/rabbitmq_pb';
+import {
+  ReadyMessage,
+  MatchmakerMessage,
+  MatchMessage,
+} from './gen/proto/rabbitmq_pb';
 import {
   delayExchange,
+  matchQueueName,
   matchmakerQueueName,
   maxPriority,
   readyRoutingKey,
@@ -51,4 +56,23 @@ export async function sendReadyQueue(
 
 export function parseReadyMessage(buffer: Buffer) {
   return ReadyMessage.deserializeBinary(bufferToUint8Array(buffer));
+}
+
+export async function sendMatchQueue(
+  rabbitChannel: amqp.Channel,
+  userId1: string,
+  userId2: string,
+  score: number,
+) {
+  const matchMesage: MatchMessage = new MatchMessage();
+
+  matchMesage.setUserId1(userId1);
+  matchMesage.setUserId2(userId2);
+  matchMesage.setScore(score);
+
+  await rabbitChannel.sendToQueue(matchQueueName, messageToBuffer(matchMesage));
+}
+
+export function parseMatchMessage(buffer: Buffer) {
+  return MatchMessage.deserializeBinary(bufferToUint8Array(buffer));
 }
