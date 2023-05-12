@@ -84,6 +84,7 @@ const userFunctions: any[] = [
   createMale,
   createGroupA,
   createGroupB,
+  createHot,
 ];
 
 function* getUserGenerator() {
@@ -142,9 +143,9 @@ export const calcScoreMap = new Map<
   [
     UserType.Hot,
     (me: User, otherUser: User) => {
-      const myHot = me?.attributes?.constant?.hot ?? 0;
-      const otherHot = otherUser?.attributes?.constant?.hot ?? 0;
-      return myHot > otherHot ? -10 : otherHot;
+      const myHot = me?.attributes?.constant?.hot ?? -10;
+      const otherHot = otherUser?.attributes?.constant?.hot ?? -10;
+      return myHot - 2 >= otherHot ? negativeScore : otherHot;
     },
   ],
   [
