@@ -286,7 +286,7 @@ const getRelationshipScores = async (
     `UNWIND $otherUsers AS otherId
       MATCH (n1:Person{userId: $target})
       MATCH (n2:Person{userId: otherId})
-      MATCH (n1)-[prel:PREDICTION]->(n2)
+      OPTIONAL MATCH (n1)-[prel:PREDICTION]->(n2)
       WITH n1, n2, prel
       return
       EXISTS((n1)-[:FRIENDS]->(n2)) as friends, 
