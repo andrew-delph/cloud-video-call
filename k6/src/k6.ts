@@ -5,27 +5,32 @@ import { check, sleep } from 'k6';
 import http from 'k6/http';
 import * as users from '../libs/User';
 import { nuke } from '../libs/utils';
+import exec from 'k6/execution';
 
-export const ws_url =
-  __ENV.WS_HOST || `ws://localhost:8888/socket.io/?EIO=4&transport=websocket`;
+const vus = 20;
+const authKeysNum = 200; // number of users created for each parallel instance running
+const nukeData = false; // this doesnt work with multile running instances
+const uniqueAuthIds = true; //for every test new auth will be created
 
-export const options_url = __ENV.OPTIONS_HOST || `ws://localhost:8888`;
+let runnerId = ``;
+let uniqueAuthKey = ``;
 
-console.log(`ws_url`, ws_url);
-console.log(`options_url`, options_url);
+let authKeysName = `authKeysName`;
+let authPrefix = `k6_auth_`;
 
-export const redisClient = new redis.Client({
-  addrs: new Array(__ENV.REDIS || `localhost:6379`), // in the form of 'host:port', separated by commas
-});
+const updateAuthVars = () => {
+  if (uniqueAuthIds) {
+    uniqueAuthKey = `${exec.vu.tags[`testid`]}_`;
+    runnerId = `${`${Math.random().toFixed(5)}_`}`;
+  }
 
-const authKeysNum = 200;
-const vus = 100;
-const nukeData = false;
+  authKeysName = `authKeysName${uniqueAuthKey}`;
+  authPrefix = `k6_auth_${uniqueAuthKey}${runnerId}`;
+};
 
 export const options = {
   setupTimeout: `10m`,
   vus: vus,
-  // iterations: authKeysNum * 10,
   duration: `10h`,
   // scenarios: {
   //   // matchTest: {
@@ -51,31 +56,38 @@ export const options = {
   // },
 };
 
-const authKeysName = `authKeysName`;
+export const ws_url =
+  __ENV.WS_HOST || `ws://localhost:8888/socket.io/?EIO=4&transport=websocket`;
+export const options_url = __ENV.OPTIONS_HOST || `ws://localhost:8888`;
+
+// console.log(`ws_url`, ws_url);
+// console.log(`options_url`, options_url);
+
+export const redisClient = new redis.Client({
+  addrs: new Array(__ENV.REDIS || `localhost:6379`), // in the form of 'host:port', separated by commas
+});
 
 export function setup() {
+  updateAuthVars();
+
   if (nukeData) nuke();
   const authKeys: string[] = [];
   for (let i = 0; i < authKeysNum; i++) {
-    authKeys.push(`k6_auth_${i}`);
+    authKeys.push(`${authPrefix}${i}`);
   }
-  console.log(`pre delete connectedAuthMapName`);
-  redisClient
-    .del(`connectedAuthMapName`)
-    .then(() => {
-      console.log(`pre delete authKeysName`);
-      return redisClient.del(authKeysName);
-    })
-    .then(async () => {
-      console.log(`post delete authKeysName`);
-      for (let auth of authKeys) {
-        let user = users.getUser(auth);
-        await user.updatePreferences();
-        console.log(`post updatePreferences ${auth}`);
-      }
+  (async () => {
+    // await redisClient.del(authKeysName);
+    // Change this to watch and delete only if the first time
+    return;
+  })().then(async () => {
+    for (let auth of authKeys) {
+      let user = users.getUser(auth);
+      await user.updatePreferences();
+      console.log(`post updatePreferences ${auth}`);
+    }
 
-      await redisClient.lpush(authKeysName, ...authKeys);
-    });
+    await redisClient.lpush(authKeysName, ...authKeys);
+  });
 }
 
 const established_elapsed = new Trend(`established_elapsed`, true);
@@ -96,6 +108,7 @@ const score_trend = new Trend(`score_trend`);
 const score_gauge = new Gauge(`score_gauge`);
 
 const getAuth = async () => {
+  updateAuthVars();
   let auth: string | null = null;
 
   const popAuth = async (count: number = 0): Promise<string> => {
@@ -124,7 +137,6 @@ const getAuth = async () => {
 
   return auth;
 };
-
 export default async function () {
   let auth: string;
   try {

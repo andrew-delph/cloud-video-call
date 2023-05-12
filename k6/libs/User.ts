@@ -16,6 +16,8 @@ export enum UserType {
   Male = `Male`,
   LocationBound = `LocationBound`,
   Hot = `Hot`,
+  GroupA = `GroupA`,
+  GroupB = `GroupB`,
 }
 
 export const createRandom = (auth: string): User => {
@@ -63,7 +65,26 @@ export const createHot = (auth: string): User => {
   return new User(auth, attributes, filters, UserType.Hot);
 };
 
-const userFunctions: any[] = [createFemale, createMale];
+export const createGroupA = (auth: string): User => {
+  const attributes = {};
+  const filters = {};
+
+  return new User(auth, attributes, filters, UserType.GroupA);
+};
+
+export const createGroupB = (auth: string): User => {
+  const attributes = {};
+  const filters = {};
+
+  return new User(auth, attributes, filters, UserType.GroupB);
+};
+
+const userFunctions: any[] = [
+  createFemale,
+  createMale,
+  createGroupA,
+  createGroupB,
+];
 
 function* getUserGenerator() {
   let current = 0;
@@ -88,47 +109,61 @@ export const fromRedis = async (auth: string): Promise<User> => {
   return new User(auth, attributes, {}, type);
 };
 
+const postiveScore = 5;
+const negativeScore = -5;
 export const calcScoreMap = new Map<
   UserType,
-  (me: any, otherAttr: any) => number
+  (me: User, otherUser: User) => number
 >([
   [
     UserType.Random,
-    (me: any, otherAttr: any) => {
+    (me: User, otherUser: User) => {
       return 3;
     },
   ],
   [
     UserType.Male,
-    (me: any, otherAttr: any) => {
-      return otherAttr?.constant?.gender?.startsWith(`female`) ? 5 : -5;
+    (me: User, otherUser: User) => {
+      return otherUser.type == UserType.Female ? postiveScore : negativeScore;
     },
   ],
   [
     UserType.Female,
-    (me: any, otherAttr: any) => {
-      return otherAttr?.constant?.gender?.startsWith(`male`) ? 5 : -5;
+    (me: User, otherUser: User) => {
+      return otherUser.type == UserType.Male ? postiveScore : negativeScore;
     },
   ],
   [
     UserType.LocationBound,
-    (me: any, otherAttr: any) => {
-      return 5;
+    (me: User, otherUser: User) => {
+      return postiveScore;
     },
   ],
   [
     UserType.Hot,
-    (me: any, otherAttr: any) => {
-      const myHot = me?.constant?.hot ?? 0;
-      const otherHot = otherAttr?.constant?.hot ?? 0;
+    (me: User, otherUser: User) => {
+      const myHot = me?.attributes?.constant?.hot ?? 0;
+      const otherHot = otherUser?.attributes?.constant?.hot ?? 0;
       return myHot > otherHot ? -10 : otherHot;
+    },
+  ],
+  [
+    UserType.GroupA,
+    (me: User, otherUser: User) => {
+      return me.type == otherUser.type ? postiveScore : negativeScore;
+    },
+  ],
+  [
+    UserType.GroupB,
+    (me: any, otherUser: User) => {
+      return me.type == otherUser.type ? postiveScore : negativeScore;
     },
   ],
 ]);
 
 export class User {
-  attributes = {};
-  filters = {};
+  attributes: any = {};
+  filters: any = {};
   auth: string = ``;
   type: UserType;
 
@@ -162,9 +197,7 @@ export class User {
   }
 
   async getScore(otherAuth: string) {
-    const otherAtributes = JSON.parse(
-      await redisClient.get(otherAuth + `_attributes`),
-    );
-    return calcScoreMap.get(this.type)!(this.attributes, otherAtributes);
+    const otherUser = await fromRedis(otherAuth);
+    return calcScoreMap.get(this.type)!(this, otherUser);
   }
 }
