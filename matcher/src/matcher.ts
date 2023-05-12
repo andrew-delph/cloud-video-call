@@ -25,7 +25,7 @@ const logger = common.getLogger();
 const neo4jRpcClient = createNeo4jClient();
 
 import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
-import { MatchMessage, ReadyMessage } from 'common';
+import { sendReadyQueue } from 'common-messaging/src/message_helper';
 
 dotenv.config();
 
@@ -72,7 +72,7 @@ export async function matchConsumer() {
       let userId2: string = ``;
 
       try {
-        const msgContent: MatchMessage = JSON.parse(msg.content.toString());
+        const msgContent = JSON.parse(msg.content.toString());
         userId1 = msgContent.userId1;
         userId2 = msgContent.userId2;
 
@@ -82,17 +82,12 @@ export async function matchConsumer() {
         if (await mainRedisClient.sismember(common.activeSetName, userId1)) {
           await mainRedisClient.sadd(common.readySetName, userId1);
 
-          await rabbitChannel.sendToQueue(
-            matchmakerQueueName,
-            Buffer.from(JSON.stringify({ userId: userId1 } as ReadyMessage)),
-          );
+          await sendReadyQueue(rabbitChannel, userId1, 0, 0);
         }
         if (await mainRedisClient.sismember(common.activeSetName, userId2)) {
           await mainRedisClient.sadd(common.readySetName, userId2);
-          await rabbitChannel.sendToQueue(
-            matchmakerQueueName,
-            Buffer.from(JSON.stringify({ userId: userId2 } as ReadyMessage)),
-          );
+
+          await sendReadyQueue(rabbitChannel, userId2, 0, 0);
         }
       } finally {
         rabbitChannel.ack(msg);
@@ -104,7 +99,7 @@ export async function matchConsumer() {
   );
 }
 
-export const match = async (msgContent: MatchMessage) => {
+export const match = async (msgContent: any) => {
   if (!msgContent.userId1 || !msgContent.userId2 || msgContent.score == null) {
     logger.error(`MatchMessage is missing data ${JSON.stringify(msgContent)}`);
     throw Error(`MatchMessage is missing data ${JSON.stringify(msgContent)}`);

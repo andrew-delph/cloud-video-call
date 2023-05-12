@@ -6,6 +6,10 @@ export * from './gen/proto/neo4j_pb';
 export * from './gen/proto/rabbitmq_pb';
 export * from './variables';
 
+export * from './utils';
+
+export * as message_helper from './message_helper';
+
 export * as grpc from '@grpc/grpc-js';
 
 export const createNeo4jClient = (

@@ -13,10 +13,11 @@ import amqp from 'amqplib';
 import {
   CreateUserRequest,
   CreateUserResponse,
+  ReadyMessage,
   createNeo4jClient,
   matchmakerQueueName,
 } from 'common-messaging';
-import { listenGlobalExceptions, ReadyMessage } from 'common';
+import { listenGlobalExceptions } from 'common';
 import { auth_middleware } from './authentication';
 import {
   cleanMySocketServer,
@@ -24,6 +25,7 @@ import {
   registerSocketReady,
   unregisterSocketReady,
 } from './management';
+import { sendMatchmakerQueue } from 'common-messaging/src/message_helper';
 
 const logger = common.getLogger();
 
@@ -105,20 +107,7 @@ io.on(`connection`, async (socket) => {
     if (ready) {
       await registerSocketReady(socket);
 
-      const readyMesage: ReadyMessage = { userId: socket.data.auth };
-
-      // await rabbitChannel.publish(
-      //   exchangeName,
-      //   routingKey,
-      //   Buffer.from(JSON.stringify(readyMesage)),
-      //   { headers: { 'x-delay': delay } },
-      // );
-
-      await rabbitChannel.sendToQueue(
-        matchmakerQueueName,
-        Buffer.from(JSON.stringify(readyMesage)),
-        {},
-      );
+      await sendMatchmakerQueue(rabbitChannel, socket.data.auth);
     } else {
       await unregisterSocketReady(socket);
     }

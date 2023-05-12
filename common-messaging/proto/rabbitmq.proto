@@ -6,3 +6,7 @@ package rabbitmq;
 message ReadyMessage {
   string user_id = 1;
 }
+
+message MatchmakerMessage {
+  string user_id = 1;
+}

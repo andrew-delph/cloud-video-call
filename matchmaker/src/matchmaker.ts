@@ -17,13 +17,17 @@ import {
   readyQueueName,
   matchQueueName,
   matchmakerQueueName,
-} from 'common-messaging';
-import {
-  listenGlobalExceptions,
-  MatchMessage,
+  maxPriority,
   ReadyMessage,
-  RelationshipScoreType,
-} from 'common';
+  delayExchange,
+  readyRoutingKey,
+} from 'common-messaging';
+import { listenGlobalExceptions, RelationshipScoreType } from 'common';
+import {
+  parseMatchmakerMessage,
+  parseReadyMessage,
+  sendReadyQueue,
+} from 'common-messaging/src/message_helper';
 
 const logger = common.getLogger();
 
@@ -39,11 +43,7 @@ let rabbitChannel: amqp.Channel;
 
 const prefetch = 2;
 
-const delayExchange = `my-delayed-exchange`;
-const readyRoutingKey = `ready-routing-key`;
 const defaultDelay = 1000; // 1 seconds
-
-const maxPriority = 10;
 
 const relationshipFilterCacheEx = 60 * 2;
 const realtionshipScoreCacheEx = 1;
@@ -125,15 +125,15 @@ export const startReadyConsumer = async () => {
         return;
       }
 
-      const msgContent: ReadyMessage = JSON.parse(msg.content.toString());
+      const matchmakerMessage = parseMatchmakerMessage(msg.content);
 
-      const userId = msgContent.userId;
+      const userId = matchmakerMessage.getUserId();
 
       const userRepsonse = await neo4jGetUser(userId);
 
       const priority = userRepsonse.getPriority() || 0;
 
-      await pushReadyQueue(msg.content, defaultDelay, priority);
+      await sendReadyQueue(rabbitChannel, userId, priority, 1000);
 
       rabbitChannel.ack(msg);
     },
@@ -154,9 +154,9 @@ export const startReadyConsumer = async () => {
         logger.warn(`msg.properties.priority == null`);
       }
 
-      const msgContent: ReadyMessage = JSON.parse(msg.content.toString());
+      const readyMesage = parseReadyMessage(msg.content);
 
-      const userId = msgContent.userId;
+      const userId = readyMesage.getUserId();
 
       logger.debug(`matching: ${userId}`);
       if (!userId) {
@@ -366,7 +366,7 @@ const matchmakerFlow = async (
       await mainRedisClient.srem(common.readySetName, otherId);
 
       // send to matcher
-      const matchMessage: MatchMessage = {
+      const matchMessage = {
         userId1: userId,
         userId2: otherId,
         score: highestScore,
