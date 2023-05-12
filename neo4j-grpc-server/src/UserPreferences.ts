@@ -1,4 +1,9 @@
-import { driver, redisClient } from './neo4j-grpc-server';
+import {
+  compareUserFiltersCacheEx,
+  driver,
+  redisClient,
+  userPreferencesCacheEx,
+} from './neo4j-grpc-server';
 import * as neo4j from 'neo4j-driver';
 import * as common from 'common';
 import haversine from 'haversine-distance';
@@ -12,8 +17,6 @@ export type UserPreferences = {
   f_custom: any;
   priority: number;
 };
-const userPreferencesCacheEx = 60 * 60 * 2;
-const compareUserFiltersCacheEx = 60 * 60 * 2;
 
 const getUserPreferencesCacheKey = (userId: string): string => {
   return `UserPreferences-${userId}`;

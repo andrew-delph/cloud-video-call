@@ -39,6 +39,9 @@ common.listenGlobalExceptions(async () => {
   });
 });
 
+export const userPreferencesCacheEx = 60 * 60 * 2;
+export const compareUserFiltersCacheEx = 60 * 60 * 2;
+
 var server = new grpc.Server();
 
 type Client = ReturnType<typeof common.createRedisClient>;
