@@ -31,41 +31,7 @@ import {
   readUserPreferences,
   writeUserPreferencesDatabase,
 } from './UserPreferences';
-
-import * as math from 'mathjs';
-
-async function cosineSimilarity(
-  vectorA: number[],
-  vectorB: number[],
-): Promise<number> {
-  const dotProduct = math.dot(vectorA, vectorB);
-  const magnitudeA = math.norm(vectorA);
-  const magnitudeB = math.norm(vectorB);
-
-  const session = driver.session();
-
-  const mathjsScore = Number(
-    math.divide(dotProduct, math.multiply(magnitudeA, magnitudeB)),
-  );
-
-  // const result = await session.run(
-  //   `RETURN gds.similarity.cosine(
-  //     $vectorA,
-  //     $vectorB
-  //   ) AS cosineSimilarity;`,
-  //   { vectorA, vectorB },
-  // );
-
-  // const neo4jScore = result.records[0].get(`cosineSimilarity`);
-
-  // logger.error(
-  //   `cosineSimilarity calculations mathjsScore: ${JSON.stringify(
-  //     mathjsScore,
-  //   )} neo4jScore: ${JSON.stringify(neo4jScore)}`,
-  // );
-
-  return mathjsScore;
-}
+import { cosineSimilarity } from './utils';
 
 common.listenGlobalExceptions(async () => {
   await server.tryShutdown(() => {
@@ -288,10 +254,7 @@ const getRelationshipScores = async (
 
       if (otherEmbddings != null) {
         const score = new Score();
-        const redisScore = await cosineSimilarity(
-          userEmbddings,
-          otherEmbddings,
-        );
+        const redisScore = cosineSimilarity(userEmbddings, otherEmbddings);
 
         logger.info(
           `cosineSimilarity score is ${redisScore} for ${userId} and ${otherId}`,
