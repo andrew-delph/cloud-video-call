@@ -131,7 +131,7 @@ export const startReadyConsumer = async () => {
 
       const delaySeconds = matchmakerMessage.getCooldownAttempts() ** 1.25;
 
-      logger.info(
+      logger.debug(
         `userId=${userId} priority=${priority.toFixed(
           1,
         )} cooldownAttempts=${cooldownAttempts} delaySeconds=${delaySeconds.toFixed(
@@ -368,7 +368,7 @@ async function matchmakerFlow(
           readyMessage,
         );
       } else {
-        logger.info(
+        logger.debug(
           `User no related scores: priority=${readyMessage.getPriority()} cooldownAttempts=${readyMessage.getCooldownAttempts()}`,
         );
       }
