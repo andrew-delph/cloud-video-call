@@ -363,7 +363,7 @@ async function matchmakerFlow(
 
     if (highestScore.prob <= 0 && highestScore.score <= 0) {
       if (
-        readyMessage.getPriority() >= 0 &&
+        readyMessage.getPriority() > 0 &&
         readyMessage.getCooldownAttempts() < maxCooldownAttemps
       ) {
         throw new CooldownRetryError(
