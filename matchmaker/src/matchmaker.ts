@@ -26,6 +26,7 @@ import { listenGlobalExceptions, RelationshipScoreType } from 'common';
 import {
   parseMatchmakerMessage,
   parseReadyMessage,
+  sendMatchmakerQueue,
   sendMatchQueue,
   sendReadyQueue,
 } from 'common-messaging/src/message_helper';
@@ -173,6 +174,10 @@ export const startReadyConsumer = async () => {
         } else if (e instanceof RetryError) {
           logger.debug(`RetryError ${userId} ${e}`);
           rabbitChannel.nack(msg);
+        } else if (e instanceof CooldownRetryError) {
+          logger.debug(`CooldownRetryError ${userId} ${e}`);
+          await sendMatchmakerQueue(rabbitChannel, userId);
+          rabbitChannel.ack(msg);
         } else {
           logger.error(`Unknown error: ${e}`);
           logger.error(e.stack);
@@ -200,6 +205,14 @@ class CompleteError extends Error {
 class RetryError extends Error {
   constructor(message: string) {
     super(message);
+  }
+}
+
+class CooldownRetryError extends Error {
+  readyMessage: ReadyMessage;
+  constructor(message: string, readyMessage: ReadyMessage) {
+    super(message);
+    this.readyMessage = readyMessage;
   }
 }
 
@@ -311,7 +324,6 @@ async function matchmakerFlow(
   let otherId: string;
   let highestScore: common.RelationshipScoreType = {
     prob: -1,
-    num_friends: -1,
     score: -1,
   };
 
@@ -327,10 +339,7 @@ async function matchmakerFlow(
       if (a_score.prob != b_score.prob) {
         return b_score.prob - a_score.prob;
       }
-      if (a_score.score != b_score.score) {
-        return b_score.score - a_score.score;
-      }
-      return b_score.num_friends - a_score.num_friends;
+      return b_score.score - a_score.score;
     });
     otherId = relationShipScores[0][0];
     highestScore = relationShipScores[0][1];
@@ -341,6 +350,17 @@ async function matchmakerFlow(
         lowestScore,
       )} otherId:${otherId} size: ${relationShipScores.length}`,
     );
+
+    if (
+      highestScore.prob < 0 &&
+      highestScore.score < 0 &&
+      readyMessage.getPriority() >= 0
+    ) {
+      throw new CooldownRetryError(
+        `no good high score and too high priority`,
+        readyMessage,
+      );
+    }
   }
 
   // listen and publish on otherId
@@ -543,9 +563,8 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
     const score = scoreEntry[1];
     const prob = score.getProb();
     const scoreVal = score.getScore();
-    const num_friends = score.getNumbFriends();
 
-    const score_obj = { prob, score: scoreVal, num_friends };
+    const score_obj = { prob, score: scoreVal };
 
     await mainRedisClient.set(
       getRealtionshipScoreCacheKey(userId, scoreId),

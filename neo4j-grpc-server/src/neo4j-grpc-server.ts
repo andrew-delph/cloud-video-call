@@ -286,18 +286,16 @@ const getRelationshipScores = async (
     `UNWIND $otherUsers AS otherId
       MATCH (n1:Person{userId: $target})
       MATCH (n2:Person{userId: otherId})
-      OPTIONAL MATCH (n1)-[prel:PREDICTION]->(n2)
-      OPTIONAL MATCH (n1)-[:FRIENDS]-(:Person)-[:FRIENDS]-(:Person)-[:FRIENDS]-(n2)
-      WITH n1, n2, prel, count(*) as num_friends
+      MATCH (n1)-[prel:PREDICTION]->(n2)
+      WITH n1, n2, prel
       return
       EXISTS((n1)-[:FRIENDS]->(n2)) as friends, 
       coalesce(prel.probability,0) as prob, 
       round(n2.priority,3) as p2,
       n1.userId as targetId,
-      n2.userId as otherId,
-      num_friends
-      ORDER BY prob DESC, num_friends DESC, p2 DESC
-      LIMIT 5`,
+      n2.userId as otherId
+      ORDER BY prob DESC, p2 DESC
+      `,
     { target: userId, otherUsers: otherUsers },
   );
 
@@ -310,19 +308,17 @@ const getRelationshipScores = async (
   const length = result.records.length;
   for (const [i, record] of result.records.entries()) {
     const prob = record.get(`prob`);
-    const num_friends = record.get(`num_friends`);
     const otherId = record.get(`otherId`);
     const index = length - i;
     if (i == 0) {
       logger.debug(
-        `prob:${prob} num_friends:${num_friends}  length:${length} index:${index}  userId:${userId}  otherId:${otherId}  otherUsers:${otherUsers}`,
+        `prob:${prob} length:${length} index:${index}  userId:${userId}  otherId:${otherId}  otherUsers:${otherUsers}`,
       );
     }
 
     const score = reply.getRelationshipScoresMap().get(userId) ?? new Score();
 
     score.setProb(prob);
-    score.setNumbFriends(num_friends);
 
     reply.getRelationshipScoresMap().set(otherId, score);
   }

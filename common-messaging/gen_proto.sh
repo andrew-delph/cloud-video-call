@@ -2,7 +2,11 @@
 
 # Exit the script if any command fails
 set -e
+
+rm -rf node_modules
 buf generate
+
+pnpm i
 
 # npx grpc_tools_node_protoc \
 #       --ts_out=grpc_js:./src/gen \

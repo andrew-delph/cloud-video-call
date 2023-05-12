@@ -237,9 +237,6 @@ export class Score extends jspb.Message {
     getScore(): number;
     setScore(value: number): Score;
 
-    getNumbFriends(): number;
-    setNumbFriends(value: number): Score;
-
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Score.AsObject;
@@ -255,7 +252,6 @@ export namespace Score {
     export type AsObject = {
         prob: number,
         score: number,
-        numbFriends: number,
     }
 }
 

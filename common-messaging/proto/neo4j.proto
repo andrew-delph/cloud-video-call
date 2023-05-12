@@ -80,7 +80,6 @@ message GetRelationshipScoresResponse {
 message Score {
   float prob = 1;
   float score = 2;
-  int32 numb_friends = 3;
 }
 
 message CheckUserFiltersRequest {
