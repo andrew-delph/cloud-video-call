@@ -296,7 +296,7 @@ const getRelationshipScores = async (
       WITH n1, n2, prel
       return
       EXISTS((n1)-[:FRIENDS]->(n2)) as friends, 
-      coalesce(prel.probability,0) as prob, 
+      coalesce(prel.probability, -1) as prob, 
       round(n2.priority,3) as p2,
       n1.userId as targetId,
       n2.userId as otherId
