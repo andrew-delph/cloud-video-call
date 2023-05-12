@@ -355,16 +355,20 @@ async function matchmakerFlow(
       )} otherId:${otherId} size: ${relationShipScores.length}`,
     );
 
-    if (
-      highestScore.prob < 0 &&
-      highestScore.score < 0 &&
-      readyMessage.getPriority() >= 0 &&
-      readyMessage.getCooldownAttempts() < maxCooldownAttemps
-    ) {
-      throw new CooldownRetryError(
-        `no good high score and too high priority`,
-        readyMessage,
-      );
+    if (highestScore.prob < 0 && highestScore.score < 0) {
+      if (
+        readyMessage.getPriority() >= 0 &&
+        readyMessage.getCooldownAttempts() < maxCooldownAttemps
+      ) {
+        throw new CooldownRetryError(
+          `no good high score and too high priority`,
+          readyMessage,
+        );
+      } else {
+        logger.debug(
+          `User no related scores: priority=${readyMessage.getPriority()} cooldownAttempts=${readyMessage.getCooldownAttempts()}`,
+        );
+      }
     }
   }
 
