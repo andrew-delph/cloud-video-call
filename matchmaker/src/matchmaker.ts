@@ -129,17 +129,17 @@ export const startReadyConsumer = async () => {
         (await common.getRedisUserPriority(mainRedisClient, userId)) ||
         0;
 
-      logger.info(
-        `userId=${userId} priority=${priority} cooldownAttempts=${cooldownAttempts}`,
-      );
+      const delaySeconds = matchmakerMessage.getCooldownAttempts() ** 1.25;
 
-      const delay = matchmakerMessage.getCooldownAttempts() ** 1.25 * 1000;
+      logger.info(
+        `userId=${userId} priority=${priority} cooldownAttempts=${cooldownAttempts} delaySeconds=${delaySeconds}`,
+      );
 
       await sendReadyQueue(
         rabbitChannel,
         userId,
         priority,
-        delay,
+        delaySeconds * 1000,
         matchmakerMessage.getCooldownAttempts(),
       );
 
