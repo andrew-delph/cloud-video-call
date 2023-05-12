@@ -327,9 +327,6 @@ createUser: {
     responseSerialize: serialize_neo4j_MatchHistoryResponse,
     responseDeserialize: deserialize_neo4j_MatchHistoryResponse,
   },
-  // option (google.api.http) = {
-//   post: "/v1/history"
-// };
 };
 
 exports.Neo4jClient = grpc.makeGenericClientConstructor(Neo4jService);

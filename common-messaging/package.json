@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "build": "npm run build:proto && tsc",
-    "build:watch": "nodemon --watch ./protos --watch ./src -e ts,proto --exec 'npm run build'",
+    "build:watch": "nodemon --watch ./src/*.ts --watch ./proto -e ts,proto --exec 'npm run build'",
     "build:proto": "bash gen_proto.sh"
   },
   "dependencies": {
