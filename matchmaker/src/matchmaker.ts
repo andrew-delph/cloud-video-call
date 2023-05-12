@@ -133,7 +133,7 @@ export const startReadyConsumer = async () => {
         `userId=${userId} priority=${priority} cooldownAttempts=${cooldownAttempts}`,
       );
 
-      const delay = matchmakerMessage.getCooldownAttempts() * 1000;
+      const delay = matchmakerMessage.getCooldownAttempts() ** 1.25 * 1000;
 
       await sendReadyQueue(
         rabbitChannel,
