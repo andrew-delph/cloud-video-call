@@ -323,7 +323,7 @@ const getRelationshipScores = async (
     }
 
     const score =
-      reply.getRelationshipScoresMap().get(userId) ?? defaultScore();
+      reply.getRelationshipScoresMap().get(otherId) ?? defaultScore();
 
     score.setProb(prob);
 
