@@ -260,7 +260,6 @@ const getRelationshipScores = async (
           `cosineSimilarity score is ${redisScore} for ${userId} and ${otherId}`,
         );
 
-        if (redisScore < 0.3) continue;
         score.setScore(redisScore);
         reply.getRelationshipScoresMap().set(otherId, score);
       }
