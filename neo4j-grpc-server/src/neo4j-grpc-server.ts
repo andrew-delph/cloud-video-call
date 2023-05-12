@@ -225,6 +225,13 @@ const updateMatch = (
   callback(null, reply);
 };
 
+function defaultScore() {
+  const score = new Score();
+  score.setProb(-1);
+  score.setScore(-1);
+  return score;
+}
+
 const getRelationshipScores = async (
   call: grpc.ServerUnaryCall<
     GetRelationshipScoresRequest,
@@ -253,7 +260,7 @@ const getRelationshipScores = async (
       );
 
       if (otherEmbddings != null) {
-        const score = new Score();
+        const score = defaultScore();
         const redisScore = cosineSimilarity(userEmbddings, otherEmbddings);
 
         logger.info(
@@ -315,7 +322,8 @@ const getRelationshipScores = async (
       );
     }
 
-    const score = reply.getRelationshipScoresMap().get(userId) ?? new Score();
+    const score =
+      reply.getRelationshipScoresMap().get(userId) ?? defaultScore();
 
     score.setProb(prob);
 
