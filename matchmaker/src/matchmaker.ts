@@ -361,7 +361,7 @@ async function matchmakerFlow(
         readyMessage.getCooldownAttempts() < maxCooldownAttemps
       ) {
         throw new CooldownRetryError(
-          `no good high score and too high priority`,
+          `userID=${readyMessage.getUserId()} priority=${readyMessage.getPriority()} cooldownAttempts=${readyMessage.getCooldownAttempts()}`,
           readyMessage,
         );
       } else {
