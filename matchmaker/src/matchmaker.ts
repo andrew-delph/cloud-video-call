@@ -120,12 +120,18 @@ export const startReadyConsumer = async () => {
 
       const userId = matchmakerMessage.getUserId();
 
+      const cooldownAttempts = matchmakerMessage.getCooldownAttempts();
+
       const userRepsonse = await neo4jGetUser(userId);
 
       const priority =
         userRepsonse.getPriority() ||
         (await common.getRedisUserPriority(mainRedisClient, userId)) ||
         0;
+
+      logger.info(
+        `userId=${userId} priority=${priority} cooldownAttempts=${cooldownAttempts}`,
+      );
 
       const delay = matchmakerMessage.getCooldownAttempts() * 1000;
 
@@ -349,13 +355,13 @@ async function matchmakerFlow(
     highestScore = relationShipScores[0][1];
     const lowestScore: common.RelationshipScoreType =
       relationShipScores[relationShipScores.length - 1][1];
-    logger.info(
+    logger.debug(
       `score highest:${JSON.stringify(highestScore)} lowest:${JSON.stringify(
         lowestScore,
       )} otherId:${otherId} size: ${relationShipScores.length}`,
     );
 
-    if (highestScore.prob < 0 && highestScore.score < 0) {
+    if (highestScore.prob <= 0 && highestScore.score <= 0) {
       if (
         readyMessage.getPriority() >= 0 &&
         readyMessage.getCooldownAttempts() < maxCooldownAttemps
