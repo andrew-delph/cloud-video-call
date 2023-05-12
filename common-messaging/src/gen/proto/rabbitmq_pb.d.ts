@@ -10,6 +10,9 @@ export class MatchmakerMessage extends jspb.Message {
     getUserId(): string;
     setUserId(value: string): MatchmakerMessage;
 
+    getCooldownAttempts(): number;
+    setCooldownAttempts(value: number): MatchmakerMessage;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): MatchmakerMessage.AsObject;
@@ -24,6 +27,7 @@ export class MatchmakerMessage extends jspb.Message {
 export namespace MatchmakerMessage {
     export type AsObject = {
         userId: string,
+        cooldownAttempts: number,
     }
 }
 
@@ -33,6 +37,9 @@ export class ReadyMessage extends jspb.Message {
 
     getPriority(): number;
     setPriority(value: number): ReadyMessage;
+
+    getCooldownAttempts(): number;
+    setCooldownAttempts(value: number): ReadyMessage;
 
 
     serializeBinary(): Uint8Array;
@@ -49,6 +56,7 @@ export namespace ReadyMessage {
     export type AsObject = {
         userId: string,
         priority: number,
+        cooldownAttempts: number,
     }
 }
 

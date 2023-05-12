@@ -17,10 +17,12 @@ import { bufferToUint8Array } from './utils';
 export async function sendMatchmakerQueue(
   rabbitChannel: amqp.Channel,
   userId: string,
+  cooldown_attempts: number = 0,
 ) {
   const matchmakerMessage: MatchmakerMessage = new MatchmakerMessage();
 
   matchmakerMessage.setUserId(userId);
+  matchmakerMessage.setCooldownAttempts(cooldown_attempts);
 
   await rabbitChannel.sendToQueue(
     matchmakerQueueName,
@@ -38,11 +40,13 @@ export async function sendReadyQueue(
   userId: string,
   priority: number,
   delay: number,
+  cooldown_attempts: number,
 ) {
   const readyMessage: ReadyMessage = new ReadyMessage();
 
   readyMessage.setUserId(userId);
   readyMessage.setPriority(priority);
+  readyMessage.setCooldownAttempts(cooldown_attempts);
 
   await rabbitChannel.publish(
     delayExchange,

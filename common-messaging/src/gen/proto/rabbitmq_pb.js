@@ -119,7 +119,8 @@ proto.rabbitmq.MatchmakerMessage.prototype.toObject = function(opt_includeInstan
  */
 proto.rabbitmq.MatchmakerMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, "")
+    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    cooldownAttempts: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -160,6 +161,10 @@ proto.rabbitmq.MatchmakerMessage.deserializeBinaryFromReader = function(msg, rea
       var value = /** @type {string} */ (reader.readString());
       msg.setUserId(value);
       break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setCooldownAttempts(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -196,6 +201,13 @@ proto.rabbitmq.MatchmakerMessage.serializeBinaryToWriter = function(message, wri
       f
     );
   }
+  f = message.getCooldownAttempts();
+  if (f !== 0) {
+    writer.writeInt32(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -214,6 +226,24 @@ proto.rabbitmq.MatchmakerMessage.prototype.getUserId = function() {
  */
 proto.rabbitmq.MatchmakerMessage.prototype.setUserId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional int32 cooldown_attempts = 2;
+ * @return {number}
+ */
+proto.rabbitmq.MatchmakerMessage.prototype.getCooldownAttempts = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.rabbitmq.MatchmakerMessage} returns this
+ */
+proto.rabbitmq.MatchmakerMessage.prototype.setCooldownAttempts = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -250,7 +280,8 @@ proto.rabbitmq.ReadyMessage.prototype.toObject = function(opt_includeInstance) {
 proto.rabbitmq.ReadyMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
     userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    priority: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0)
+    priority: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    cooldownAttempts: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -295,6 +326,10 @@ proto.rabbitmq.ReadyMessage.deserializeBinaryFromReader = function(msg, reader) 
       var value = /** @type {number} */ (reader.readFloat());
       msg.setPriority(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setCooldownAttempts(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -338,6 +373,13 @@ proto.rabbitmq.ReadyMessage.serializeBinaryToWriter = function(message, writer) 
       f
     );
   }
+  f = message.getCooldownAttempts();
+  if (f !== 0) {
+    writer.writeInt32(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -374,6 +416,24 @@ proto.rabbitmq.ReadyMessage.prototype.getPriority = function() {
  */
 proto.rabbitmq.ReadyMessage.prototype.setPriority = function(value) {
   return jspb.Message.setProto3FloatField(this, 2, value);
+};
+
+
+/**
+ * optional int32 cooldown_attempts = 3;
+ * @return {number}
+ */
+proto.rabbitmq.ReadyMessage.prototype.getCooldownAttempts = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.rabbitmq.ReadyMessage} returns this
+ */
+proto.rabbitmq.ReadyMessage.prototype.setCooldownAttempts = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 

@@ -45,10 +45,10 @@ let rabbitChannel: amqp.Channel;
 
 const prefetch = 2;
 
-const defaultDelay = 1000; // 1 seconds
-
 const relationshipFilterCacheEx = 60 * 2;
 const realtionshipScoreCacheEx = 1;
+
+const maxCooldownAttemps = 5;
 
 const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
@@ -95,17 +95,6 @@ const neo4jGetUser = (userId: string) => {
 
 const matchmakerChannelPrefix = `matchmaker`;
 
-const pushReadyQueue = async (
-  content: Buffer,
-  delay: number,
-  priority: number,
-) => {
-  await rabbitChannel.publish(delayExchange, readyRoutingKey, content, {
-    headers: { 'x-delay': delay },
-    priority: maxPriority * priority,
-  });
-};
-
 export const startReadyConsumer = async () => {
   await connectRabbit();
 
@@ -135,7 +124,15 @@ export const startReadyConsumer = async () => {
 
       const priority = userRepsonse.getPriority() || 0;
 
-      await sendReadyQueue(rabbitChannel, userId, priority, 1000);
+      const delay = matchmakerMessage.getCooldownAttempts() * 1000;
+
+      await sendReadyQueue(
+        rabbitChannel,
+        userId,
+        priority,
+        delay,
+        matchmakerMessage.getCooldownAttempts(),
+      );
 
       rabbitChannel.ack(msg);
     },
@@ -176,7 +173,11 @@ export const startReadyConsumer = async () => {
           rabbitChannel.nack(msg);
         } else if (e instanceof CooldownRetryError) {
           logger.debug(`CooldownRetryError ${userId} ${e}`);
-          await sendMatchmakerQueue(rabbitChannel, userId);
+          await sendMatchmakerQueue(
+            rabbitChannel,
+            userId,
+            readyMessage.getCooldownAttempts() + 1,
+          );
           rabbitChannel.ack(msg);
         } else {
           logger.error(`Unknown error: ${e}`);
@@ -354,7 +355,8 @@ async function matchmakerFlow(
     if (
       highestScore.prob < 0 &&
       highestScore.score < 0 &&
-      readyMessage.getPriority() >= 0
+      readyMessage.getPriority() >= 0 &&
+      readyMessage.getCooldownAttempts() < maxCooldownAttemps
     ) {
       throw new CooldownRetryError(
         `no good high score and too high priority`,

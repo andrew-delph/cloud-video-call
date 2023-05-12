@@ -86,12 +86,12 @@ export async function matchConsumer() {
         if (await mainRedisClient.sismember(common.activeSetName, userId1)) {
           await mainRedisClient.sadd(common.readySetName, userId1);
 
-          await sendReadyQueue(rabbitChannel, userId1, 0, 0);
+          await sendReadyQueue(rabbitChannel, userId1, 0, 0, 0);
         }
         if (await mainRedisClient.sismember(common.activeSetName, userId2)) {
           await mainRedisClient.sadd(common.readySetName, userId2);
 
-          await sendReadyQueue(rabbitChannel, userId2, 0, 0);
+          await sendReadyQueue(rabbitChannel, userId2, 0, 0, 0);
         }
       } finally {
         rabbitChannel.ack(msg);
