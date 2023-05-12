@@ -98,6 +98,23 @@ logger.info(`Value of JOB: ${job}`);
 
       logger.info(`wrote ${results.records.length} embeddings to redis`);
 
+      results = await funcs.run(
+        `
+        CALL gds.graph.nodeProperty.stream('shortPredictGraph', 'priority', 'Person')
+          YIELD nodeId, propertyValue
+          RETURN gds.util.asNode(nodeId).userId AS userId, propertyValue AS priority
+          ORDER BY score DESC
+        `,
+      );
+
+      for (let record of results.records) {
+        const userId: string = record.get(`userId`);
+        const priority = record.get(`priority`);
+        await common.writeRedisUserPriority(redisClient, userId, priority);
+      }
+
+      logger.info(`wrote ${results.records.length} prioritys to redis`);
+
       break;
     case `TRAIN`:
     case `COMPUTE`:

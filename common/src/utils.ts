@@ -135,7 +135,7 @@ export const getRecentlyActiveUsers = async (
 };
 
 export function userEmbeddingsKey(userId: string): string {
-  return `userIdEmbeddingsKey-${userId}`;
+  return `userEmbeddingsKey-${userId}`;
 }
 
 export const getRedisUserEmbeddings = async (
@@ -155,6 +155,32 @@ export const writeRedisUserEmbeddings = async (
   await redisClient.set(
     userEmbeddingsKey(userId),
     JSON.stringify(embedding),
+    `EX`,
+    expire,
+  );
+};
+
+export function userPriorityKey(userId: string): string {
+  return `userPriorityKey-${userId}`;
+}
+
+export const getRedisUserPriority = async (
+  redisClient: Client,
+  userId: string,
+): Promise<number[] | null> => {
+  const val = await redisClient.get(userPriorityKey(userId));
+  return val != null ? JSON.parse(val) : null;
+};
+
+export const writeRedisUserPriority = async (
+  redisClient: Client,
+  userId: string,
+  priority: number,
+  expire: number = 60 * 10,
+): Promise<void> => {
+  await redisClient.set(
+    userPriorityKey(userId),
+    JSON.stringify(priority),
     `EX`,
     expire,
   );
