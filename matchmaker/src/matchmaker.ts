@@ -38,7 +38,7 @@ const prefetch = 2;
 
 const delayExchange = `my-delayed-exchange`;
 const readyRoutingKey = `ready-routing-key`;
-const delay = 1000; // 1 seconds
+const defaultDelay = 1000; // 1 seconds
 
 const maxPriority = 10;
 
@@ -94,6 +94,17 @@ const neo4jGetUser = (userId: string) => {
 
 const matchmakerChannelPrefix = `matchmaker`;
 
+const pushReadyQueue = async (
+  content: Buffer,
+  delay: number,
+  priority: number,
+) => {
+  await rabbitChannel.publish(delayExchange, readyRoutingKey, content, {
+    headers: { 'x-delay': delay },
+    priority: maxPriority * priority,
+  });
+};
+
 export const startReadyConsumer = async () => {
   await connectRabbit();
 
@@ -123,10 +134,7 @@ export const startReadyConsumer = async () => {
 
       const priority = userRepsonse.getPriority() || 0;
 
-      await rabbitChannel.publish(delayExchange, readyRoutingKey, msg.content, {
-        headers: { 'x-delay': delay },
-        priority: maxPriority * priority,
-      });
+      await pushReadyQueue(msg.content, defaultDelay, priority);
 
       rabbitChannel.ack(msg);
     },
