@@ -1,7 +1,7 @@
 import http from 'k6/http';
 
 import { check, sleep } from 'k6';
-import { options_url } from '../src/k6';
+import { options_url } from '../k6';
 
 export const nuke = () => {
   console.log(`starting nuke`);

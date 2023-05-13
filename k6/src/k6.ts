@@ -1,10 +1,10 @@
 import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
-import { K6SocketIoExp } from '../libs/K6SocketIoExp';
+import { K6SocketIoExp } from './libs/K6SocketIoExp';
 import redis from 'k6/experimental/redis';
 import { check, sleep } from 'k6';
 import http from 'k6/http';
-import * as users from '../libs/User';
-import { nuke } from '../libs/utils';
+import * as users from './libs/User';
+import { nuke } from './libs/utils';
 import exec from 'k6/execution';
 
 const vus = 50;

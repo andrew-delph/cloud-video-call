@@ -1,4 +1,4 @@
-import { calcScoreMap, UserType } from '../libs/User';
+import { calcScoreMap, UserType } from './libs/User';
 import {
   randomString,
   randomIntBetween,
