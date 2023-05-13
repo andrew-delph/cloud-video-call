@@ -8,7 +8,7 @@
     "build": "tsc",
     "prod": "node ./dist/socketio_server.js",
     "docker": "bazel run image_push",
-    "k8-restart": "npm run docker && kn service update websocket --image=andrewdelph/video-call-websocket:latest --wait && date"
+    "k8-restart": "kn service update websocket --image=andrewdelph/video-call-websocket:latest --wait && date || echo -en '\\0007'"
   },
   "author": "",
   "license": "ISC",
