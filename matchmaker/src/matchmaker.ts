@@ -48,7 +48,7 @@ const prefetch = 2;
 const relationshipFilterCacheEx = 60 * 2;
 const realtionshipScoreCacheEx = 1;
 
-const maxCooldownAttemps = 5;
+const maxCooldownAttemps = 10;
 
 const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
@@ -373,12 +373,17 @@ async function matchmakerFlow(
         );
       }
     }
+    const lowestScore = relationShipScores[relationShipScores.length - 1][1];
     logger.info(
-      `highestScore=${JSON.stringify(
-        highestScore,
-      )} lowestScore=${JSON.stringify(
-        relationShipScores[relationShipScores.length - 1][1],
-      )} of possible ${relationShipScores.length}`,
+      `highestScore={prob=${highestScore.prob.toFixed(
+        2,
+      )}, score=${highestScore.score.toFixed(
+        2,
+      )}} lowestScore={prob=${lowestScore.prob.toFixed(
+        2,
+      )}, score=${lowestScore.score.toFixed(2)}} of possible ${
+        relationShipScores.length
+      } cooldownAttempts=${readyMessage.getCooldownAttempts()}`,
     );
   }
 
