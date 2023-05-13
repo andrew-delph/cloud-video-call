@@ -36,7 +36,11 @@ logger.info(`Value of JOB: ${job}`);
       }
 
       const test_attributes: string[] = await funcs.getAttributeKeys();
-      results = await funcs.createGraph(`shortPredictGraph`, test_attributes);
+      results = await funcs.createGraph(
+        `shortPredictGraph`,
+        test_attributes,
+        activeUsers,
+      );
 
       results = await funcs.run(
         `
