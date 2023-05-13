@@ -82,9 +82,9 @@ export const createGroupB = (auth: string): User => {
 const userFunctions: any[] = [
   createFemale,
   createMale,
-  createGroupA,
-  createGroupB,
-  createHot,
+  // createGroupA,
+  // createGroupB,
+  // createHot,
 ];
 
 function* getUserGenerator() {

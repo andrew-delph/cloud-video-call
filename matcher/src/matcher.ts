@@ -127,7 +127,7 @@ export const match = async (msgContent: MatchMessage) => {
   );
 
   if (!socket1 || !socket2) {
-    logger.error(`(!socket1 || !socket2 ${socket1} ${socket2}`);
+    logger.error(`!socket1 || !socket2 ${socket1} ${socket2}`);
     throw Error(`!socket1 || !socket2 ${socket1} ${socket2}`);
   }
 

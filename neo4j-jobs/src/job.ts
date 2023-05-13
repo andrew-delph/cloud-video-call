@@ -42,6 +42,8 @@ logger.info(`Value of JOB: ${job}`);
         activeUsers,
       );
 
+      logger.info(`graph: ${JSON.stringify(results.records[0])}`);
+
       results = await funcs.run(
         `
           CALL gds.articleRank.mutate('shortPredictGraph', {  
@@ -114,6 +116,7 @@ logger.info(`Value of JOB: ${job}`);
         const userId: string = record.get(`userId`);
         const priority = record.get(`priority`);
         await common.writeRedisUserPriority(redisClient, userId, priority);
+        logger.info(`userId=${userId} priority=${priority}`);
       }
 
       logger.info(`wrote ${results.records.length} prioritys to redis`);

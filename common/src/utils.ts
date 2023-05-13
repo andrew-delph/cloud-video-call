@@ -42,9 +42,11 @@ export async function createRabbitMQClient(): Promise<
   let rabbitChannel = await rabbitConnection.createChannel();
   rabbitChannel.on(`error`, (err) => {
     logger.error(`Publisher error: ${err.message}`);
+    throw err;
   });
   rabbitConnection.on(`error`, (err) => {
     logger.error(`Connection error: ${err.message}`);
+    throw err;
   });
 
   return [rabbitConnection, rabbitChannel];
