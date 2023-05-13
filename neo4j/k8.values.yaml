@@ -14,6 +14,7 @@ env:
   NEO4J_PLUGINS: '["graph-data-science","apoc"]'
 
 config:
+  server.directories.plugins: '/plugins'
   dbms.security.procedures.unrestricted: 'gds.*'
   dbms.memory.transaction.total.max: '1GB'
   server.bolt.thread_pool_max_size: '1000'
@@ -31,5 +32,9 @@ volumes:
     defaultStorageClass:
       requests:
         storage: 40Gi
+  plugins:
+    mode: 'share'
+    share:
+      name: 'data'
 nodeSelector:
   vke.vultr.com/node-pool: video-call
