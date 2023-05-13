@@ -99,6 +99,9 @@ importers:
       '@socket.io/redis-adapter':
         specifier: 8.0.0
         version: 8.0.0
+      '@types/express':
+        specifier: ^4.17.17
+        version: 4.17.17
       amqplib:
         specifier: ^0.10.3
         version: 0.10.3
@@ -114,6 +117,9 @@ importers:
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3
+      express:
+        specifier: ^4.18.2
+        version: 4.18.2
       firebase-admin:
         specifier: ^10.3.0
         version: 10.3.0(@firebase/app-types@0.9.0)
@@ -172,6 +178,9 @@ importers:
 
   matchmaker:
     dependencies:
+      '@types/express':
+        specifier: ^4.17.17
+        version: 4.17.17
       amqplib:
         specifier: ^0.10.3
         version: 0.10.3
@@ -184,6 +193,9 @@ importers:
       common-messaging:
         specifier: link:../common-messaging
         version: link:../common-messaging
+      express:
+        specifier: ^4.18.2
+        version: 4.18.2
       ioredis:
         specifier: 5.2.5
         version: 5.2.5

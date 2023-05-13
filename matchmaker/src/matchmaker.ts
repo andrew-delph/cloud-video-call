@@ -4,6 +4,8 @@ import Client from 'ioredis';
 import Redlock, { ResourceLockedError, ExecutionError } from 'redlock';
 import amqp from 'amqplib';
 
+import express from 'express';
+
 import {
   createNeo4jClient,
   GetRelationshipScoresRequest,
@@ -32,6 +34,20 @@ import {
 } from 'common-messaging/src/message_helper';
 
 const logger = common.getLogger();
+
+listenGlobalExceptions(async () => {
+  logger.debug(`clean up matchmaker`);
+});
+
+const port = 80;
+const app = express();
+app.get(`/health`, (req, res) => {
+  logger.debug(`got health check`);
+  res.send(`Health is good.`);
+});
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 
 const neo4jRpcClient = createNeo4jClient();
 
@@ -97,7 +113,7 @@ const neo4jGetUser = (userId: string) => {
 
 const matchmakerChannelPrefix = `matchmaker`;
 
-export const startReadyConsumer = async () => {
+export async function startReadyConsumer() {
   await connectRabbit();
 
   mainRedisClient = common.createRedisClient();
@@ -216,7 +232,7 @@ export const startReadyConsumer = async () => {
       noAck: false,
     },
   );
-};
+}
 
 class CompleteError extends Error {
   constructor(message: string) {
@@ -614,9 +630,4 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
   return Array.from(relationshipScoresMap.entries());
 };
 
-if (require.main === module) {
-  listenGlobalExceptions(async () => {
-    logger.debug(`clean up matchmaker`);
-  });
-  startReadyConsumer();
-}
+startReadyConsumer();

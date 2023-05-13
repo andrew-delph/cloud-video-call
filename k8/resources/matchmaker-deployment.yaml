@@ -25,7 +25,7 @@ spec:
           image: andrewdelph/video-call-matchmaker:latest
           name: matchmaker
           ports:
-            - containerPort: 4000
+            - containerPort: 80
           resources:
             requests:
               cpu: '25m'
@@ -33,6 +33,12 @@ spec:
             limits:
               cpu: '512m'
               memory: '250Mi'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            # initialDelaySeconds: 30
+            periodSeconds: 10
       restartPolicy: Always
 status: {}
 ---

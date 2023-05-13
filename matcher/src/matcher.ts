@@ -20,8 +20,23 @@ import {
   matchmakerQueueName,
   MatchMessage,
 } from 'common-messaging';
+import express from 'express';
+
+common.listenGlobalExceptions(async () => {
+  logger.debug(`clean up matcher`);
+});
 
 const logger = common.getLogger();
+
+const port = 80;
+const app = express();
+app.get(`/health`, (req, res) => {
+  logger.debug(`got health check`);
+  res.send(`Health is good.`);
+});
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 
 const neo4jRpcClient = createNeo4jClient();
 
@@ -230,6 +245,4 @@ export const match = async (msgContent: MatchMessage) => {
     });
 };
 
-if (require.main === module) {
-  matchConsumer();
-}
+matchConsumer();
