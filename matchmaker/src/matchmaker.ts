@@ -64,7 +64,7 @@ const prefetch = 2;
 const relationshipFilterCacheEx = 60 * 2;
 const realtionshipScoreCacheEx = 60;
 
-const maxCooldownAttemps = 10;
+const maxCooldownAttemps = 20;
 
 const maxDelaySeconds = 10;
 
@@ -414,7 +414,7 @@ async function matchmakerFlow(
         relationShipScores.length
       } cooldownAttempts=${readyMessage.getCooldownAttempts()} priority=${readyMessage.getPriority()} scoreThreshold=${scoreThreshold.toFixed(
         2,
-      )} userId=${readyMessage.getUserId()}`,
+      )} userId=${readyMessage.getUserId()} otherId=${otherId}`,
     );
   }
 

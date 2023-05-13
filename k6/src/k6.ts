@@ -21,7 +21,7 @@ let authPrefix = `k6_auth_`;
 
 userFunctions.push(users.createFemale);
 userFunctions.push(users.createMale);
-userFunctions.push(users.createGroupA);
+// userFunctions.push(users.createGroupA);
 // userFunctions.push(users.createGroupB);
 // userFunctions.push(users.createHot);
 
@@ -221,10 +221,7 @@ export default async function () {
       .then(async (data: any) => {
         // prediction_score_trend.add(data.score);
 
-        let score = await myUser.getScore(data.other).catch((e) => {
-          console.error(`error getting score: ${e}`);
-          return -1;
-        });
+        let score = await myUser.getScore(data.other);
 
         score_trend.add(score, { type: myUser.type.valueOf() });
         score_gauge.add(score, { type: myUser.type.valueOf() });
