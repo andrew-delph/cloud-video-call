@@ -28,10 +28,7 @@ export const createRandom = (auth: string): User => {
 };
 
 export const createFemale = (auth: string): User => {
-  const attributes = {
-    constant: { gender: `female` },
-    custom: { long: 1, lat: 1 },
-  };
+  const attributes = { constant: { gender: `female` } };
   let filters = { constant: {} };
   // filters = { constant: { gender: `male` } };
 
