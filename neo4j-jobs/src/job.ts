@@ -35,7 +35,9 @@ logger.info(`Value of JOB: ${job}`);
         logger.info(`Recently Active Users: ${activeUsers.length}`);
       }
 
-      const test_attributes: string[] = await funcs.getAttributeKeys();
+      const test_attributes: string[] = await funcs.getAttributeKeys(
+        activeUsers,
+      );
       results = await funcs.createGraph(
         `shortPredictGraph`,
         test_attributes,

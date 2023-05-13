@@ -462,14 +462,23 @@ export async function createAttributeFloat(): Promise<neo4j.QueryResult> {
   return result;
 }
 
-export async function getAttributeKeys() {
+export async function getAttributeKeys(userList: string[] = []) {
   console.log(``);
   console.log(`--- getAttributeKeys`);
   let start_time = performance.now();
   let result;
 
+  let whereString = ``;
+  if (userList.length > 0) {
+    whereString = `WHERE p.userId IN 
+    ${JSON.stringify(userList)}`;
+
+    console.log(`whereString  for ${userList.length}`);
+  }
+
   result = await session.run(
     `MATCH (p:Person)-[rel:USER_ATTRIBUTES_CONSTANT]->(n:MetaData)
+    ${whereString}
     WITH DISTINCT keys(n) as keyList
     UNWIND keyList as individualKeys
     WITH DISTINCT individualKeys as uniqueKeys
