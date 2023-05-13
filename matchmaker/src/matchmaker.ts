@@ -358,7 +358,10 @@ async function matchmakerFlow(
     otherId = relationShipScores[0][0];
     highestScore = relationShipScores[0][1];
 
-    if (highestScore.prob <= 0 && highestScore.score <= 0) {
+    const scoreThreshold =
+      1 - (readyMessage.getCooldownAttempts() + 1) / maxCooldownAttemps;
+
+    if (highestScore.prob <= 0 && highestScore.score <= scoreThreshold) {
       if (
         readyMessage.getPriority() > 0 &&
         readyMessage.getCooldownAttempts() < maxCooldownAttemps
@@ -383,7 +386,9 @@ async function matchmakerFlow(
         2,
       )}, score=${lowestScore.score.toFixed(2)}} of possible ${
         relationShipScores.length
-      } cooldownAttempts=${readyMessage.getCooldownAttempts()} priority=${readyMessage.getPriority()}`,
+      } cooldownAttempts=${readyMessage.getCooldownAttempts()} priority=${readyMessage.getPriority()} scoreThreshold=${scoreThreshold.toFixed(
+        2,
+      )}`,
     );
   }
 
