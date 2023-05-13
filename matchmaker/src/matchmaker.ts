@@ -383,7 +383,7 @@ async function matchmakerFlow(
         2,
       )}, score=${lowestScore.score.toFixed(2)}} of possible ${
         relationShipScores.length
-      } cooldownAttempts=${readyMessage.getCooldownAttempts()}`,
+      } cooldownAttempts=${readyMessage.getCooldownAttempts()} priority=${readyMessage.getPriority()}`,
     );
   }
 
