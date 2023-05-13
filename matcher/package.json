@@ -5,7 +5,7 @@
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "dev": "nodemon --delay 1000ms --ignore dist  --ext ts --exec 'npm run k8-restart'",
+    "dev": "ibazel -run_command_after_success='bash -c \"cd matcher && npm run k8-restart\"' build :ts",
     "docker": "bazel run image_push",
     "k8-restart": "npm run docker && kubectl rollout restart deployment/matcher && kubectl rollout status deployment/matcher --watch=true --timeout=300s  && date",
     "prod": "node ./dist/matcher.js"

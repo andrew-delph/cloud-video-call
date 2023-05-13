@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha 'dist/test/**/*.js' --recursive",
-    "dev": "nodemon --delay 1000ms --ignore dist  --ext ts --exec 'npm run k8-restart'",
+    "dev": "ibazel -run_command_after_success='bash -c \"cd neo4j-grpc-server && npm run k8-restart\"' build :ts",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "prod": "node ./dist/index.js",

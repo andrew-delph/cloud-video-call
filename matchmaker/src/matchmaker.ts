@@ -50,6 +50,8 @@ const realtionshipScoreCacheEx = 60;
 
 const maxCooldownAttemps = 10;
 
+const maxDelaySeconds = 10;
+
 const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
 
@@ -129,11 +131,17 @@ export const startReadyConsumer = async () => {
         (await common.getRedisUserPriority(mainRedisClient, userId)) ||
         0;
 
-      const delaySeconds = matchmakerMessage.getCooldownAttempts() ** 1.25;
+      const delaySeconds = Math.min(
+        matchmakerMessage.getCooldownAttempts() ** 1.25,
+        maxDelaySeconds,
+      );
 
-      logger.debug(
+      logger.info(
         `userId=${userId} priority=${priority.toFixed(
-          1,
+          2,
+        )} redis=${await common.getRedisUserPriority(
+          mainRedisClient,
+          userId,
         )} cooldownAttempts=${cooldownAttempts} delaySeconds=${delaySeconds.toFixed(
           1,
         )}`,
