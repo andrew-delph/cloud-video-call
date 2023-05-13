@@ -571,12 +571,14 @@ export async function createGraph(
         sourceNodeProperties: source {
             // priority: coalesce(source.priority, 0),
             // community: coalesce(source.community, 0),
-            values: source_values ${getExtraNodeProperties(`source`)}
+            values: source_values 
+            ${getExtraNodeProperties(`source`)}
           },
         targetNodeProperties: target {
             // priority: coalesce(target.priority, 0),
             // community: coalesce(target.community, 0),
-            values: target_values ${getExtraNodeProperties(`target`)}
+            values: target_values 
+            ${getExtraNodeProperties(`target`)}
           }
       },
       {
