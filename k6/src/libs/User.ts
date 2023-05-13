@@ -172,9 +172,13 @@ export class User {
 
   constructor(auth: string, attributes: any, filters: any, type: UserType) {
     this.type = type;
-    this.auth = auth + `${type.valueOf()}${attributes?.constant?.hot ?? ``}`;
     this.attributes = attributes;
     this.filters = filters;
+    this.auth = auth + this.getTypeString();
+  }
+
+  getTypeString() {
+    return `${this.type.valueOf()}${this.attributes?.constant?.hot ?? ``}`;
   }
 
   async updatePreferences(): Promise<void> {

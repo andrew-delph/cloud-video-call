@@ -19,11 +19,11 @@ let uniqueAuthKey = ``;
 let authKeysName = `authKeysName`;
 let authPrefix = `k6_auth_`;
 
-userFunctions.push(users.createFemale);
-userFunctions.push(users.createMale);
-userFunctions.push(users.createGroupA);
-userFunctions.push(users.createGroupB);
-// userFunctions.push(users.createHot);
+// userFunctions.push(users.createFemale);
+// userFunctions.push(users.createMale);
+// userFunctions.push(users.createGroupA);
+// userFunctions.push(users.createGroupB);
+userFunctions.push(users.createHot);
 
 const updateAuthVars = () => {
   if (uniqueAuthIds) {
@@ -166,18 +166,18 @@ export default async function () {
     let expectMatch: any;
 
     socket.on(`error`, () => {
-      error_counter.add(1, { type: myUser.type.valueOf() });
+      error_counter.add(1, { type: myUser.getTypeString() });
     });
     socket
       .expectMessage(`established`)
       .catch((error) => {
         console.error(`failed established`);
-        established_success.add(false, { type: myUser.type.valueOf() });
+        established_success.add(false, { type: myUser.getTypeString() });
         return Promise.reject(error);
       })
       .then((data: any) => {
-        established_success.add(true, { type: myUser.type.valueOf() });
-        established_elapsed.add(data.elapsed, { type: myUser.type.valueOf() });
+        established_success.add(true, { type: myUser.getTypeString() });
+        established_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
 
         expectMatch = socket.expectMessage(`match`);
         const readyPromise = socket.sendWithAck(`ready`, {});
@@ -185,18 +185,18 @@ export default async function () {
       })
       .catch((error) => {
         console.error(`failed ready`);
-        ready_success.add(false, { type: myUser.type.valueOf() });
+        ready_success.add(false, { type: myUser.getTypeString() });
         return Promise.reject(error);
       })
       .then((data: any) => {
         console.log(`ready..`);
-        ready_success.add(true, { type: myUser.type.valueOf() });
-        ready_elapsed.add(data.elapsed, { type: myUser.type.valueOf() });
+        ready_success.add(true, { type: myUser.getTypeString() });
+        ready_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
         return expectMatch;
       })
       .catch((error) => {
         console.error(`failed match`);
-        match_success.add(false, { type: myUser.type.valueOf() });
+        match_success.add(false, { type: myUser.getTypeString() });
         return Promise.reject(error);
       })
       .then((data: any) => {
@@ -204,9 +204,9 @@ export default async function () {
         if (typeof data.callback === `function`) {
           data.callback(`ok`);
         }
-        match_success.add(true, { type: myUser.type.valueOf() });
-        match_elapsed.add(data.elapsed, { type: myUser.type.valueOf() });
-        success_counter.add(1, { type: myUser.type.valueOf() });
+        match_success.add(true, { type: myUser.getTypeString() });
+        match_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
+        success_counter.add(1, { type: myUser.getTypeString() });
         check(data, {
           'match has feedback id': (data: any) =>
             data && data.data && data.data.feedback_id,
@@ -223,8 +223,8 @@ export default async function () {
 
         let score = await myUser.getScore(data.other);
 
-        score_trend.add(score, { type: myUser.type.valueOf() });
-        score_gauge.add(score, { type: myUser.type.valueOf() });
+        score_trend.add(score, { type: myUser.getTypeString() });
+        score_gauge.add(score, { type: myUser.getTypeString() });
 
         const r = http.post(
           `${options_url}/providefeedback`,
