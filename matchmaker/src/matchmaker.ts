@@ -136,7 +136,7 @@ export const startReadyConsumer = async () => {
         maxDelaySeconds,
       );
 
-      logger.info(
+      logger.debug(
         `userId=${userId} priority=${priority.toFixed(
           2,
         )} redis=${await common.getRedisUserPriority(
@@ -398,7 +398,7 @@ async function matchmakerFlow(
         relationShipScores.length
       } cooldownAttempts=${readyMessage.getCooldownAttempts()} priority=${readyMessage.getPriority()} scoreThreshold=${scoreThreshold.toFixed(
         2,
-      )}`,
+      )} userId=${readyMessage.getUserId()}`,
     );
   }
 
@@ -550,11 +550,7 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
     relationshipScoresMap.set(otherId, relationshipScore);
   }
 
-  if (relationshipScoresMap.size > 0) {
-    logger.info(`relationship scores in cache: ${relationshipScoresMap.size}`);
-  } else {
-    logger.debug(`relationship scores in cache: ${relationshipScoresMap.size}`);
-  }
+  logger.debug(`relationship scores in cache: ${relationshipScoresMap.size}`);
 
   if (readyset.size == 0) return Array.from(relationshipScoresMap.entries());
 

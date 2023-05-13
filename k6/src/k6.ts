@@ -6,6 +6,7 @@ import http from 'k6/http';
 import * as users from './libs/User';
 import { nuke } from './libs/utils';
 import exec from 'k6/execution';
+import { userFunctions } from './libs/User';
 
 const vus = 20;
 const authKeysNum = 200; // number of users created for each parallel instance running
@@ -17,6 +18,12 @@ let uniqueAuthKey = ``;
 
 let authKeysName = `authKeysName`;
 let authPrefix = `k6_auth_`;
+
+// userFunctions.push(users.createFemale);
+// userFunctions.push(users.createMale);
+// userFunctions.push(users.createGroupA);
+// userFunctions.push(users.createGroupB);
+userFunctions.push(users.createHot);
 
 const updateAuthVars = () => {
   if (uniqueAuthIds) {

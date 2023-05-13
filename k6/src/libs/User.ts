@@ -58,8 +58,11 @@ export const createLocationBound = (auth: string): User => {
   return new User(auth, attributes, filters, UserType.LocationBound);
 };
 
+const hotRange = 5;
 export const createHot = (auth: string): User => {
-  const attributes = { constant: { hot: randomIntBetween(-10, 10) } };
+  const attributes = {
+    constant: { hot: randomIntBetween(-hotRange, hotRange) },
+  };
   const filters = {};
 
   return new User(auth, attributes, filters, UserType.Hot);
@@ -79,12 +82,12 @@ export const createGroupB = (auth: string): User => {
   return new User(auth, attributes, filters, UserType.GroupB);
 };
 
-const userFunctions: any[] = [
-  createFemale,
-  createMale,
+export const userFunctions: any[] = [
+  // createFemale,
+  // createMale,
   // createGroupA,
   // createGroupB,
-  // createHot,
+  // // createHot,
 ];
 
 function* getUserGenerator() {
@@ -168,9 +171,9 @@ export class User {
   auth: string = ``;
   type: UserType;
 
-  constructor(auth: string, attributes: {}, filters: {}, type: UserType) {
+  constructor(auth: string, attributes: any, filters: any, type: UserType) {
     this.type = type;
-    this.auth = auth;
+    this.auth = auth + `${type.valueOf()}${attributes?.constant?.hot ?? ``}`;
     this.attributes = attributes;
     this.filters = filters;
   }
