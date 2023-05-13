@@ -714,8 +714,8 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "code",
-          "expr": "avg (k6_score_trend_avg{testid=~\"$testid\"}) by(testid)",
+          "editorMode": "builder",
+          "expr": "avg by(testid) (k6_score_trend_avg{testid=~\"$testid\", type=~\"$type\"})",
           "legendFormat": "score avg: {{testid}}",
           "range": true,
           "refId": "A"
@@ -726,7 +726,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "builder",
-          "expr": "avg by(testid) (avg_over_time(k6_score_gauge{testid=~\"$testid\"}[1m]))",
+          "expr": "avg by(testid) (avg_over_time(k6_score_gauge{testid=~\"$testid\", type=~\"$type\"}[1m]))",
           "hide": false,
           "legendFormat": "score avg[1m] {{testid}}",
           "range": true,
@@ -819,7 +819,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "avg (k6_match_elapsed_avg{testid=~\"$testid\"}) by(testid)",
+          "expr": "avg by(testid) (k6_match_elapsed_avg{testid=~\"$testid\", type=~\"$type\"})",
           "legendFormat": "match avg: {{testid}}",
           "range": true,
           "refId": "A"
@@ -830,7 +830,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "avg (k6_match_elapsed_p90{testid=~\"$testid\"}) by(testid)",
+          "expr": "avg (k6_match_elapsed_p90{testid=~\"$testid\", type=~\"$type\"}) by(testid)",
           "hide": false,
           "legendFormat": "match p90: {{testid}}",
           "range": true,
@@ -842,7 +842,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "avg (k6_match_elapsed_p99{testid=~\"$testid\"}) by(testid)",
+          "expr": "avg (k6_match_elapsed_p99{testid=~\"$testid\", type=~\"$type\"}) by(testid)",
           "hide": false,
           "legendFormat": "match p99: {{testid}}",
           "range": true,
