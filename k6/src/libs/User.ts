@@ -143,8 +143,8 @@ export const calcScoreMap = new Map<
   [
     UserType.Hot,
     (me: User, otherUser: User) => {
-      const myHotVal = me?.attributes?.constant?.hot ?? `-10`;
-      const otherHotVal = otherUser?.attributes?.constant?.hot ?? `-10`;
+      const myHotVal = me?.attributes?.constant?.hot ?? `-100`;
+      const otherHotVal = otherUser?.attributes?.constant?.hot ?? `-100`;
       const myHot = parseInt(myHotVal.match(/\d+/)[0]);
       const otherHot = parseInt(otherHotVal.match(/\d+/)[0]);
       return myHot - 1 <= otherHot ? postiveScore : negativeScore;
