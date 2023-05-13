@@ -10,12 +10,12 @@ message MatchmakerMessage {
 
 message ReadyMessage {
   string user_id = 1;
-  float priority = 2;
+  double priority = 2;
   int32 cooldown_attempts = 3;
 }
 
 message MatchMessage {
   string user_id1 = 1;
   string user_id2 = 2;
-  float score = 3;
+  double score = 3;
 }

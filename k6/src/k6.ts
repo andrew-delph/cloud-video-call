@@ -7,7 +7,7 @@ import * as users from './libs/User';
 import { nuke } from './libs/utils';
 import exec from 'k6/execution';
 
-const vus = 50;
+const vus = 20;
 const authKeysNum = 200; // number of users created for each parallel instance running
 const nukeData = false; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
@@ -150,7 +150,7 @@ export default async function () {
 
   const myUser = await users.fromRedis(auth);
 
-  const socket = new K6SocketIoExp(ws_url, { auth: auth }, {}, 40000);
+  const socket = new K6SocketIoExp(ws_url, { auth: auth }, {}, 60 * 2);
 
   socket.setOnClose(async () => {
     await redisClient.rpush(authKeysName, auth);

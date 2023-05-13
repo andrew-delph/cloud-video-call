@@ -323,7 +323,7 @@ proto.rabbitmq.ReadyMessage.deserializeBinaryFromReader = function(msg, reader) 
       msg.setUserId(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readDouble());
       msg.setPriority(value);
       break;
     case 3:
@@ -368,7 +368,7 @@ proto.rabbitmq.ReadyMessage.serializeBinaryToWriter = function(message, writer) 
   }
   f = message.getPriority();
   if (f !== 0.0) {
-    writer.writeFloat(
+    writer.writeDouble(
       2,
       f
     );
@@ -402,7 +402,7 @@ proto.rabbitmq.ReadyMessage.prototype.setUserId = function(value) {
 
 
 /**
- * optional float priority = 2;
+ * optional double priority = 2;
  * @return {number}
  */
 proto.rabbitmq.ReadyMessage.prototype.getPriority = function() {
@@ -517,7 +517,7 @@ proto.rabbitmq.MatchMessage.deserializeBinaryFromReader = function(msg, reader) 
       msg.setUserId2(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readDouble());
       msg.setScore(value);
       break;
     default:
@@ -565,7 +565,7 @@ proto.rabbitmq.MatchMessage.serializeBinaryToWriter = function(message, writer) 
   }
   f = message.getScore();
   if (f !== 0.0) {
-    writer.writeFloat(
+    writer.writeDouble(
       3,
       f
     );
@@ -610,7 +610,7 @@ proto.rabbitmq.MatchMessage.prototype.setUserId2 = function(value) {
 
 
 /**
- * optional float score = 3;
+ * optional double score = 3;
  * @return {number}
  */
 proto.rabbitmq.MatchMessage.prototype.getScore = function() {

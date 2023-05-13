@@ -78,8 +78,8 @@ message GetRelationshipScoresResponse {
 }
 
 message Score {
-  float prob = 1;
-  float score = 2;
+  double prob = 1;
+  double score = 2;
 }
 
 message CheckUserFiltersRequest {
@@ -120,7 +120,7 @@ message GetUserPerferencesResponse {
   map<string, string> filters_constant = 5;
   map<string, string> attributes_custom = 6;
   map<string, string> filters_custom = 7;
-  float priority = 8;
+  double priority = 8;
 }
 
 
@@ -140,7 +140,7 @@ message PutUserPerferencesResponse {
 message CreateFeedbackRequest {
   string user_id = 1;
   int32 feedback_id = 2;
-  float score = 3;
+  double score = 3;
 }
 
 message MatchHistoryRequest {
@@ -155,6 +155,6 @@ message Match {
   string user_id1 = 1;
   string user_id2 = 2;
   string create_time = 3;
-  float user_id1_score = 4;
-  float user_id2_score = 5;
+  double user_id1_score = 4;
+  double user_id2_score = 5;
 }

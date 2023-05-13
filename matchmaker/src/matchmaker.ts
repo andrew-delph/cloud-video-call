@@ -46,7 +46,7 @@ let rabbitChannel: amqp.Channel;
 const prefetch = 2;
 
 const relationshipFilterCacheEx = 60 * 2;
-const realtionshipScoreCacheEx = 1;
+const realtionshipScoreCacheEx = 60;
 
 const maxCooldownAttemps = 10;
 
@@ -364,7 +364,7 @@ async function matchmakerFlow(
     if (highestScore.prob <= 0 && highestScore.score <= scoreThreshold) {
       if (
         readyMessage.getPriority() > 0 &&
-        readyMessage.getCooldownAttempts() < maxCooldownAttemps
+        readyMessage.getCooldownAttempts() <= maxCooldownAttemps
       ) {
         throw new CooldownRetryError(
           `userID=${readyMessage.getUserId()} priority=${readyMessage.getPriority()} cooldownAttempts=${readyMessage.getCooldownAttempts()}`,
@@ -376,15 +376,17 @@ async function matchmakerFlow(
         );
       }
     }
+    const highestScoreString = `highestScore={prob=${highestScore.prob.toFixed(
+      2,
+    )}, score=${highestScore.score.toFixed(2)}}`;
+
     const lowestScore = relationShipScores[relationShipScores.length - 1][1];
+    const lowestScoreString = `lowestScore={prob=${lowestScore.prob.toFixed(
+      2,
+    )}, score=${lowestScore.score.toFixed(2)}}`;
+
     logger.info(
-      `highestScore={prob=${highestScore.prob.toFixed(
-        2,
-      )}, score=${highestScore.score.toFixed(
-        2,
-      )}} lowestScore={prob=${lowestScore.prob.toFixed(
-        2,
-      )}, score=${lowestScore.score.toFixed(2)}} of possible ${
+      `${highestScoreString} scores=${
         relationShipScores.length
       } cooldownAttempts=${readyMessage.getCooldownAttempts()} priority=${readyMessage.getPriority()} scoreThreshold=${scoreThreshold.toFixed(
         2,

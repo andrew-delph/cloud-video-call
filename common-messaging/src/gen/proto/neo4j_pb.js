@@ -2014,11 +2014,11 @@ proto.neo4j.Score.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readDouble());
       msg.setProb(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readDouble());
       msg.setScore(value);
       break;
     default:
@@ -2052,14 +2052,14 @@ proto.neo4j.Score.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getProb();
   if (f !== 0.0) {
-    writer.writeFloat(
+    writer.writeDouble(
       1,
       f
     );
   }
   f = message.getScore();
   if (f !== 0.0) {
-    writer.writeFloat(
+    writer.writeDouble(
       2,
       f
     );
@@ -2068,7 +2068,7 @@ proto.neo4j.Score.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional float prob = 1;
+ * optional double prob = 1;
  * @return {number}
  */
 proto.neo4j.Score.prototype.getProb = function() {
@@ -2086,7 +2086,7 @@ proto.neo4j.Score.prototype.setProb = function(value) {
 
 
 /**
- * optional float score = 2;
+ * optional double score = 2;
  * @return {number}
  */
 proto.neo4j.Score.prototype.getScore = function() {
@@ -3122,7 +3122,7 @@ proto.neo4j.GetUserPerferencesResponse.deserializeBinaryFromReader = function(ms
          });
       break;
     case 8:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readDouble());
       msg.setPriority(value);
       break;
     default:
@@ -3193,7 +3193,7 @@ proto.neo4j.GetUserPerferencesResponse.serializeBinaryToWriter = function(messag
   }
   f = message.getPriority();
   if (f !== 0.0) {
-    writer.writeFloat(
+    writer.writeDouble(
       8,
       f
     );
@@ -3348,7 +3348,7 @@ proto.neo4j.GetUserPerferencesResponse.prototype.clearFiltersCustomMap = functio
 
 
 /**
- * optional float priority = 8;
+ * optional double priority = 8;
  * @return {number}
  */
 proto.neo4j.GetUserPerferencesResponse.prototype.getPriority = function() {
@@ -3871,7 +3871,7 @@ proto.neo4j.CreateFeedbackRequest.deserializeBinaryFromReader = function(msg, re
       msg.setFeedbackId(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readDouble());
       msg.setScore(value);
       break;
     default:
@@ -3919,7 +3919,7 @@ proto.neo4j.CreateFeedbackRequest.serializeBinaryToWriter = function(message, wr
   }
   f = message.getScore();
   if (f !== 0.0) {
-    writer.writeFloat(
+    writer.writeDouble(
       3,
       f
     );
@@ -3964,7 +3964,7 @@ proto.neo4j.CreateFeedbackRequest.prototype.setFeedbackId = function(value) {
 
 
 /**
- * optional float score = 3;
+ * optional double score = 3;
  * @return {number}
  */
 proto.neo4j.CreateFeedbackRequest.prototype.getScore = function() {
@@ -4357,11 +4357,11 @@ proto.neo4j.Match.deserializeBinaryFromReader = function(msg, reader) {
       msg.setCreateTime(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readDouble());
       msg.setUserId1Score(value);
       break;
     case 5:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readDouble());
       msg.setUserId2Score(value);
       break;
     default:
@@ -4416,14 +4416,14 @@ proto.neo4j.Match.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getUserId1Score();
   if (f !== 0.0) {
-    writer.writeFloat(
+    writer.writeDouble(
       4,
       f
     );
   }
   f = message.getUserId2Score();
   if (f !== 0.0) {
-    writer.writeFloat(
+    writer.writeDouble(
       5,
       f
     );
@@ -4486,7 +4486,7 @@ proto.neo4j.Match.prototype.setCreateTime = function(value) {
 
 
 /**
- * optional float user_id1_score = 4;
+ * optional double user_id1_score = 4;
  * @return {number}
  */
 proto.neo4j.Match.prototype.getUserId1Score = function() {
@@ -4504,7 +4504,7 @@ proto.neo4j.Match.prototype.setUserId1Score = function(value) {
 
 
 /**
- * optional float user_id2_score = 5;
+ * optional double user_id2_score = 5;
  * @return {number}
  */
 proto.neo4j.Match.prototype.getUserId2Score = function() {
