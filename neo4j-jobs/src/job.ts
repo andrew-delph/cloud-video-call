@@ -49,13 +49,16 @@ logger.info(`Value of JOB: ${job}`);
           CALL gds.articleRank.mutate('shortPredictGraph', {  
               scaler: "MinMax",
               nodeLabels: ['Person'],
-              relationshipTypes: ['FRIENDS'],
+              relationshipTypes: ['FEEDBACK'],
+              relationshipWeightProperty: 'score',
               mutateProperty: 'priority' 
             }
           )
           YIELD nodePropertiesWritten, ranIterations
         `,
       );
+
+      logger.info(`articleRank: ${JSON.stringify(results.records[0])}`);
 
       results = await funcs.run(
         `
@@ -68,6 +71,8 @@ logger.info(`Value of JOB: ${job}`);
           )
         `,
       );
+
+      logger.info(`louvain: ${JSON.stringify(results.records[0])}`);
 
       results = await funcs.run(
         `
@@ -87,6 +92,8 @@ logger.info(`Value of JOB: ${job}`);
           )
         `,
       );
+
+      logger.info(`fastRP: ${JSON.stringify(results.records[0])}`);
 
       results = await funcs.run(
         `
@@ -116,7 +123,7 @@ logger.info(`Value of JOB: ${job}`);
         const userId: string = record.get(`userId`);
         const priority = record.get(`priority`);
         await common.writeRedisUserPriority(redisClient, userId, priority);
-        logger.info(`userId=${userId} priority=${priority}`);
+        logger.debug(`userId=${userId} priority=${priority}`);
       }
 
       logger.info(`wrote ${results.records.length} prioritys to redis`);
@@ -155,11 +162,24 @@ logger.info(`Value of JOB: ${job}`);
       funcs.printResults(results, print_num);
 
     case `COMPUTE`:
+      results = await funcs.run(
+        `
+          CALL gds.beta.model.exists('lp-pipeline-model');
+        `,
+      );
+
+      const modelExists = results.records[0].get(`exists`);
+
+      if (!modelExists) {
+        logger.error(
+          `model "lp-pipeline-model" does not exist and aborting the job.`,
+        );
+        break;
+      }
+
       results = await funcs.predict(true, `myGraph`);
       funcs.printResults(results, print_num);
 
-      // results = await funcs.compareTypes();
-      // funcs.printResults(results, print_num);
       break;
   }
 
