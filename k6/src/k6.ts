@@ -89,11 +89,10 @@ export function setup() {
   })().then(async () => {
     for (let auth of authKeys) {
       let user = users.getUser(auth);
+      await redisClient.lpush(authKeysName, user.auth);
       await user.updatePreferences();
       console.log(`post updatePreferences ${auth}`);
     }
-
-    await redisClient.lpush(authKeysName, ...authKeys);
   });
 }
 
