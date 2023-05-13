@@ -835,6 +835,18 @@
           "legendFormat": "match p90: {{testid}}",
           "range": true,
           "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg (k6_match_elapsed_p99{testid=~\"$testid\"}) by(testid)",
+          "hide": false,
+          "legendFormat": "match p99: {{testid}}",
+          "range": true,
+          "refId": "C"
         }
       ],
       "title": "Match Elapsed",
@@ -2268,7 +2280,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "blue"
+                "color": "blue",
+                "value": null
               }
             ]
           },
@@ -2787,7 +2800,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "9.3.6",
+      "pluginVersion": "9.2.4",
       "targets": [
         {
           "datasource": {
@@ -3014,7 +3027,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3188,7 +3202,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3276,7 +3291,7 @@
         "frameIndex": 1,
         "showHeader": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.2.4",
       "targets": [
         {
           "datasource": {
@@ -3488,7 +3503,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3576,7 +3592,7 @@
         "frameIndex": 1,
         "showHeader": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.2.4",
       "targets": [
         {
           "datasource": {
@@ -3794,7 +3810,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           }
@@ -4227,6 +4244,6 @@
   "timezone": "",
   "title": "Test Result",
   "uid": "01npcT44k",
-  "version": 3,
+  "version": 1,
   "weekStart": ""
 }
