@@ -61,7 +61,7 @@ export const createLocationBound = (auth: string): User => {
 const hotRange = 5;
 export const createHot = (auth: string): User => {
   const attributes = {
-    constant: { hot: randomIntBetween(-hotRange, hotRange) },
+    constant: { hot: `${randomIntBetween(-hotRange, hotRange)}` },
   };
   const filters = {};
 
@@ -146,8 +146,10 @@ export const calcScoreMap = new Map<
   [
     UserType.Hot,
     (me: User, otherUser: User) => {
-      const myHot = me?.attributes?.constant?.hot ?? -10;
-      const otherHot = otherUser?.attributes?.constant?.hot ?? -10;
+      const myHotVal = me?.attributes?.constant?.hot ?? `-10`;
+      const otherHotVal = otherUser?.attributes?.constant?.hot ?? `-10`;
+      const myHot = parseInt(myHotVal.match(/\d+/)[0]);
+      const otherHot = parseInt(otherHotVal.match(/\d+/)[0]);
       return myHot - 2 >= otherHot ? negativeScore : otherHot;
     },
   ],
