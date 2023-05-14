@@ -21,7 +21,7 @@ let authPrefix = `k6_auth_`;
 
 // userFunctions.push(users.createFemale);
 // userFunctions.push(users.createMale);
-userFunctions.push(users.createGroupA);
+// userFunctions.push(users.createGroupA);
 // userFunctions.push(users.createGroupB);
 userFunctions.push(users.createHot);
 

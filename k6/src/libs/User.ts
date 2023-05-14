@@ -68,7 +68,7 @@ function* hotnessGeneratorFunction() {
 const hotnessGenerator = hotnessGeneratorFunction();
 export const createHot = (auth: string): User => {
   const attributes = {
-    constant: { hot: `hot${hotnessGenerator.next().value}` },
+    constant: { hot: `Hot${hotnessGenerator.next().value}` },
   };
   const filters = {};
 
@@ -188,7 +188,7 @@ export class User {
   }
 
   getTypeString() {
-    return `${this.type.valueOf()}${this.attributes?.constant?.hot ?? ``}`;
+    return `${this.attributes?.constant?.hot ?? this.type.valueOf()}`;
   }
 
   async updatePreferences(): Promise<void> {
