@@ -35,7 +35,7 @@ export function printResults(
       line =
         line +
         ` ` +
-        `${key.toString()}: ${JSON.stringify(record.get(key))}` +
+        `${key.toString()}: ${record.get(key).toString().split(`_`).pop()}` +
         `\t`;
     });
     console.log(line);
@@ -66,20 +66,7 @@ export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
 
-    //   gender = false;
-
-    results = await funcs.run(
-      `
-      CALL gds.beta.model.exists('my-model');
-    `,
-    );
-
-    const modelExists = results.records[0].get(`exists`);
-    console.log(`modelExists ${modelExists} inverse ${!modelExists}`);
-
-    printResults(results, 50);
-
-    // await nodembeddings_flow.main();
+    await nodembeddings_flow.main();
 
     return;
 

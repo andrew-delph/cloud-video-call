@@ -12,6 +12,12 @@ export enum PersonType {
   GroupB = `GroupB`,
 }
 
+export function userdIdToType(userId: string) {
+  const split = userId.split(`_`);
+  const val = split.pop()!;
+  return val;
+}
+
 export const indexToColor: { [key: number]: string } = {
   1: `Orange`,
   2: `Blue`,
@@ -27,15 +33,29 @@ function areListsEqual(list1: string[], list2: string[]) {
   );
 }
 
+const validLists = [
+  [PersonType.Male.valueOf(), PersonType.Female.valueOf()],
+  [PersonType.GroupA.valueOf(), PersonType.GroupA.valueOf()],
+  [PersonType.GroupB.valueOf(), PersonType.GroupB.valueOf()],
+  [PersonType.Random.valueOf(), PersonType.Random.valueOf()],
+];
+for (let i = 0; i < 6; i++) {
+  validLists.push([
+    `${PersonType.Hot.valueOf()}${i}`,
+    `${PersonType.Hot.valueOf()}${i}`,
+  ]);
+  validLists.push([
+    `${PersonType.Hot.valueOf()}${i}`,
+    `${PersonType.Hot.valueOf()}${i - 1}`,
+  ]);
+  validLists.push([
+    `${PersonType.Hot.valueOf()}${i}`,
+    `${PersonType.Hot.valueOf()}${i + 1}`,
+  ]);
+}
+
 export const validFriends = (ntype: string, mtype: string): boolean => {
   const testList = [ntype, mtype];
-
-  const validLists = [
-    [PersonType.Male.valueOf(), PersonType.Female.valueOf()],
-    [PersonType.GroupA.valueOf(), PersonType.GroupA.valueOf()],
-    [PersonType.GroupB.valueOf(), PersonType.GroupB.valueOf()],
-    [PersonType.Random.valueOf(), PersonType.Random.valueOf()],
-  ];
 
   for (let check of validLists) {
     if (areListsEqual(testList, check)) {

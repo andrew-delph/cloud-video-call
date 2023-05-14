@@ -48,7 +48,8 @@ logger.info(`Value of JOB: ${job}`);
 
       results = await funcs.run(
         `
-          CALL gds.articleRank.mutate('shortPredictGraph', {  
+          CALL gds.articleRank.mutate('shortPredictGraph', 
+            {  
               scaler: "MinMax",
               nodeLabels: ['Person'],
               relationshipTypes: ['FEEDBACK'],
@@ -85,7 +86,7 @@ logger.info(`Value of JOB: ${job}`);
             relationshipWeightProperty: 'score',
             featureProperties: ['values','priority','community'],
             propertyRatio: 0.0,
-            nodeSelfInfluence: 1.0,
+            nodeSelfInfluence: 0.5,
             embeddingDimension: 128,
             randomSeed: 42,
             iterationWeights: ${JSON.stringify([1, 0.5])},

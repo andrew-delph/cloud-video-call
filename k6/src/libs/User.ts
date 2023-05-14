@@ -28,17 +28,23 @@ export const createRandom = (auth: string): User => {
 };
 
 export const createFemale = (auth: string): User => {
-  const attributes = { constant: { gender: `female` } };
+  let attributes: any = { constant: { gender: `female` } };
   let filters = { constant: {} };
   // filters = { constant: { gender: `male` } };
+  if (Math.random() > 0.5) {
+    attributes = { constant: {} };
+  }
 
   return new User(auth, attributes, filters, UserType.Female);
 };
 
 export const createMale = (auth: string): User => {
-  const attributes = { constant: { gender: `male` } };
+  let attributes: any = { constant: { gender: `male` } };
   let filters = { constant: {} };
   // filters = { constant: { gender: `female` } };
+  if (Math.random() > 0.5) {
+    attributes = { constant: {} };
+  }
 
   return new User(auth, attributes, filters, UserType.Male);
 };
