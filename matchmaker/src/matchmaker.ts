@@ -430,9 +430,9 @@ async function matchmakerFlow(
         .getPriority()
         .toFixed(2)} scoreThreshold=${scoreThreshold.toFixed(
         2,
-      )} userId=${stripUserId(readyMessage.getUserId())} otherId=${stripUserId(
+      )} matched=[${stripUserId(readyMessage.getUserId())},${stripUserId(
         otherId,
-      )}`,
+      )}]`,
     );
   }
 
