@@ -157,7 +157,7 @@ export const calcScoreMap = new Map<
       const otherHotVal = otherUser?.attributes?.constant?.hot ?? `-100`;
       const myHot = parseInt(myHotVal.match(/\d+/)[0]);
       const otherHot = parseInt(otherHotVal.match(/\d+/)[0]);
-      return myHot - 1 <= otherHot ? postiveScore : negativeScore;
+      return Math.abs(myHot - otherHot) <= 1 ? postiveScore : negativeScore;
     },
   ],
   [
