@@ -12,6 +12,7 @@ const vus = 20;
 const authKeysNum = 100; // number of users created for each parallel instance running
 const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
+const shuffleUsers = false; // shuffle the users to insert redis
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
@@ -95,7 +96,9 @@ export function setup() {
       users.push(user);
     }
 
-    users = shuffleArray(users);
+    if (shuffleUsers) {
+      users = shuffleArray(users);
+    }
 
     for (let user of users) {
       await redisClient.lpush(authKeysName, user.auth);
