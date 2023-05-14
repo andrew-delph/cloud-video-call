@@ -395,8 +395,12 @@ async function matchmakerFlow(
           readyMessage,
         );
       } else {
-        logger.debug(
-          `User no related scores: priority=${readyMessage.getPriority()} cooldownAttempts=${readyMessage.getCooldownAttempts()}`,
+        logger.warn(
+          `no good score: priority=${readyMessage
+            .getPriority()
+            .toFixed(
+              2,
+            )} cooldownAttempts=${readyMessage.getCooldownAttempts()} userId=${readyMessage.getUserId()} otherId=${otherId}`,
         );
       }
     }
