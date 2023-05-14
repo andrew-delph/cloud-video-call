@@ -585,7 +585,7 @@
       "id": 125,
       "options": {
         "legend": {
-          "calcs": [],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -630,6 +630,18 @@
           "legendFormat": "match p99: {{testid}}",
           "range": true,
           "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg by(testid) (avg_over_time(k6_match_elapsed_gauge{testid=~\"$testid\", type=~\"$type\"}[1m]))",
+          "hide": false,
+          "legendFormat": "match avg[1m]: {{testid}}",
+          "range": true,
+          "refId": "D"
         }
       ],
       "title": "Match Elapsed",
@@ -1038,8 +1050,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1134,8 +1145,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-blue",
-                "value": null
+                "color": "dark-blue"
               },
               {
                 "color": "red",
@@ -1231,8 +1241,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1328,8 +1337,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1426,8 +1434,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1522,8 +1529,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1617,8 +1623,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1731,8 +1736,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1837,8 +1841,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -2027,8 +2030,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-blue",
-                "value": null
+                "color": "dark-blue"
               }
             ]
           },
@@ -2096,8 +2098,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4185,8 +4186,8 @@
       {
         "current": {
           "selected": true,
-          "text": ["Hot4"],
-          "value": ["Hot4"]
+          "text": ["All"],
+          "value": ["$__all"]
         },
         "datasource": {
           "type": "prometheus",
@@ -4306,6 +4307,6 @@
   "timezone": "",
   "title": "Test Result",
   "uid": "01npcT44k",
-  "version": 10,
+  "version": 13,
   "weekStart": ""
 }

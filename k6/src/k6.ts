@@ -109,6 +109,8 @@ const established_elapsed = new Trend(`established_elapsed`, true);
 const match_elapsed = new Trend(`match_elapsed`, true);
 const ready_elapsed = new Trend(`ready_elapsed`, true);
 
+const match_elapsed_gauge = new Gauge(`match_elapsed_gauge`, true);
+
 const established_success = new Rate(`established_success`);
 const ready_success = new Rate(`ready_success`);
 const match_success = new Rate(`match_success`);
@@ -215,6 +217,9 @@ export default async function () {
         }
         match_success.add(true, { type: myUser.getTypeString() });
         match_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
+        match_elapsed_gauge.add(data.elapsed, {
+          type: myUser.getTypeString(),
+        });
         success_counter.add(1, { type: myUser.getTypeString() });
         check(data, {
           'match has feedback id': (data: any) =>
