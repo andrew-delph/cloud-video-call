@@ -133,7 +133,6 @@ logger.info(`Value of JOB: ${job}`);
       break;
     case `TRAIN`:
     case `COMPUTE`:
-      return;
       // await funcs.createFriends();
       node_attributes = await funcs.getAttributeKeys();
       results = await funcs.createGraph(`myGraph`, node_attributes);
@@ -148,11 +147,8 @@ logger.info(`Value of JOB: ${job}`);
       results = await funcs.callCommunities();
       funcs.printResults(results, print_num);
 
-      results = await funcs.callWriteSimilar();
-      funcs.printResults(results, print_num);
-
-      results = await funcs.createPipeline();
-      funcs.printResults(results, print_num);
+      // results = await funcs.callWriteSimilar();
+      // funcs.printResults(results, print_num);
 
       results = await funcs.createGraph(`myGraph`, node_attributes);
       funcs.printResults(results, print_num);
@@ -160,6 +156,9 @@ logger.info(`Value of JOB: ${job}`);
   }
   switch (job) {
     case `TRAIN`:
+      results = await funcs.createPipeline();
+      funcs.printResults(results, print_num);
+
       results = await funcs.train();
       funcs.printResults(results, print_num);
 
