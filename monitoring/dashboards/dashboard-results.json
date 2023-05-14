@@ -3039,7 +3039,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -4187,14 +4188,14 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values({__name__=~\"k6.*\"}, type)",
+        "definition": "label_values({__name__=~\"k6.*\",testid=~\"$testid\"}, type)",
         "hide": 0,
         "includeAll": true,
         "multi": true,
         "name": "type",
         "options": [],
         "query": {
-          "query": "label_values({__name__=~\"k6.*\"}, type)",
+          "query": "label_values({__name__=~\"k6.*\",testid=~\"$testid\"}, type)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
