@@ -54,7 +54,7 @@ export async function sendReadyQueue(
     messageToBuffer(readyMessage),
     {
       headers: { 'x-delay': delay },
-      priority: maxPriority * priority,
+      priority: Math.max(maxPriority * priority, 0),
     },
   );
 }

@@ -151,7 +151,7 @@ export async function startReadyConsumer() {
       const priority =
         userRepsonse.getPriority() ||
         (await common.getRedisUserPriority(mainRedisClient, userId)) ||
-        0;
+        -1;
 
       const delaySeconds = Math.min(
         matchmakerMessage.getCooldownAttempts() ** cooldownScalerValue,
@@ -393,7 +393,7 @@ async function matchmakerFlow(
 
     if (highestScore.prob <= 0 && highestScore.score <= scoreThreshold) {
       if (
-        readyMessage.getPriority() > 0 &&
+        readyMessage.getPriority() >= 0 &&
         readyMessage.getCooldownAttempts() <= maxCooldownAttemps
       ) {
         throw new CooldownRetryError(

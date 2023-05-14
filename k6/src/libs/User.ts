@@ -55,7 +55,7 @@ export const createLocationBound = (auth: string): User => {
   return new User(auth, attributes, filters, UserType.LocationBound);
 };
 
-const hotRange = 6;
+export const hotRange = 6;
 
 function* hotnessGeneratorFunction() {
   let current = 0;
