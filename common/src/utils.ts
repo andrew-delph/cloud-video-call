@@ -122,16 +122,19 @@ export const getRecentlyActiveUsers = async (
   includeActive: boolean = true,
 ) => {
   const fiveMinutesAgo = moment().subtract(minutes, `minutes`).valueOf();
-
-  const recentlyActiveList = await redisClient.zrangebyscore(
-    recentlyActiveUserSet,
-    fiveMinutesAgo,
-    `+inf`,
-  );
+  const recentlyActiveList = [];
 
   if (includeActive) {
     recentlyActiveList.push(...(await getActiveUsers(redisClient)));
   }
+
+  recentlyActiveList.push(
+    ...(await redisClient.zrangebyscore(
+      recentlyActiveUserSet,
+      fiveMinutesAgo,
+      `+inf`,
+    )),
+  );
 
   return [...new Set(recentlyActiveList)];
 };
