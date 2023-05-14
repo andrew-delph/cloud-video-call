@@ -391,6 +391,19 @@ async function matchmakerFlow(
     const scoreThreshold =
       1 - (readyMessage.getCooldownAttempts() + 1) / maxCooldownAttemps;
 
+    const highestScoreString = `highestScore={prob=${highestScore.prob.toFixed(
+      2,
+    )}, score=${highestScore.score.toFixed(2)}}`;
+
+    const lowestScore = relationShipScores[relationShipScores.length - 1][1];
+    const lowestScoreString = `lowestScore={prob=${lowestScore.prob.toFixed(
+      2,
+    )}, score=${lowestScore.score.toFixed(2)}}`;
+
+    const matchedString = `matched=[${stripUserId(
+      readyMessage.getUserId(),
+    )},${stripUserId(otherId)}]`;
+
     if (highestScore.prob <= 0 && highestScore.score <= scoreThreshold) {
       if (
         readyMessage.getPriority() >= 0 &&
@@ -406,22 +419,12 @@ async function matchmakerFlow(
             .getPriority()
             .toFixed(
               2,
-            )} cooldownAttempts=${readyMessage.getCooldownAttempts()} userId=${stripUserId(
-            readyMessage.getUserId(),
-          )} otherId=${stripUserId(otherId)} score=${highestScore.score.toFixed(
-            2,
-          )} priority=${readyMessage.getPriority().toFixed(2)}`,
+            )} cooldownAttempts=${readyMessage.getCooldownAttempts()} priority=${readyMessage
+            .getPriority()
+            .toFixed(2)} ${matchedString}`,
         );
       }
     }
-    const highestScoreString = `highestScore={prob=${highestScore.prob.toFixed(
-      2,
-    )}, score=${highestScore.score.toFixed(2)}}`;
-
-    const lowestScore = relationShipScores[relationShipScores.length - 1][1];
-    const lowestScoreString = `lowestScore={prob=${lowestScore.prob.toFixed(
-      2,
-    )}, score=${lowestScore.score.toFixed(2)}}`;
 
     logger.info(
       `${highestScoreString} scores=${
@@ -430,9 +433,7 @@ async function matchmakerFlow(
         .getPriority()
         .toFixed(2)} scoreThreshold=${scoreThreshold.toFixed(
         2,
-      )} matched=[${stripUserId(readyMessage.getUserId())},${stripUserId(
-        otherId,
-      )}]`,
+      )} ${matchedString}`,
     );
   }
 
