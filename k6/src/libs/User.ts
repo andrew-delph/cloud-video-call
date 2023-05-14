@@ -108,7 +108,7 @@ function* getUserGenerator() {
 
 const userGenerator = getUserGenerator();
 
-export const getUser = (auth: string): User => {
+export const createUser = (auth: string): User => {
   // return userFunctions[Math.floor(Math.random() * userFunctions.length)](auth);
   return userGenerator.next().value(auth);
 };

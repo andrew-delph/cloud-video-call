@@ -3,8 +3,8 @@ import { K6SocketIoExp } from './libs/K6SocketIoExp';
 import redis from 'k6/experimental/redis';
 import { check, sleep } from 'k6';
 import http from 'k6/http';
-import * as users from './libs/User';
-import { nuke } from './libs/utils';
+import * as usersLib from './libs/User';
+import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { userFunctions } from './libs/User';
 
@@ -21,9 +21,9 @@ let authPrefix = `k6_auth_`;
 
 // userFunctions.push(users.createFemale);
 // userFunctions.push(users.createMale);
-// userFunctions.push(users.createGroupA);
-// userFunctions.push(users.createGroupB);
-userFunctions.push(users.createHot);
+userFunctions.push(usersLib.createGroupA);
+userFunctions.push(usersLib.createGroupB);
+userFunctions.push(usersLib.createHot);
 
 const updateAuthVars = () => {
   if (uniqueAuthIds) {
@@ -87,11 +87,18 @@ export function setup() {
     // Change this to watch and delete only if the first time
     return;
   })().then(async () => {
+    let users = [];
     for (let auth of authKeys) {
-      let user = users.getUser(auth);
+      let user = usersLib.createUser(auth);
+      users.push(user);
+    }
+
+    users = shuffleArray(users);
+
+    for (let user of users) {
       await redisClient.lpush(authKeysName, user.auth);
       await user.updatePreferences();
-      console.log(`post updatePreferences ${auth}`);
+      console.log(`post updatePreferences ${user.auth}`);
     }
   });
 }
@@ -122,10 +129,10 @@ const getAuth = async () => {
     if (!auth) {
       throw `auth is nill: ${auth}`;
     }
-    if (Math.random() > 0.5 && count < 10) {
-      await redisClient.rpush(authKeysName, auth);
-      return await popAuth(count + 1);
-    }
+    // if (Math.random() > 0.5 && count < 10) {
+    //   await redisClient.rpush(authKeysName, auth);
+    //   return await popAuth(count + 1);
+    // }
     return auth;
   };
 
@@ -154,7 +161,7 @@ export default async function () {
 
   console.log(`auth`, auth);
 
-  const myUser = await users.fromRedis(auth);
+  const myUser = await usersLib.fromRedis(auth);
 
   const socket = new K6SocketIoExp(ws_url, { auth: auth }, {});
 
