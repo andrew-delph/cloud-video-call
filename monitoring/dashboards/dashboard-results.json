@@ -698,7 +698,7 @@
       "id": 130,
       "options": {
         "legend": {
-          "calcs": [],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -708,6 +708,7 @@
           "sort": "none"
         }
       },
+      "pluginVersion": "9.2.4",
       "targets": [
         {
           "datasource": {
@@ -715,7 +716,10 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
+          "exemplar": false,
           "expr": "avg by(testid, type) (avg_over_time(k6_score_gauge{testid=~\"$testid\", type=~\"$type\"}[1m]))",
+          "format": "time_series",
+          "instant": false,
           "legendFormat": "avg[1m]: {{testid}} = {{type}}",
           "range": true,
           "refId": "A"
