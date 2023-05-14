@@ -5,7 +5,7 @@
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "dev": "ibazel -run_command_after_success='bash -c \"cd matcher && npm run k8-restart\"' build :ts",
+    "dev": "ibazel -run_command_after_success='bash -c \"cd matcher && npm run k8-restart\"' run :image_push",
     "docker": "bazel run image_push",
     "k8-restart": "kubectl rollout restart deployment/matcher && kubectl rollout status deployment/matcher --watch=true --timeout=300s  && date || echo -en '\\0007'",
     "prod": "node ./dist/matcher.js"

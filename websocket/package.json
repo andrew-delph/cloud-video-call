@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "ibazel -run_command_after_success='bash -c \"cd websocket && npm run k8-restart\"' build :ts",
+    "dev": "ibazel -run_command_after_success='bash -c \"cd websocket && npm run k8-restart\"' run :image_push",
     "build": "tsc",
     "prod": "node ./dist/socketio_server.js",
     "docker": "bazel run image_push",

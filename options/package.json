@@ -7,7 +7,7 @@
     "prod": "node ./dist/options.js",
     "build": "tsc",
     "build:watch": "nodemon -e ts --exec 'npm run build'",
-    "dev": "ibazel -run_command_after_success='bash -c \"cd websocket && npm run k8-restart\"' build :ts",
+    "dev": "ibazel -run_command_after_success='bash -c \"cd websocket && npm run k8-restart\"' run :image_push",
     "docker": "bazel run image_push",
     "k8-restart": "kn service update options --image=andrewdelph/video-call-options:latest --wait && date || echo -en '\\0007'"
   },
