@@ -55,10 +55,20 @@ export const createLocationBound = (auth: string): User => {
   return new User(auth, attributes, filters, UserType.LocationBound);
 };
 
-const hotRange = 5;
+const hotRange = 6;
+
+function* hotnessGeneratorFunction() {
+  let current = 0;
+
+  while (true) {
+    yield current % hotRange;
+    current += 1;
+  }
+}
+const hotnessGenerator = hotnessGeneratorFunction();
 export const createHot = (auth: string): User => {
   const attributes = {
-    constant: { hot: `${randomIntBetween(-hotRange, hotRange)}` },
+    constant: { hot: `hot${hotnessGenerator.next().value}` },
   };
   const filters = {};
 
