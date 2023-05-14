@@ -220,7 +220,7 @@ export default async function () {
         }
         match_success.add(true, { type: myUser.getTypeString() });
         match_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
-        match_elapsed_gauge.add(data.elapsed, {
+        match_elapsed_gauge.add(data.elapsed / 1000, {
           type: myUser.getTypeString(),
         });
         success_counter.add(1, { type: myUser.getTypeString() });
