@@ -65,8 +65,14 @@ const relationshipFilterCacheEx = 60 * 2;
 const realtionshipScoreCacheEx = 60;
 
 const maxCooldownAttemps = 20;
-
+const cooldownScalerValue = 1.25;
 const maxDelaySeconds = 10;
+
+const stripUserId = (userId: string): string => {
+  const split = userId.split(`_`);
+  const val = split.pop()!;
+  return val;
+};
 
 const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
@@ -148,12 +154,12 @@ export async function startReadyConsumer() {
         0;
 
       const delaySeconds = Math.min(
-        matchmakerMessage.getCooldownAttempts() ** 1.25,
+        matchmakerMessage.getCooldownAttempts() ** cooldownScalerValue,
         maxDelaySeconds,
       );
 
       logger.debug(
-        `userId=${userId} priority=${priority.toFixed(
+        `userId=${stripUserId(userId)} priority=${priority.toFixed(
           2,
         )} redis=${await common.getRedisUserPriority(
           mainRedisClient,
@@ -396,11 +402,15 @@ async function matchmakerFlow(
         );
       } else {
         logger.warn(
-          `no good score: priority=${readyMessage
+          `no cooldown: priority=${readyMessage
             .getPriority()
             .toFixed(
               2,
-            )} cooldownAttempts=${readyMessage.getCooldownAttempts()} userId=${readyMessage.getUserId()} otherId=${otherId}`,
+            )} cooldownAttempts=${readyMessage.getCooldownAttempts()} userId=${stripUserId(
+            readyMessage.getUserId(),
+          )} otherId=${stripUserId(otherId)} score=${highestScore.score.toFixed(
+            2,
+          )} priority=${readyMessage.getPriority().toFixed(2)}`,
         );
       }
     }
@@ -416,9 +426,13 @@ async function matchmakerFlow(
     logger.info(
       `${highestScoreString} scores=${
         relationShipScores.length
-      } cooldownAttempts=${readyMessage.getCooldownAttempts()} priority=${readyMessage.getPriority()} scoreThreshold=${scoreThreshold.toFixed(
+      } cooldownAttempts=${readyMessage.getCooldownAttempts()} priority=${readyMessage
+        .getPriority()
+        .toFixed(2)} scoreThreshold=${scoreThreshold.toFixed(
         2,
-      )} userId=${readyMessage.getUserId()} otherId=${otherId}`,
+      )} userId=${stripUserId(readyMessage.getUserId())} otherId=${stripUserId(
+        otherId,
+      )}`,
     );
   }
 

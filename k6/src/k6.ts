@@ -9,7 +9,7 @@ import exec from 'k6/execution';
 import { userFunctions } from './libs/User';
 
 const vus = 20;
-const authKeysNum = 100; // number of users created for each parallel instance running
+const authKeysNum = 40; // number of users created for each parallel instance running
 const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 
@@ -28,7 +28,7 @@ userFunctions.push(users.createHot);
 const updateAuthVars = () => {
   if (uniqueAuthIds) {
     uniqueAuthKey = `${exec.vu.tags[`testid`]}_`;
-    runnerId = `${`${Math.random().toFixed(5)}_`}`;
+    runnerId = `${Math.random().toFixed(5)}_`;
   }
 
   authKeysName = `authKeysName${uniqueAuthKey}`;
@@ -80,7 +80,7 @@ export function setup() {
   if (nukeData) nuke();
   const authKeys: string[] = [];
   for (let i = 0; i < authKeysNum; i++) {
-    authKeys.push(`${authPrefix}${i}`);
+    authKeys.push(`${authPrefix}${i}_`);
   }
   (async () => {
     // await redisClient.del(authKeysName);
