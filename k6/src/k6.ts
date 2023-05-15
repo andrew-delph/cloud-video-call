@@ -152,10 +152,6 @@ const getAuth = async () => {
 
   try {
     auth = await popAuth();
-    while (!auth) {
-      sleep(1);
-      auth = await popAuth();
-    }
   } catch (e) {
     console.error(`error with getting auth: ${e}`);
     sleep(10);

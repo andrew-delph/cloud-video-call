@@ -217,7 +217,7 @@ const generateEmbedding = async (
   results = await funcs.run(
     `
       MATCH (n:Person),(m:Person)
-      WHERE id(n) < id(m) // AND (n.type = "Male" or m.type = "Male")
+      WHERE id(n) < id(m) AND n.embedding IS NOT NULL AND m.embedding IS NOT NULL
       CALL {
         WITH n, m
         RETURN gds.similarity.cosine(
