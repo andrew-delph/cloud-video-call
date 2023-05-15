@@ -62,7 +62,7 @@ let rabbitChannel: amqp.Channel;
 const prefetch = 2;
 
 const relationshipFilterCacheEx = 60 * 10;
-const realtionshipScoreCacheEx = 60;
+const realtionshipScoreCacheEx = 60 * 2;
 
 const maxReadyQueueDelay = 60;
 const cooldownScalerValue = 1.25;
