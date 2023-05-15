@@ -8,7 +8,7 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { userFunctions } from './libs/User';
 
-const vus = 40;
+const vus = 100;
 const authKeysNum = 1000; // number of users created for each parallel instance running
 const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
@@ -45,7 +45,6 @@ export const options = {
       executor: `shared-iterations`,
       vus: vus,
       iterations: authKeysNum * 3,
-      maxDuration: `5m`,
     },
     //   matchTest: {
     //     executor: `ramping-vus`,
@@ -152,6 +151,9 @@ const getAuth = async () => {
     auth = await popAuth();
   } catch (e) {
     console.error(`error with getting auth: ${e}`);
+    check(false, {
+      popAuth: (_) => false,
+    });
     throw e;
   }
 

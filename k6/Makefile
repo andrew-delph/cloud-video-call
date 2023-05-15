@@ -38,7 +38,7 @@ run_prod:
 	./run-kube.sh resources/k6-output-grafana-cloud.yaml --external
 
 watch:
-	watch kubectl get pods -n k6
+	watch -n 15 kubectl get pods -n k6
 
 delete:
 	kubectl delete  -f resources/k6-output-grafana-cloud.yaml -n k6

@@ -61,12 +61,13 @@ let rabbitChannel: amqp.Channel;
 
 const prefetch = 2;
 
-const relationshipFilterCacheEx = 60 * 2;
-const realtionshipScoreCacheEx = 60;
+const relationshipFilterCacheEx = 60 * 10;
+const realtionshipScoreCacheEx = 20;
 
+const maxReadyQueueDelay = 60;
 const cooldownScalerValue = 1.25;
-const maxDelaySeconds = 5;
-const maxCooldownAttemps = 20 / maxDelaySeconds;
+const maxReadyDelaySeconds = 5;
+const maxCooldownAttemps = maxReadyQueueDelay / maxReadyDelaySeconds;
 
 const stripUserId = (userId: string): string => {
   const split = userId.split(`_`);
@@ -154,12 +155,12 @@ export async function startReadyConsumer() {
         -1;
 
       const priorityDelay =
-        maxDelaySeconds - maxDelaySeconds * Math.min(priority, 0);
+        maxReadyDelaySeconds - maxReadyDelaySeconds * Math.min(priority, 0);
 
       const delaySeconds = Math.min(
         priorityDelay +
           matchmakerMessage.getCooldownAttempts() ** cooldownScalerValue,
-        maxDelaySeconds,
+        maxReadyDelaySeconds,
       );
 
       logger.debug(
