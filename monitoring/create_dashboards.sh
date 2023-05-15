@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-# delete existing dashboards
+# delete existing dashboards (including default)
 kubectl delete configmap --selector custom_dashboard='1' -n monitoring
 
 # Set the directory path

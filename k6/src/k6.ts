@@ -44,7 +44,7 @@ export const options = {
     matchTest: {
       executor: `shared-iterations`,
       vus: vus,
-      iterations: authKeysNum * 50,
+      iterations: authKeysNum * 3,
     },
     //   matchTest: {
     //     executor: `ramping-vus`,

@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { cosineSimilarity } from '../src/utils';
+import { cosineSimilarity, cosineSimilarityFunc } from '../src/utils';
 import { memoize } from 'lodash';
 
 describe(`basic`, function () {
@@ -28,6 +28,11 @@ describe(`cosine`, function () {
     assert.notEqual(1, score);
   });
 
+  it(`test 3 same vals as 2 inversed`, function () {
+    const score = cosineSimilarity([2, 2], [1, 1]);
+    assert.notEqual(1, score);
+  });
+
   it(`test cosineSimilarity.cache is 2`, function () {
     const cache: any = cosineSimilarity.cache;
     assert.equal(2, cache.size);
@@ -51,6 +56,19 @@ describe(`cosine`, function () {
     assert.isAbove(time1, time2);
 
     console.log(`1: ${time1} 2: ${time2} ratio: ${time1 / time2}`);
+  });
+
+  it(`test cosineSimilarity scores are the same`, function () {
+    const len = 10;
+    const val1 = Array.from({ length: len }, () => Math.random());
+    const val2 = Array.from({ length: len }, () => Math.random());
+
+    const score1 = cosineSimilarityFunc(val1, val2);
+    const score2 = cosineSimilarityFunc(val2, val1);
+
+    console.log(`score1=${score1} score2=${score2}`);
+
+    assert.equal(score1, score2);
   });
 });
 

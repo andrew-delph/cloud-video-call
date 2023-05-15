@@ -5,6 +5,7 @@ import { LRUCache } from 'typescript-lru-cache';
 
 import * as common from 'common';
 const logger = common.getLogger();
+
 // Create a cache. Optional options object can be passed in.
 const cache = new LRUCache<string, string>({ maxSize: 5000 });
 
@@ -23,12 +24,21 @@ export const cosineSimilarity = memoize(
     logger.warn(
       `cosineSimilarity size=${memCache.size} mb=${getMapSizeInMB(memCache)}`,
     );
-    return JSON.stringify(vectorA.toString() + `,` + vectorB.toString());
+
+    // cache in sorted order because result is the same
+    if (vectorA < vectorB) {
+      return JSON.stringify(vectorA.toString() + `,` + vectorB.toString());
+    } else {
+      return JSON.stringify(vectorB.toString() + `,` + vectorA.toString());
+    }
   },
 );
 cosineSimilarity.cache = cache;
 
-function cosineSimilarityFunc(vectorA: number[], vectorB: number[]): number {
+export function cosineSimilarityFunc(
+  vectorA: number[],
+  vectorB: number[],
+): number {
   const dotProduct = math.dot(vectorA, vectorB);
   const magnitudeA = math.norm(vectorA);
   const magnitudeB = math.norm(vectorB);

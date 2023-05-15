@@ -22,3 +22,6 @@ spec:
             tcpSocket:
               port: 80
             initialDelaySeconds: 10
+          resources:
+            limits:
+              cpu: '512m'
