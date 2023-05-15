@@ -8,9 +8,9 @@
     "build": "tsc",
     "build:watch": "tsc --watch",
     "prod": "node ./dist/matchmaker.js",
-    "dev": "ibazel -run_command_after_success='bash -c \"cd matchmaker && npm run k8-restart\"' run :image_push",
+    "dev": "ibazel -run_command_after_success='bash -c \"cd matchmaker && npm run k8-restart\"' build :ts",
     "docker": "bazel run image_push",
-    "k8-restart": "kubectl rollout restart deployment/matchmaker && kubectl rollout status deployment/matchmaker --watch=true --timeout=300s && date || echo -en '\\0007'"
+    "k8-restart": "bazel run :image_push && kubectl rollout restart deployment/matchmaker && kubectl rollout status deployment/matchmaker --watch=true --timeout=300s && date || echo -en '\\0007'"
   },
   "keywords": [],
   "author": "",
