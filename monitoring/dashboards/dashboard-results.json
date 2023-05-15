@@ -299,14 +299,12 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "avg by(testid, type) (avg_over_time(k6_score_gauge{testid=~\"$testid\", type=~\"$type\"}[1m]))",
-          "format": "time_series",
-          "instant": false,
-          "legendFormat": "avg[1m]: {{testid}} = {{type}}",
+          "editorMode": "builder",
+          "expr": "avg by(testid) (k6_score_trend_avg{testid=~\"$testid\", type=~\"$type\"})",
+          "hide": false,
+          "legendFormat": "full avg: {{testid}}",
           "range": true,
-          "refId": "A"
+          "refId": "C"
         },
         {
           "datasource": {
@@ -325,12 +323,14 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "builder",
-          "expr": "avg by(testid) (k6_score_trend_avg{testid=~\"$testid\", type=~\"$type\"})",
-          "hide": false,
-          "legendFormat": "full avg: {{testid}}",
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "avg by(testid, type) (avg_over_time(k6_score_gauge{testid=~\"$testid\", type=~\"$type\"}[1m]))",
+          "format": "time_series",
+          "instant": false,
+          "legendFormat": "avg[1m]: {{testid}} = {{type}}",
           "range": true,
-          "refId": "C"
+          "refId": "A"
         }
       ],
       "title": "Score",
@@ -2322,8 +2322,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "blue",
-                "value": null
+                "color": "blue"
               }
             ]
           },
@@ -4300,7 +4299,6 @@
       },
       {
         "current": {
-          "isNone": true,
           "selected": false,
           "text": "None",
           "value": ""
@@ -4325,13 +4323,13 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Test Result",
   "uid": "01npcT44k",
-  "version": 15,
+  "version": 19,
   "weekStart": ""
 }
