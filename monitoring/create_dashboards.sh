@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# default dashboards: https://github.com/prometheus-community/helm-charts/tree/8f91606e01b85b9aa013ed472c5acb836c4e7ac8/charts/kube-prometheus-stack/templates/grafana/dashboards-1.14
 
 # delete existing dashboards
 kubectl delete configmap --selector custom_dashboard='1' -n monitoring
