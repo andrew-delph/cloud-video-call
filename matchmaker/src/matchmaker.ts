@@ -64,9 +64,9 @@ const prefetch = 2;
 const relationshipFilterCacheEx = 60 * 2;
 const realtionshipScoreCacheEx = 60;
 
-const maxCooldownAttemps = 20;
 const cooldownScalerValue = 1.25;
 const maxDelaySeconds = 5;
+const maxCooldownAttemps = 20 / maxDelaySeconds;
 
 const stripUserId = (userId: string): string => {
   const split = userId.split(`_`);

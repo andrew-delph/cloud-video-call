@@ -152,7 +152,6 @@ const getAuth = async () => {
     auth = await popAuth();
   } catch (e) {
     console.error(`error with getting auth: ${e}`);
-    sleep(10);
     throw e;
   }
 
@@ -261,7 +260,6 @@ export default async function () {
           },
         );
         check(r, { 'feedback response status is 201': r && r.status == 201 });
-        await socket.sleep(5000);
       })
       .finally(async () => {
         socket.close();

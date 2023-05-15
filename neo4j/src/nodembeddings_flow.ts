@@ -143,8 +143,10 @@ export const nodeembeddings = async (
   }
 
   resultList.sort((item1, item2) => {
-    return item1.avg - item2.avg;
-    // return item1.avg * item1.length - item2.avg * item2.length;
+    if (item1.avg != item2.avg) {
+      return item1.avg - item2.avg;
+    }
+    return item1.avg * item1.length - item2.avg * item2.length;
   });
 
   const winner = resultList[resultList.length - 1].perm;
