@@ -67,6 +67,7 @@ const realtionshipScoreCacheEx = 60;
 const maxCooldownDelay = 60; // still can be longer because of priority delay
 const cooldownScalerValue = 1.25;
 const maxReadyDelaySeconds = 5;
+const maxPriorityDelay = 2;
 const maxCooldownAttemps = maxCooldownDelay ** (1 / cooldownScalerValue);
 
 const stripUserId = (userId: string): string => {
@@ -157,7 +158,7 @@ export async function startReadyConsumer() {
         -1;
 
       const priorityDelay =
-        maxReadyDelaySeconds - maxReadyDelaySeconds * Math.min(priority, 0);
+        maxPriorityDelay - maxPriorityDelay * Math.min(priority, 0);
 
       const delaySeconds = Math.min(
         priorityDelay +
