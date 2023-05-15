@@ -8,11 +8,11 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { userFunctions } from './libs/User';
 
-const vus = 20;
-const authKeysNum = 100; // number of users created for each parallel instance running
+const vus = 70;
+const authKeysNum = 1000; // number of users created for each parallel instance running
 const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
-const shuffleUsers = false; // shuffle the users to insert redis
+const shuffleUsers = true; // shuffle the users to insert redis
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
@@ -41,7 +41,8 @@ const updateAuthVars = () => {
 export const options = {
   setupTimeout: `20m`,
   vus: vus,
-  duration: `10h`,
+  // duration: `10h`,
+  iterations: authKeysNum * 3,
   // scenarios: {
   //   // matchTest: {
   //   //   executor: `shared-iterations`,
@@ -65,6 +66,28 @@ export const options = {
   // },
   // },
 };
+
+const established_elapsed = new Trend(`established_elapsed`, true);
+const match_elapsed = new Trend(`match_elapsed`, true);
+const ready_elapsed = new Trend(`ready_elapsed`, true);
+
+const get_auth_trend = new Trend(`get_auth_trend`, true);
+const setup_trend = new Trend(`setup_trend`, true); //TODO implement
+
+const match_elapsed_gauge = new Gauge(`match_elapsed_gauge`, true);
+
+const established_success = new Rate(`established_success`);
+const ready_success = new Rate(`ready_success`);
+const match_success = new Rate(`match_success`);
+
+const error_counter = new Counter(`error_counter`);
+const success_counter = new Counter(`success_counter`);
+
+const other_parity = new Rate(`other_parity`);
+
+const prediction_score_trend = new Trend(`prediction_score_trend`);
+const score_trend = new Trend(`score_trend`);
+const score_gauge = new Gauge(`score_gauge`);
 
 export const ws_url =
   __ENV.WS_HOST || `ws://localhost:8888/socket.io/?EIO=4&transport=websocket`;
@@ -108,25 +131,6 @@ export function setup() {
   });
 }
 
-const established_elapsed = new Trend(`established_elapsed`, true);
-const match_elapsed = new Trend(`match_elapsed`, true);
-const ready_elapsed = new Trend(`ready_elapsed`, true);
-
-const match_elapsed_gauge = new Gauge(`match_elapsed_gauge`, true);
-
-const established_success = new Rate(`established_success`);
-const ready_success = new Rate(`ready_success`);
-const match_success = new Rate(`match_success`);
-
-const error_counter = new Counter(`error_counter`);
-const success_counter = new Counter(`success_counter`);
-
-const other_parity = new Rate(`other_parity`);
-
-const prediction_score_trend = new Trend(`prediction_score_trend`);
-const score_trend = new Trend(`score_trend`);
-const score_gauge = new Gauge(`score_gauge`);
-
 const getAuth = async () => {
   updateAuthVars();
   let auth: string | null = null;
@@ -136,10 +140,13 @@ const getAuth = async () => {
     if (!auth) {
       throw `auth is nill: ${auth}`;
     }
-    // if (Math.random() > 0.5 && count < 10) {
-    //   await redisClient.rpush(authKeysName, auth);
-    //   return await popAuth(count + 1);
-    // }
+
+    if (shuffleUsers) {
+      if (Math.random() > 0.5 && count < authKeysNum / 3) {
+        await redisClient.rpush(authKeysName, auth);
+        return await popAuth(count + 1);
+      }
+    }
     return auth;
   };
 
@@ -160,7 +167,10 @@ const getAuth = async () => {
 export default async function () {
   let auth: string;
   try {
+    const auth_start_time = Date.now();
     auth = await getAuth();
+    const auth_end_time = Date.now();
+    get_auth_trend.add(auth_end_time - auth_start_time);
   } catch (e) {
     console.error(e);
     return;

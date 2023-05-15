@@ -66,7 +66,7 @@ const realtionshipScoreCacheEx = 60;
 
 const maxCooldownAttemps = 20;
 const cooldownScalerValue = 1.25;
-const maxDelaySeconds = 10;
+const maxDelaySeconds = 5;
 
 const stripUserId = (userId: string): string => {
   const split = userId.split(`_`);
@@ -153,8 +153,12 @@ export async function startReadyConsumer() {
         (await common.getRedisUserPriority(mainRedisClient, userId)) ||
         -1;
 
+      const priorityDelay =
+        maxDelaySeconds - maxDelaySeconds * Math.min(priority, 0);
+
       const delaySeconds = Math.min(
-        matchmakerMessage.getCooldownAttempts() ** cooldownScalerValue,
+        priorityDelay +
+          matchmakerMessage.getCooldownAttempts() ** cooldownScalerValue,
         maxDelaySeconds,
       );
 

@@ -66,6 +66,13 @@ function generatePermutations(values: number[], length: number) {
   return permutations;
 }
 
+function cleanPerm(perm: number[]): number[] {
+  if (perm.length > 1 && perm[perm.length - 1] == 0) {
+    return cleanPerm(perm.slice(0, perm.length - 1));
+  }
+  return perm;
+}
+
 export const nodeembeddings = async (
   permutations: any = false,
   createData: boolean = false,
@@ -91,7 +98,7 @@ export const nodeembeddings = async (
   results = await funcs.createGraph(`myGraph`, test_attributes);
 
   if (permutations == false) {
-    permutations = generatePermutations([0, 1, 0.5], 4);
+    permutations = generatePermutations([0, 1, 0.5], 3);
   }
   console.log(`permutations: ${JSON.stringify(permutations)}`);
 
@@ -126,12 +133,23 @@ export const nodeembeddings = async (
 
   const resultList: any[] = [];
 
-  for (let perm of permutations) {
-    resultList.push(await generateEmbedding(perm));
+  for (let nodeSelfInfluence of [0, 1, 0.5]) {
+    for (let propertyRatio of [0, 1, 0.5]) {
+      for (let perm of permutations) {
+        resultList.push(
+          await generateEmbedding(
+            cleanPerm(perm),
+            propertyRatio,
+            nodeSelfInfluence,
+          ),
+        );
+      }
+    }
   }
 
   resultList.sort((item1, item2) => {
-    return item1.avg * item1.length - item2.avg * item2.length;
+    return item1.avg - item2.avg;
+    // return item1.avg * item1.length - item2.avg * item2.length;
   });
 
   const winner = resultList[resultList.length - 1].perm;
@@ -139,22 +157,35 @@ export const nodeembeddings = async (
   console.log();
   console.log(`printing winner`);
 
-  await generateEmbedding(winner);
+  await generateEmbedding(
+    winner,
+    winner.propertyRatio,
+    winner.nodeSelfInfluence,
+  );
 
   console.log();
-  for (let result of resultList) {
-    console.log(
-      `avg: ${result.avg} perm: ${JSON.stringify(result.perm)} length: ${
-        result.length
-      } score: ${result.avg * result.length}`,
-    );
-  }
+  // for (let result of resultList) {
+  //   console.log(
+  //     `avg=${result.avg.toFixed(2)}\t perm=${JSON.stringify(
+  //       result.perm,
+  //     )}\t pr=${result.propertyRatio}\t nsi=${
+  //       result.nodeSelfInfluence
+  //     }\t leng=${result.length}\t s=${(result.avg * result.length).toFixed(
+  //       2,
+  //     )} `,
+  //   );
+  // }
+  console.table(resultList.filter((item) => item.avg >= 0.5));
   console.log(`permutations.length: ${permutations.length}`);
 
   return resultList;
 };
 
-const generateEmbedding = async (perm: number[]) => {
+const generateEmbedding = async (
+  perm: number[],
+  propertyRatio: number = 0,
+  nodeSelfInfluence: number = 1,
+) => {
   console.log(`perm: ${JSON.stringify(perm)}`);
 
   results = await funcs.run(
@@ -172,8 +203,8 @@ const generateEmbedding = async (perm: number[]) => {
         relationshipTypes: ['FEEDBACK'],
         relationshipWeightProperty: 'score',
         featureProperties: ['values','priority','community'],
-        propertyRatio: 0.0,
-        nodeSelfInfluence: 1.0,
+        propertyRatio: ${propertyRatio},
+        nodeSelfInfluence: ${nodeSelfInfluence},
         embeddingDimension: 128,
         randomSeed: 42,
         iterationWeights: ${JSON.stringify(perm)},
@@ -211,7 +242,13 @@ const generateEmbedding = async (perm: number[]) => {
 
   console.log(`the avg is : ${avg}`);
 
-  return { avg, perm, length: results.records.length };
+  return {
+    avg,
+    perm,
+    length: results.records.length,
+    propertyRatio,
+    nodeSelfInfluence,
+  };
 };
 
 export const main = async () => {

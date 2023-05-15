@@ -26,7 +26,7 @@ logger.info(`Value of JOB: ${job}`);
         graph name shortPredictGraph
       */
 
-      const activeUsers = await common.getRecentlyActiveUsers(redisClient, 5);
+      const activeUsers = await common.getRecentlyActiveUsers(redisClient, 10);
 
       if (activeUsers.length < 5) {
         logger.info(`activeUsers.length is too small : ${activeUsers.length}`);
