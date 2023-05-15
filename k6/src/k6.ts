@@ -45,6 +45,7 @@ export const options = {
       executor: `shared-iterations`,
       vus: vus,
       iterations: authKeysNum * 3,
+      maxDuration: `10h`,
     },
     //   matchTest: {
     //     executor: `ramping-vus`,
@@ -94,7 +95,7 @@ export const options_url = __ENV.OPTIONS_HOST || `ws://localhost:8888`;
 // console.log(`options_url`, options_url);
 
 export const redisClient = new redis.Client({
-  addrs: new Array(__ENV.REDIS || `localhost:6379`), // in the form of 'host:port', separated by commas
+  addrs: new Array(__ENV.REDIS || `192.168.49.2:30001`), // in the form of 'host:port', separated by commas
 });
 
 export function setup() {

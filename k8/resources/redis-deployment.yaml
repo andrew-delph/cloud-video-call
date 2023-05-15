@@ -41,10 +41,12 @@ metadata:
     app: redis
   name: redis
 spec:
+  type: NodePort
   ports:
     - name: '6379'
       port: 6379
       targetPort: 6379
+      nodePort: 30001
   selector:
     app: redis
 status:
