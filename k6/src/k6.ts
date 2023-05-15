@@ -8,7 +8,7 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { userFunctions } from './libs/User';
 
-const vus = 70;
+const vus = 40;
 const authKeysNum = 1000; // number of users created for each parallel instance running
 const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
@@ -40,31 +40,29 @@ const updateAuthVars = () => {
 
 export const options = {
   setupTimeout: `20m`,
-  vus: vus,
-  // duration: `10h`,
-  iterations: authKeysNum * 3,
-  // scenarios: {
-  //   // matchTest: {
-  //   //   executor: `shared-iterations`,
-  //   //   vus: vus,
-  //   //   iterations: authKeysNum * 100,
-  //   // },
-  //   matchTest: {
-  //     executor: `ramping-vus`,
-  //     startVUs: vus,
-  //     stages: [
-  //       { duration: `3h`, target: vus },
-  //       // { duration: `2h`, target: vus * 3 },
-  //       // { duration: `3m`, target: vus * 1 },
-  //     ],
-  //   },
-  // longConnection: { // TODO fix this....
-  //   executor: `ramping-vus`,
-  //   exec: `longWait`,
-  //   startVUs: 10,
-  //   stages: [{ duration: `10m`, target: 10 }],
-  // },
-  // },
+  scenarios: {
+    matchTest: {
+      executor: `shared-iterations`,
+      vus: vus,
+      iterations: authKeysNum * 3,
+      maxDuration: `5m`,
+    },
+    //   matchTest: {
+    //     executor: `ramping-vus`,
+    //     startVUs: vus,
+    //     stages: [
+    //       { duration: `3h`, target: vus },
+    //       // { duration: `2h`, target: vus * 3 },
+    //       // { duration: `3m`, target: vus * 1 },
+    //     ],
+    //   },
+    // longConnection: { // TODO fix this....
+    //   executor: `ramping-vus`,
+    //   exec: `longWait`,
+    //   startVUs: 10,
+    //   stages: [{ duration: `10m`, target: 10 }],
+    // },
+  },
 };
 
 const established_elapsed = new Trend(`established_elapsed`, true);
