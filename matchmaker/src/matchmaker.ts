@@ -106,6 +106,7 @@ const neo4jGetUser = (userId: string) => {
         getUserPerferencesRequest,
         (error: any, response: GetUserPerferencesResponse) => {
           if (error) {
+            logger.error(error);
             reject(error);
           } else {
             resolve(response);
@@ -113,6 +114,7 @@ const neo4jGetUser = (userId: string) => {
         },
       );
     } catch (e) {
+      logger.error(e);
       reject(e);
     }
   });
@@ -438,7 +440,7 @@ async function matchmakerFlow(
         .getPriority()
         .toFixed(2)} scoreThreshold=${scoreThreshold.toFixed(
         2,
-      )} ${matchedString}`,
+      )} ${matchedString} ~~~~~~~~~`,
     );
   }
 

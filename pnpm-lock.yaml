@@ -303,6 +303,9 @@ importers:
       neo4j-driver:
         specifier: ^5.5.0
         version: 5.5.0
+      typescript-lru-cache:
+        specifier: ^2.0.0
+        version: 2.0.0
       uuid:
         specifier: ^9.0.0
         version: 9.0.0
@@ -7651,6 +7654,10 @@ packages:
     dependencies:
       kind-of: 3.2.2
     dev: true
+
+  /typescript-lru-cache@2.0.0:
+    resolution: {integrity: sha512-Jp57Qyy8wXeMkdNuZiglE6v2Cypg13eDA1chHwDG6kq51X7gk4K7P7HaDdzZKCxkegXkVHNcPD0n5aW6OZH3aA==}
+    dev: false
 
   /typescript@4.9.3:
     resolution: {integrity: sha512-CIfGzTelbKNEnLpLdGFgdyKhG23CKdKgQPOBc+OUNrkJ2vr+KSzsSV5kq5iWhEQbok+quxgGzrAtGWCyU7tHnA==}

@@ -7,11 +7,11 @@ spec:
     metadata:
       annotations:
         autoscaling.knative.dev/min-scale: '1'
-        autoscaling.knative.dev/max-scale: '3'
+        autoscaling.knative.dev/max-scale: '1'
         autoscaling.knative.dev/initial-scale: '1'
         autoscaling.knative.dev/class: 'kpa.autoscaling.knative.dev'
     spec:
-      containerConcurrency: 5
+      containerConcurrency: 1
       priorityClassName: 'mid-priority'
       containers:
         - image: andrewdelph/video-call-neo4j-grpc-server:latest
