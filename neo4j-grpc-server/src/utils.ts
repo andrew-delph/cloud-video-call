@@ -20,7 +20,7 @@ export const cosineSimilarity = memoize(
   (vectorA: number[], vectorB: number[]) => {
     var memCache: any = cosineSimilarity.cache;
 
-    logger.info(
+    logger.warn(
       `cosineSimilarity size=${memCache.size} mb=${getMapSizeInMB(memCache)}`,
     );
     return JSON.stringify(vectorA.toString() + `,` + vectorB.toString());
