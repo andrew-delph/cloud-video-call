@@ -266,7 +266,7 @@ const getRelationshipScores = async (
         const score = defaultScore();
         const redisScore = cosineSimilarity(userEmbddings, otherEmbddings);
 
-        logger.info(
+        logger.debug(
           `cosineSimilarity score is ${redisScore} for ${userId} and ${otherId}`,
         );
 
