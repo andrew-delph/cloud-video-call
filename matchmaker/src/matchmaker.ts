@@ -584,10 +584,10 @@ const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
     const relationshipScore: RelationshipScoreType = JSON.parse(
       (await mainRedisClient.get(
         getRealtionshipScoreCacheKey(userId, otherId),
-      )) || `0`,
+      )) || `null`,
     );
 
-    if (!relationshipScore) continue;
+    if (relationshipScore == null) continue;
     readyset.delete(otherId);
     relationshipScoresMap.set(otherId, relationshipScore);
   }
