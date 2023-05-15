@@ -64,10 +64,10 @@ const prefetch = 2;
 const relationshipFilterCacheEx = 60 * 10;
 const realtionshipScoreCacheEx = 60;
 
-const maxReadyQueueDelay = 60;
+const maxCooldownDelay = 60; // still can be longer because of priority delay
 const cooldownScalerValue = 1.25;
 const maxReadyDelaySeconds = 5;
-const maxCooldownAttemps = maxReadyQueueDelay ** (1 / cooldownScalerValue);
+const maxCooldownAttemps = maxCooldownDelay ** (1 / cooldownScalerValue);
 
 const stripUserId = (userId: string): string => {
   const split = userId.split(`_`);
