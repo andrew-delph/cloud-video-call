@@ -271,7 +271,33 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "full avg[1m]: test-05-14-20-07-44",
+                  "full avg: test-05-14-20-07-44"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 20,
@@ -770,6 +796,18 @@
           "legendFormat": "ready p90: {{testid}}",
           "range": true,
           "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg(k6_get_auth_trend_avg{testid=~\"$testid\"}) by (testid)",
+          "hide": false,
+          "legendFormat": "get_auth avg: {{testid}}",
+          "range": true,
+          "refId": "E"
         }
       ],
       "title": "Established  + Ready",
@@ -2310,7 +2348,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "blue"
+                "color": "blue",
+                "value": null
               }
             ]
           },
@@ -4287,6 +4326,7 @@
       },
       {
         "current": {
+          "isNone": true,
           "selected": false,
           "text": "None",
           "value": ""
@@ -4311,13 +4351,13 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Test Result",
   "uid": "01npcT44k",
-  "version": 14,
+  "version": 15,
   "weekStart": ""
 }
