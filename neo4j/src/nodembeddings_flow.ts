@@ -47,12 +47,18 @@ const calcAvg = (
   return total / length;
 };
 
-function generatePermutations(values: number[], length: number) {
-  const permutations: number[][] = [];
+function cleanPerm(perm: number[]): number[] {
+  if (perm.length > 1 && perm[perm.length - 1] == 0) {
+    return cleanPerm(perm.slice(0, perm.length - 1));
+  }
+  return perm;
+}
+function generatePermutations(values: number[], length: number): number[][] {
+  const permutationsSet = new Set<string>();
 
   function generateHelper(current: number[]) {
     if (current.length === length) {
-      permutations.push(current);
+      permutationsSet.add(JSON.stringify(cleanPerm(current)));
       return;
     }
 
@@ -63,14 +69,7 @@ function generatePermutations(values: number[], length: number) {
 
   generateHelper([]);
 
-  return permutations;
-}
-
-function cleanPerm(perm: number[]): number[] {
-  if (perm.length > 1 && perm[perm.length - 1] == 0) {
-    return cleanPerm(perm.slice(0, perm.length - 1));
-  }
-  return perm;
+  return Array.from(permutationsSet).map((val) => JSON.parse(val));
 }
 
 export const nodeembeddings = async (
@@ -137,11 +136,7 @@ export const nodeembeddings = async (
     for (let propertyRatio of [0, 1, 0.5]) {
       for (let perm of permutations) {
         resultList.push(
-          await generateEmbedding(
-            cleanPerm(perm),
-            propertyRatio,
-            nodeSelfInfluence,
-          ),
+          await generateEmbedding(perm, propertyRatio, nodeSelfInfluence),
         );
       }
     }
