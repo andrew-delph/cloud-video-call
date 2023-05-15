@@ -803,9 +803,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "avg(k6_get_auth_trend_avg{testid=~\"$testid\"}) by (testid)",
+          "expr": "avg(k6_get_auth_trend_p99{testid=~\"$testid\"}) by (testid)",
           "hide": false,
-          "legendFormat": "get_auth avg: {{testid}}",
+          "legendFormat": "get_auth p99: {{testid}}",
           "range": true,
           "refId": "E"
         }
