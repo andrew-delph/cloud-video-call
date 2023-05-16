@@ -61,7 +61,6 @@ export function printResults(
 }
 
 const start_time = performance.now();
-
 export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);

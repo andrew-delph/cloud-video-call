@@ -13,44 +13,11 @@ import {
 import * as funcs from './neo4j_functions';
 import * as neo4j from 'neo4j-driver';
 
-import * as math from 'mathjs';
-
-import { memoize } from 'lodash';
-import { LRUCache } from 'typescript-lru-cache';
+const Pool = require(`multiprocessing`).Pool;
 
 let results: neo4j.QueryResult;
 
-const cache = new LRUCache<string, string>({ maxSize: 10000 });
-
-export const cosineSimilarityCalc = memoize(
-  cosineSimilarityFunc,
-  (vectorA: number[], vectorB: number[]) => {
-    // cache in sorted order because result is the same
-    if (vectorA < vectorB) {
-      return JSON.stringify(vectorA.toString() + `,` + vectorB.toString());
-    } else {
-      return JSON.stringify(vectorB.toString() + `,` + vectorA.toString());
-    }
-  },
-);
-cosineSimilarityCalc.cache = cache;
-
-export function cosineSimilarityFunc(
-  vectorA: number[],
-  vectorB: number[],
-): number {
-  const dotProduct = math.dot(vectorA, vectorB);
-  const magnitudeA = math.norm(vectorA);
-  const magnitudeB = math.norm(vectorB);
-
-  const mathjsScore = Number(
-    math.divide(dotProduct, math.multiply(magnitudeA, magnitudeB)),
-  );
-
-  return mathjsScore;
-}
-
-const calcAvg = (
+const calcAvg = async (
   result: neo4j.QueryResult,
   cosineSimilarityThreshhold: number = 0.5,
 ) => {
@@ -59,16 +26,52 @@ const calcAvg = (
   const start_time = performance.now();
   let records = result.records;
 
+  function generatePairs(items: any) {
+    const pairs = [];
+
+    for (let i = 0; i < items.length; i++) {
+      for (let j = i + 1; j < items.length; j++) {
+        if (items[i] !== items[j]) {
+          pairs.push([items[i], items[j]]);
+        }
+      }
+    }
+
+    return pairs;
+  }
+
+  const items = records.map((record) => {
+    return {
+      type: record.get(`n.userId`),
+      embedding: record.get(`n.embedding`),
+    };
+  });
+
+  const pairs = generatePairs(items);
+
+  console.log(`pairs.length`, pairs.length);
+
+  const pool = new Pool(10);
+
+  const scores = await pool.map(
+    pairs.map((pairs) => {
+      const ntype: any = pairs[0].type;
+      const mtype: any = pairs[1].type;
+      const nembedding: any = pairs[0].embedding;
+      const membedding: any = pairs[1].embedding;
+      return { ntype, mtype, nembedding, membedding };
+    }),
+    __dirname + `/consine_worker`,
+  );
+
   let length = 0;
   let total = 0;
 
-  for (let record of records) {
-    const ntype = userdIdToType(record.get(`m.userId`));
-    const mtype = userdIdToType(record.get(`n.userId`));
-    const nembedding = record.get(`n.embedding`);
-    const membedding = record.get(`m.embedding`);
+  for (let score of scores) {
+    const ntype = score.ntype;
+    const mtype = score.mtype;
 
-    const simScore = cosineSimilarityCalc(nembedding, membedding);
+    const simScore = score.simScore;
 
     if (simScore <= cosineSimilarityThreshhold) {
       continue;
@@ -79,7 +82,7 @@ const calcAvg = (
   }
 
   console.log(`calcAvg:`, performance.now() - start_time);
-  console.log();
+  console.log(`total`, total, `length`, length);
 
   return total / length;
 };
@@ -251,19 +254,17 @@ const generateEmbedding = async (
 
   results = await funcs.run(
     `
-      MATCH (n:Person),(m:Person)
-      WHERE id(n) < id(m) AND n.embedding IS NOT NULL AND m.embedding IS NOT NULL
+      MATCH (n:Person)
+      WHERE n.embedding IS NOT NULL
       return
       n.userId, 
-      m.userId,
-      n.embedding,
-      m.embedding
+      n.embedding
     `,
   );
 
   // printResults(results, 50, 0);
 
-  const avg = calcAvg(results);
+  const avg: number = (await calcAvg(results)) as number;
 
   console.log(`the avg is:`, avg);
   console.log();
