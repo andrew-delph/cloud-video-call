@@ -39,7 +39,7 @@ import {
   expireScoreZset,
   getRelationshipFilterCacheKey,
   getRelationshipScores,
-} from './score_threshold';
+} from './relationship_calculations';
 
 const logger = common.getLogger();
 
