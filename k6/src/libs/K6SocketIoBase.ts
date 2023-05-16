@@ -96,7 +96,7 @@ export abstract class K6SocketIoBase {
     this.on(`close`, async () => {
       if (this.onClose != null) await this.onClose();
       clearTimeout(max_time_timeout);
-      this.failWaitingEvents();
+      this.closeWaitingEvents();
       check(this.connected, { connected: (r) => r });
       check(this.hasError, { hasError: (r) => !r });
     });
@@ -209,7 +209,7 @@ export abstract class K6SocketIoBase {
 
   expectMessage(event: string, timeout = 0) {
     const startTime = Date.now();
-    const waitingEventId: string = uuid();
+    const waitingEventId: string = `${event}-${uuid()}`;
     const wrapper = this;
 
     return new Promise((resolve, reject) => {
@@ -224,7 +224,7 @@ export abstract class K6SocketIoBase {
         if (isSuccess || timeout == 0) {
           resolve({ data, callback, elapsed });
         } else {
-          reject(`timeout reached for ${event}`);
+          reject(`timeout reached for ${waitingEventId}`);
         }
       };
       wrapper.eventMessageHandleMap[event] = eventMessageHandle;
@@ -261,9 +261,11 @@ export abstract class K6SocketIoBase {
     });
   }
 
-  failWaitingEvents() {
-    for (const waitingEvent of Object.values(this.waitingEventMap)) {
-      waitingEvent(`failed wait event.`);
+  closeWaitingEvents() {
+    for (const waitingEvent of Object.entries(this.waitingEventMap)) {
+      const eventId = waitingEvent[0];
+      const reject = waitingEvent[1];
+      reject(`closeWaitingEvents: ${eventId}`);
     }
   }
 }
