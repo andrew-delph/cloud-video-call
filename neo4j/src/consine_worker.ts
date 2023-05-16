@@ -41,7 +41,7 @@ export const poolCalcScore = (
   nembedding: number[],
   membedding: number[],
 ) => {
-  const simScore = cosineSimilarityMem(nembedding, membedding);
+  const simScore = cosineSimilarityFunc(nembedding, membedding);
   // const simScore = cosineSimilarityMem(nembedding, membedding);
 
   return { ntype, mtype, simScore };

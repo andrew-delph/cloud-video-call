@@ -52,8 +52,7 @@ const calcAvg = async (
 
   console.log(`pairs.length`, pairs.length);
 
-  const pool = new Pool(10);
-
+  // const pool = new Pool(10);
   // const scores = await pool.map(
   // pairs.map((pairs) => {
   //   const ntype: any = pairs[0].type;
@@ -99,8 +98,9 @@ const calcAvg = async (
     length += 1;
   }
 
-  console.log(`calcAvg:`, performance.now() - start_time);
   console.log(`total`, total, `length`, length);
+  console.log(`--- calcAvg`);
+  console.log(`run`, performance.now() - start_time);
 
   return total / length;
 };
@@ -188,12 +188,12 @@ export const nodeembeddings = async (
   `,
   );
 
-  const resultList: any[] = [];
+  let resultList: any[] = [];
 
   // [0, 1, 0.5]
-  for (let propertyRatio of [0, 1, 0.5]) {
-    for (let nodeSelfInfluence of [0, 1, 0.5]) {
-      for (let perm of permutations) {
+  for (let propertyRatio of [0]) {
+    for (let nodeSelfInfluence of [1]) {
+      for (let perm of permutations.slice(5)) {
         resultList.push(
           await generateEmbedding(perm, propertyRatio, nodeSelfInfluence),
         );
@@ -208,16 +208,14 @@ export const nodeembeddings = async (
     return item1.avg * item1.length - item2.avg * item2.length;
   });
 
-  const winner = resultList[resultList.length - 1].perm;
-
-  console.log();
-  console.log(`printing winner`);
-
-  await generateEmbedding(
-    winner,
-    winner.propertyRatio,
-    winner.nodeSelfInfluence,
-  );
+  // const winner = resultList[resultList.length - 1].perm;
+  // console.log();
+  // console.log(`printing winner`);
+  // await generateEmbedding(
+  //   winner,
+  //   winner.propertyRatio,
+  //   winner.nodeSelfInfluence,
+  // );
 
   console.log();
   // for (let result of resultList) {
@@ -231,7 +229,10 @@ export const nodeembeddings = async (
   //     )} `,
   //   );
   // }
-  console.table(resultList.filter((item) => item.avg >= 0.5));
+
+  // resultList = resultList.filter((item) => item.avg >= 0.5);
+
+  console.table(resultList);
   console.log(`permutations.length: ${permutations.length}`);
 
   return resultList;
@@ -277,14 +278,15 @@ const generateEmbedding = async (
       return
       n.userId, 
       n.embedding
-      LIMIT 200
+      // LIMIT 200
     `,
   );
 
   // printResults(results, 50, 0);
 
-  const avg: number = (await calcAvg(results)) as number;
+  const avg: number = (await calcAvg(results, 0)) as number;
 
+  console.log();
   console.log(`the avg is:`, avg);
   console.log();
 
