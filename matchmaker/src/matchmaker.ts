@@ -73,13 +73,13 @@ export const relationshipFilterCacheEx = 60 * 10;
 export const realtionshipScoreCacheEx = 60;
 
 const maxCooldownDelay = 20; // still can be longer because of priority delay
-const cooldownScalerValue = 1.25;
+const cooldownScalerValue = 1.1;
 const maxReadyDelaySeconds = 5;
 const maxPriorityDelay = 2;
 const maxCooldownAttemps = maxCooldownDelay ** (1 / cooldownScalerValue);
 
 const calcScorePercentile = (attempts: number) => {
-  return 10 ** (-attempts / maxCooldownAttemps);
+  return (maxCooldownAttemps - attempts - 1) / maxCooldownAttemps;
 };
 
 export const stripUserId = (userId: string): string => {
@@ -189,9 +189,7 @@ export async function startReadyConsumer() {
         )} redis=${await common.getRedisUserPriority(
           mainRedisClient,
           userId,
-        )} cooldownAttempts=${cooldownAttempts} delaySeconds=${delaySeconds.toFixed(
-          1,
-        )}`,
+        )} attempt=${cooldownAttempts} delay=${delaySeconds.toFixed(1)}`,
       );
 
       await sendReadyQueue(
@@ -417,11 +415,13 @@ async function matchmakerFlow(
 
     const cooldownString = `priority=${readyMessage
       .getPriority()
-      .toFixed(2)} cooldownAttempts=${readyMessage.getCooldownAttempts()}`;
+      .toFixed(
+        2,
+      )} attempts=${readyMessage.getCooldownAttempts()}/${maxCooldownAttemps}`;
 
-    const scoreThreasholdString = `scorePercentile=${scorePercentile.toFixed(
+    const scoreThreasholdString = `percentile=${scorePercentile.toFixed(
       2,
-    )} scoreThreshold=${scoreThreshold.toFixed(2)}`;
+    )} threshold=${scoreThreshold.toFixed(2)}`;
 
     const highestScoreString = `highestScore={prob=${highestScore.prob.toFixed(
       2,
@@ -451,11 +451,7 @@ async function matchmakerFlow(
     }
 
     logger.info(
-      `${highestScoreString} scores=${
-        relationShipScores.length
-      } cooldownAttempts=${readyMessage.getCooldownAttempts()} priority=${readyMessage
-        .getPriority()
-        .toFixed(2)} ${scoreThreasholdString} ${matchedString}`,
+      `${highestScoreString} scores=${relationShipScores.length} ${cooldownString} ${scoreThreasholdString} ${matchedString}`,
     );
   }
 
