@@ -52,17 +52,12 @@ export function cosineSimilarityFunc(
 
 const calcAvg = (
   result: neo4j.QueryResult,
-  topLimit: number = 0,
   cosineSimilarityThreshhold: number = 0.5,
 ) => {
   console.log(`calculating average`);
 
   const start_time = performance.now();
   let records = result.records;
-
-  if (topLimit > 0) {
-    records = records.slice(0, topLimit);
-  }
 
   let length = 0;
   let total = 0;
