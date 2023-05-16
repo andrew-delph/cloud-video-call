@@ -1318,8 +1318,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1414,8 +1413,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-blue",
-                "value": null
+                "color": "dark-blue"
               },
               {
                 "color": "red",
@@ -1511,8 +1509,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1608,8 +1605,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1706,8 +1702,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1802,8 +1797,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1915,8 +1909,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2021,8 +2014,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -4343,8 +4335,8 @@
       {
         "current": {
           "selected": false,
-          "text": "test-05-16-14-36-34",
-          "value": "test-05-16-14-36-34"
+          "text": "test-05-16-18-08-55",
+          "value": "test-05-16-18-08-55"
         },
         "datasource": {
           "type": "prometheus",
@@ -4377,14 +4369,14 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values({__name__=~\"k6.*\",testid=~\"$selectedids\"}, testid)",
+        "definition": "label_values({__name__=~\"k6.*\",testid=~\"$latest\"}, testid)",
         "hide": 2,
         "includeAll": true,
         "multi": false,
         "name": "testid",
         "options": [],
         "query": {
-          "query": "label_values({__name__=~\"k6.*\",testid=~\"$selectedids\"}, testid)",
+          "query": "label_values({__name__=~\"k6.*\",testid=~\"$latest\"}, testid)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -4403,6 +4395,6 @@
   "timezone": "",
   "title": "Test Result",
   "uid": "01npcT44k",
-  "version": 23,
+  "version": 25,
   "weekStart": ""
 }
