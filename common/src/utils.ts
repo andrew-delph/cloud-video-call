@@ -136,7 +136,7 @@ export const getRecentlyActiveUsers = async (
     )),
   );
 
-  return [...new Set(recentlyActiveList)];
+  return new Set(recentlyActiveList);
 };
 
 export function userEmbeddingsKey(userId: string): string {
