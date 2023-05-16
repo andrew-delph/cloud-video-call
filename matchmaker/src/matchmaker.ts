@@ -78,6 +78,10 @@ const maxReadyDelaySeconds = 5;
 const maxPriorityDelay = 2;
 const maxCooldownAttemps = maxCooldownDelay ** (1 / cooldownScalerValue);
 
+const calcScorePercentile = (attempts: number) => {
+  return 10 ** (-attempts / maxCooldownAttemps);
+};
+
 export const stripUserId = (userId: string): string => {
   const split = userId.split(`_`);
   const val = split.pop()!;
@@ -402,8 +406,9 @@ async function matchmakerFlow(
     otherId = relationShipScores[0][0];
     highestScore = relationShipScores[0][1];
 
-    const scorePercentile =
-      1 - (readyMessage.getCooldownAttempts() + 1) / maxCooldownAttemps;
+    const scorePercentile = calcScorePercentile(
+      readyMessage.getCooldownAttempts(),
+    );
 
     const scoreThreshold = await calcScoreThreshold(
       readyMessage.getUserId(),
