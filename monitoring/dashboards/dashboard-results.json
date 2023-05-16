@@ -2201,8 +2201,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2403,8 +2402,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "blue",
-                "value": null
+                "color": "blue"
               }
             ]
           },
@@ -3150,8 +3148,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4237,11 +4234,11 @@
         "type": "datasource"
       },
       {
-        "allValue": "random1111111111",
+        "allValue": "",
         "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
+          "selected": true,
+          "text": ["All"],
+          "value": ["$__all"]
         },
         "datasource": {
           "type": "prometheus",
@@ -4251,7 +4248,7 @@
         "hide": 0,
         "includeAll": true,
         "label": "testid",
-        "multi": false,
+        "multi": true,
         "name": "selectedids",
         "options": [],
         "query": {
@@ -4345,9 +4342,10 @@
       },
       {
         "current": {
+          "isNone": true,
           "selected": false,
-          "text": "test-05-16-14-16-31",
-          "value": "test-05-16-14-16-31"
+          "text": "None",
+          "value": ""
         },
         "datasource": {
           "type": "prometheus",
@@ -4380,14 +4378,14 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values({__name__=~\"k6.*\",testid=~\"$latest\"}, testid)",
+        "definition": "label_values({__name__=~\"k6.*\",testid=~\"$selectedids\"}, testid)",
         "hide": 2,
         "includeAll": true,
         "multi": false,
         "name": "testid",
         "options": [],
         "query": {
-          "query": "label_values({__name__=~\"k6.*\",testid=~\"$latest\"}, testid)",
+          "query": "label_values({__name__=~\"k6.*\",testid=~\"$selectedids\"}, testid)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -4406,6 +4404,6 @@
   "timezone": "",
   "title": "Test Result",
   "uid": "01npcT44k",
-  "version": 22,
+  "version": 23,
   "weekStart": ""
 }
