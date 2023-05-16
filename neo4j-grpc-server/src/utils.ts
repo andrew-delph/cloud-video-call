@@ -7,7 +7,7 @@ import * as common from 'common';
 const logger = common.getLogger();
 
 // Create a cache. Optional options object can be passed in.
-const cache = new LRUCache<string, string>({ maxSize: 10000 });
+const cache = new LRUCache<string, string>({ maxSize: 30000 });
 
 function getMapSizeInMB(map: any) {
   const jsonStr = JSON.stringify([...map]);
@@ -16,20 +16,16 @@ function getMapSizeInMB(map: any) {
   return sizeInMB.toFixed(2); // Limiting to 2 decimal places
 }
 
-const logCacheSizeThrottle = throttle(async (size: number, mb: string) => {
-  logger.warn(`cosineSimilarity size=${size} mb=${getMapSizeInMB(mb)}`);
-}, 10000);
+const logCacheSizeThrottle = throttle(async () => {
+  logger.warn(
+    `cosineSimilarity size=${cache.size} mb=${getMapSizeInMB(cache)}`,
+  );
+}, 20000);
 
 export const cosineSimilarity = memoize(
   cosineSimilarityFunc,
   (vectorA: number[], vectorB: number[]) => {
-    var memCache: any = cosineSimilarity.cache;
-
-    logger.warn(
-      `cosineSimilarity size=${memCache.size} mb=${getMapSizeInMB(memCache)}`,
-    );
-
-    logCacheSizeThrottle(memCache.size, getMapSizeInMB(memCache));
+    logCacheSizeThrottle();
 
     // cache in sorted order because result is the same
     if (vectorA < vectorB) {

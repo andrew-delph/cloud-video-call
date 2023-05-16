@@ -255,12 +255,40 @@ export namespace Score {
     }
 }
 
-export class CheckUserFiltersRequest extends jspb.Message { 
+export class FilterObject extends jspb.Message { 
     getUserId1(): string;
-    setUserId1(value: string): CheckUserFiltersRequest;
+    setUserId1(value: string): FilterObject;
 
     getUserId2(): string;
-    setUserId2(value: string): CheckUserFiltersRequest;
+    setUserId2(value: string): FilterObject;
+
+    getPassed(): boolean;
+    setPassed(value: boolean): FilterObject;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): FilterObject.AsObject;
+    static toObject(includeInstance: boolean, msg: FilterObject): FilterObject.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: FilterObject, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): FilterObject;
+    static deserializeBinaryFromReader(message: FilterObject, reader: jspb.BinaryReader): FilterObject;
+}
+
+export namespace FilterObject {
+    export type AsObject = {
+        userId1: string,
+        userId2: string,
+        passed: boolean,
+    }
+}
+
+export class CheckUserFiltersRequest extends jspb.Message { 
+    clearFiltersList(): void;
+    getFiltersList(): Array<FilterObject>;
+    setFiltersList(value: Array<FilterObject>): CheckUserFiltersRequest;
+    addFilters(value?: FilterObject, index?: number): FilterObject;
 
 
     serializeBinary(): Uint8Array;
@@ -275,20 +303,15 @@ export class CheckUserFiltersRequest extends jspb.Message {
 
 export namespace CheckUserFiltersRequest {
     export type AsObject = {
-        userId1: string,
-        userId2: string,
+        filtersList: Array<FilterObject.AsObject>,
     }
 }
 
 export class CheckUserFiltersResponse extends jspb.Message { 
-    getError(): boolean;
-    setError(value: boolean): CheckUserFiltersResponse;
-
-    getMessage(): string;
-    setMessage(value: string): CheckUserFiltersResponse;
-
-    getPassed(): boolean;
-    setPassed(value: boolean): CheckUserFiltersResponse;
+    clearFiltersList(): void;
+    getFiltersList(): Array<FilterObject>;
+    setFiltersList(value: Array<FilterObject>): CheckUserFiltersResponse;
+    addFilters(value?: FilterObject, index?: number): FilterObject;
 
 
     serializeBinary(): Uint8Array;
@@ -303,9 +326,7 @@ export class CheckUserFiltersResponse extends jspb.Message {
 
 export namespace CheckUserFiltersResponse {
     export type AsObject = {
-        error: boolean,
-        message: string,
-        passed: boolean,
+        filtersList: Array<FilterObject.AsObject>,
     }
 }
 

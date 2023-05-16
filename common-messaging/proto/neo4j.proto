@@ -82,15 +82,18 @@ message Score {
   double score = 2;
 }
 
-message CheckUserFiltersRequest {
+message FilterObject {
   string user_id1 = 1;
   string user_id2 = 2;
+  bool passed = 3;
+}
+
+message CheckUserFiltersRequest {
+  repeated FilterObject filters = 1;
 }
 
 message CheckUserFiltersResponse {
-  bool error = 1;
-  string message = 2;
-  bool passed = 3;
+  repeated FilterObject filters = 1;
 }
 
 

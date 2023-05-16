@@ -23,6 +23,7 @@ import {
   ReadyMessage,
   delayExchange,
   readyRoutingKey,
+  FilterObject,
 } from 'common-messaging';
 import { listenGlobalExceptions, RelationshipScoreType } from 'common';
 import {
@@ -553,16 +554,23 @@ const applyReadySetFilters = async (
   // make comparisions to each userId
   // store in cache. 1 means passes filter. 0 means rejected
 
+  const checkUserFiltersRequest = new CheckUserFiltersRequest();
+
   for (const idToRequest of readySet) {
-    const checkUserFiltersRequest = new CheckUserFiltersRequest();
+    const filter = new FilterObject();
+    filter.setUserId1(userId);
+    filter.setUserId2(idToRequest);
 
-    checkUserFiltersRequest.setUserId1(userId);
-    checkUserFiltersRequest.setUserId2(idToRequest);
+    checkUserFiltersRequest.addFilters(filter);
+  }
 
-    const getUserAttributesFiltersResponse = await neo4jCheckUserFiltersRequest(
-      checkUserFiltersRequest,
-    );
-    const passed = getUserAttributesFiltersResponse.getPassed();
+  const checkUserFiltersResponse = await neo4jCheckUserFiltersRequest(
+    checkUserFiltersRequest,
+  );
+
+  for (let filter of checkUserFiltersResponse.getFiltersList()) {
+    const passed = filter.getPassed();
+    const idToRequest = filter.getUserId2();
 
     // set valid result
     await mainRedisClient.set(

@@ -8,7 +8,7 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus = 75;
+const vus = 20;
 const authKeysNum = vus + 10; // number of users created for each parallel instance running
 const iterations = authKeysNum * 1000;
 
