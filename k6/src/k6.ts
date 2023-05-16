@@ -6,13 +6,14 @@ import http from 'k6/http';
 import * as usersLib from './libs/User';
 import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
-import { userFunctions } from './libs/User';
+import { User, userFunctions } from './libs/User';
 
-const vus = 20;
-const authKeysNum = 1000; // number of users created for each parallel instance running
+const vus = 50;
+const authKeysNum = vus + 10; // number of users created for each parallel instance running
 const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
+const updatePreferences = true;
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
@@ -111,7 +112,7 @@ export function setup() {
     // Change this to watch and delete only if the first time
     return;
   })().then(async () => {
-    let users = [];
+    let users: User[] = [];
     for (let auth of authKeys) {
       let user = usersLib.createUser(auth);
       users.push(user);
@@ -123,7 +124,7 @@ export function setup() {
 
     for (let user of users) {
       await redisClient.lpush(authKeysName, user.auth);
-      await user.updatePreferences();
+      await user.init(updatePreferences);
       console.log(`post updatePreferences ${user.auth}`);
     }
   });

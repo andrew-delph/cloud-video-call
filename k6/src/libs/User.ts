@@ -197,26 +197,29 @@ export class User {
     return `${this.attributes?.constant?.hot ?? this.type.valueOf()}`;
   }
 
-  async updatePreferences(): Promise<void> {
+  async init(updatePreferences: boolean): Promise<void> {
     await redisClient.set(
       this.auth + `_attributes`,
       JSON.stringify(this.attributes),
     );
 
     await redisClient.set(this.auth + `_type`, this.type.toString());
-    const r = http.put(
-      `${options_url}/preferences`,
-      JSON.stringify({ attributes: this.attributes, filters: this.filters }),
-      {
-        headers: {
-          authorization: this.auth,
-          'Content-Type': `application/json`,
+
+    if (updatePreferences) {
+      const r = http.put(
+        `${options_url}/preferences`,
+        JSON.stringify({ attributes: this.attributes, filters: this.filters }),
+        {
+          headers: {
+            authorization: this.auth,
+            'Content-Type': `application/json`,
+          },
         },
-      },
-    );
-    check(r, {
-      'updatePreferences response status is 201': r && r.status == 201,
-    });
+      );
+      check(r, {
+        'updatePreferences response status is 201': r && r.status == 201,
+      });
+    }
   }
 
   async getScore(otherAuth: string) {
