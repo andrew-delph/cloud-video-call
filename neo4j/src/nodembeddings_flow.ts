@@ -13,12 +13,47 @@ import {
 import * as funcs from './neo4j_functions';
 import * as neo4j from 'neo4j-driver';
 
+import * as math from 'mathjs';
+
+import { memoize } from 'lodash';
+import { LRUCache } from 'typescript-lru-cache';
+
 let results: neo4j.QueryResult;
+
+const cache = new LRUCache<string, string>({ maxSize: 5000 });
+
+export const cosineSimilarityCalc = memoize(
+  cosineSimilarityFunc,
+  (vectorA: number[], vectorB: number[]) => {
+    // cache in sorted order because result is the same
+    if (vectorA < vectorB) {
+      return JSON.stringify(vectorA.toString() + `,` + vectorB.toString());
+    } else {
+      return JSON.stringify(vectorB.toString() + `,` + vectorA.toString());
+    }
+  },
+);
+cosineSimilarityCalc.cache = cache;
+
+export function cosineSimilarityFunc(
+  vectorA: number[],
+  vectorB: number[],
+): number {
+  const dotProduct = math.dot(vectorA, vectorB);
+  const magnitudeA = math.norm(vectorA);
+  const magnitudeB = math.norm(vectorB);
+
+  const mathjsScore = Number(
+    math.divide(dotProduct, math.multiply(magnitudeA, magnitudeB)),
+  );
+
+  return mathjsScore;
+}
 
 const calcAvg = (
   result: neo4j.QueryResult,
   topLimit: number = 0,
-  cosineSimilarityThreshhold: number = 0,
+  cosineSimilarityThreshhold: number = 0.5,
 ) => {
   let records = result.records;
 
@@ -32,12 +67,13 @@ const calcAvg = (
   for (let record of records) {
     const ntype = userdIdToType(record.get(`m.userId`));
     const mtype = userdIdToType(record.get(`n.userId`));
-    // const ntype = record.get(`m.type`);
-    // const mtype = record.get(`n.type`);
-    const cosineSimilarity = record.get(`cosineSimilarity`);
+    const nembedding = record.get(`n.embedding`);
+    const membedding = record.get(`m.embedding`);
 
-    if (cosineSimilarity <= cosineSimilarityThreshhold) {
-      break;
+    const simScore = cosineSimilarityCalc(nembedding, membedding);
+
+    if (simScore <= cosineSimilarityThreshhold) {
+      continue;
     }
 
     if (validFriends(ntype, mtype)) total += 1;
@@ -97,7 +133,7 @@ export const nodeembeddings = async (
   results = await funcs.createGraph(`myGraph`, test_attributes);
 
   if (permutations == false) {
-    permutations = generatePermutations([0, 1, 0.5], 3);
+    permutations = generatePermutations([0, 1, 0.5], 2);
   }
   console.log(`permutations: ${JSON.stringify(permutations)}`);
 
@@ -132,8 +168,9 @@ export const nodeembeddings = async (
 
   const resultList: any[] = [];
 
-  for (let nodeSelfInfluence of [0, 1, 0.5]) {
-    for (let propertyRatio of [0, 1, 0.5]) {
+  // [0, 1, 0.5]
+  for (let propertyRatio of [0, 1, 0.5]) {
+    for (let nodeSelfInfluence of [0, 1, 0.5]) {
       for (let perm of permutations) {
         resultList.push(
           await generateEmbedding(perm, propertyRatio, nodeSelfInfluence),
@@ -215,26 +252,17 @@ const generateEmbedding = async (
     `
       MATCH (n:Person),(m:Person)
       WHERE id(n) < id(m) AND n.embedding IS NOT NULL AND m.embedding IS NOT NULL
-      CALL {
-        WITH n, m
-        RETURN gds.similarity.cosine(
-          n.embedding,
-          m.embedding
-        ) AS cosineSimilarity
-      } IN TRANSACTIONS
-        OF 10 ROWS
-      with n, m, cosineSimilarity
-      where cosineSimilarity > 0.5
       return
-      n.userId, m.userId,
-      cosineSimilarity
-      // , n.embedding as ne, m.embedding as me
-      ORDER by cosineSimilarity DESC
+      n.userId, 
+      m.userId,
+      n.embedding,
+      m.embedding
     `,
   );
 
-  printResults(results, 50, 0);
+  // printResults(results, 50, 0);
 
+  console.log(`calculating average`);
   const avg = calcAvg(results);
 
   console.log(`the avg is : ${avg}`);
@@ -245,6 +273,7 @@ const generateEmbedding = async (
     length: results.records.length,
     propertyRatio,
     nodeSelfInfluence,
+    score: avg * results.records.length,
   };
 };
 
