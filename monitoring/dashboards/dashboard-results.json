@@ -184,9 +184,9 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "code",
+          "editorMode": "builder",
           "exemplar": true,
-          "expr": "sum by(testid) (k6_vus)",
+          "expr": "sum by(testid) (k6_vus{testid=~\"$testid\"})",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -292,7 +292,8 @@
               {
                 "id": "color",
                 "value": {
-                  "mode": "continuous-greens"
+                  "fixedColor": "dark-green",
+                  "mode": "fixed"
                 }
               }
             ]
@@ -390,7 +391,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "code",
+          "editorMode": "builder",
           "expr": "avg by(testid) (avg_over_time(k6_score_gauge{testid=~\"$testid\", type=~\"$type\"}[1m]))",
           "hide": false,
           "legendFormat": "full avg[1m]: {{testid}}",
@@ -402,10 +403,11 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "code",
+          "editorMode": "builder",
           "exemplar": false,
           "expr": "avg by(testid, type) (avg_over_time(k6_score_gauge{testid=~\"$testid\", type=~\"$type\"}[1m]))",
           "format": "time_series",
+          "hide": false,
           "instant": false,
           "legendFormat": "avg[1m]: {{testid}} = {{type}}",
           "range": true,
@@ -3323,8 +3325,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4236,11 +4237,11 @@
         "type": "datasource"
       },
       {
-        "allValue": ".*",
+        "allValue": "random1111111111",
         "current": {
-          "selected": true,
-          "text": ["All"],
-          "value": ["$__all"]
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": {
           "type": "prometheus",
@@ -4249,8 +4250,9 @@
         "definition": "label_values(testid)",
         "hide": 0,
         "includeAll": true,
-        "multi": true,
-        "name": "testid",
+        "label": "testid",
+        "multi": false,
+        "name": "selectedids",
         "options": [],
         "query": {
           "query": "label_values(testid)",
@@ -4298,14 +4300,14 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values({__name__=~\"k6.*\",testid=~\"$testid\"}, type)",
+        "definition": "label_values({__name__=~\"k6.*\",testid=~\"$latest|$testid\"}, type)",
         "hide": 0,
         "includeAll": true,
         "multi": true,
         "name": "type",
         "options": [],
         "query": {
-          "query": "label_values({__name__=~\"k6.*\",testid=~\"$testid\"}, type)",
+          "query": "label_values({__name__=~\"k6.*\",testid=~\"$latest|$testid\"}, type)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -4342,65 +4344,56 @@
         "type": "query"
       },
       {
+        "current": {
+          "selected": false,
+          "text": "test-05-16-14-16-31",
+          "value": "test-05-16-14-16-31"
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "filters": [],
-        "hide": 0,
-        "name": "Filters",
-        "skipUrlSync": false,
-        "type": "adhoc"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "k6_http_req_waiting_seconds",
-          "value": "k6_http_req_waiting_seconds"
-        },
-        "description": "Metrics for apdex",
+        "definition": "query_result(topk(1,  avg(k6_setup_trend_max) by (testid)))",
         "hide": 0,
         "includeAll": false,
+        "label": "",
         "multi": false,
-        "name": "metrics",
-        "options": [
-          {
-            "selected": true,
-            "text": "k6_http_req_waiting_seconds",
-            "value": "k6_http_req_waiting_seconds"
-          },
-          {
-            "selected": false,
-            "text": "k6_http_req_duration_seconds",
-            "value": "k6_http_req_duration_seconds"
-          }
-        ],
-        "query": "k6_http_req_waiting_seconds, k6_http_req_duration_seconds",
-        "skipUrlSync": false,
-        "type": "custom"
-      },
-      {
-        "current": {
-          "isNone": true,
-          "selected": false,
-          "text": "None",
-          "value": ""
-        },
-        "datasource": {
-          "type": "datasource",
-          "uid": "grafana"
-        },
-        "definition": "",
-        "hide": 0,
-        "includeAll": false,
-        "multi": false,
-        "name": "query0",
+        "name": "latest",
         "options": [],
-        "query": "",
-        "refresh": 1,
-        "regex": "",
+        "query": {
+          "query": "query_result(topk(1,  avg(k6_setup_trend_max) by (testid)))",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "/\"([^\"]+)\"/",
         "skipUrlSync": false,
         "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values({__name__=~\"k6.*\",testid=~\"$latest\"}, testid)",
+        "hide": 2,
+        "includeAll": true,
+        "multi": false,
+        "name": "testid",
+        "options": [],
+        "query": {
+          "query": "label_values({__name__=~\"k6.*\",testid=~\"$latest\"}, testid)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 2,
         "type": "query"
       }
     ]
@@ -4413,6 +4406,6 @@
   "timezone": "",
   "title": "Test Result",
   "uid": "01npcT44k",
-  "version": 20,
+  "version": 22,
   "weekStart": ""
 }
