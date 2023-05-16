@@ -1,8 +1,43 @@
-import { responseCode, responseType } from './constants';
-import { checkResponse, getArrayFromRequest, getCallbackId } from './socket.io';
 import { uuidv4 as uuid } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { setTimeout, clearTimeout } from 'k6/experimental/timers';
 import { check } from 'k6';
+
+export enum responseType {
+  open,
+  close,
+  ping,
+  pong,
+  message,
+  upgrade,
+  noop,
+}
+
+export enum responseCode {
+  connect,
+  disconnect,
+  event,
+  ack,
+  error,
+}
+
+export interface soResponse {
+  type: number;
+  code: number;
+}
+
+export function checkResponse(response: string): soResponse {
+  return { type: parseInt(response[0]), code: parseInt(response[1]) };
+}
+
+export function getCallbackId(response: string): number {
+  return parseInt(response.slice(2));
+}
+
+export function getArrayFromRequest(response: string): string[] {
+  const match = /\[.+\]/;
+  const parsedResponse = response.match(match);
+  return parsedResponse ? JSON.parse(parsedResponse[0]) : [];
+}
 
 export abstract class K6SocketIoBase {
   socket: any;

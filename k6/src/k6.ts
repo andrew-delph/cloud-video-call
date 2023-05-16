@@ -8,8 +8,10 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './libs/User';
 
-const vus = 50;
+const vus = 300;
 const authKeysNum = vus + 10; // number of users created for each parallel instance running
+const iterations = authKeysNum * 3;
+
 const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
@@ -45,7 +47,7 @@ export const options = {
     matchTest: {
       executor: `shared-iterations`,
       vus: vus,
-      iterations: authKeysNum * 3,
+      iterations: iterations,
       maxDuration: `10h`,
     },
     //   matchTest: {
