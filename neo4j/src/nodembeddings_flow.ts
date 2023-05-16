@@ -12,6 +12,7 @@ import {
 
 import * as funcs from './neo4j_functions';
 import * as neo4j from 'neo4j-driver';
+import { poolCalcScore } from './consine_worker';
 
 const Pool = require(`multiprocessing`).Pool;
 
@@ -53,16 +54,33 @@ const calcAvg = async (
 
   const pool = new Pool(10);
 
-  const scores = await pool.map(
-    pairs.map((pairs) => {
+  // const scores = await pool.map(
+  // pairs.map((pairs) => {
+  //   const ntype: any = pairs[0].type;
+  //   const mtype: any = pairs[1].type;
+  //   const nembedding: any = pairs[0].embedding;
+  //   const membedding: any = pairs[1].embedding;
+  //   return { ntype, mtype, nembedding, membedding };
+  // }),
+  //   __dirname + `/consine_worker`,
+  // );
+
+  const scores = pairs
+    .map((pairs) => {
       const ntype: any = pairs[0].type;
       const mtype: any = pairs[1].type;
       const nembedding: any = pairs[0].embedding;
       const membedding: any = pairs[1].embedding;
       return { ntype, mtype, nembedding, membedding };
-    }),
-    __dirname + `/consine_worker`,
-  );
+    })
+    .map((args) => {
+      return poolCalcScore(
+        args.ntype,
+        args.mtype,
+        args.nembedding,
+        args.membedding,
+      );
+    });
 
   let length = 0;
   let total = 0;
@@ -259,6 +277,7 @@ const generateEmbedding = async (
       return
       n.userId, 
       n.embedding
+      LIMIT 200
     `,
   );
 

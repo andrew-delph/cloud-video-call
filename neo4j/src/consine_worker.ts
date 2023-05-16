@@ -35,32 +35,25 @@ function cosineSimilarityFunc(vectorA: number[], vectorB: number[]): number {
   return mathjsScore;
 }
 
-const poolCalcScore = (
+export const poolCalcScore = (
   ntype: any,
   mtype: any,
   nembedding: number[],
   membedding: number[],
 ) => {
-  //   const dotProduct = math.dot(nembedding, membedding);
-  //   const magnitudeA = math.norm(nembedding);
-  //   const magnitudeB = math.norm(membedding);
-  //   const simScore = Number(
-  //     math.divide(dotProduct, math.multiply(magnitudeA, magnitudeB)),
-  //   );
-
   const simScore = cosineSimilarityMem(nembedding, membedding);
   // const simScore = cosineSimilarityMem(nembedding, membedding);
 
   return { ntype, mtype, simScore };
 };
 
-module.exports = function squareAsync(args: any) {
-  return P.resolve().then(() => {
-    return poolCalcScore(
-      args.ntype,
-      args.mtype,
-      args.nembedding,
-      args.membedding,
-    );
-  });
-};
+// module.exports = function squareAsync(args: any) {
+//   return P.resolve().then(() => {
+//     return poolCalcScore(
+//       args.ntype,
+//       args.mtype,
+//       args.nembedding,
+//       args.membedding,
+//     );
+//   });
+// };
