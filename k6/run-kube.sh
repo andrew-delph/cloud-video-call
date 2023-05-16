@@ -35,7 +35,7 @@ kubectl delete --ignore-not-found=true --wait=true -f $RESOURCE_FILENAME -n k6
 # Update '--tag testid=...' to include the test-script name and timestamp for uniqueness, then apply
 sed -e "s/testid\=${RESOURCE_NAME}/testid\=${TAG_NAME}/g" -e "s/WS_HOST_VALUE/${WS_HOST}/g" -e "s/OPTIONS_HOST_VALUE/${OPTIONS_HOST}/g" $RESOURCE_FILENAME | kubectl apply  -f - -n k6
 
-sed -e "s/testid\=${RESOURCE_NAME}/testid\=${TAG_NAME}/g" -e "s/WS_HOST_VALUE/${WS_HOST}/g" -e "s/OPTIONS_HOST_VALUE/${OPTIONS_HOST}/g" $RESOURCE_FILENAME
+# sed -e "s/testid\=${RESOURCE_NAME}/testid\=${TAG_NAME}/g" -e "s/WS_HOST_VALUE/${WS_HOST}/g" -e "s/OPTIONS_HOST_VALUE/${OPTIONS_HOST}/g" $RESOURCE_FILENAME
 
 echo "WS_HOST:" $WS_HOST
 

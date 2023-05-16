@@ -26,7 +26,7 @@
   },
   "scripts": {
     "local": "npm run webpack && bash ./run-local.sh dist/k6.js",
-    "webpack": "webpack --progress",
+    "webpack": "webpack --no-color",
     "webpack:watch": "webpack --progress --watch",
     "test": "npm run webpack && k6 run dist/test.js"
   },

@@ -17,7 +17,7 @@ const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = true; // update attributes/filters in neo4j
 
-const validMatchChatTime = 10; // number of seconds to delay if valid match
+const validMatchChatTime = 1; // number of seconds to delay if valid match
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
@@ -34,6 +34,7 @@ for (let i = 0; i < usersLib.hotRange / 3; i++) {
 }
 
 const updateAuthVars = () => {
+  setup_trend.add(Date.now());
   if (uniqueAuthIds) {
     uniqueAuthKey = `${exec.vu.tags[`testid`]}_`;
     runnerId = `${Math.random().toFixed(5)}_`;

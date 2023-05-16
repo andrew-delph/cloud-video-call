@@ -17,7 +17,7 @@ init:
 	cd dependencies/k6-operator && make deploy
 
 setup:
-	npm run webpack
+	npm run webpack > /dev/null
 
 	kubectl create namespace k6 || echo "namespace already exists"
 
