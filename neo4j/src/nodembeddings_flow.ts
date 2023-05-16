@@ -20,7 +20,7 @@ import { LRUCache } from 'typescript-lru-cache';
 
 let results: neo4j.QueryResult;
 
-const cache = new LRUCache<string, string>({ maxSize: 5000 });
+const cache = new LRUCache<string, string>({ maxSize: 10000 });
 
 export const cosineSimilarityCalc = memoize(
   cosineSimilarityFunc,
@@ -55,6 +55,9 @@ const calcAvg = (
   topLimit: number = 0,
   cosineSimilarityThreshhold: number = 0.5,
 ) => {
+  console.log(`calculating average`);
+
+  const start_time = performance.now();
   let records = result.records;
 
   if (topLimit > 0) {
@@ -79,6 +82,8 @@ const calcAvg = (
     if (validFriends(ntype, mtype)) total += 1;
     length += 1;
   }
+
+  console.log(`calcAvg:`, performance.now() - start_time);
 
   return total / length;
 };
@@ -262,7 +267,6 @@ const generateEmbedding = async (
 
   // printResults(results, 50, 0);
 
-  console.log(`calculating average`);
   const avg = calcAvg(results);
 
   console.log(`the avg is : ${avg}`);
