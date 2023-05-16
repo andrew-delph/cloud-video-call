@@ -79,7 +79,7 @@ const maxPriorityDelay = 2;
 const maxCooldownAttemps = maxCooldownDelay ** (1 / cooldownScalerValue);
 
 const calcScorePercentile = (attempts: number) => {
-  return ((maxCooldownAttemps - attempts - 1) / maxCooldownAttemps) * 2;
+  return 1 - (attempts + 1) / maxCooldownAttemps / 3;
 };
 
 export const stripUserId = (userId: string): string => {
