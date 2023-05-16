@@ -59,10 +59,10 @@ let lockRedisClient: Client;
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
 
-const prefetch = 10;
+const prefetch = 20;
 
 const relationshipFilterCacheEx = 60 * 10;
-const realtionshipScoreCacheEx = 60;
+const realtionshipScoreCacheEx = 60 * 5;
 
 const maxCooldownDelay = 20; // still can be longer because of priority delay
 const cooldownScalerValue = 1.25;
@@ -75,6 +75,22 @@ const stripUserId = (userId: string): string => {
   const val = split.pop()!;
   return val;
 };
+
+function getRelationshipFilterCacheKey(
+  userId1: string,
+  userId2: string,
+): string {
+  if (userId1 > userId2) return getRelationshipFilterCacheKey(userId2, userId1);
+  return `relationship-filter-${userId1}-${userId2}`;
+}
+
+function getRealtionshipScoreCacheKey(
+  userId1: string,
+  userId2: string,
+): string {
+  if (userId1 > userId2) return getRealtionshipScoreCacheKey(userId2, userId1);
+  return `relationship-score-${userId1}-${userId2}`;
+}
 
 const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
@@ -490,13 +506,6 @@ async function matchmakerFlow(
     })
     .catch(onError);
 }
-const getRelationshipFilterCacheKey = (
-  userId1: string,
-  userId2: string,
-): string => {
-  if (userId1 > userId2) return getRelationshipFilterCacheKey(userId2, userId1);
-  return `relationship-filter-${userId1}-${userId2}`;
-};
 
 const neo4jCheckUserFiltersRequest = (
   checkUserFiltersRequest: CheckUserFiltersRequest,
@@ -569,10 +578,6 @@ const applyReadySetFilters = async (
   }
 
   return approved;
-};
-
-const getRealtionshipScoreCacheKey = (userId: string, otherId: string) => {
-  return `relationship-score-${userId}-${otherId}`;
 };
 
 const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
