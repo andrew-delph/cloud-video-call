@@ -79,6 +79,7 @@ const calcAvg = (
   }
 
   console.log(`calcAvg:`, performance.now() - start_time);
+  console.log();
 
   return total / length;
 };
@@ -264,7 +265,8 @@ const generateEmbedding = async (
 
   const avg = calcAvg(results);
 
-  console.log(`the avg is : ${avg}`);
+  console.log(`the avg is:`, avg);
+  console.log();
 
   return {
     avg,

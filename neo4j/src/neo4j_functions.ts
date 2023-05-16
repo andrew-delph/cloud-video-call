@@ -59,6 +59,7 @@ export async function run(
   const end_time = performance.now();
 
   console.log(`run`, end_time - start_time);
+  console.log();
 
   return result;
 }
