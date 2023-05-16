@@ -36,6 +36,9 @@ watch:
 	watch 'kubectl get pods -n default && kubectl get hpa && kubectl get pods -n monitoring && kubectl get pods -n knative-serving'
 
 top:
+	kubectl top node && kubectl resource-capacity && kubectl top pod --sum --sort-by="cpu"
+
+topA:
 	kubectl top node && kubectl resource-capacity && kubectl top pod -A --sum --sort-by="cpu"
 
 services:
