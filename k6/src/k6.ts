@@ -3,10 +3,10 @@ import { K6SocketIoExp } from './libs/K6SocketIoExp';
 import redis from 'k6/experimental/redis';
 import { check, sleep } from 'k6';
 import http from 'k6/http';
-import * as usersLib from './libs/User';
+import * as usersLib from './User';
 import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
-import { User, userFunctions } from './libs/User';
+import { User, userFunctions } from './User';
 
 const vus = 300;
 const authKeysNum = vus + 10; // number of users created for each parallel instance running
