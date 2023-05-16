@@ -376,7 +376,7 @@ async function matchmakerFlow(
 
   readySet.delete(readyMessage.getUserId());
 
-  readySet = await applyReadySetFilters(readyMessage.getUserId(), readySet);
+  readySet = await filterReadySet(readyMessage.getUserId(), readySet);
 
   if (readySet.size == 0) throw new RetryError(`ready set is 0`);
 
@@ -525,10 +525,7 @@ const neo4jCheckUserFiltersRequest = (
   });
 };
 
-export async function applyReadySetFilters(
-  userId: string,
-  readySet: Set<string>,
-) {
+export async function filterReadySet(userId: string, readySet: Set<string>) {
   const approved = new Set<string>();
   // check if exists in cache before making request for each id.
   for (let otherId of readySet) {
