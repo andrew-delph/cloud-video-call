@@ -38,7 +38,7 @@ watch:
 top:
 	kubectl top node && kubectl resource-capacity && kubectl top pod --sum --sort-by="cpu"
 
-topA:
+topa:
 	kubectl top node && kubectl resource-capacity && kubectl top pod -A --sum --sort-by="cpu"
 
 services:
