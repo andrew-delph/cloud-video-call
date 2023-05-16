@@ -186,7 +186,7 @@
           },
           "editorMode": "builder",
           "exemplar": true,
-          "expr": "sum by(testid) (k6_vus{testid=~\"$testid\"})",
+          "expr": "sum by(testid) (k6_vus)",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -4342,10 +4342,9 @@
       },
       {
         "current": {
-          "isNone": true,
           "selected": false,
-          "text": "None",
-          "value": ""
+          "text": "test-05-16-14-36-34",
+          "value": "test-05-16-14-36-34"
         },
         "datasource": {
           "type": "prometheus",
