@@ -1,6 +1,6 @@
 import * as math from 'mathjs';
 
-import { memoize } from 'lodash';
+import { memoize, throttle } from 'lodash';
 import { LRUCache } from 'typescript-lru-cache';
 
 import * as common from 'common';
@@ -16,6 +16,10 @@ function getMapSizeInMB(map: any) {
   return sizeInMB.toFixed(2); // Limiting to 2 decimal places
 }
 
+const logCacheSizeThrottle = throttle(async (size: number, mb: string) => {
+  logger.warn(`cosineSimilarity size=${size} mb=${getMapSizeInMB(mb)}`);
+}, 10000);
+
 export const cosineSimilarity = memoize(
   cosineSimilarityFunc,
   (vectorA: number[], vectorB: number[]) => {
@@ -24,6 +28,8 @@ export const cosineSimilarity = memoize(
     logger.warn(
       `cosineSimilarity size=${memCache.size} mb=${getMapSizeInMB(memCache)}`,
     );
+
+    logCacheSizeThrottle(memCache.size, getMapSizeInMB(memCache));
 
     // cache in sorted order because result is the same
     if (vectorA < vectorB) {
