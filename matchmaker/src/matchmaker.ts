@@ -79,7 +79,7 @@ const maxPriorityDelay = 2;
 const maxCooldownAttemps = maxCooldownDelay ** (1 / cooldownScalerValue);
 
 const calcScorePercentile = (attempts: number) => {
-  return (maxCooldownAttemps - attempts - 1) / maxCooldownAttemps;
+  return ((maxCooldownAttemps - attempts - 1) / maxCooldownAttemps) * 2;
 };
 
 export const stripUserId = (userId: string): string => {
@@ -417,7 +417,9 @@ async function matchmakerFlow(
       .getPriority()
       .toFixed(
         2,
-      )} attempts=${readyMessage.getCooldownAttempts()}/${maxCooldownAttemps}`;
+      )} attempts=${readyMessage.getCooldownAttempts()}/${maxCooldownAttemps.toFixed(
+      1,
+    )}`;
 
     const scoreThreasholdString = `percentile=${scorePercentile.toFixed(
       2,
