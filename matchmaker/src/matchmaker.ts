@@ -59,12 +59,12 @@ let lockRedisClient: Client;
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
 
-const prefetch = 2;
+const prefetch = 10;
 
 const relationshipFilterCacheEx = 60 * 10;
 const realtionshipScoreCacheEx = 60;
 
-const maxCooldownDelay = 60; // still can be longer because of priority delay
+const maxCooldownDelay = 20; // still can be longer because of priority delay
 const cooldownScalerValue = 1.25;
 const maxReadyDelaySeconds = 5;
 const maxPriorityDelay = 2;

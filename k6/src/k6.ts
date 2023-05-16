@@ -10,14 +10,14 @@ import { User, userFunctions } from './User';
 
 const vus = 50;
 const authKeysNum = vus + 10; // number of users created for each parallel instance running
-const iterations = authKeysNum * 20;
+const iterations = authKeysNum * 200;
 
 const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = true; // update attributes/filters in neo4j
 
-const validMatchChatTime = 1; // number of seconds to delay if valid match
+const validMatchChatTime = 10; // number of seconds to delay if valid match
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
@@ -29,9 +29,9 @@ userFunctions.push(usersLib.createFemale);
 userFunctions.push(usersLib.createMale);
 userFunctions.push(usersLib.createGroupA);
 userFunctions.push(usersLib.createGroupB);
-for (let i = 0; i < usersLib.hotRange / 3; i++) {
-  userFunctions.push(usersLib.createHot);
-}
+// for (let i = 0; i < usersLib.hotRange / 3; i++) {
+//   userFunctions.push(usersLib.createHot);
+// }
 
 const updateAuthVars = () => {
   setup_trend.add(Date.now());

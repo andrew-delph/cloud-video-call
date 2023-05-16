@@ -7,14 +7,14 @@ rules:
     - seriesQuery: 'rabbitmq_queue_messages_ready'
       name:
         matches: ''
-        as: 'readyQueue'
+        as: 'matchmaker'
       resources:
         template: <<.Resource>>
-      metricsQuery: avg_over_time( sum(<<.Series>>{queue="readyQueue"}) by (<<.GroupBy>>) [1m:])
+      metricsQuery: avg_over_time( sum(<<.Series>>{queue=~"readyQueue|matchmakerQueueName"}) by (<<.GroupBy>>) [1m:])
     - seriesQuery: 'rabbitmq_queue_messages_ready'
       name:
         matches: ''
-        as: 'matchQueue'
+        as: 'matcher'
       resources:
         template: <<.Resource>>
-      metricsQuery: avg_over_time( sum(<<.Series>>{queue=~"matchQueue|matchmakerQueueName"}) [1m:])
+      metricsQuery: avg_over_time( sum(<<.Series>>{queue=~"matchQueue"}) by (<<.GroupBy>>) [1m:])

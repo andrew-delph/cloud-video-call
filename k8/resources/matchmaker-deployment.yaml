@@ -57,10 +57,10 @@ spec:
     - type: Object
       object:
         metric:
-          name: readyQueue
+          name: matchmaker
         target:
           type: Value
-          value: 100
+          value: 10
         describedObject:
           apiVersion: '/v1'
           kind: 'Namespace'
