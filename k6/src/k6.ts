@@ -8,14 +8,16 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus = 300;
+const vus = 50;
 const authKeysNum = vus + 10; // number of users created for each parallel instance running
-const iterations = authKeysNum * 3;
+const iterations = authKeysNum * 20;
 
 const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = true; // update attributes/filters in neo4j
+
+const validMatchChatTime = 10; // number of seconds to delay if valid match
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
@@ -247,7 +249,9 @@ export default async function () {
       .then(async (data: any) => {
         // prediction_score_trend.add(data.score);
 
-        let score = await myUser.getScore(data.other);
+        let validMatch: boolean = await myUser.getValidMatch(data.other);
+
+        const score = validMatch ? 5 : -5;
 
         score_trend.add(score, { type: myUser.getTypeString() });
         score_gauge.add(score, { type: myUser.getTypeString() });
@@ -266,6 +270,17 @@ export default async function () {
           },
         );
         check(r, { 'feedback response status is 201': r && r.status == 201 });
+
+        return validMatch;
+      })
+      .then(async (validMatch: boolean) => {
+        if (validMatch) {
+          await socket.sleep(validMatchChatTime * 1000);
+        }
+      })
+      .catch((error) => {
+        error_counter.add(1, { type: myUser.getTypeString() });
+        console.error(error);
       })
       .finally(async () => {
         socket.close();

@@ -126,34 +126,32 @@ export const fromRedis = async (auth: string): Promise<User> => {
   return new User(auth, attributes, {}, type);
 };
 
-const postiveScore = 5;
-const negativeScore = -5;
-export const calcScoreMap = new Map<
+export const validMatchMap = new Map<
   UserType,
-  (me: User, otherUser: User) => number
+  (me: User, otherUser: User) => boolean
 >([
   [
     UserType.Random,
     (me: User, otherUser: User) => {
-      return 3;
+      return true;
     },
   ],
   [
     UserType.Male,
     (me: User, otherUser: User) => {
-      return otherUser.type == UserType.Female ? postiveScore : negativeScore;
+      return otherUser.type == UserType.Female ? true : false;
     },
   ],
   [
     UserType.Female,
     (me: User, otherUser: User) => {
-      return otherUser.type == UserType.Male ? postiveScore : negativeScore;
+      return otherUser.type == UserType.Male ? true : false;
     },
   ],
   [
     UserType.LocationBound,
     (me: User, otherUser: User) => {
-      return postiveScore;
+      return true;
     },
   ],
   [
@@ -163,19 +161,19 @@ export const calcScoreMap = new Map<
       const otherHotVal = otherUser?.attributes?.constant?.hot ?? `-100`;
       const myHot = parseInt(myHotVal.match(/\d+/)[0]);
       const otherHot = parseInt(otherHotVal.match(/\d+/)[0]);
-      return Math.abs(myHot - otherHot) <= 1 ? postiveScore : negativeScore;
+      return Math.abs(myHot - otherHot) <= 1 ? true : false;
     },
   ],
   [
     UserType.GroupA,
     (me: User, otherUser: User) => {
-      return me.type == otherUser.type ? postiveScore : negativeScore;
+      return me.type == otherUser.type ? true : false;
     },
   ],
   [
     UserType.GroupB,
     (me: any, otherUser: User) => {
-      return me.type == otherUser.type ? postiveScore : negativeScore;
+      return me.type == otherUser.type ? true : false;
     },
   ],
 ]);
@@ -222,8 +220,8 @@ export class User {
     }
   }
 
-  async getScore(otherAuth: string) {
+  async getValidMatch(otherAuth: string) {
     const otherUser = await fromRedis(otherAuth);
-    return calcScoreMap.get(this.type)!(this, otherUser);
+    return validMatchMap.get(this.type)!(this, otherUser);
   }
 }
