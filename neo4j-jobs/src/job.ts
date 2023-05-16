@@ -87,7 +87,7 @@ logger.info(`Value of JOB: ${job}`);
             featureProperties: ['values','priority','community'],
             propertyRatio: 0.0,
             nodeSelfInfluence: 0.5,
-            embeddingDimension: 128,
+            embeddingDimension: 15,
             randomSeed: 42,
             iterationWeights: ${JSON.stringify([1, 0.5])},
             mutateProperty: 'embedding'

@@ -62,7 +62,7 @@ let rabbitChannel: amqp.Channel;
 const prefetch = 20;
 
 const relationshipFilterCacheEx = 60 * 10;
-const realtionshipScoreCacheEx = 60 * 5;
+const realtionshipScoreCacheEx = 60;
 
 const maxCooldownDelay = 20; // still can be longer because of priority delay
 const cooldownScalerValue = 1.25;

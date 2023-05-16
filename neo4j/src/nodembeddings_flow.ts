@@ -262,7 +262,7 @@ const generateEmbedding = async (
         featureProperties: ['values','priority','community'],
         propertyRatio: ${propertyRatio},
         nodeSelfInfluence: ${nodeSelfInfluence},
-        embeddingDimension: 128,
+        embeddingDimension: 15,
         randomSeed: 42,
         iterationWeights: ${JSON.stringify(perm)},
         writeProperty: 'embedding'
