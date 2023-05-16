@@ -49,7 +49,7 @@ export async function calcScoreThreshold(
     `WITHSCORES`,
   );
 
-  logger.error(
+  logger.debug(
     `userId=${stripUserId(
       userId,
     )} zsetScoreTotal=${zsetScoreTotal} index=${index} zrange=${JSON.stringify(
