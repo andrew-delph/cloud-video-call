@@ -8,7 +8,7 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus = 100;
+const vus = 500;
 const authKeysNum = vus + 10; // number of users created for each parallel instance running
 const iterations = authKeysNum * 1000;
 
@@ -57,9 +57,9 @@ export const options = {
     // },
     matchTest: {
       executor: `ramping-vus`,
-      startVUs: vus / 4,
+      startVUs: Math.floor(vus / 6),
       stages: [
-        { duration: `30m`, target: vus },
+        { duration: `1h`, target: vus },
         { duration: `5h`, target: vus },
         // { duration: `3m`, target: vus * 1 },
       ],
@@ -201,7 +201,7 @@ export default async function () {
     socket
       .expectMessage(`established`)
       .catch((error) => {
-        console.error(`failed established`);
+        console.warn(`failed established`);
         established_success.add(false, { type: myUser.getTypeString() });
         return Promise.reject(error);
       })
@@ -217,7 +217,7 @@ export default async function () {
             return readyPromise;
           })()
             .catch((error) => {
-              console.error(`failed ready`);
+              console.warn(`failed ready`);
               ready_success.add(false, { type: myUser.getTypeString() });
               return Promise.reject(error);
             })
@@ -228,7 +228,7 @@ export default async function () {
               return expectMatch;
             })
             .catch((error) => {
-              console.error(`failed match`);
+              console.warn(`failed match`);
               match_success.add(false, { type: myUser.getTypeString() });
               return Promise.reject(error);
             })
@@ -301,7 +301,7 @@ export default async function () {
       })
       .catch((error) => {
         error_counter.add(1, { type: myUser.getTypeString() });
-        console.error(error);
+        console.warn(error);
       })
       .finally(async () => {
         socket.close();
