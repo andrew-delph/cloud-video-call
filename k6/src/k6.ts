@@ -134,7 +134,7 @@ export function setup() {
     for (let user of users) {
       await redisClient.lpush(authKeysName, user.auth);
       await user.init(updatePreferences);
-      console.log(`post updatePreferences ${user.auth}`);
+      console.debug(`post updatePreferences ${user.auth}`);
     }
   });
 }
@@ -182,7 +182,7 @@ export default async function () {
     return;
   }
 
-  console.log(`auth`, auth);
+  console.debug(`auth`, auth);
 
   const myUser = await usersLib.fromRedis(auth);
 
@@ -222,7 +222,7 @@ export default async function () {
               return Promise.reject(error);
             })
             .then((data: any) => {
-              console.log(`ready..`);
+              console.debug(`ready..`);
               ready_success.add(true, { type: myUser.getTypeString() });
               ready_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
               return expectMatch;
@@ -233,7 +233,7 @@ export default async function () {
               return Promise.reject(error);
             })
             .then((data: any) => {
-              console.log(`match`);
+              console.debug(`match`);
               if (typeof data.callback === `function`) {
                 data.callback(`ok`);
               }
