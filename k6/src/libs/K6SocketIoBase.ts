@@ -165,7 +165,7 @@ export abstract class K6SocketIoBase {
           eventMessageHandle(message, callback);
         } else {
           if (event == `message` || event == `activeCount`) break;
-          console.log(`no eventMessageHandle:`, event);
+          console.debug(`no eventMessageHandle:`, event);
         }
         break;
       }
