@@ -114,6 +114,10 @@
               {
                 "id": "custom.showPoints",
                 "value": "never"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
               }
             ]
           },
@@ -143,7 +147,7 @@
               },
               {
                 "id": "custom.lineWidth",
-                "value": 3
+                "value": 1
               },
               {
                 "id": "custom.lineInterpolation",
@@ -152,6 +156,10 @@
               {
                 "id": "decimals",
                 "value": 0
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 3
               }
             ]
           }
@@ -1319,8 +1327,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1415,8 +1422,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-blue",
-                "value": null
+                "color": "dark-blue"
               }
             ]
           },
@@ -1507,8 +1513,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1603,8 +1608,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-blue",
-                "value": null
+                "color": "dark-blue"
               },
               {
                 "color": "red",
@@ -1700,8 +1704,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1797,8 +1800,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1895,8 +1897,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1991,8 +1992,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2104,8 +2104,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2210,8 +2209,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -4532,8 +4530,8 @@
       {
         "current": {
           "selected": false,
-          "text": "test-05-16-23-30-29",
-          "value": "test-05-16-23-30-29"
+          "text": "test-05-16-23-50-57",
+          "value": "test-05-16-23-50-57"
         },
         "datasource": {
           "type": "prometheus",
@@ -4592,6 +4590,6 @@
   "timezone": "",
   "title": "Test Result",
   "uid": "01npcT44k",
-  "version": 27,
+  "version": 29,
   "weekStart": ""
 }
