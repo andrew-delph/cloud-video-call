@@ -36,7 +36,6 @@ for (let i = 0; i < usersLib.hotRange / 3; i++) {
 }
 
 const updateAuthVars = () => {
-  latest.add(Date.now());
   if (uniqueAuthIds) {
     uniqueAuthKey = `${exec.vu.tags[`testid`]}_`;
     runnerId = `${Math.random().toFixed(5)}_`;
@@ -78,7 +77,6 @@ const match_elapsed = new Trend(`match_elapsed`, true);
 const ready_elapsed = new Trend(`ready_elapsed`, true);
 
 const get_auth_trend = new Trend(`get_auth_trend`, true);
-const latest = new Trend(`latest`, true); //TODO implement
 
 const match_elapsed_gauge = new Gauge(`match_elapsed_gauge`, true);
 
@@ -209,7 +207,6 @@ export default async function () {
 
         // start the match sequence
         for (let i = 0; i < matches; i++) {
-          latest.add(Date.now());
           await (() => {
             expectMatch = socket.expectMessage(`match`);
             const readyPromise = socket.sendWithAck(`ready`, {});
