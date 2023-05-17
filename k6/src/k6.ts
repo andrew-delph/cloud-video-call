@@ -87,6 +87,9 @@ const match_success = new Rate(`match_success`);
 const error_counter = new Counter(`error_counter`);
 const success_counter = new Counter(`success_counter`);
 
+const valid_score = new Counter(`valid_score`);
+const invalid_score = new Counter(`invalid_score`);
+
 const other_parity = new Rate(`other_parity`);
 
 const prediction_score_trend = new Trend(`prediction_score_trend`);
@@ -257,6 +260,12 @@ export default async function () {
               let validMatch: boolean = await myUser.getValidMatch(data.other);
 
               const score = validMatch ? 5 : -5;
+
+              if (validMatch) {
+                valid_score.add(1, { type: myUser.getTypeString() });
+              } else {
+                invalid_score.add(1, { type: myUser.getTypeString() });
+              }
 
               score_trend.add(score, { type: myUser.getTypeString() });
               score_gauge.add(score, { type: myUser.getTypeString() });
