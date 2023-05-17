@@ -605,7 +605,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "builder",
-          "expr": "sum(k6_valid_score_total{testid=~\"$testid\", type=\"$type\"}) / (sum(k6_invalid_score_total{testid=~\"$testid\"}) + sum(k6_valid_score_total{testid=~\"$testid\"}))",
+          "expr": "sum(k6_valid_score_total{testid=~\"$testid\", type=\"$type\"}) / (sum(k6_invalid_score_total{testid=~\"$testid\", type=\"$type\"}) + sum(k6_valid_score_total{testid=~\"$testid\", type=\"$type\"}))",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -4490,8 +4490,8 @@
       {
         "current": {
           "selected": true,
-          "text": ["Male"],
-          "value": ["Male"]
+          "text": ["Hot3"],
+          "value": ["Hot3"]
         },
         "datasource": {
           "type": "prometheus",
