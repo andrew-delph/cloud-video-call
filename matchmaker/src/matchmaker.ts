@@ -3,7 +3,7 @@ import * as common from 'common';
 import Client from 'ioredis';
 import Redlock, { ResourceLockedError, ExecutionError } from 'redlock';
 import amqp from 'amqplib';
-
+import moment from 'moment';
 import express from 'express';
 
 import {
@@ -69,7 +69,7 @@ let rabbitChannel: amqp.Channel;
 
 const prefetch = 20;
 
-export const relationshipFilterCacheEx = 60 * 10;
+export const relationshipFilterCacheEx = 2;
 export const realtionshipScoreCacheEx = 60;
 
 const maxCooldownDelay = 20; // still can be longer because of priority delay
@@ -77,6 +77,8 @@ const cooldownScalerValue = 1.1;
 const maxReadyDelaySeconds = 5;
 const maxPriorityDelay = 2;
 const maxCooldownAttemps = maxCooldownDelay ** (1 / cooldownScalerValue);
+
+const lastMatchedCooldownMinutes = 60; // number of minutes a user cannot match for
 
 const calcScorePercentile = (attempts: number) => {
   return 1 - (attempts + 1) / maxCooldownAttemps / 3;
@@ -580,6 +582,15 @@ export async function filterReadySet(userId: string, readySet: Set<string>) {
   return new Set<string>(
     filtersAsObjectList
       .filter((filterObj) => filterObj.passed)
+      .filter((filterObj) => {
+        if (!!filterObj.lastMatchedTime) {
+          const passed = moment(filterObj.lastMatchedTime).isBefore(
+            moment().subtract(lastMatchedCooldownMinutes, `minutes`),
+          );
+          logger.error(`passed=${passed}`);
+          return passed;
+        } else return true;
+      })
       .map((filterObj) => filterObj.userId2),
   );
 }
