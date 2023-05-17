@@ -7,7 +7,7 @@ import * as common from 'common';
 const logger = common.getLogger();
 
 // Create a cache. Optional options object can be passed in.
-const cache = new LRUCache<string, string>({ maxSize: 30000 });
+const cache = new LRUCache<string, string>({ maxSize: 750000 });
 
 function getMapSizeInMB(map: any) {
   const jsonStr = JSON.stringify([...map]);
