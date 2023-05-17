@@ -537,22 +537,18 @@ const neo4jCheckUserFiltersRequest = (
 };
 
 export async function filterReadySet(userId: string, readySet: Set<string>) {
-  const approved = new Set<string>();
+  const filtersAsObjectList: FilterObject.AsObject[] = [];
   // check if exists in cache before making request for each id.
   for (let otherId of readySet) {
-    const filter = await mainRedisClient.get(
+    const cacheVal = await mainRedisClient.get(
       getRelationshipFilterCacheKey(userId, otherId),
     );
-    if (filter == null) continue;
-    if (filter == `1`) {
-      approved.add(otherId);
-    }
+    if (cacheVal == null) continue;
+
+    const filterObj: FilterObject.AsObject = JSON.parse(cacheVal);
+    filtersAsObjectList.push(filterObj);
     readySet.delete(otherId);
   }
-
-  // request filters and attributes for each userId
-  // make comparisions to each userId
-  // store in cache. 1 means passes filter. 0 means rejected
 
   const checkUserFiltersRequest = new CheckUserFiltersRequest();
 
@@ -568,24 +564,24 @@ export async function filterReadySet(userId: string, readySet: Set<string>) {
     checkUserFiltersRequest,
   );
 
-  for (let filter of checkUserFiltersResponse.getFiltersList()) {
-    const passed = filter.getPassed();
-    const idToRequest = filter.getUserId2();
-
+  for (let filterObj of checkUserFiltersResponse
+    .getFiltersList()
+    .map((filter) => filter.toObject())) {
     // set valid result
     await mainRedisClient.set(
-      getRelationshipFilterCacheKey(userId, idToRequest),
-      passed ? `1` : 0,
+      getRelationshipFilterCacheKey(filterObj.userId1, filterObj.userId2),
+      JSON.stringify(filterObj),
       `EX`,
       relationshipFilterCacheEx,
     );
-    if (passed) {
-      approved.add(idToRequest);
-    } else {
-    }
+    filtersAsObjectList.push(filterObj);
   }
 
-  return approved;
+  return new Set<string>(
+    filtersAsObjectList
+      .filter((filterObj) => filterObj.passed)
+      .map((filterObj) => filterObj.userId2),
+  );
 }
 
 const relationShipScoresSortFunc = (
