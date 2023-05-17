@@ -433,20 +433,23 @@ const checkUserFilters = async (
   const start_time = performance.now();
   const session = driver.session();
   for (let filter of call.request.getFiltersList()) {
+    filter.setPassed(
+      await compareUserFilters(filter.getUserId1(), filter.getUserId2()),
+    );
+
     const results = await session.run(
       `
       MATCH (n:Person{userId: $userId1})-[r:MATCHED]-(m:Person{userId: $userId2})
-      RETURN n,m,r
+      RETURN a.userId, b.userId, r.createDate
+      ORDER by r.createDate DESC
+      LIMIT 1
       `,
       { userId1: filter.getUserId1(), userId2: filter.getUserId2() },
     );
 
-    const matched = results.records.length > 0;
-
-    filter.setPassed(
-      (await compareUserFilters(filter.getUserId1(), filter.getUserId2())) &&
-        !matched,
-    );
+    if (results.records.length > 0) {
+      filter.setLastMatchedTime(results.records[0].get(`r.createDate`));
+    }
   }
   await session.close();
 

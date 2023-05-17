@@ -265,6 +265,9 @@ export class FilterObject extends jspb.Message {
     getPassed(): boolean;
     setPassed(value: boolean): FilterObject;
 
+    getLastMatchedTime(): string;
+    setLastMatchedTime(value: string): FilterObject;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): FilterObject.AsObject;
@@ -281,6 +284,7 @@ export namespace FilterObject {
         userId1: string,
         userId2: string,
         passed: boolean,
+        lastMatchedTime: string,
     }
 }
 
