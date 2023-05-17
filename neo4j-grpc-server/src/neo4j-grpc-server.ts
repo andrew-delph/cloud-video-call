@@ -445,7 +445,7 @@ const checkUserFilters = async (
 
     filter.setPassed(
       (await compareUserFilters(filter.getUserId1(), filter.getUserId2())) &&
-        matched,
+        !matched,
     );
   }
   await session.close();
