@@ -170,7 +170,7 @@ export async function writeUserPreferencesDatabase(
     { userId, custom: preferences.f_custom || {} },
   );
 
-  const result = await session.run(
+  const results = await session.run(
     `
     MATCH (p:Person{userId: $userId})
     RETURN coalesce(p.priority, 0) as priority
@@ -178,11 +178,11 @@ export async function writeUserPreferencesDatabase(
     { userId },
   );
 
-  if (result.records.length != 1) {
-    throw `Incorrect results length for write user: ${result.records.length}`;
+  if (results.records.length != 1) {
+    throw `Incorrect results length for write user: ${results.records.length}`;
   }
 
-  preferences.priority = result.records[0].get(`priority`);
+  preferences.priority = results.records[0].get(`priority`);
 
   await redisClient.set(
     getUserPreferencesCacheKey(userId),

@@ -431,12 +431,24 @@ const checkUserFilters = async (
   callback: grpc.sendUnaryData<CheckUserFiltersResponse>,
 ): Promise<void> => {
   const start_time = performance.now();
-
+  const session = driver.session();
   for (let filter of call.request.getFiltersList()) {
+    const results = await session.run(
+      `
+      MATCH (n:Person{userId: $userId1})-[r:MATCHED]-(m:Person{userId: $userId2})
+      RETURN n,m,r
+      `,
+      { userId1: filter.getUserId1(), userId2: filter.getUserId2() },
+    );
+
+    const matched = results.records.length > 0;
+
     filter.setPassed(
-      await compareUserFilters(filter.getUserId1(), filter.getUserId2()),
+      (await compareUserFilters(filter.getUserId1(), filter.getUserId2())) &&
+        matched,
     );
   }
+  await session.close();
 
   const reply = new CheckUserFiltersResponse();
 

@@ -8,7 +8,7 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus = 200;
+const vus = 30;
 const authKeysNum = vus + 10; // number of users created for each parallel instance running
 const iterations = authKeysNum * 1000;
 
@@ -49,21 +49,21 @@ const updateAuthVars = () => {
 export const options = {
   setupTimeout: `20m`,
   scenarios: {
-    // matchTest: {
-    //   executor: `shared-iterations`,
-    //   vus: vus,
-    //   iterations: iterations,
-    //   maxDuration: `10h`,
-    // },
     matchTest: {
-      executor: `ramping-vus`,
-      startVUs: Math.floor(vus / 6),
-      stages: [
-        { duration: `1h`, target: vus },
-        { duration: `5h`, target: vus },
-        // { duration: `3m`, target: vus * 1 },
-      ],
+      executor: `shared-iterations`,
+      vus: vus,
+      iterations: iterations,
+      maxDuration: `10h`,
     },
+    // matchTest: {
+    //   executor: `ramping-vus`,
+    //   startVUs: 0,
+    //   stages: [
+    //     { duration: `30m`, target: vus },
+    //     { duration: `5h`, target: vus },
+    //     // { duration: `3m`, target: vus * 1 },
+    //   ],
+    // },
     // longConnection: { // TODO fix this....
     //   executor: `ramping-vus`,
     //   exec: `longWait`,
