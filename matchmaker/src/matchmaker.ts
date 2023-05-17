@@ -23,6 +23,7 @@ import {
   ReadyMessage,
   delayExchange,
   readyRoutingKey,
+  FilterObject,
 } from 'common-messaging';
 import { listenGlobalExceptions, RelationshipScoreType } from 'common';
 import {
@@ -32,6 +33,13 @@ import {
   sendMatchQueue,
   sendReadyQueue,
 } from 'common-messaging/src/message_helper';
+import {
+  calcScoreThreshold,
+  calcScoreZset,
+  expireScoreZset,
+  getRelationshipFilterCacheKey,
+  getRelationshipScores,
+} from './relationship_calculations';
 
 const logger = common.getLogger();
 
@@ -49,9 +57,9 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-const neo4jRpcClient = createNeo4jClient();
+export const neo4jRpcClient = createNeo4jClient();
 
-let mainRedisClient: Client;
+export let mainRedisClient: Client;
 let subRedisClient: Client;
 let pubRedisClient: Client;
 let lockRedisClient: Client;
@@ -59,18 +67,22 @@ let lockRedisClient: Client;
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
 
-const prefetch = 10;
+const prefetch = 20;
 
-const relationshipFilterCacheEx = 60 * 10;
-const realtionshipScoreCacheEx = 60;
+export const relationshipFilterCacheEx = 60 * 10;
+export const realtionshipScoreCacheEx = 60;
 
 const maxCooldownDelay = 20; // still can be longer because of priority delay
-const cooldownScalerValue = 1.25;
+const cooldownScalerValue = 1.1;
 const maxReadyDelaySeconds = 5;
 const maxPriorityDelay = 2;
 const maxCooldownAttemps = maxCooldownDelay ** (1 / cooldownScalerValue);
 
-const stripUserId = (userId: string): string => {
+const calcScorePercentile = (attempts: number) => {
+  return 1 - (attempts + 1) / maxCooldownAttemps / 3;
+};
+
+export const stripUserId = (userId: string): string => {
   const split = userId.split(`_`);
   const val = split.pop()!;
   return val;
@@ -150,6 +162,11 @@ export async function startReadyConsumer() {
 
       const cooldownAttempts = matchmakerMessage.getCooldownAttempts();
 
+      if (cooldownAttempts == 0) {
+        await calcScoreZset(userId);
+      }
+      await expireScoreZset(userId, maxCooldownDelay);
+
       const userRepsonse = await neo4jGetUser(userId);
 
       const priority =
@@ -172,9 +189,7 @@ export async function startReadyConsumer() {
         )} redis=${await common.getRedisUserPriority(
           mainRedisClient,
           userId,
-        )} cooldownAttempts=${cooldownAttempts} delaySeconds=${delaySeconds.toFixed(
-          1,
-        )}`,
+        )} attempt=${cooldownAttempts} delay=${delaySeconds.toFixed(1)}`,
       );
 
       await sendReadyQueue(
@@ -248,19 +263,19 @@ export async function startReadyConsumer() {
   );
 }
 
-class CompleteError extends Error {
+export class CompleteError extends Error {
   constructor(message: string) {
     super(message);
   }
 }
 
-class RetryError extends Error {
+export class RetryError extends Error {
   constructor(message: string) {
     super(message);
   }
 }
 
-class CooldownRetryError extends Error {
+export class CooldownRetryError extends Error {
   readyMessage: ReadyMessage;
   constructor(message: string, readyMessage: ReadyMessage) {
     super(message);
@@ -363,7 +378,7 @@ async function matchmakerFlow(
 
   readySet.delete(readyMessage.getUserId());
 
-  readySet = await applyReadySetFilters(readyMessage.getUserId(), readySet);
+  readySet = await filterReadySet(readyMessage.getUserId(), readySet);
 
   if (readySet.size == 0) throw new RetryError(`ready set is 0`);
 
@@ -385,19 +400,30 @@ async function matchmakerFlow(
     logger.info(`select the otherId ... relationShipScores.length == 0`);
     throw new RetryError(`relationShipScores.length == 0`);
   } else {
-    relationShipScores.sort((a, b) => {
-      const a_score = a[1];
-      const b_score = b[1];
-      if (a_score.prob != b_score.prob) {
-        return b_score.prob - a_score.prob;
-      }
-      return b_score.score - a_score.score;
-    });
+    relationShipScores.sort(relationShipScoresSortFunc);
     otherId = relationShipScores[0][0];
     highestScore = relationShipScores[0][1];
 
-    const scoreThreshold =
-      1 - (readyMessage.getCooldownAttempts() + 1) / maxCooldownAttemps;
+    const scorePercentile = calcScorePercentile(
+      readyMessage.getCooldownAttempts(),
+    );
+
+    const scoreThreshold = await calcScoreThreshold(
+      readyMessage.getUserId(),
+      scorePercentile,
+    );
+
+    const cooldownString = `priority=${readyMessage
+      .getPriority()
+      .toFixed(
+        2,
+      )} attempts=${readyMessage.getCooldownAttempts()}/${maxCooldownAttemps.toFixed(
+      1,
+    )}`;
+
+    const scoreThreasholdString = `percentile=${scorePercentile.toFixed(
+      2,
+    )} threshold=${scoreThreshold.toFixed(2)}`;
 
     const highestScoreString = `highestScore={prob=${highestScore.prob.toFixed(
       2,
@@ -418,30 +444,16 @@ async function matchmakerFlow(
         readyMessage.getCooldownAttempts() <= maxCooldownAttemps
       ) {
         throw new CooldownRetryError(
-          `userID=${readyMessage.getUserId()} priority=${readyMessage.getPriority()} cooldownAttempts=${readyMessage.getCooldownAttempts()}`,
+          `userID=${readyMessage.getUserId()} ${cooldownString} ${scoreThreasholdString}`,
           readyMessage,
         );
       } else {
-        logger.warn(
-          `no cooldown: priority=${readyMessage
-            .getPriority()
-            .toFixed(
-              2,
-            )} cooldownAttempts=${readyMessage.getCooldownAttempts()} priority=${readyMessage
-            .getPriority()
-            .toFixed(2)} ${matchedString}`,
-        );
+        logger.warn(`no cooldown: ${cooldownString} ${matchedString}`);
       }
     }
 
     logger.info(
-      `${highestScoreString} scores=${
-        relationShipScores.length
-      } cooldownAttempts=${readyMessage.getCooldownAttempts()} priority=${readyMessage
-        .getPriority()
-        .toFixed(2)} scoreThreshold=${scoreThreshold.toFixed(
-        2,
-      )} ${matchedString}`,
+      `${highestScoreString} scores=${relationShipScores.length} ${cooldownString} ${scoreThreasholdString} ${matchedString}`,
     );
   }
 
@@ -490,13 +502,6 @@ async function matchmakerFlow(
     })
     .catch(onError);
 }
-const getRelationshipFilterCacheKey = (
-  userId1: string,
-  userId2: string,
-): string => {
-  if (userId1 > userId2) return getRelationshipFilterCacheKey(userId2, userId1);
-  return `relationship-filter-${userId1}-${userId2}`;
-};
 
 const neo4jCheckUserFiltersRequest = (
   checkUserFiltersRequest: CheckUserFiltersRequest,
@@ -523,10 +528,7 @@ const neo4jCheckUserFiltersRequest = (
   });
 };
 
-const applyReadySetFilters = async (
-  userId: string,
-  readySet: Set<string>,
-): Promise<Set<string>> => {
+export async function filterReadySet(userId: string, readySet: Set<string>) {
   const approved = new Set<string>();
   // check if exists in cache before making request for each id.
   for (let otherId of readySet) {
@@ -544,16 +546,23 @@ const applyReadySetFilters = async (
   // make comparisions to each userId
   // store in cache. 1 means passes filter. 0 means rejected
 
+  const checkUserFiltersRequest = new CheckUserFiltersRequest();
+
   for (const idToRequest of readySet) {
-    const checkUserFiltersRequest = new CheckUserFiltersRequest();
+    const filter = new FilterObject();
+    filter.setUserId1(userId);
+    filter.setUserId2(idToRequest);
 
-    checkUserFiltersRequest.setUserId1(userId);
-    checkUserFiltersRequest.setUserId2(idToRequest);
+    checkUserFiltersRequest.addFilters(filter);
+  }
 
-    const getUserAttributesFiltersResponse = await neo4jCheckUserFiltersRequest(
-      checkUserFiltersRequest,
-    );
-    const passed = getUserAttributesFiltersResponse.getPassed();
+  const checkUserFiltersResponse = await neo4jCheckUserFiltersRequest(
+    checkUserFiltersRequest,
+  );
+
+  for (let filter of checkUserFiltersResponse.getFiltersList()) {
+    const passed = filter.getPassed();
+    const idToRequest = filter.getUserId2();
 
     // set valid result
     await mainRedisClient.set(
@@ -569,92 +578,18 @@ const applyReadySetFilters = async (
   }
 
   return approved;
-};
+}
 
-const getRealtionshipScoreCacheKey = (userId: string, otherId: string) => {
-  return `relationship-score-${userId}-${otherId}`;
-};
-
-const getRelationshipScores = async (userId: string, readyset: Set<string>) => {
-  const relationshipScoresMap = new Map<string, RelationshipScoreType>();
-
-  // get values that are in cache
-  // pop from the readySet if in cache
-
-  for (const otherId of readyset.values()) {
-    const relationshipScore: RelationshipScoreType = JSON.parse(
-      (await mainRedisClient.get(
-        getRealtionshipScoreCacheKey(userId, otherId),
-      )) || `null`,
-    );
-
-    if (relationshipScore == null) continue;
-    readyset.delete(otherId);
-    relationshipScoresMap.set(otherId, relationshipScore);
+const relationShipScoresSortFunc = (
+  a: [string, common.RelationshipScoreType],
+  b: [string, common.RelationshipScoreType],
+) => {
+  const a_score = a[1];
+  const b_score = b[1];
+  if (a_score.prob != b_score.prob) {
+    return b_score.prob - a_score.prob;
   }
-
-  logger.debug(`relationship scores in cache: ${relationshipScoresMap.size}`);
-
-  if (readyset.size == 0) return Array.from(relationshipScoresMap.entries());
-
-  // get relationship scores from neo4j
-  const getRelationshipScoresRequest = new GetRelationshipScoresRequest();
-  getRelationshipScoresRequest.setUserId(userId);
-  getRelationshipScoresRequest.setOtherUsersList(Array.from(readyset));
-
-  const getRelationshipScoresResponse =
-    await new Promise<GetRelationshipScoresResponse>(
-      async (resolve, reject) => {
-        try {
-          await neo4jRpcClient.getRelationshipScores(
-            getRelationshipScoresRequest,
-            (error: any, response: GetRelationshipScoresResponse) => {
-              if (error) {
-                reject(error);
-              } else {
-                resolve(response);
-              }
-            },
-          );
-        } catch (e) {
-          reject(e);
-        }
-      },
-    ).catch((e) => {
-      logger.error(`getRelationshipScores`, e);
-      throw new RetryError(e);
-    });
-
-  const getRelationshipScoresMap =
-    getRelationshipScoresResponse.getRelationshipScoresMap();
-
-  logger.debug(
-    `relationship scores requested:${
-      readyset.size
-    } responded: ${getRelationshipScoresMap.getLength()}`,
-  );
-
-  // write them to the cache
-  // store them in map
-  for (const scoreEntry of getRelationshipScoresMap.entries()) {
-    const scoreId = scoreEntry[0];
-    const score = scoreEntry[1];
-    const prob = score.getProb();
-    const scoreVal = score.getScore();
-
-    const score_obj = { prob, score: scoreVal };
-
-    await mainRedisClient.set(
-      getRealtionshipScoreCacheKey(userId, scoreId),
-      JSON.stringify(score_obj),
-      `EX`,
-      realtionshipScoreCacheEx,
-    );
-
-    relationshipScoresMap.set(scoreId, score_obj);
-  }
-
-  return Array.from(relationshipScoresMap.entries());
+  return b_score.score - a_score.score;
 };
 
 startReadyConsumer();

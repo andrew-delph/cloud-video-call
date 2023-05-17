@@ -8,16 +8,19 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus = 50;
+const vus = 200;
 const authKeysNum = vus + 10; // number of users created for each parallel instance running
-const iterations = authKeysNum * 200;
+const iterations = authKeysNum * 1000;
 
 const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = true; // update attributes/filters in neo4j
 
-const validMatchChatTime = 10; // number of seconds to delay if valid match
+const validMatchChatTime = 20; //60 * 5; // number of seconds to delay if valid match
+const invalidMatchChatTime = 10; //60 * 5;
+
+const matches = Infinity; // number of matches per vus. -1 is inf
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
@@ -29,12 +32,11 @@ userFunctions.push(usersLib.createFemale);
 userFunctions.push(usersLib.createMale);
 userFunctions.push(usersLib.createGroupA);
 userFunctions.push(usersLib.createGroupB);
-// for (let i = 0; i < usersLib.hotRange / 3; i++) {
-//   userFunctions.push(usersLib.createHot);
-// }
+for (let i = 0; i < usersLib.hotRange / 3; i++) {
+  userFunctions.push(usersLib.createHot);
+}
 
 const updateAuthVars = () => {
-  setup_trend.add(Date.now());
   if (uniqueAuthIds) {
     uniqueAuthKey = `${exec.vu.tags[`testid`]}_`;
     runnerId = `${Math.random().toFixed(5)}_`;
@@ -47,21 +49,21 @@ const updateAuthVars = () => {
 export const options = {
   setupTimeout: `20m`,
   scenarios: {
+    // matchTest: {
+    //   executor: `shared-iterations`,
+    //   vus: vus,
+    //   iterations: iterations,
+    //   maxDuration: `10h`,
+    // },
     matchTest: {
-      executor: `shared-iterations`,
-      vus: vus,
-      iterations: iterations,
-      maxDuration: `10h`,
+      executor: `ramping-vus`,
+      startVUs: Math.floor(vus / 6),
+      stages: [
+        { duration: `1h`, target: vus },
+        { duration: `5h`, target: vus },
+        // { duration: `3m`, target: vus * 1 },
+      ],
     },
-    //   matchTest: {
-    //     executor: `ramping-vus`,
-    //     startVUs: vus,
-    //     stages: [
-    //       { duration: `3h`, target: vus },
-    //       // { duration: `2h`, target: vus * 3 },
-    //       // { duration: `3m`, target: vus * 1 },
-    //     ],
-    //   },
     // longConnection: { // TODO fix this....
     //   executor: `ramping-vus`,
     //   exec: `longWait`,
@@ -76,7 +78,6 @@ const match_elapsed = new Trend(`match_elapsed`, true);
 const ready_elapsed = new Trend(`ready_elapsed`, true);
 
 const get_auth_trend = new Trend(`get_auth_trend`, true);
-const setup_trend = new Trend(`setup_trend`, true); //TODO implement
 
 const match_elapsed_gauge = new Gauge(`match_elapsed_gauge`, true);
 
@@ -86,6 +87,9 @@ const match_success = new Rate(`match_success`);
 
 const error_counter = new Counter(`error_counter`);
 const success_counter = new Counter(`success_counter`);
+
+const valid_score = new Counter(`valid_score`);
+const invalid_score = new Counter(`invalid_score`);
 
 const other_parity = new Rate(`other_parity`);
 
@@ -197,91 +201,107 @@ export default async function () {
     socket
       .expectMessage(`established`)
       .catch((error) => {
-        console.error(`failed established`);
+        console.info(`failed established`);
         established_success.add(false, { type: myUser.getTypeString() });
         return Promise.reject(error);
       })
-      .then((data: any) => {
+      .then(async (data: any) => {
         established_success.add(true, { type: myUser.getTypeString() });
         established_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
 
-        expectMatch = socket.expectMessage(`match`);
-        const readyPromise = socket.sendWithAck(`ready`, {});
-        return readyPromise;
-      })
-      .catch((error) => {
-        console.error(`failed ready`);
-        ready_success.add(false, { type: myUser.getTypeString() });
-        return Promise.reject(error);
-      })
-      .then((data: any) => {
-        console.log(`ready..`);
-        ready_success.add(true, { type: myUser.getTypeString() });
-        ready_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
-        return expectMatch;
-      })
-      .catch((error) => {
-        console.error(`failed match`);
-        match_success.add(false, { type: myUser.getTypeString() });
-        return Promise.reject(error);
-      })
-      .then((data: any) => {
-        console.log(`match`);
-        if (typeof data.callback === `function`) {
-          data.callback(`ok`);
-        }
-        match_success.add(true, { type: myUser.getTypeString() });
-        match_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
-        match_elapsed_gauge.add(data.elapsed / 1000, {
-          type: myUser.getTypeString(),
-        });
-        success_counter.add(1, { type: myUser.getTypeString() });
-        check(data, {
-          'match has feedback id': (data: any) =>
-            data && data.data && data.data.feedback_id,
-          'match has role': (data: any) => data && data.data && data.data.role,
-          'match has other': (data: any) =>
-            data && data.data && data.data.other,
-          'match has score': (data: any) =>
-            data && data.data && data.data.score != null,
-        });
-        return data.data;
-      })
-      .then(async (data: any) => {
-        // prediction_score_trend.add(data.score);
+        // start the match sequence
+        for (let i = 0; i < matches; i++) {
+          await (() => {
+            expectMatch = socket.expectMessage(`match`);
+            const readyPromise = socket.sendWithAck(`ready`, {});
+            return readyPromise;
+          })()
+            .catch((error) => {
+              console.info(`failed ready`);
+              ready_success.add(false, { type: myUser.getTypeString() });
+              return Promise.reject(error);
+            })
+            .then((data: any) => {
+              console.log(`ready..`);
+              ready_success.add(true, { type: myUser.getTypeString() });
+              ready_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
+              return expectMatch;
+            })
+            .catch((error) => {
+              console.info(`failed match`);
+              match_success.add(false, { type: myUser.getTypeString() });
+              return Promise.reject(error);
+            })
+            .then((data: any) => {
+              console.log(`match`);
+              if (typeof data.callback === `function`) {
+                data.callback(`ok`);
+              }
+              match_success.add(true, { type: myUser.getTypeString() });
+              match_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
+              match_elapsed_gauge.add(data.elapsed / 1000, {
+                type: myUser.getTypeString(),
+              });
+              success_counter.add(1, { type: myUser.getTypeString() });
+              check(data, {
+                'match has feedback id': (data: any) =>
+                  data && data.data && data.data.feedback_id,
+                'match has role': (data: any) =>
+                  data && data.data && data.data.role,
+                'match has other': (data: any) =>
+                  data && data.data && data.data.other,
+                'match has score': (data: any) =>
+                  data && data.data && data.data.score != null,
+              });
+              return data.data;
+            })
+            .then(async (data: any) => {
+              // prediction_score_trend.add(data.score);
 
-        let validMatch: boolean = await myUser.getValidMatch(data.other);
+              let validMatch: boolean = await myUser.getValidMatch(data.other);
 
-        const score = validMatch ? 5 : -5;
+              const score = validMatch ? 5 : -5;
 
-        score_trend.add(score, { type: myUser.getTypeString() });
-        score_gauge.add(score, { type: myUser.getTypeString() });
+              if (validMatch) {
+                valid_score.add(1, { type: myUser.getTypeString() });
+              } else {
+                invalid_score.add(1, { type: myUser.getTypeString() });
+              }
 
-        const r = http.post(
-          `${options_url}/providefeedback`,
-          JSON.stringify({
-            feedback_id: data.feedback_id,
-            score: score,
-          }),
-          {
-            headers: {
-              authorization: auth,
-              'Content-Type': `application/json`,
-            },
-          },
-        );
-        check(r, { 'feedback response status is 201': r && r.status == 201 });
+              score_trend.add(score, { type: myUser.getTypeString() });
+              score_gauge.add(score, { type: myUser.getTypeString() });
 
-        return validMatch;
-      })
-      .then(async (validMatch: boolean) => {
-        if (validMatch) {
-          await socket.sleep(validMatchChatTime * 1000);
+              const r = http.post(
+                `${options_url}/providefeedback`,
+                JSON.stringify({
+                  feedback_id: data.feedback_id,
+                  score: score,
+                }),
+                {
+                  headers: {
+                    authorization: auth,
+                    'Content-Type': `application/json`,
+                  },
+                },
+              );
+              check(r, {
+                'feedback response status is 201': r && r.status == 201,
+              });
+
+              return validMatch;
+            })
+            .then(async (validMatch: boolean) => {
+              if (validMatch) {
+                await socket.sleep(validMatchChatTime * 1000);
+              } else {
+                await socket.sleep(invalidMatchChatTime * 1000);
+              }
+            });
         }
       })
       .catch((error) => {
         error_counter.add(1, { type: myUser.getTypeString() });
-        console.error(error);
+        console.info(error);
       })
       .finally(async () => {
         socket.close();

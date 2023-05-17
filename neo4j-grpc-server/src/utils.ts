@@ -1,13 +1,13 @@
 import * as math from 'mathjs';
 
-import { memoize } from 'lodash';
+import { memoize, throttle } from 'lodash';
 import { LRUCache } from 'typescript-lru-cache';
 
 import * as common from 'common';
 const logger = common.getLogger();
 
 // Create a cache. Optional options object can be passed in.
-const cache = new LRUCache<string, string>({ maxSize: 5000 });
+const cache = new LRUCache<string, string>({ maxSize: 750000 });
 
 function getMapSizeInMB(map: any) {
   const jsonStr = JSON.stringify([...map]);
@@ -16,14 +16,16 @@ function getMapSizeInMB(map: any) {
   return sizeInMB.toFixed(2); // Limiting to 2 decimal places
 }
 
+const logCacheSizeThrottle = throttle(async () => {
+  logger.warn(
+    `cosineSimilarity size=${cache.size} mb=${getMapSizeInMB(cache)}`,
+  );
+}, 20000);
+
 export const cosineSimilarity = memoize(
   cosineSimilarityFunc,
   (vectorA: number[], vectorB: number[]) => {
-    var memCache: any = cosineSimilarity.cache;
-
-    logger.warn(
-      `cosineSimilarity size=${memCache.size} mb=${getMapSizeInMB(memCache)}`,
-    );
+    logCacheSizeThrottle();
 
     // cache in sorted order because result is the same
     if (vectorA < vectorB) {

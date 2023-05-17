@@ -10,7 +10,6 @@ export class K6SocketIoExp extends K6SocketIoBase {
     this.socket.addEventListener(event, callback);
   }
   parseMessage(message: any): string {
-    // console.log(`message.data`, message.data);
     return message.data;
   }
 }

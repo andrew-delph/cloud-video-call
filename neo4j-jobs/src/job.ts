@@ -26,7 +26,9 @@ logger.info(`Value of JOB: ${job}`);
         graph name shortPredictGraph
       */
 
-      const activeUsers = await common.getRecentlyActiveUsers(redisClient, 10);
+      const activeUsers = Array.from(
+        await common.getRecentlyActiveUsers(redisClient, 10),
+      );
 
       if (activeUsers.length < 5) {
         logger.info(`activeUsers.length is too small : ${activeUsers.length}`);
@@ -87,7 +89,7 @@ logger.info(`Value of JOB: ${job}`);
             featureProperties: ['values','priority','community'],
             propertyRatio: 0.0,
             nodeSelfInfluence: 0.5,
-            embeddingDimension: 128,
+            embeddingDimension: 15,
             randomSeed: 42,
             iterationWeights: ${JSON.stringify([1, 0.5])},
             mutateProperty: 'embedding'

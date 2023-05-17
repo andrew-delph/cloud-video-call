@@ -84,12 +84,12 @@ export abstract class K6SocketIoBase {
     });
     this.on(`error`, (msg) => {
       this.hasError = true;
-      console.error(`on_error: ${JSON.stringify(msg)}`);
+      console.info(`on_error: ${JSON.stringify(msg)}`);
     });
     let max_time_timeout: number;
     if (this.max_time != 0) {
       max_time_timeout = setTimeout(() => {
-        console.error(`max_time_timeout reached of ${this.max_time}`);
+        console.info(`max_time_timeout reached of ${this.max_time}`);
         this.close();
       }, this.max_time);
     }

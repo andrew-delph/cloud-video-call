@@ -432,13 +432,15 @@ const checkUserFilters = async (
 ): Promise<void> => {
   const start_time = performance.now();
 
-  const userId1 = call.request.getUserId1();
-  const userId2 = call.request.getUserId2();
-
-  const valid = await compareUserFilters(userId1, userId2);
+  for (let filter of call.request.getFiltersList()) {
+    filter.setPassed(
+      await compareUserFilters(filter.getUserId1(), filter.getUserId2()),
+    );
+  }
 
   const reply = new CheckUserFiltersResponse();
-  reply.setPassed(valid);
+
+  reply.setFiltersList(call.request.getFiltersList());
 
   const duration = (performance.now() - start_time) / 1000;
   if (duration > durationWarn) {
