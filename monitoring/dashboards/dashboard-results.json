@@ -478,8 +478,8 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "code",
-          "expr": "sum(k6_valid_score_total{testid=~\"$testid\"})",
+          "editorMode": "builder",
+          "expr": "sum(k6_valid_score_total{testid=~\"$testid\", type=\"$type\"})",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -541,8 +541,8 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "code",
-          "expr": "sum(k6_invalid_score_total{testid=~\"$testid\"})",
+          "editorMode": "builder",
+          "expr": "sum(k6_invalid_score_total{testid=~\"$testid\", type=\"$type\"})",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -605,7 +605,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "builder",
-          "expr": "sum(k6_valid_score_total{testid=~\"$testid\"}) / (sum(k6_invalid_score_total{testid=~\"$testid\"}) + sum(k6_valid_score_total{testid=~\"$testid\"}))",
+          "expr": "sum(k6_valid_score_total{testid=~\"$testid\", type=\"$type\"}) / (sum(k6_invalid_score_total{testid=~\"$testid\"}) + sum(k6_valid_score_total{testid=~\"$testid\"}))",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -1327,7 +1327,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1422,7 +1423,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-blue"
+                "color": "dark-blue",
+                "value": null
               }
             ]
           },
@@ -1513,7 +1515,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1608,7 +1611,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-blue"
+                "color": "dark-blue",
+                "value": null
               },
               {
                 "color": "red",
@@ -1704,7 +1708,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1800,7 +1805,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1897,7 +1903,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1992,7 +1999,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2104,7 +2112,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2209,7 +2218,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -2388,7 +2398,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2589,7 +2600,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "blue"
+                "color": "blue",
+                "value": null
               }
             ]
           },
@@ -3335,7 +3347,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -4477,8 +4490,8 @@
       {
         "current": {
           "selected": true,
-          "text": ["All"],
-          "value": ["$__all"]
+          "text": ["Male"],
+          "value": ["Male"]
         },
         "datasource": {
           "type": "prometheus",
@@ -4530,8 +4543,8 @@
       {
         "current": {
           "selected": false,
-          "text": "test-05-16-23-50-57",
-          "value": "test-05-16-23-50-57"
+          "text": "test-05-17-08-10-26",
+          "value": "test-05-17-08-10-26"
         },
         "datasource": {
           "type": "prometheus",
