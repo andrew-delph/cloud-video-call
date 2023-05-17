@@ -84,12 +84,12 @@ export abstract class K6SocketIoBase {
     });
     this.on(`error`, (msg) => {
       this.hasError = true;
-      console.warn(`on_error: ${JSON.stringify(msg)}`);
+      console.info(`on_error: ${JSON.stringify(msg)}`);
     });
     let max_time_timeout: number;
     if (this.max_time != 0) {
       max_time_timeout = setTimeout(() => {
-        console.warn(`max_time_timeout reached of ${this.max_time}`);
+        console.info(`max_time_timeout reached of ${this.max_time}`);
         this.close();
       }, this.max_time);
     }
@@ -165,7 +165,7 @@ export abstract class K6SocketIoBase {
           eventMessageHandle(message, callback);
         } else {
           if (event == `message` || event == `activeCount`) break;
-          console.debug(`no eventMessageHandle:`, event);
+          console.log(`no eventMessageHandle:`, event);
         }
         break;
       }

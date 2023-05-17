@@ -8,7 +8,7 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus = 500;
+const vus = 200;
 const authKeysNum = vus + 10; // number of users created for each parallel instance running
 const iterations = authKeysNum * 1000;
 
@@ -134,7 +134,7 @@ export function setup() {
     for (let user of users) {
       await redisClient.lpush(authKeysName, user.auth);
       await user.init(updatePreferences);
-      console.debug(`post updatePreferences ${user.auth}`);
+      console.log(`post updatePreferences ${user.auth}`);
     }
   });
 }
@@ -182,7 +182,7 @@ export default async function () {
     return;
   }
 
-  console.debug(`auth`, auth);
+  console.log(`auth`, auth);
 
   const myUser = await usersLib.fromRedis(auth);
 
@@ -201,7 +201,7 @@ export default async function () {
     socket
       .expectMessage(`established`)
       .catch((error) => {
-        console.warn(`failed established`);
+        console.info(`failed established`);
         established_success.add(false, { type: myUser.getTypeString() });
         return Promise.reject(error);
       })
@@ -217,23 +217,23 @@ export default async function () {
             return readyPromise;
           })()
             .catch((error) => {
-              console.warn(`failed ready`);
+              console.info(`failed ready`);
               ready_success.add(false, { type: myUser.getTypeString() });
               return Promise.reject(error);
             })
             .then((data: any) => {
-              console.debug(`ready..`);
+              console.log(`ready..`);
               ready_success.add(true, { type: myUser.getTypeString() });
               ready_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
               return expectMatch;
             })
             .catch((error) => {
-              console.warn(`failed match`);
+              console.info(`failed match`);
               match_success.add(false, { type: myUser.getTypeString() });
               return Promise.reject(error);
             })
             .then((data: any) => {
-              console.debug(`match`);
+              console.log(`match`);
               if (typeof data.callback === `function`) {
                 data.callback(`ok`);
               }
@@ -301,7 +301,7 @@ export default async function () {
       })
       .catch((error) => {
         error_counter.add(1, { type: myUser.getTypeString() });
-        console.warn(error);
+        console.info(error);
       })
       .finally(async () => {
         socket.close();
