@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/chat_screen.dart';
-import 'package:get/get.dart';
+import 'package:flutter_app/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../services/app_service.dart';
@@ -21,6 +20,8 @@ class MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     AppProvider appProvider = Provider.of<AppProvider>(context);
     String title = '(Active users ${appProvider.activeCount})';
+
+    print("ON MAIN!!");
 
     return Scaffold(
       appBar: AppBar(
@@ -45,8 +46,8 @@ class MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
-      body: const Center(
-        child: ChatScreen(),
+      body: Center(
+        child: HomeScreen(),
       ),
     );
   }

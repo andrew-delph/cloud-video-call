@@ -2,9 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
 
-import '../utils/Factory.dart';
+import '../config/Factory.dart';
+import 'api_service.dart';
 
-class OptionsProvider extends GetConnect {
+class OptionsProvider extends ApiService {
   OptionsProvider() {
     httpClient.baseUrl = Factory.getOptionsHost();
 

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/utils.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
@@ -29,136 +28,143 @@ class OptionsScreen extends StatelessWidget {
 
     preferencesService.loadAttributes();
 
-    Widget profile = Container(
-        alignment: Alignment.topCenter,
-        decoration: BoxDecoration(
-          color: Colors.teal,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.all(20),
-        margin: const EdgeInsets.all(20),
-        constraints: const BoxConstraints(
-          maxWidth: 1000,
-        ),
-        child: loading
-            ? connectingWidget
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Profile",
-                    style: TextStyle(
-                      fontSize: 35.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const Divider(),
-                  UserProfileWidget(
-                    priority: priority,
-                  ),
-                  const Divider(),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Attributes',
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        DropDownPreference(
-                          label: 'Gender',
-                          options: const [naValue, "Male", "Female", "Other"],
-                          preferenceMap: preferencesService.constantAttributes,
-                          mapKey: 'gender',
-                        ),
-                        DropDownPreference(
-                          label: 'Language',
-                          options: const [
-                            naValue,
-                            "English",
-                            "French",
-                            "Other"
-                          ],
-                          preferenceMap: preferencesService.constantAttributes,
-                          mapKey: 'language',
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Divider(),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Filters',
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        DropDownPreference(
-                          label: 'Gender',
-                          options: const [naValue, "Male", "Female", "Other"],
-                          preferenceMap: preferencesService.constantFilters,
-                          mapKey: 'gender',
-                        ),
-                        DropDownPreference(
-                          label: 'Language',
-                          options: const [
-                            naValue,
-                            "English",
-                            "French",
-                            "Other"
-                          ],
-                          preferenceMap: preferencesService.constantFilters,
-                          mapKey: 'language',
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Divider(),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Location Settings',
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        LocationOptionsWidget(
-                            customAttributes:
-                                preferencesService.customAttributes,
-                            customFilters: preferencesService.customFilters),
-                      ],
-                    ),
-                  ),
-                  Obx(() {
-                    return SizedBox(
-                      height: 50,
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: !preferencesService.unsavedChanges.value
-                            ? null
-                            : () async {
-                                preferencesService.updateAttributes();
-                              },
-                        child: const Text('Submit'),
+    Widget profile = Obx(() {
+      return Container(
+          alignment: Alignment.topCenter,
+          decoration: BoxDecoration(
+            color: Colors.teal,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.all(20),
+          constraints: const BoxConstraints(
+            maxWidth: 1000,
+          ),
+          child: preferencesService.loading.value
+              ? connectingWidget
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Profile",
+                      style: TextStyle(
+                        fontSize: 35.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                    );
-                  })
-                ],
-              ));
+                    ),
+                    const Divider(),
+                    UserProfileWidget(
+                      priority: priority,
+                    ),
+                    const Divider(),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Attributes',
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          DropDownPreference(
+                            label: 'Gender',
+                            options: const [naValue, "Male", "Female", "Other"],
+                            preferenceMap:
+                                preferencesService.constantAttributes,
+                            mapKey: 'gender',
+                          ),
+                          DropDownPreference(
+                            label: 'Language',
+                            options: const [
+                              naValue,
+                              "English",
+                              "French",
+                              "Other"
+                            ],
+                            preferenceMap:
+                                preferencesService.constantAttributes,
+                            mapKey: 'language',
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Filters',
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          DropDownPreference(
+                            label: 'Gender',
+                            options: const [naValue, "Male", "Female", "Other"],
+                            preferenceMap: preferencesService.constantFilters,
+                            mapKey: 'gender',
+                          ),
+                          DropDownPreference(
+                            label: 'Language',
+                            options: const [
+                              naValue,
+                              "English",
+                              "French",
+                              "Other"
+                            ],
+                            preferenceMap: preferencesService.constantFilters,
+                            mapKey: 'language',
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Location Settings',
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          LocationOptionsWidget(
+                              customAttributes:
+                                  preferencesService.customAttributes,
+                              customFilters: preferencesService.customFilters),
+                        ],
+                      ),
+                    ),
+                    Obx(() {
+                      return SizedBox(
+                        height: 50,
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: !preferencesService.unsavedChanges.value
+                              ? null
+                              : () async {
+                                  await preferencesService.updateAttributes();
+                                  Get.snackbar('Updated',
+                                      'Preferences have been updated',
+                                      snackPosition: SnackPosition.BOTTOM);
+                                },
+                          child: const Text('Submit'),
+                        ),
+                      );
+                    })
+                  ],
+                ));
+    });
 
     Widget history = Container(
         alignment: Alignment.topCenter,

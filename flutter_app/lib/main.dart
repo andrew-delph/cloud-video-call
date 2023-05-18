@@ -1,36 +1,46 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/services/app_service.dart';
 import 'package:flutter_app/screens/login_screen.dart';
 import 'package:flutter_app/screens/main_screen.dart';
+import 'package:flutter_app/services/app_service.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
-import 'utils/firebase_options.dart';
+import 'config/firebase_options.dart';
+import 'controllers/auth_controller.dart';
+import 'routes/app_pages.dart';
+import 'services/auth_service.dart';
 
 void main() async {
-  print("Start main...");
+  await initializeApp();
 
+  runApp(GetMaterialApp(
+    debugShowCheckedModeBanner: false,
+    title: "Random Video Chat with AI",
+    theme: ThemeData(primarySwatch: Colors.green),
+    initialRoute: Routes.HOME,
+    getPages: AppPages.pages,
+  ));
+}
+
+Future<void> initializeApp() async {
+  // await GetStorage.init();
+  // OAuthClientService _OAuthClientService = Get.put(OAuthClientService());
+  // await _OAuthClientService.initCredentials();
+  // Get.put(
+  //     AuthController(Get.put(AuthApiService()), Get.put(OAuthClientService())),
+  //     permanent: true);
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  //
-  // var db = FirebaseFirestore.instance;
-
-  // await db.collection("users").doc("count").get().then((value) {
-  //   print("count from firestore ${value.data()}");
-  // });
-
-  // db.collection("users").doc("count").snapshots().listen(
-  //       (event) => print("live count from firestore: ${event.data()}"),
-  //       onError: (error) => print("Listen failed: $error"),
-  //     );
-
-  runApp(const MyApp());
+  Get.put(AuthController(Get.put(AuthService())), permanent: true);
+  log('Initialize');
 }
 
 class MyApp extends StatelessWidget {
@@ -49,11 +59,10 @@ class MyApp extends StatelessWidget {
             return const CircularProgressIndicator();
           }
 
-          Widget screen;
           if (!snapshot.hasData) {
             print("loggin!!!!!");
 
-            return MaterialApp(
+            return GetMaterialApp(
                 debugShowCheckedModeBanner: false,
                 title: title,
                 theme: ThemeData(primarySwatch: Colors.green),
@@ -62,7 +71,7 @@ class MyApp extends StatelessWidget {
             print("loading app!!!!!");
             return ChangeNotifierProvider(
                 create: (context) => AppProvider(),
-                child: MaterialApp(
+                child: GetMaterialApp(
                     debugShowCheckedModeBanner: false,
                     title: title,
                     theme: ThemeData(primarySwatch: Colors.green),

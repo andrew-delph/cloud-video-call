@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/provider/options_provider.dart';
+import 'package:flutter_app/services/options_service.dart';
 import 'package:get/get.dart';
 
 class HistoryWidget extends StatelessWidget {

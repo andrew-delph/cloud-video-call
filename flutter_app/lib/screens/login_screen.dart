@@ -1,32 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class LoginScreen extends StatefulWidget {
+import '../controllers/auth_controller.dart';
+import '../routes/app_pages.dart';
+
+class LoginScreen extends GetView<AuthController> {
   const LoginScreen({super.key});
-
-  @override
-  State<StatefulWidget> createState() {
-    return LoginScreenState();
-  }
-}
-
-class LoginScreenState extends State<LoginScreen> {
-  @override
-  void dispose() {
-    super.dispose();
-    print("LoginScreenState dispose");
-  }
-
-  @override
-  void deactivate() {
-    super.deactivate();
-    print("LoginScreenState deactivate");
-  }
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,41 +16,40 @@ class LoginScreenState extends State<LoginScreen> {
         ElevatedButton(
           child: const Text("Login Anonymous"),
           onPressed: () async {
-            await FirebaseAuth.instance.signInAnonymously().then((value) {
-              // Navigator.pop(context);
-            }).catchError((onError) {
-              String msg = onError.toString();
-              SnackBar snackBar = SnackBar(
-                content: Text(msg),
+            controller
+                .signInAnonymously()
+                .then((value) => Get.offAllNamed(Routes.HOME))
+                .catchError((err) {
+              Get.snackbar(
+                "Error",
+                err.toString(),
+                snackPosition: SnackPosition.TOP,
+                backgroundColor: Colors.red.withOpacity(.75),
+                colorText: Colors.white,
+                icon: const Icon(Icons.error, color: Colors.white),
+                shouldIconPulse: true,
+                barBlur: 20,
               );
-
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
             });
           },
         ),
         ElevatedButton(
           child: const Text("Login Google"),
           onPressed: () async {
-            // Create a new provider
-            GoogleAuthProvider googleProvider = GoogleAuthProvider();
-
-            googleProvider
-                .addScope('https://www.googleapis.com/auth/contacts.readonly');
-            googleProvider
-                .setCustomParameters({'login_hint': 'user@example.com'});
-
-            // Once signed in, return the UserCredential
-            await FirebaseAuth.instance
-                .signInWithPopup(googleProvider)
-                .then((value) {
-              // Navigator.pop(context);
-            }).catchError((onError) {
-              String msg = onError.toString();
-              SnackBar snackBar = SnackBar(
-                content: Text(msg),
+            controller
+                .signinWithGoogle()
+                .then((value) => Get.offAllNamed(Routes.HOME))
+                .catchError((err) {
+              Get.snackbar(
+                "Error",
+                err.toString(),
+                snackPosition: SnackPosition.TOP,
+                backgroundColor: Colors.red.withOpacity(.75),
+                colorText: Colors.white,
+                icon: const Icon(Icons.error, color: Colors.white),
+                shouldIconPulse: true,
+                barBlur: 20,
               );
-
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
             });
           },
         )

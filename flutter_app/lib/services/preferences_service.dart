@@ -1,7 +1,7 @@
 import 'package:flutter_app/utils/utils.dart';
 import 'package:get/get.dart';
 
-import '../provider/options_provider.dart';
+import 'options_service.dart';
 
 class PreferencesService extends GetxController {
   final OptionsProvider optionsProvider = OptionsProvider();
@@ -11,6 +11,7 @@ class PreferencesService extends GetxController {
   final RxMap<String, String> customFilters = <String, String>{}.obs;
   final RxDouble priority = (0.0).obs;
   RxBool unsavedChanges = false.obs;
+  RxBool loading = false.obs;
 
   PreferencesService() {
     constantAttributes.listen((p0) {
@@ -35,7 +36,15 @@ class PreferencesService extends GetxController {
     unsavedChanges.refresh();
   }
 
+  void updateLoading(bool flag) {
+    loading.value = flag;
+    unsavedChanges.refresh();
+  }
+
   Future<void> loadAttributes() async {
+    loading.update((val) {
+      loading.value = true;
+    });
     return optionsProvider.getPreferences().then((response) {
       Preferences? preferences = response.body;
 
@@ -51,7 +60,13 @@ class PreferencesService extends GetxController {
       customFilters.addAll(preferences.customFilters);
       priority.value = preferences.priority;
 
-      updateChanges(false);
+      unsavedChanges.update((val) {
+        unsavedChanges.value = false;
+      });
+
+      loading.update((val) {
+        loading.value = false;
+      });
     });
   }
 
@@ -66,6 +81,9 @@ class PreferencesService extends GetxController {
         'custom': customFilters,
       }
     };
+    loading.update((val) {
+      loading.value = true;
+    });
     return optionsProvider.updatePreferences(body).then((response) {
       if (validStatusCode(response.statusCode)) {
       } else {

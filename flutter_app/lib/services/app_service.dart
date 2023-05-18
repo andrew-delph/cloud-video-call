@@ -11,7 +11,7 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:statemachine/statemachine.dart';
 
-import '../utils/Factory.dart';
+import '../config/Factory.dart';
 
 class AppProvider extends ChangeNotifier {
   MediaStream? _localMediaStream;
