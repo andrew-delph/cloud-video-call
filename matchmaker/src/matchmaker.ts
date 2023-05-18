@@ -69,7 +69,6 @@ let rabbitChannel: amqp.Channel;
 
 const prefetch = 20;
 
-export const relationshipFilterCacheEx = 2;
 export const realtionshipScoreCacheEx = 60;
 
 const maxCooldownDelay = 20; // still can be longer because of priority delay
@@ -539,19 +538,6 @@ const neo4jCheckUserFiltersRequest = (
 };
 
 export async function filterReadySet(userId: string, readySet: Set<string>) {
-  const filtersAsObjectList: FilterObject.AsObject[] = [];
-  // check if exists in cache before making request for each id.
-  for (let otherId of readySet) {
-    const cacheVal = await mainRedisClient.get(
-      getRelationshipFilterCacheKey(userId, otherId),
-    );
-    if (cacheVal == null) continue;
-
-    const filterObj: FilterObject.AsObject = JSON.parse(cacheVal);
-    filtersAsObjectList.push(filterObj);
-    readySet.delete(otherId);
-  }
-
   const checkUserFiltersRequest = new CheckUserFiltersRequest();
 
   for (const idToRequest of readySet) {
@@ -566,32 +552,20 @@ export async function filterReadySet(userId: string, readySet: Set<string>) {
     checkUserFiltersRequest,
   );
 
-  for (let filterObj of checkUserFiltersResponse
-    .getFiltersList()
-    .map((filter) => filter.toObject())) {
-    // set valid result
-    await mainRedisClient.set(
-      getRelationshipFilterCacheKey(filterObj.userId1, filterObj.userId2),
-      JSON.stringify(filterObj),
-      `EX`,
-      relationshipFilterCacheEx,
-    );
-    filtersAsObjectList.push(filterObj);
-  }
-
   return new Set<string>(
-    filtersAsObjectList
-      .filter((filterObj) => filterObj.passed)
+    checkUserFiltersResponse
+      .getFiltersList()
+      .filter((filter) => filter.getPassed())
       .filter((filterObj) => {
-        if (!!filterObj.lastMatchedTime) {
-          const passed = moment(filterObj.lastMatchedTime).isBefore(
+        if (!!filterObj.getLastMatchedTime()) {
+          const passed = moment(filterObj.getLastMatchedTime()).isBefore(
             moment().subtract(lastMatchedCooldownMinutes, `minutes`),
           );
           logger.error(`passed=${passed}`);
           return passed;
         } else return true;
       })
-      .map((filterObj) => filterObj.userId2),
+      .map((filterObj) => filterObj.getUserId2()),
   );
 }
 
