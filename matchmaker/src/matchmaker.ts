@@ -37,7 +37,6 @@ import {
   calcScoreThreshold,
   calcScoreZset,
   expireScoreZset,
-  getRelationshipFilterCacheKey,
   getRelationshipScores,
 } from './relationship_calculations';
 
@@ -500,14 +499,6 @@ async function matchmakerFlow(
       // remove both from ready set
       await mainRedisClient.srem(common.readySetName, readyMessage.getUserId());
       await mainRedisClient.srem(common.readySetName, otherId);
-
-      // delete relationship filters from cache for matched cooldown
-      const keysDeleted = await mainRedisClient.del([
-        getRelationshipFilterCacheKey(readyMessage.getUserId(), otherId),
-        getRelationshipFilterCacheKey(otherId, readyMessage.getUserId()),
-      ]);
-
-      logger.debug(`RelationshipFilterCaches delete:${keysDeleted}`);
     })
     .catch(onError);
 }
