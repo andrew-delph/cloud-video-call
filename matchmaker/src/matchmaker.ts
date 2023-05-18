@@ -76,7 +76,7 @@ const maxReadyDelaySeconds = 5;
 const maxPriorityDelay = 2;
 const maxCooldownAttemps = maxCooldownDelay ** (1 / cooldownScalerValue);
 
-const lastMatchedCooldownMinutes = 60; // number of minutes a user cannot match for
+const lastMatchedCooldownMinutes = 5; // number of minutes a user cannot match for
 
 const calcScorePercentile = (attempts: number) => {
   return 1 - (attempts + 1) / maxCooldownAttemps / 3;
