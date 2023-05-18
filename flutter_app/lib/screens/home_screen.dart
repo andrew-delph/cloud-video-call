@@ -19,33 +19,40 @@ class HomeScreen extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("home screen..."),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: 'Options',
-            onPressed: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => OptionsScreen()),
-              // );
-            },
+        appBar: AppBar(
+          title: Text("home screen..."),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.settings),
+              tooltip: 'Options',
+              onPressed: () {
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => OptionsScreen()),
+                // );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.logout),
+              tooltip: 'Logout',
+              onPressed: () async {
+                Get.find<AuthService>().signOut();
+                Get.offAllNamed(Routes.LOGIN);
+              },
+            ),
+          ],
+        ),
+        body: controller.obx(
+          (state) => const Center(
+            child: Text("this is the home..."),
           ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Logout',
-            onPressed: () async {
-              Get.find<AuthService>().signOut();
-              Get.offAllNamed(Routes.LOGIN);
-            },
+          onLoading: const CircularProgressIndicator(),
+          onEmpty: Column(
+            children: const [
+              Text('No Data found'),
+            ],
           ),
-        ],
-      ),
-      body: Center(
-        child: Text("this is the home..."),
-      ),
-    );
+        ));
   }
 
   // @override

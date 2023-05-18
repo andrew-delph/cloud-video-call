@@ -1,6 +1,7 @@
 import 'package:flutter_app/screens/home_screen.dart';
 import 'package:get/get.dart';
 
+import '../bindings/home_binding.dart';
 import '../middlewares/auth_middleware.dart';
 import '../screens/login_screen.dart';
 import '../screens/main_screen.dart';
@@ -11,6 +12,7 @@ class AppPages {
     GetPage(
         name: Routes.HOME,
         page: () => HomeScreen(),
+        binding: HomeBinding(),
         middlewares: [AuthMiddleware()],
         transition: Transition.fadeIn),
     GetPage(

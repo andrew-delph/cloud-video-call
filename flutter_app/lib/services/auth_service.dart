@@ -1,8 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../routes/app_pages.dart';
 
 class AuthService extends GetxService {
   String? token;
+
+  @override
+  void onInit() {
+    super.onInit();
+  }
 
   ititToken() async {}
 
@@ -31,11 +39,6 @@ class AuthService extends GetxService {
 
   bool isAuthenticated() {
     return FirebaseAuth.instance.currentUser != null;
-  }
-
-  bool sessionIsEmpty() {
-    if (token == null) return true;
-    return false;
   }
 
   signOut() async {
