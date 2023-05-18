@@ -444,10 +444,10 @@ async function matchmakerFlow(
 
   const highestScoreString = `prob=${highestScore.prob.toFixed(
     2,
-  )} score=${highestScore.score.toFixed(2)} lastMatch=${moment().diff(
+  )} score=${highestScore.score.toFixed(2)} lastMatchMins=${moment().diff(
     highestScore.latest_match,
     `minutes`,
-  )}mins`;
+  )}`;
 
   // const lowestScore = relationShipScores[relationShipScores.length - 1][1];
   // const lowestScoreString = `lowestScore={prob=${lowestScore.prob.toFixed(
