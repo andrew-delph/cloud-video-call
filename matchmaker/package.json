@@ -33,6 +33,7 @@
     "ioredis": "5.2.5",
     "lodash": "^4.17.21",
     "lodash.throttle": "^4.1.1",
+    "moment": "^2.29.4",
     "redlock": "^5.0.0-beta.2",
     "uuid": "^9.0.0"
   }

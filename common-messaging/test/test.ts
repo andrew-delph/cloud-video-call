@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { ReadyMessage } from '../src';
+import { FilterObject, ReadyMessage } from '../src';
 import { bufferToUint8Array, messageToBuffer } from '../src/utils';
 import { parseReadyMessage } from '../src/message_helper';
 
@@ -52,5 +52,20 @@ describe(`Test rabbitmq messages`, function () {
 
     assert.equal(userId, readyMessage2.getUserId());
     assert.equal(priority, readyMessage2.getPriority());
+  });
+
+  it(`message to json`, function () {
+    const userId1 = `testid1`;
+    const userId2 = `testid2`;
+    const passed = true;
+    const lastMatchedTime = `1223344`;
+
+    const filter = new FilterObject();
+    filter.setUserId1(userId1);
+    filter.setUserId1(userId2);
+    filter.setPassed(passed);
+    filter.setLastMatchedTime(lastMatchedTime);
+
+    console.log(filter.toObject());
   });
 });

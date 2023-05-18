@@ -18,14 +18,6 @@ const getUserScoreZsetCacheKey = (userId: string) => {
   return `scorezset-${userId}`;
 };
 
-export function getRelationshipFilterCacheKey(
-  userId1: string,
-  userId2: string,
-): string {
-  if (userId1 > userId2) return getRelationshipFilterCacheKey(userId2, userId1);
-  return `relationship-filter-${userId1}-${userId2}`;
-}
-
 export function getRealtionshipScoreCacheKey(
   userId1: string,
   userId2: string,

@@ -3,7 +3,7 @@ import * as common from 'common';
 import Client from 'ioredis';
 import Redlock, { ResourceLockedError, ExecutionError } from 'redlock';
 import amqp from 'amqplib';
-
+import moment from 'moment';
 import express from 'express';
 
 import {
@@ -37,7 +37,6 @@ import {
   calcScoreThreshold,
   calcScoreZset,
   expireScoreZset,
-  getRelationshipFilterCacheKey,
   getRelationshipScores,
 } from './relationship_calculations';
 
@@ -69,7 +68,6 @@ let rabbitChannel: amqp.Channel;
 
 const prefetch = 20;
 
-export const relationshipFilterCacheEx = 60 * 10;
 export const realtionshipScoreCacheEx = 60;
 
 const maxCooldownDelay = 20; // still can be longer because of priority delay
@@ -77,6 +75,8 @@ const cooldownScalerValue = 1.1;
 const maxReadyDelaySeconds = 5;
 const maxPriorityDelay = 2;
 const maxCooldownAttemps = maxCooldownDelay ** (1 / cooldownScalerValue);
+
+const lastMatchedCooldownMinutes = 60; // number of minutes a user cannot match for
 
 const calcScorePercentile = (attempts: number) => {
   return 1 - (attempts + 1) / maxCooldownAttemps / 3;
@@ -494,11 +494,11 @@ async function matchmakerFlow(
         throw new RetryError(`otherId is no longer ready`);
       }
 
+      await sendMatchQueue(rabbitChannel, readyMessage.getUserId(), otherId, 1);
+
       // remove both from ready set
       await mainRedisClient.srem(common.readySetName, readyMessage.getUserId());
       await mainRedisClient.srem(common.readySetName, otherId);
-
-      await sendMatchQueue(rabbitChannel, readyMessage.getUserId(), otherId, 1);
     })
     .catch(onError);
 }
@@ -529,23 +529,6 @@ const neo4jCheckUserFiltersRequest = (
 };
 
 export async function filterReadySet(userId: string, readySet: Set<string>) {
-  const approved = new Set<string>();
-  // check if exists in cache before making request for each id.
-  for (let otherId of readySet) {
-    const filter = await mainRedisClient.get(
-      getRelationshipFilterCacheKey(userId, otherId),
-    );
-    if (filter == null) continue;
-    if (filter == `1`) {
-      approved.add(otherId);
-    }
-    readySet.delete(otherId);
-  }
-
-  // request filters and attributes for each userId
-  // make comparisions to each userId
-  // store in cache. 1 means passes filter. 0 means rejected
-
   const checkUserFiltersRequest = new CheckUserFiltersRequest();
 
   for (const idToRequest of readySet) {
@@ -560,24 +543,21 @@ export async function filterReadySet(userId: string, readySet: Set<string>) {
     checkUserFiltersRequest,
   );
 
-  for (let filter of checkUserFiltersResponse.getFiltersList()) {
-    const passed = filter.getPassed();
-    const idToRequest = filter.getUserId2();
-
-    // set valid result
-    await mainRedisClient.set(
-      getRelationshipFilterCacheKey(userId, idToRequest),
-      passed ? `1` : 0,
-      `EX`,
-      relationshipFilterCacheEx,
-    );
-    if (passed) {
-      approved.add(idToRequest);
-    } else {
-    }
-  }
-
-  return approved;
+  return new Set<string>(
+    checkUserFiltersResponse
+      .getFiltersList()
+      .filter((filter) => filter.getPassed())
+      .filter((filterObj) => {
+        if (!!filterObj.getLastMatchedTime()) {
+          const passed = moment(filterObj.getLastMatchedTime()).isBefore(
+            moment().subtract(lastMatchedCooldownMinutes, `minutes`),
+          );
+          logger.error(`passed=${passed}`);
+          return passed;
+        } else return true;
+      })
+      .map((filterObj) => filterObj.getUserId2()),
+  );
 }
 
 const relationShipScoresSortFunc = (

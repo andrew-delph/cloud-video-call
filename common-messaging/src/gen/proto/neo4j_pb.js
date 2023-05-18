@@ -2159,7 +2159,8 @@ proto.neo4j.FilterObject.toObject = function(includeInstance, msg) {
   var f, obj = {
     userId1: jspb.Message.getFieldWithDefault(msg, 1, ""),
     userId2: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    passed: jspb.Message.getBooleanFieldWithDefault(msg, 3, false)
+    passed: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
+    lastMatchedTime: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -2208,6 +2209,10 @@ proto.neo4j.FilterObject.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setPassed(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setLastMatchedTime(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -2255,6 +2260,13 @@ proto.neo4j.FilterObject.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       3,
+      f
+    );
+  }
+  f = message.getLastMatchedTime();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
       f
     );
   }
@@ -2312,6 +2324,24 @@ proto.neo4j.FilterObject.prototype.getPassed = function() {
  */
 proto.neo4j.FilterObject.prototype.setPassed = function(value) {
   return jspb.Message.setProto3BooleanField(this, 3, value);
+};
+
+
+/**
+ * optional string last_matched_time = 4;
+ * @return {string}
+ */
+proto.neo4j.FilterObject.prototype.getLastMatchedTime = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.neo4j.FilterObject} returns this
+ */
+proto.neo4j.FilterObject.prototype.setLastMatchedTime = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
