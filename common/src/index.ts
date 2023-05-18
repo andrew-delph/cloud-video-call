@@ -3,4 +3,3 @@ export * from './variables';
 export * from './utils';
 export * from './exceptions';
 export * from './logger';
-export * from './types';

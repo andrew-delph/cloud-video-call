@@ -17,8 +17,8 @@ const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = true; // update attributes/filters in neo4j
 
-const validMatchChatTime = 20; //60 * 5; // number of seconds to delay if valid match
-const invalidMatchChatTime = 10; //60 * 5;
+const validMatchChatTime = 0; //60 * 5; // number of seconds to delay if valid match
+const invalidMatchChatTime = 0; //60 * 5;
 
 const matches = Infinity; // number of matches per vus. -1 is inf
 

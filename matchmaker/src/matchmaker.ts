@@ -25,7 +25,7 @@ import {
   readyRoutingKey,
   FilterObject,
 } from 'common-messaging';
-import { listenGlobalExceptions, RelationshipScoreType } from 'common';
+import { listenGlobalExceptions } from 'common';
 import {
   parseMatchmakerMessage,
   parseReadyMessage,
@@ -39,6 +39,7 @@ import {
   expireScoreZset,
   getRelationshipScores,
 } from './relationship_calculations';
+import { FilteredUserType, RelationshipScoreType } from './types';
 
 const logger = common.getLogger();
 
@@ -76,7 +77,31 @@ const maxReadyDelaySeconds = 5;
 const maxPriorityDelay = 2;
 const maxCooldownAttemps = maxCooldownDelay ** (1 / cooldownScalerValue);
 
-const lastMatchedCooldownMinutes = 5; // number of minutes a user cannot match for
+const lastMatchedCooldownMinutes = 1; // filter of last matches
+
+const relationShipScoresSortFunc = (
+  a: [string, RelationshipScoreType],
+  b: [string, RelationshipScoreType],
+) => {
+  const a_score = a[1];
+  const b_score = b[1];
+
+  const score =
+    a_score.prob != b_score.prob
+      ? b_score.prob - a_score.prob
+      : b_score.score - a_score.score;
+
+  if (
+    Math.abs(score) <= 0.1 &&
+    (a_score.latest_match != undefined || b_score.latest_match != undefined)
+  ) {
+    if (a_score.latest_match == undefined) return -1;
+    if (b_score.latest_match == undefined) return 1;
+    else if (a_score.latest_match == b_score.latest_match) return score;
+    else return b_score.latest_match.isAfter(a_score.latest_match) ? -1 : 1;
+  }
+  return score;
+};
 
 const calcScorePercentile = (attempts: number) => {
   return 1 - (attempts + 1) / maxCooldownAttemps / 3;
@@ -374,88 +399,83 @@ async function matchmakerFlow(
   registerSubscriptionListener(readyMessage.getUserId());
   await notifyListeners(readyMessage.getUserId());
 
-  let readySet = new Set(await mainRedisClient.smembers(common.readySetName));
+  const readySet = new Set(await mainRedisClient.smembers(common.readySetName));
 
-  readySet.delete(readyMessage.getUserId());
-
-  readySet = await filterReadySet(readyMessage.getUserId(), readySet);
-
-  if (readySet.size == 0) throw new RetryError(`ready set is 0`);
-
-  const relationShipScores = await getRelationshipScores(
+  const filterSet: Set<FilteredUserType> = await createFilterSet(
     readyMessage.getUserId(),
     readySet,
   );
 
-  // select the otherId
-  let otherId: string;
-  let highestScore: common.RelationshipScoreType = {
-    prob: -1,
-    score: -1,
-  };
+  if (filterSet.size == 0) throw new RetryError(`filterSet is 0`);
+
+  const relationShipScores = await getRelationshipScores(
+    readyMessage.getUserId(),
+    filterSet,
+  );
 
   if (relationShipScores.length == 0) {
-    const randomIndex = Math.floor(Math.random() * readySet.size);
-    otherId = Array.from(readySet)[randomIndex];
-    logger.info(`select the otherId ... relationShipScores.length == 0`);
     throw new RetryError(`relationShipScores.length == 0`);
-  } else {
-    relationShipScores.sort(relationShipScoresSortFunc);
-    otherId = relationShipScores[0][0];
-    highestScore = relationShipScores[0][1];
-
-    const scorePercentile = calcScorePercentile(
-      readyMessage.getCooldownAttempts(),
-    );
-
-    const scoreThreshold = await calcScoreThreshold(
-      readyMessage.getUserId(),
-      scorePercentile,
-    );
-
-    const cooldownString = `priority=${readyMessage
-      .getPriority()
-      .toFixed(
-        2,
-      )} attempts=${readyMessage.getCooldownAttempts()}/${maxCooldownAttemps.toFixed(
-      1,
-    )}`;
-
-    const scoreThreasholdString = `percentile=${scorePercentile.toFixed(
-      2,
-    )} threshold=${scoreThreshold.toFixed(2)}`;
-
-    const highestScoreString = `highestScore={prob=${highestScore.prob.toFixed(
-      2,
-    )}, score=${highestScore.score.toFixed(2)}}`;
-
-    const lowestScore = relationShipScores[relationShipScores.length - 1][1];
-    const lowestScoreString = `lowestScore={prob=${lowestScore.prob.toFixed(
-      2,
-    )}, score=${lowestScore.score.toFixed(2)}}`;
-
-    const matchedString = `matched=[${stripUserId(
-      readyMessage.getUserId(),
-    )},${stripUserId(otherId)}]`;
-
-    if (highestScore.prob <= 0 && highestScore.score <= scoreThreshold) {
-      if (
-        readyMessage.getPriority() >= 0 &&
-        readyMessage.getCooldownAttempts() <= maxCooldownAttemps
-      ) {
-        throw new CooldownRetryError(
-          `userID=${readyMessage.getUserId()} ${cooldownString} ${scoreThreasholdString}`,
-          readyMessage,
-        );
-      } else {
-        logger.warn(`no cooldown: ${cooldownString} ${matchedString}`);
-      }
-    }
-
-    logger.info(
-      `${highestScoreString} scores=${relationShipScores.length} ${cooldownString} ${scoreThreasholdString} ${matchedString}`,
-    );
   }
+  relationShipScores.sort(relationShipScoresSortFunc);
+
+  const otherId: string = relationShipScores[0][0];
+  const highestScore: RelationshipScoreType = relationShipScores[0][1];
+
+  const scorePercentile = calcScorePercentile(
+    readyMessage.getCooldownAttempts(),
+  );
+
+  const scoreThreshold = await calcScoreThreshold(
+    readyMessage.getUserId(),
+    scorePercentile,
+  );
+
+  const cooldownString = `priority=${readyMessage
+    .getPriority()
+    .toFixed(
+      2,
+    )} attempts=${readyMessage.getCooldownAttempts()}/${maxCooldownAttemps.toFixed(
+    1,
+  )}`;
+
+  const scoreThreasholdString = `percentile=${scorePercentile.toFixed(
+    2,
+  )} threshold=${scoreThreshold.toFixed(2)}`;
+
+  const highestScoreString = `prob=${highestScore.prob.toFixed(
+    2,
+  )} score=${highestScore.score.toFixed(2)} lastMatch=${
+    highestScore.latest_match == undefined
+      ? undefined
+      : moment().diff(highestScore.latest_match, `minutes`)
+  }`;
+
+  // const lowestScore = relationShipScores[relationShipScores.length - 1][1];
+  // const lowestScoreString = `lowestScore={prob=${lowestScore.prob.toFixed(
+  //   2,
+  // )}, score=${lowestScore.score.toFixed(2)}}`;
+
+  const matchedString = `matched=[${stripUserId(
+    readyMessage.getUserId(),
+  )},${stripUserId(otherId)}]`;
+
+  if (highestScore.prob <= 0 && highestScore.score <= scoreThreshold) {
+    if (
+      readyMessage.getPriority() >= 0 &&
+      readyMessage.getCooldownAttempts() <= maxCooldownAttemps
+    ) {
+      throw new CooldownRetryError(
+        `userID=${readyMessage.getUserId()} ${cooldownString} ${scoreThreasholdString}`,
+        readyMessage,
+      );
+    } else {
+      logger.warn(`no cooldown: ${cooldownString} ${matchedString}`);
+    }
+  }
+
+  logger.info(
+    `scores=${relationShipScores.length} ${cooldownString} ${scoreThreasholdString} ${matchedString} ${highestScoreString} `,
+  );
 
   // listen and publish on otherId
   registerSubscriptionListener(otherId);
@@ -528,7 +548,12 @@ const neo4jCheckUserFiltersRequest = (
   });
 };
 
-export async function filterReadySet(userId: string, readySet: Set<string>) {
+export async function createFilterSet(
+  userId: string,
+  readySet: Set<string>,
+): Promise<Set<FilteredUserType>> {
+  readySet.delete(userId);
+
   const checkUserFiltersRequest = new CheckUserFiltersRequest();
 
   for (const idToRequest of readySet) {
@@ -543,33 +568,24 @@ export async function filterReadySet(userId: string, readySet: Set<string>) {
     checkUserFiltersRequest,
   );
 
-  return new Set<string>(
+  return new Set<FilteredUserType>(
     checkUserFiltersResponse
       .getFiltersList()
       .filter((filter) => filter.getPassed())
-      .filter((filterObj) => {
-        if (!!filterObj.getLastMatchedTime()) {
-          const passed = moment(filterObj.getLastMatchedTime()).isBefore(
-            moment().subtract(lastMatchedCooldownMinutes, `minutes`),
-          );
-          logger.error(`passed=${passed}`);
-          return passed;
-        } else return true;
+      .map((filter) => {
+        return {
+          otherId: filter.getUserId2(),
+          latest_match: !!filter.getLastMatchedTime()
+            ? moment(filter.getLastMatchedTime())
+            : moment(0),
+        };
       })
-      .map((filterObj) => filterObj.getUserId2()),
+      .filter((filterObj) => {
+        return moment(filterObj.latest_match).isBefore(
+          moment().subtract(lastMatchedCooldownMinutes, `minutes`),
+        );
+      }),
   );
 }
-
-const relationShipScoresSortFunc = (
-  a: [string, common.RelationshipScoreType],
-  b: [string, common.RelationshipScoreType],
-) => {
-  const a_score = a[1];
-  const b_score = b[1];
-  if (a_score.prob != b_score.prob) {
-    return b_score.prob - a_score.prob;
-  }
-  return b_score.score - a_score.score;
-};
 
 startReadyConsumer();

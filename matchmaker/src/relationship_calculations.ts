@@ -5,12 +5,13 @@ import {
   mainRedisClient,
   neo4jRpcClient,
   stripUserId,
+  createFilterSet,
 } from './matchmaker';
 import {
   GetRelationshipScoresRequest,
   GetRelationshipScoresResponse,
 } from 'common-messaging';
-import { RelationshipScoreType } from 'common';
+import { FilteredUserType, RelationshipScoreType } from './types';
 
 const logger = common.getLogger();
 
@@ -28,11 +29,11 @@ export function getRealtionshipScoreCacheKey(
 
 export async function calcScoreZset(userId: string) {
   const activeUsers = await common.getRecentlyActiveUsers(mainRedisClient, 1);
-  activeUsers.delete(userId);
+  const filterSet = await createFilterSet(userId, activeUsers);
 
   const activeRelationshipScores = await getRelationshipScores(
     userId,
-    new Set(activeUsers),
+    filterSet,
   );
 
   for (let relationshipScore of activeRelationshipScores) {
@@ -81,33 +82,39 @@ export async function expireScoreZset(userId: string, seconds: number) {
 
 export async function getRelationshipScores(
   userId: string,
-  requestSet: Set<string>,
+  filteredSet: Set<FilteredUserType>,
 ) {
+  const filterList = Array.from(filteredSet);
   const relationshipScoresMap = new Map<string, RelationshipScoreType>();
 
   // get values that are in cache
   // pop from the readySet if in cache
 
-  for (const otherId of requestSet.values()) {
+  for (const filter of filterList) {
     const relationshipScore: RelationshipScoreType = JSON.parse(
       (await mainRedisClient.get(
-        getRealtionshipScoreCacheKey(userId, otherId),
+        getRealtionshipScoreCacheKey(userId, filter.otherId),
       )) || `null`,
     );
-
     if (relationshipScore == null) continue;
-    requestSet.delete(otherId);
-    relationshipScoresMap.set(otherId, relationshipScore);
+    relationshipScore.latest_match = filter.latest_match;
+    relationshipScoresMap.set(filter.otherId, relationshipScore);
   }
 
   logger.debug(`relationship scores in cache: ${relationshipScoresMap.size}`);
 
-  if (requestSet.size == 0) return Array.from(relationshipScoresMap.entries());
+  const filtersToRequest = filterList.filter((filter) =>
+    relationshipScoresMap.has(filter.otherId),
+  );
+  if (filtersToRequest.length == 0)
+    return Array.from(relationshipScoresMap.entries());
 
   // get relationship scores from neo4j
   const getRelationshipScoresRequest = new GetRelationshipScoresRequest();
   getRelationshipScoresRequest.setUserId(userId);
-  getRelationshipScoresRequest.setOtherUsersList(Array.from(requestSet));
+  getRelationshipScoresRequest.setOtherUsersList(
+    filtersToRequest.map((filter) => filter.otherId),
+  );
 
   const getRelationshipScoresResponse =
     await new Promise<GetRelationshipScoresResponse>(
@@ -137,28 +144,36 @@ export async function getRelationshipScores(
 
   logger.debug(
     `relationship scores requested:${
-      requestSet.size
+      filteredSet.size
     } responded: ${getRelationshipScoresMap.getLength()}`,
   );
 
   // write them to the cache
   // store them in map
-  for (const scoreEntry of getRelationshipScoresMap.entries()) {
-    const scoreId = scoreEntry[0];
-    const score = scoreEntry[1];
-    const prob = score.getProb();
-    const scoreVal = score.getScore();
 
-    const score_obj = { prob, score: scoreVal };
+  for (const filter of filtersToRequest) {
+    const relationshipScore = getRelationshipScoresMap.get(filter.otherId);
+    if (!relationshipScore) continue;
+
+    const prob = relationshipScore.getProb();
+    const score = relationshipScore.getScore();
+    const otherId = filter.otherId;
+    const latest_match = filter.latest_match;
+    const score_obj: RelationshipScoreType = {
+      prob,
+      score,
+      otherId,
+      latest_match,
+    };
 
     await mainRedisClient.set(
-      getRealtionshipScoreCacheKey(userId, scoreId),
+      getRealtionshipScoreCacheKey(userId, otherId),
       JSON.stringify(score_obj),
       `EX`,
       realtionshipScoreCacheEx,
     );
 
-    relationshipScoresMap.set(scoreId, score_obj);
+    relationshipScoresMap.set(otherId, score_obj);
   }
 
   return Array.from(relationshipScoresMap.entries());
