@@ -103,8 +103,8 @@ export async function getRelationshipScores(
 
   logger.debug(`relationship scores in cache: ${relationshipScoresMap.size}`);
 
-  const filtersToRequest = filterList.filter((filter) =>
-    relationshipScoresMap.has(filter.otherId),
+  const filtersToRequest = filterList.filter(
+    (filter) => !relationshipScoresMap.has(filter.otherId),
   );
   if (filtersToRequest.length == 0)
     return Array.from(relationshipScoresMap.entries());
@@ -144,7 +144,7 @@ export async function getRelationshipScores(
 
   logger.debug(
     `relationship scores requested:${
-      filteredSet.size
+      filtersToRequest.length
     } responded: ${getRelationshipScoresMap.getLength()}`,
   );
 
