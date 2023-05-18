@@ -45,6 +45,9 @@ grafana:
       labelValue: '1'
 
       exemplarTraceIdDestinations: {}
+  persistence:
+    enabled: true
+    existingClaim: storage-loki-0
 
 prometheus:
   enabled: true
@@ -59,7 +62,9 @@ prometheus:
       # - web.enable-remote-write-receiver
       # - log.level=debug
     persistentVolume:
-      enabled: false
+      enabled: true
+      existingClaim: storage-loki-0
+      mountPath: /prometheus
   alertmanager:
     enabled: false
 
@@ -80,6 +85,9 @@ loki:
   datasource:
     jsonData: '{}'
     uid: ''
+  persistence:
+    enabled: true
+    storage: 40Gi
 
 promtail:
   enabled: true
