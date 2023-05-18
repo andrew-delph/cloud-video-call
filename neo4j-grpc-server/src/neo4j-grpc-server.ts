@@ -598,6 +598,7 @@ const getMatchHistory = async (
     OPTIONAL MATCH (n2:Person)-[r3:FEEDBACK{feedbackId:r1.other}]->(n1:Person)
     return n1.userId, n2.userId, r1.createDate, r2.score, r3.score
     ORDER by r1.createDate DESC
+    LIMIT 10
     `,
     { userId },
   );
