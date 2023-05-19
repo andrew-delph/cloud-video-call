@@ -56,4 +56,30 @@ void main() {
 
     print("username1: ${username1.val} username2:${username2.val}");
   });
+
+  test('test get_storage Rx', () async {
+    RxString myVariable = ''.obs;
+
+    GetStorage box = GetStorage();
+
+    // check if the value exists in storage, if not, set it to default value.
+    if (box.hasData('myVariable')) {
+      myVariable.value = box.read('myVariable');
+    } else {
+      myVariable.value = "defaultzzz";
+    }
+
+    ever(myVariable, (value) {
+      // This will be called every time myVariable changes.
+      box.write('myVariable', value);
+    });
+
+    print("myVariable $myVariable");
+
+    myVariable("change_it");
+
+    final myVariable2 = '2'.val('myVariable');
+
+    print("myVariable $myVariable myVariable2 ${myVariable2.val}");
+  });
 }

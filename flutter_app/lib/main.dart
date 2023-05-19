@@ -13,6 +13,7 @@ import 'config/firebase_options.dart';
 import 'controllers/auth_controller.dart';
 import 'routes/app_pages.dart';
 import 'services/auth_service.dart';
+import 'services/local_preferences_service.dart';
 
 void main() async {
   await initializeApp();
@@ -40,6 +41,7 @@ Future<void> initializeApp() async {
   );
 
   Get.put(AuthController(Get.put(AuthService())), permanent: true);
+  Get.put(LocalPreferences());
   log('Initialize');
 }
 

@@ -3,6 +3,7 @@ import 'package:flutter_app/services/auth_service.dart';
 import 'package:flutter_app/utils/state_machines.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 
 import '../controllers/home_controller.dart';
@@ -126,9 +127,6 @@ class HomeScreen extends GetView<HomeController> {
     //       label: 'Submit Feedback', controller: controller, appProvider: null,);
     // }
 
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-
     Widget chatButton = TextButton(
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all<Color>(
@@ -145,15 +143,15 @@ class HomeScreen extends GetView<HomeController> {
 
     Widget videoRenderLayout;
 
-    double ratioHW = 0;
+    BuildContext? context = Get.context;
+    if (context != null ? context.isSmallTablet : false) {
+      double ratioHW = 0;
 
-    if (controller.localVideoRenderer.value.videoHeight != 0 &&
-        controller.localVideoRenderer.value.videoWidth != 0) {
-      ratioHW = controller.localVideoRenderer.value.videoHeight /
-          controller.localVideoRenderer.value.videoWidth;
-    }
-
-    if (width < height) {
+      if (controller.localVideoRenderer.value.videoHeight != 0 &&
+          controller.localVideoRenderer.value.videoWidth != 0) {
+        ratioHW = controller.localVideoRenderer.value.videoHeight /
+            controller.localVideoRenderer.value.videoWidth;
+      }
       videoRenderLayout = Obx(() => Stack(
             children: [
               Container(
@@ -168,8 +166,8 @@ class HomeScreen extends GetView<HomeController> {
                 right: 0,
                 child: Container(
                   alignment: Alignment.bottomRight,
-                  width: width / 2,
-                  height: (width / 2) * ratioHW,
+                  width: Get.width / 2,
+                  height: (Get.width / 2) * ratioHW,
                   child: RTCVideoView(
                     controller.localVideoRenderer.value,
                   ),
@@ -250,11 +248,16 @@ class HomeScreen extends GetView<HomeController> {
           controller.chatMachine.current =
               ChatStates.ended; // will show feedback screen not good.
           controller.sendChatScore(score).then((value) {}).catchError((error) {
-            SnackBar snackBar = SnackBar(
-              content: Text(error.toString()),
+            Get.snackbar(
+              "Error",
+              error.toString(),
+              snackPosition: SnackPosition.TOP,
+              backgroundColor: Colors.red.withOpacity(.75),
+              colorText: Colors.white,
+              icon: const Icon(Icons.error, color: Colors.white),
+              shouldIconPulse: true,
+              barBlur: 20,
             );
-
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }).whenComplete(() {
             controller.chatMachine.current = ChatStates.end;
           });

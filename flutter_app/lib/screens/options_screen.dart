@@ -7,6 +7,7 @@ import 'package:flutter_app/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../controllers/options_controller.dart';
+import '../services/local_preferences_service.dart';
 import '../widgets/LoadingWidget.dart';
 import '../widgets/dropdown_preference_widget.dart';
 import '../widgets/history_widget.dart';
@@ -218,44 +219,32 @@ class OptionsScreen extends GetView<OptionsController> {
     //   },
     // );
 
-    Widget preferences = FutureBuilder<Options>(
-      future: Options.getOptions(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          bool confirmFeedbackPopup =
-              snapshot.data?.getConfirmFeedbackPopup() ?? true;
-          bool autoQueue = snapshot.data?.getAutoQueue() ?? false;
-          return Column(children: [
-            Row(
-              children: [
-                const Text("Swipe feedback popup:"),
-                Switch(
-                  value: confirmFeedbackPopup,
-                  onChanged: (bool newValue) async {
-                    await snapshot.data?.setConfirmFeedbackPopup(newValue);
-                  },
-                )
-              ],
-            ),
-            Row(
-              children: [
-                const Text("Auto queue:"),
-                Switch(
-                  value: autoQueue,
-                  onChanged: (bool newValue) async {
-                    await snapshot.data?.setAutoQueue(newValue);
-                  },
-                )
-              ],
-            )
-          ]);
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
+    LocalPreferences localPreferences = Get.find();
+
+    Widget preferences = Obx(() => Column(children: [
+          Row(
+            children: [
+              const Text("Swipe feedback popup:"),
+              Switch(
+                value: localPreferences.feedbackPopup.value,
+                onChanged: (bool newValue) async {
+                  localPreferences.feedbackPopup.value = newValue;
+                },
+              )
+            ],
+          ),
+          Row(
+            children: [
+              const Text("Auto queue:"),
+              Switch(
+                value: localPreferences.autoQueue.value,
+                onChanged: (bool newValue) async {
+                  localPreferences.autoQueue.value = newValue;
+                },
+              )
+            ],
+          )
+        ]));
 
     Widget settings = Container(
         alignment: Alignment.topCenter,

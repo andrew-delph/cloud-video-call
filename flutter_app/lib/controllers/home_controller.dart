@@ -6,16 +6,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart' hide navigator;
+import 'package:get_storage/get_storage.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:statemachine/statemachine.dart';
 import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../config/Factory.dart';
 import '../services/auth_service.dart';
+import '../services/local_preferences_service.dart';
 import '../utils/state_machines.dart';
 import '../utils/utils.dart';
 
 class HomeController extends GetxController with StateMixin {
+  LocalPreferences localPreferences = Get.find();
+
   Rx<MediaStream?> localMediaStream = Rx(null);
   Rx<MediaStream?> remoteMediaStream = Rx(null);
   Rx<RTCPeerConnection?> peerConnection = Rx(null);
