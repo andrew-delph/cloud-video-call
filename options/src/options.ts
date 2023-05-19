@@ -47,7 +47,7 @@ app.post(`/providefeedback`, async (req, res) => {
 
   if (!auth) {
     logger.debug(`Missing Authorization`);
-    res.status(401).json({ error: `Missing Authorization` });
+    res.status(403).json({ error: `Missing Authorization` });
     return;
   } else if (
     !(typeof feedback_id === `number` && !isNaN(feedback_id)) ||
@@ -62,7 +62,7 @@ app.post(`/providefeedback`, async (req, res) => {
 
   let uid: string = await getUid(auth).catch((error) => {
     logger.debug(`getUid error: ${error}`);
-    res.status(401).send(`failed authentication`);
+    res.status(403).send(`failed authentication`);
     return;
   });
 
@@ -105,13 +105,13 @@ app.put(`/preferences`, async (req, res) => {
 
   if (!auth) {
     logger.debug(`Missing Authorization`);
-    res.status(401).json({ error: `Missing Authorization` });
+    res.status(403).json({ error: `Missing Authorization` });
     return;
   }
 
   let uid: string = await getUid(auth).catch((error) => {
     logger.debug(`getUid error: ${error}`);
-    res.status(401).send(`failed authentication`);
+    res.status(403).send(`failed authentication`);
     return;
   });
 
@@ -166,13 +166,13 @@ app.get(`/preferences`, async (req, res) => {
 
   if (!auth) {
     logger.debug(`Missing Authorization`);
-    res.status(401).json({ error: `Missing Authorization` });
+    res.status(403).json({ error: `Missing Authorization` });
     return;
   }
 
   let uid: string = await getUid(auth).catch((error) => {
     logger.debug(`getUid error: ${error}`);
-    res.status(401).send(`failed authentication`);
+    res.status(403).send(`failed authentication`);
     return;
   });
 
@@ -230,13 +230,13 @@ app.get(`/history`, async (req, res) => {
 
   if (!auth) {
     logger.debug(`Missing Authorization`);
-    res.status(401).json({ error: `Missing Authorization` });
+    res.status(403).json({ error: `Missing Authorization` });
     return;
   }
 
   let uid: string = await getUid(auth).catch((error) => {
     logger.debug(`getUid error: ${error}`);
-    res.status(401).send(`failed authentication`);
+    res.status(403).send(`failed authentication`);
     return;
   });
 
