@@ -245,74 +245,78 @@ class HomeScreen extends GetView<HomeController> {
             ),
           ],
         ),
-        body: Flex(
-          direction: Axis.horizontal,
-          children: [
-            isInChat() == false
-                ? Container(
-                    width: 100,
-                    color: Colors.white,
-                    child: chatButton,
-                  )
-                : Container(),
-            Expanded(
-                child: Obx(
-              () => Stack(
-                children: [
-                  videoRenderLayout,
-                  controller.localMediaStream.value == null
-                      ? Container()
-                      : Positioned(
-                          left: 0,
-                          right: 0,
-                          bottom: 20,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                tooltip: "End call",
-                                icon: const Icon(Icons.call_end),
-                                color: isInChat() ? Colors.red : Colors.white,
-                                onPressed: () {
-                                  if (isInChat()) {
-                                    controller.chatMachine.current =
-                                        ChatStates.ended;
-                                  }
-                                },
-                              ),
-                              IconButton(
-                                tooltip: "Mute mic",
-                                color: controller.isMuteMic()
-                                    ? Colors.red
-                                    : Colors.white,
-                                icon: controller.isMuteMic()
-                                    ? const Icon(Icons.mic_off)
-                                    : const Icon(Icons.mic),
-                                onPressed: () {
-                                  controller.toggleMuteMic();
-                                },
-                              ),
-                              IconButton(
-                                tooltip: "Camera off",
-                                color: controller.isHideCam()
-                                    ? Colors.red
-                                    : Colors.white,
-                                icon: controller.isHideCam()
-                                    ? const Icon(Icons.videocam_off)
-                                    : const Icon(Icons.videocam),
-                                onPressed: () {
-                                  controller.toggleHideCam();
-                                },
-                              ),
-                              // SettingsButton(controller),
-                            ],
-                          ),
-                        ),
-                ],
-              ),
-            )),
-          ],
-        ));
+        body: controller.obx(
+            (state) => Flex(
+                  direction: Axis.horizontal,
+                  children: [
+                    isInChat() == false
+                        ? Container(
+                            width: 100,
+                            color: Colors.white,
+                            child: chatButton,
+                          )
+                        : Container(),
+                    Expanded(
+                        child: Obx(
+                      () => Stack(
+                        children: [
+                          videoRenderLayout,
+                          controller.localMediaStream.value == null
+                              ? Container()
+                              : Positioned(
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 20,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        tooltip: "End call",
+                                        icon: const Icon(Icons.call_end),
+                                        color: isInChat()
+                                            ? Colors.red
+                                            : Colors.white,
+                                        onPressed: () {
+                                          if (isInChat()) {
+                                            controller.chatMachine.current =
+                                                ChatStates.ended;
+                                          }
+                                        },
+                                      ),
+                                      IconButton(
+                                        tooltip: "Mute mic",
+                                        color: controller.isMuteMic()
+                                            ? Colors.red
+                                            : Colors.white,
+                                        icon: controller.isMuteMic()
+                                            ? const Icon(Icons.mic_off)
+                                            : const Icon(Icons.mic),
+                                        onPressed: () {
+                                          controller.toggleMuteMic();
+                                        },
+                                      ),
+                                      IconButton(
+                                        tooltip: "Camera off",
+                                        color: controller.isHideCam()
+                                            ? Colors.red
+                                            : Colors.white,
+                                        icon: controller.isHideCam()
+                                            ? const Icon(Icons.videocam_off)
+                                            : const Icon(Icons.videocam),
+                                        onPressed: () {
+                                          controller.toggleHideCam();
+                                        },
+                                      ),
+                                      // SettingsButton(controller),
+                                    ],
+                                  ),
+                                ),
+                        ],
+                      ),
+                    )),
+                  ],
+                ),
+            onLoading: CircularProgressIndicator()));
   }
 }
 
