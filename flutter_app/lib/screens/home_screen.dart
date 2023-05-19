@@ -120,15 +120,6 @@ class HomeScreen extends GetView<HomeController> {
           controller.chatMachine.current?.identifier == ChatStates.matched;
     }
 
-    // if socket is connecting
-    if (controller.socketMachine.current?.identifier == SocketStates.connecting)
-      return connectingWidget;
-
-    // if socket is error
-    if (controller.socketMachine.current?.identifier == SocketStates.error) {
-      return errorWidget;
-    }
-
     // if (controller.chatMachine.current?.identifier ==
     //     ChatStates.feedback) {
     //   return FeedbackScreen(
@@ -292,24 +283,26 @@ class HomeScreen extends GetView<HomeController> {
           ],
         ),
         body: controller.obx(
-            (state) => Flex(
-                  direction: Axis.horizontal,
-                  children: [
-                    isInChat() == false
-                        ? Container(
-                            width: 100,
-                            color: Colors.white,
-                            child: chatButton,
-                          )
-                        : Container(),
-                    Expanded(
-                      child: Stack(
-                        children: [videoRenderLayout, chatButtons],
-                      ),
-                    ),
-                  ],
+          (state) => Flex(
+            direction: Axis.horizontal,
+            children: [
+              isInChat() == false
+                  ? Container(
+                      width: 100,
+                      color: Colors.white,
+                      child: chatButton,
+                    )
+                  : Container(),
+              Expanded(
+                child: Stack(
+                  children: [videoRenderLayout, chatButtons],
                 ),
-            onLoading: CircularProgressIndicator()));
+              ),
+            ],
+          ),
+          onLoading: CircularProgressIndicator(),
+          onError: (error) => Text('Error: $error'),
+        ));
   }
 }
 
