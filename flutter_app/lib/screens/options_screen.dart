@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/routes/app_pages.dart';
@@ -313,7 +315,15 @@ class OptionsScreen extends GetView<OptionsController> {
         child: Scaffold(
             appBar: AppBar(
               leading: BackButton(
-                onPressed: () => Get.toNamed(Routes.HOME),
+                onPressed: () {
+                  log("previous: ${Get.routing.previous.isEmpty}");
+                  if (Get.routing.previous.isEmpty) {
+                    Get.toNamed(Routes.HOME);
+                  } else {
+                    Get.back(canPop: true, closeOverlays: false);
+                  }
+                  // Get.toNamed(Routes.HOME);
+                },
               ),
               title: const Text('Options screen'),
             ),
