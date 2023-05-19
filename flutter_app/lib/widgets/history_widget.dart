@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/services/options_service.dart';
 import 'package:get/get.dart';
 
+import '../models/history_model.dart';
+
 class HistoryWidget extends StatelessWidget {
   Rx<HistoryModel> historyModel = HistoryModel().obs;
 

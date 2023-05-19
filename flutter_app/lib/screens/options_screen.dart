@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/routes/app_pages.dart';
 import 'package:flutter_app/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -311,6 +312,9 @@ class OptionsScreen extends GetView<OptionsController> {
         },
         child: Scaffold(
             appBar: AppBar(
+              leading: BackButton(
+                onPressed: () => Get.toNamed(Routes.HOME),
+              ),
               title: const Text('Options screen'),
             ),
             body: Center(

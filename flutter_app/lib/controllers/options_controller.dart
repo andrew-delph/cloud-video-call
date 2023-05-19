@@ -1,6 +1,7 @@
 import 'package:flutter_app/utils/utils.dart';
 import 'package:get/get.dart';
 
+import '../models/preferences_model.dart';
 import '../services/options_service.dart';
 
 class OptionsController extends GetxController {

@@ -20,13 +20,14 @@ class HomeScreen extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: Text("home screen..."),
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.settings),
               tooltip: 'Options',
               onPressed: () {
-                Get.offNamedUntil(Routes.OPTIONS, (route) => true);
+                Get.toNamed(Routes.OPTIONS);
               },
             ),
             IconButton(
