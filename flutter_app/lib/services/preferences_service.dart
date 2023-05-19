@@ -15,36 +15,21 @@ class PreferencesService extends GetxController {
 
   PreferencesService() {
     constantAttributes.listen((p0) {
-      updateChanges(true);
+      unsavedChanges(true);
     });
     constantFilters.listen((p0) {
-      updateChanges(true);
+      unsavedChanges(true);
     });
     customAttributes.listen((p0) {
-      updateChanges(true);
+      unsavedChanges(true);
     });
     customFilters.listen((p0) {
-      updateChanges(true);
+      unsavedChanges(true);
     });
-    priority.listen((p0) {
-      updateChanges(true);
-    });
-  }
-
-  void updateChanges(bool flag) {
-    unsavedChanges.value = flag;
-    unsavedChanges.refresh();
-  }
-
-  void updateLoading(bool flag) {
-    loading.value = flag;
-    unsavedChanges.refresh();
   }
 
   Future<void> loadAttributes() async {
-    loading.update((val) {
-      loading.value = true;
-    });
+    loading(true);
     return optionsProvider.getPreferences().then((response) {
       Preferences? preferences = response.body;
 
@@ -58,15 +43,9 @@ class PreferencesService extends GetxController {
       constantFilters.addAll(preferences.constantFilters);
       customAttributes.addAll(preferences.customAttributes);
       customFilters.addAll(preferences.customFilters);
-      priority.value = preferences.priority;
-
-      unsavedChanges.update((val) {
-        unsavedChanges.value = false;
-      });
-
-      loading.update((val) {
-        loading.value = false;
-      });
+      priority(preferences.priority);
+      unsavedChanges(false);
+      loading(false);
     });
   }
 
@@ -81,9 +60,7 @@ class PreferencesService extends GetxController {
         'custom': customFilters,
       }
     };
-    loading.update((val) {
-      loading.value = true;
-    });
+    loading(true);
     return optionsProvider.updatePreferences(body).then((response) {
       if (validStatusCode(response.statusCode)) {
       } else {

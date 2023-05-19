@@ -24,9 +24,6 @@ class OptionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text("options screen");
-    AppProvider appProvider = Provider.of<AppProvider>(context);
-
     preferencesService.loadAttributes();
 
     Widget profile = Obx(() {
@@ -196,42 +193,42 @@ class OptionsScreen extends StatelessWidget {
                 ],
               ));
 
-    FutureBuilder devices =
-        FutureBuilder<List<PopupMenuEntry<MediaDeviceInfo>>>(
-      future: appProvider.getDeviceEntries(),
-      builder: (context, snapshot) {
-        List<Widget> mediaList = [
-          const Text(
-            "Devices",
-            style: TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          )
-        ];
+    // FutureBuilder devices =
+    //     FutureBuilder<List<PopupMenuEntry<MediaDeviceInfo>>>(
+    //   future: appProvider.getDeviceEntries(),
+    //   builder: (context, snapshot) {
+    //     List<Widget> mediaList = [
+    //       const Text(
+    //         "Devices",
+    //         style: TextStyle(
+    //           fontSize: 24.0,
+    //           fontWeight: FontWeight.bold,
+    //           color: Colors.black,
+    //         ),
+    //       )
+    //     ];
 
-        if (snapshot.hasData) {
-          mediaList = mediaList + (snapshot.data ?? []);
-        }
+    //     if (snapshot.hasData) {
+    //       mediaList = mediaList + (snapshot.data ?? []);
+    //     }
 
-        return Container(
-            alignment: Alignment.topCenter,
-            decoration: BoxDecoration(
-              color: Colors.teal,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.all(20),
-            margin: const EdgeInsets.all(20),
-            constraints: const BoxConstraints(
-              maxWidth: 1000,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: mediaList,
-            ));
-      },
-    );
+    //     return Container(
+    //         alignment: Alignment.topCenter,
+    //         decoration: BoxDecoration(
+    //           color: Colors.teal,
+    //           borderRadius: BorderRadius.circular(12),
+    //         ),
+    //         padding: const EdgeInsets.all(20),
+    //         margin: const EdgeInsets.all(20),
+    //         constraints: const BoxConstraints(
+    //           maxWidth: 1000,
+    //         ),
+    //         child: Column(
+    //           crossAxisAlignment: CrossAxisAlignment.center,
+    //           children: mediaList,
+    //         ));
+    //   },
+    // );
 
     Widget preferences = FutureBuilder<Options>(
       future: Options.getOptions(),
@@ -299,7 +296,7 @@ class OptionsScreen extends StatelessWidget {
                   const Divider(),
                   preferences,
                   const Divider(),
-                  devices
+                  // devices
                 ],
               ));
 
