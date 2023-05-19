@@ -24,6 +24,7 @@ class OptionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Text("options screen");
     AppProvider appProvider = Provider.of<AppProvider>(context);
 
     preferencesService.loadAttributes();

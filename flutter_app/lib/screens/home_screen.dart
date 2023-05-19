@@ -26,10 +26,7 @@ class HomeScreen extends GetView<HomeController> {
               icon: const Icon(Icons.settings),
               tooltip: 'Options',
               onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => OptionsScreen()),
-                // );
+                Get.offNamedUntil(Routes.OPTIONS, (route) => true);
               },
             ),
             IconButton(
