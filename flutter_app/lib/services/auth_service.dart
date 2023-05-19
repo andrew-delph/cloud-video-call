@@ -4,8 +4,6 @@ import 'package:get/get.dart';
 import '../routes/app_pages.dart';
 
 class AuthService extends GetxService {
-  String? token;
-
   @override
   void onInit() {
     super.onInit();
@@ -15,7 +13,7 @@ class AuthService extends GetxService {
     String? token = await FirebaseAuth.instance.currentUser?.getIdToken();
 
     if (token == null) {
-      Get.find<AuthService>().signOut();
+      signOut();
       Get.offAllNamed(Routes.LOGIN);
       throw "Authentication Error";
     }

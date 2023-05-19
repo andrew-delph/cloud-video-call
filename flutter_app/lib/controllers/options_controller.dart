@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import '../services/options_service.dart';
 
 class OptionsController extends GetxController {
-  final OptionsService optionsProvider = OptionsService();
+  final OptionsService optionsService;
   final RxMap<String, String> constantAttributes = <String, String>{}.obs;
   final RxMap<String, String> constantFilters = <String, String>{}.obs;
   final RxMap<String, String> customAttributes = <String, String>{}.obs;
@@ -13,7 +13,7 @@ class OptionsController extends GetxController {
   RxBool unsavedChanges = false.obs;
   RxBool loading = false.obs;
 
-  OptionsController() {
+  OptionsController(this.optionsService) {
     constantAttributes.listen((p0) {
       unsavedChanges(true);
     });
@@ -36,7 +36,7 @@ class OptionsController extends GetxController {
 
   Future<void> loadAttributes() async {
     loading(true);
-    return optionsProvider.getPreferences().then((response) {
+    return optionsService.getPreferences().then((response) {
       Preferences? preferences = response.body;
 
       if (validStatusCode(response.statusCode) && preferences != null) {
@@ -67,7 +67,7 @@ class OptionsController extends GetxController {
       }
     };
     loading(true);
-    return optionsProvider.updatePreferences(body).then((response) {
+    return optionsService.updatePreferences(body).then((response) {
       if (validStatusCode(response.statusCode)) {
       } else {
         const String errorMsg = 'Failed to update preferences.';

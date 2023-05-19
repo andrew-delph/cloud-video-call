@@ -8,16 +8,6 @@ import 'api_service.dart';
 class OptionsService extends ApiService {
   OptionsService() {
     httpClient.baseUrl = Factory.getOptionsHost();
-
-    httpClient.addRequestModifier((Request request) async {
-      final token = await FirebaseAuth.instance.currentUser!.getIdToken();
-
-      // Set the header
-      request.headers['authorization'] = token;
-      return request;
-    });
-
-    httpClient.maxAuthRetries = 3;
   }
 
   Future<Response> health() => get('/health');
