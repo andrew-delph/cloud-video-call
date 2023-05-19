@@ -33,6 +33,7 @@ void main() {
     g = GetStorage();
     await g.erase();
   });
+
   test('test observable', () {
     final RxInt value = 0.obs;
 
