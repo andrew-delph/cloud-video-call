@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -38,10 +39,9 @@ class HomeController extends GetxController with StateMixin {
     change(null, status: RxStatus.loading());
 
     remoteMediaStream.listen((remoteMediaStream) {
-      remoteVideoRenderer.update((remoteVideoRenderer) {
-        remoteVideoRenderer?.initialize().then((_) {
-          remoteVideoRenderer.srcObject = remoteMediaStream;
-        });
+      remoteVideoRenderer.update((remoteVideoRenderer) async {
+        await remoteVideoRenderer!.initialize();
+        remoteVideoRenderer.srcObject = remoteMediaStream;
       });
     });
 
@@ -167,7 +167,6 @@ class HomeController extends GetxController with StateMixin {
 
     mySocket.on('activeCount', (data) {
       activeCount = int.tryParse(data.toString()) ?? -1;
-      //notifyListeners();
     });
 
     mySocket.on('established', (data) {
@@ -175,13 +174,11 @@ class HomeController extends GetxController with StateMixin {
       established(true);
       socketMachine.current = SocketStates.established;
       change(null, status: RxStatus.success());
-      //notifyListeners();
     });
 
     mySocket.onConnect((_) {
       socketMachine.current = SocketStates.connected;
       mySocket.emit('message', 'from flutter app connected');
-      //notifyListeners();
     });
 
     mySocket.on('message', (data) => print(data));
@@ -222,17 +219,15 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<void> initLocalStream() async {
-    if (localMediaStream != null) return;
+    if (localMediaStream.value != null) return;
     await localMediaStream.value?.dispose();
 
     localVideoRenderer.value?.onResize = () {
-      // //notifyListeners();
       print("localVideoRenderer.onResize!!!!!!!!!!!!!!!!!!!!!!!!!");
     };
 
     try {
       await setLocalMediaStream();
-      // //notifyListeners();
     } catch (error) {
       handleError(ErrorDetails("initLocalStream", error.toString()));
     }
@@ -266,7 +261,6 @@ class HomeController extends GetxController with StateMixin {
           state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
         chatMachine.current = ChatStates.connectionError;
       }
-      //notifyListeners();
     };
     // END SETUP PEER CONNECTION
 
@@ -450,14 +444,11 @@ class HomeController extends GetxController with StateMixin {
         remoteVideoRenderer.value.muted = false;
         print(" (WebRTC.platformIsWebremoteVideoRenderer!.muted = false;");
       }
-
-      //notifyListeners();
     });
   }
 
   Future<void> resetRemoteMediaStream() async {
     remoteMediaStream(await createLocalMediaStream("remote"));
-    //notifyListeners();
   }
 
   Future<void> setLocalMediaStream() async {
@@ -686,7 +677,6 @@ class HomeController extends GetxController with StateMixin {
     final finalLocalVideoTrack = localVideoTrack.value;
     if (finalLocalVideoTrack != null) {
       finalLocalVideoTrack.enabled = (isHideCam());
-      // //notifyListeners();
     }
   }
 
@@ -702,7 +692,6 @@ class HomeController extends GetxController with StateMixin {
     final finalLocalAudioTrack = localAudioTrack.value;
     if (finalLocalAudioTrack != null) {
       Helper.setMicrophoneMute(!(isMuteMic()), finalLocalAudioTrack);
-      // //notifyListeners();
     }
   }
 }

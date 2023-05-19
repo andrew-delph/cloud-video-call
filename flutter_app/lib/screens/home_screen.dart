@@ -256,10 +256,11 @@ class HomeScreen extends GetView<HomeController> {
                   )
                 : Container(),
             Expanded(
-              child: Stack(
+                child: Obx(
+              () => Stack(
                 children: [
                   videoRenderLayout,
-                  controller.localMediaStream == null
+                  controller.localMediaStream.value == null
                       ? Container()
                       : Positioned(
                           left: 0,
@@ -309,7 +310,7 @@ class HomeScreen extends GetView<HomeController> {
                         ),
                 ],
               ),
-            ),
+            )),
           ],
         ));
   }
