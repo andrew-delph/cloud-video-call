@@ -54,10 +54,12 @@ class HomeController extends GetxController with StateMixin {
     });
 
     socketMachine[SocketStates.connecting].onEntry(() async {
+      change(null, status: RxStatus.loading());
       await initSocket();
     });
 
     socketMachine[SocketStates.error].onTimeout(const Duration(seconds: 3), () {
+      change(null, status: RxStatus.loading());
       socketMachine.current = SocketStates.connecting;
     });
 
