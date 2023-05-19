@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 class HistoryWidget extends StatelessWidget {
   Rx<HistoryModel> historyModel = HistoryModel().obs;
 
-  OptionsProvider optionsProvider = OptionsProvider();
+  OptionsService optionsProvider = OptionsService();
   HistoryWidget({
     Key? key,
   }) : super(key: key);

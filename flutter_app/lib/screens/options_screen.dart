@@ -7,16 +7,14 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import '../services/app_service.dart';
-import '../services/preferences_service.dart';
+import '../controllers/options_controller.dart';
 import '../widgets/LoadingWidget.dart';
 import '../widgets/dropdown_preference_widget.dart';
 import '../widgets/history_widget.dart';
 import '../widgets/location_options.dart';
 
-class OptionsScreen extends StatelessWidget {
+class OptionsScreen extends GetView<OptionsController> {
   double priority = 0;
-
-  final PreferencesService preferencesService = PreferencesService();
 
   bool loading = false;
 
@@ -24,8 +22,6 @@ class OptionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    preferencesService.loadAttributes();
-
     Widget profile = Obx(() {
       return Container(
           alignment: Alignment.topCenter,
@@ -38,7 +34,7 @@ class OptionsScreen extends StatelessWidget {
           constraints: const BoxConstraints(
             maxWidth: 1000,
           ),
-          child: preferencesService.loading.value
+          child: controller.loading.value
               ? connectingWidget
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -71,8 +67,7 @@ class OptionsScreen extends StatelessWidget {
                           DropDownPreference(
                             label: 'Gender',
                             options: const [naValue, "Male", "Female", "Other"],
-                            preferenceMap:
-                                preferencesService.constantAttributes,
+                            preferenceMap: controller.constantAttributes,
                             mapKey: 'gender',
                           ),
                           DropDownPreference(
@@ -83,8 +78,7 @@ class OptionsScreen extends StatelessWidget {
                               "French",
                               "Other"
                             ],
-                            preferenceMap:
-                                preferencesService.constantAttributes,
+                            preferenceMap: controller.constantAttributes,
                             mapKey: 'language',
                           ),
                         ],
@@ -106,7 +100,7 @@ class OptionsScreen extends StatelessWidget {
                           DropDownPreference(
                             label: 'Gender',
                             options: const [naValue, "Male", "Female", "Other"],
-                            preferenceMap: preferencesService.constantFilters,
+                            preferenceMap: controller.constantFilters,
                             mapKey: 'gender',
                           ),
                           DropDownPreference(
@@ -117,7 +111,7 @@ class OptionsScreen extends StatelessWidget {
                               "French",
                               "Other"
                             ],
-                            preferenceMap: preferencesService.constantFilters,
+                            preferenceMap: controller.constantFilters,
                             mapKey: 'language',
                           ),
                         ],
@@ -137,9 +131,8 @@ class OptionsScreen extends StatelessWidget {
                             ),
                           ),
                           LocationOptionsWidget(
-                              customAttributes:
-                                  preferencesService.customAttributes,
-                              customFilters: preferencesService.customFilters),
+                              customAttributes: controller.customAttributes,
+                              customFilters: controller.customFilters),
                         ],
                       ),
                     ),
@@ -148,10 +141,10 @@ class OptionsScreen extends StatelessWidget {
                         height: 50,
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: !preferencesService.unsavedChanges.value
+                          onPressed: !controller.unsavedChanges.value
                               ? null
                               : () async {
-                                  await preferencesService.updateAttributes();
+                                  await controller.updateAttributes();
                                   Get.snackbar('Updated',
                                       'Preferences have been updated',
                                       snackPosition: SnackPosition.BOTTOM);
@@ -302,7 +295,7 @@ class OptionsScreen extends StatelessWidget {
 
     return WillPopScope(
         onWillPop: () async {
-          if (!preferencesService.unsavedChanges.value) return true;
+          if (!controller.unsavedChanges.value) return true;
           bool confirm = await showDialog(
             context: context,
             builder: (BuildContext context) {

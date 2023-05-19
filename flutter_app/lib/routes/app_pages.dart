@@ -3,6 +3,7 @@ import 'package:flutter_app/screens/options_screen.dart';
 import 'package:get/get.dart';
 
 import '../bindings/home_binding.dart';
+import '../bindings/options_binding.dart';
 import '../middlewares/auth_middleware.dart';
 import '../screens/login_screen.dart';
 import '../screens/main_screen.dart';
@@ -23,6 +24,7 @@ class AppPages {
     GetPage(
         name: Routes.OPTIONS,
         page: () => OptionsScreen(),
+        binding: OptionsBinding(),
         middlewares: [AuthMiddleware()],
         transition: Transition.leftToRight),
   ];

@@ -1,10 +1,10 @@
 import 'package:flutter_app/utils/utils.dart';
 import 'package:get/get.dart';
 
-import 'options_service.dart';
+import '../services/options_service.dart';
 
-class PreferencesService extends GetxController {
-  final OptionsProvider optionsProvider = OptionsProvider();
+class OptionsController extends GetxController {
+  final OptionsService optionsProvider = OptionsService();
   final RxMap<String, String> constantAttributes = <String, String>{}.obs;
   final RxMap<String, String> constantFilters = <String, String>{}.obs;
   final RxMap<String, String> customAttributes = <String, String>{}.obs;
@@ -13,7 +13,7 @@ class PreferencesService extends GetxController {
   RxBool unsavedChanges = false.obs;
   RxBool loading = false.obs;
 
-  PreferencesService() {
+  OptionsController() {
     constantAttributes.listen((p0) {
       unsavedChanges(true);
     });
@@ -26,6 +26,12 @@ class PreferencesService extends GetxController {
     customFilters.listen((p0) {
       unsavedChanges(true);
     });
+  }
+
+  @override
+  onInit() {
+    super.onInit();
+    loadAttributes();
   }
 
   Future<void> loadAttributes() async {

@@ -8,7 +8,7 @@ void main() {
   // });
 
   test('test OptionsProvider health', () async {
-    var provider = OptionsProvider();
+    var provider = OptionsService();
 
     Response health = await provider.health();
 

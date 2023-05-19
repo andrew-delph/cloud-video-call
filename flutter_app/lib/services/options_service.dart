@@ -5,8 +5,8 @@ import 'package:get/get_connect/http/src/request/request.dart';
 import '../config/Factory.dart';
 import 'api_service.dart';
 
-class OptionsProvider extends ApiService {
-  OptionsProvider() {
+class OptionsService extends ApiService {
+  OptionsService() {
     httpClient.baseUrl = Factory.getOptionsHost();
 
     httpClient.addRequestModifier((Request request) async {
