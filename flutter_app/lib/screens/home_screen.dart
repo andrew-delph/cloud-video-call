@@ -163,47 +163,93 @@ class HomeScreen extends GetView<HomeController> {
     }
 
     if (width < height) {
-      videoRenderLayout = Stack(
-        children: [
-          Container(
-            color: Colors.black,
-            child: RTCVideoView(
-              controller.remoteVideoRenderer.value,
-              // objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-            ),
-          ),
-          Positioned(
-            bottom: 20, // get the size of the row buttons..?
-            right: 0,
-            child: Container(
-              alignment: Alignment.bottomRight,
-              width: width / 2,
-              height: (width / 2) * ratioHW,
-              child: RTCVideoView(
-                controller.localVideoRenderer.value,
+      videoRenderLayout = Obx(() => Stack(
+            children: [
+              Container(
+                color: Colors.black,
+                child: RTCVideoView(
+                  controller.remoteVideoRenderer.value,
+                  // objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                ),
+              ),
+              Positioned(
+                bottom: 20, // get the size of the row buttons..?
+                right: 0,
+                child: Container(
+                  alignment: Alignment.bottomRight,
+                  width: width / 2,
+                  height: (width / 2) * ratioHW,
+                  child: RTCVideoView(
+                    controller.localVideoRenderer.value,
+                  ),
+                ),
+              ),
+            ],
+          ));
+    } else {
+      videoRenderLayout = Obx(() => Row(
+            children: [
+              Expanded(
+                child: Container(
+                  color: Colors.black,
+                  child: RTCVideoView(controller.remoteVideoRenderer.value),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  color: Colors.black,
+                  child: RTCVideoView(controller.localVideoRenderer.value),
+                ),
+              ),
+            ],
+          ));
+    }
+
+    Widget chatButtons = Obx(
+      () => controller.localMediaStream.value == null
+          ? Container()
+          : Positioned(
+              left: 0,
+              right: 0,
+              bottom: 20,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    tooltip: "End call",
+                    icon: const Icon(Icons.call_end),
+                    color: isInChat() ? Colors.red : Colors.white,
+                    onPressed: () {
+                      if (isInChat()) {
+                        controller.chatMachine.current = ChatStates.ended;
+                      }
+                    },
+                  ),
+                  IconButton(
+                    tooltip: "Mute mic",
+                    color: controller.isMuteMic() ? Colors.red : Colors.white,
+                    icon: controller.isMuteMic()
+                        ? const Icon(Icons.mic_off)
+                        : const Icon(Icons.mic),
+                    onPressed: () {
+                      controller.toggleMuteMic();
+                    },
+                  ),
+                  IconButton(
+                    tooltip: "Camera off",
+                    color: controller.isHideCam() ? Colors.red : Colors.white,
+                    icon: controller.isHideCam()
+                        ? const Icon(Icons.videocam_off)
+                        : const Icon(Icons.videocam),
+                    onPressed: () {
+                      controller.toggleHideCam();
+                    },
+                  ),
+                  // SettingsButton(controller),
+                ],
               ),
             ),
-          ),
-        ],
-      );
-    } else {
-      videoRenderLayout = Row(
-        children: [
-          Expanded(
-            child: Container(
-              color: Colors.black,
-              child: RTCVideoView(controller.remoteVideoRenderer.value),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              color: Colors.black,
-              child: RTCVideoView(controller.localVideoRenderer.value),
-            ),
-          ),
-        ],
-      );
-    }
+    );
 
     videoRenderLayout = SwipeDetector(
         isDragUpdate: () {
@@ -257,63 +303,10 @@ class HomeScreen extends GetView<HomeController> {
                           )
                         : Container(),
                     Expanded(
-                        child: Obx(
-                      () => Stack(
-                        children: [
-                          videoRenderLayout,
-                          controller.localMediaStream.value == null
-                              ? Container()
-                              : Positioned(
-                                  left: 0,
-                                  right: 0,
-                                  bottom: 20,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      IconButton(
-                                        tooltip: "End call",
-                                        icon: const Icon(Icons.call_end),
-                                        color: isInChat()
-                                            ? Colors.red
-                                            : Colors.white,
-                                        onPressed: () {
-                                          if (isInChat()) {
-                                            controller.chatMachine.current =
-                                                ChatStates.ended;
-                                          }
-                                        },
-                                      ),
-                                      IconButton(
-                                        tooltip: "Mute mic",
-                                        color: controller.isMuteMic()
-                                            ? Colors.red
-                                            : Colors.white,
-                                        icon: controller.isMuteMic()
-                                            ? const Icon(Icons.mic_off)
-                                            : const Icon(Icons.mic),
-                                        onPressed: () {
-                                          controller.toggleMuteMic();
-                                        },
-                                      ),
-                                      IconButton(
-                                        tooltip: "Camera off",
-                                        color: controller.isHideCam()
-                                            ? Colors.red
-                                            : Colors.white,
-                                        icon: controller.isHideCam()
-                                            ? const Icon(Icons.videocam_off)
-                                            : const Icon(Icons.videocam),
-                                        onPressed: () {
-                                          controller.toggleHideCam();
-                                        },
-                                      ),
-                                      // SettingsButton(controller),
-                                    ],
-                                  ),
-                                ),
-                        ],
+                      child: Stack(
+                        children: [videoRenderLayout, chatButtons],
                       ),
-                    )),
+                    ),
                   ],
                 ),
             onLoading: CircularProgressIndicator()));
