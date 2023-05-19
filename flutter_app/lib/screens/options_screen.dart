@@ -1,12 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/utils.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:provider/provider.dart';
-
-import '../services/app_service.dart';
 import '../controllers/options_controller.dart';
 import '../widgets/LoadingWidget.dart';
 import '../widgets/dropdown_preference_widget.dart';
@@ -14,11 +10,7 @@ import '../widgets/history_widget.dart';
 import '../widgets/location_options.dart';
 
 class OptionsScreen extends GetView<OptionsController> {
-  double priority = 0;
-
-  bool loading = false;
-
-  OptionsScreen({super.key});
+  const OptionsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +41,7 @@ class OptionsScreen extends GetView<OptionsController> {
                     ),
                     const Divider(),
                     UserProfileWidget(
-                      priority: priority,
+                      priority: controller.priority.value,
                     ),
                     const Divider(),
                     Container(
@@ -168,7 +160,7 @@ class OptionsScreen extends GetView<OptionsController> {
         constraints: const BoxConstraints(
           maxWidth: 1000,
         ),
-        child: loading
+        child: false
             ? connectingWidget
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -273,7 +265,7 @@ class OptionsScreen extends GetView<OptionsController> {
         constraints: const BoxConstraints(
           maxWidth: 1000,
         ),
-        child: loading
+        child: false
             ? connectingWidget
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
