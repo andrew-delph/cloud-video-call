@@ -1,6 +1,7 @@
 import 'package:flutter_app/utils/utils.dart';
 import 'package:get/get.dart';
 
+import '../models/history_model.dart';
 import '../models/preferences_model.dart';
 import '../services/options_service.dart';
 
@@ -11,6 +12,7 @@ class OptionsController extends GetxController {
   final RxMap<String, String> customAttributes = <String, String>{}.obs;
   final RxMap<String, String> customFilters = <String, String>{}.obs;
   final RxDouble priority = (0.0).obs;
+  Rx<HistoryModel?> historyModel = Rx(null);
   RxBool unsavedChanges = false.obs;
   RxBool loading = false.obs;
 
@@ -33,6 +35,7 @@ class OptionsController extends GetxController {
   onInit() {
     super.onInit();
     loadAttributes();
+    optionsService.getHistory().then((response) => historyModel(response.body));
   }
 
   Future<void> loadAttributes() async {

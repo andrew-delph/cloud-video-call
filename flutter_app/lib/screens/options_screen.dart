@@ -320,7 +320,7 @@ class OptionsScreen extends GetView<OptionsController> {
                   if (Get.routing.previous.isEmpty) {
                     Get.toNamed(Routes.HOME);
                   } else {
-                    Get.back(canPop: true, closeOverlays: false);
+                    Get.back();
                   }
                   // Get.toNamed(Routes.HOME);
                 },

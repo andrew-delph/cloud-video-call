@@ -241,7 +241,6 @@ class HomeScreen extends GetView<HomeController> {
               tooltip: 'Logout',
               onPressed: () async {
                 Get.find<AuthService>().signOut();
-                Get.offAllNamed(Routes.LOGIN);
               },
             ),
           ],

@@ -14,7 +14,6 @@ class AuthService extends GetxService {
 
     if (token == null) {
       signOut();
-      Get.offAllNamed(Routes.LOGIN);
       throw "Authentication Error";
     }
     return token;
@@ -26,5 +25,6 @@ class AuthService extends GetxService {
 
   signOut() async {
     await FirebaseAuth.instance.signOut();
+    Get.offAllNamed(Routes.LOGIN);
   }
 }
