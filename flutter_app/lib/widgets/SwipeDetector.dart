@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/utils/utils.dart';
 import 'package:get/get.dart';
 
 import '../services/local_preferences_service.dart';
