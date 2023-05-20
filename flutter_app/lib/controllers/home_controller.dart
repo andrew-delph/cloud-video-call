@@ -14,7 +14,6 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../config/Factory.dart';
 import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
-import '../utils/state_machines.dart';
 import '../utils/utils.dart';
 
 class HomeController extends GetxController with StateMixin {
@@ -29,11 +28,15 @@ class HomeController extends GetxController with StateMixin {
   Rx<MediaStreamTrack?> localVideoTrack = Rx(null);
   Rx<MediaStreamTrack?> localAudioTrack = Rx(null);
 
+  Rx<RTCPeerConnectionState?> peerConnectionState = Rx(null);
+
   Rx<io.Socket?> socket = Rx(null);
   String? feedbackId;
 
   RxDouble localVideoRendererRatioHw = 0.0.obs;
   RxDouble remoteVideoRendererRatioHw = 0.0.obs;
+
+  RxBool inReadyQueue = false.obs;
 
   @override
   onInit() async {
@@ -153,6 +156,17 @@ class HomeController extends GetxController with StateMixin {
     socket.value?.dispose();
   }
 
+  bool isInChat() {
+    return [
+      RTCPeerConnectionState.RTCPeerConnectionStateConnecting,
+      RTCPeerConnectionState.RTCPeerConnectionStateConnected
+    ].contains(peerConnectionState.value);
+  }
+
+  bool isInReadyQueue() {
+    return inReadyQueue.value;
+  }
+
   Future<void> initLocalStream() async {
     if (localMediaStream.value != null) return;
     await localMediaStream.value?.dispose();
@@ -173,7 +187,7 @@ class HomeController extends GetxController with StateMixin {
     await resetRemoteMediaStream();
   }
 
-  Future<void> ready() async {
+  Future<void> queueReady() async {
     await tryResetRemote();
     await initLocalStream();
     socket.value!.off("client_host");
@@ -183,6 +197,10 @@ class HomeController extends GetxController with StateMixin {
 
     // START SETUP PEER CONNECTION
     peerConnection(await Factory.createPeerConnection());
+    peerConnection.value!.onConnectionState =
+        (RTCPeerConnectionState connectionState) {
+      peerConnectionState(connectionState);
+    };
     // END SETUP PEER CONNECTION
 
     // START add localMediaStream to peerConnection
@@ -269,6 +287,7 @@ class HomeController extends GetxController with StateMixin {
     socket.value!.emitWithAck("ready", {'ready': true}, ack: (data) {
       // TODO if ack timeout then do something
       log("ready ack $data");
+      inReadyQueue(true);
     });
   }
 
@@ -279,6 +298,7 @@ class HomeController extends GetxController with StateMixin {
     socket.value!.off("icecandidate");
     socket.value!.emitWithAck("ready", {'ready': false}, ack: (data) {
       log("ready ack $data");
+      inReadyQueue(false);
     });
   }
 

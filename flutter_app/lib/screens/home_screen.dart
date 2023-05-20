@@ -1,19 +1,12 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_app/services/auth_service.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:provider/provider.dart';
 
 import '../controllers/home_controller.dart';
 import '../routes/app_pages.dart';
-import '../services/app_service.dart';
 import '../utils/utils.dart';
-import '../widgets/LoadingWidget.dart';
 import '../widgets/SwipeDetector.dart';
-import 'feedback_screen.dart';
 
 class HomeScreen extends GetView<HomeController> {
   Set<int> dialogLock = {};
@@ -113,14 +106,6 @@ class HomeScreen extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    isInChat() {
-      return false;
-    }
-
-    isInReadyQueue() {
-      return false;
-    }
-
     // if (controller.chatMachine.current?.identifier ==
     //     ChatStates.feedback) {
     //   return FeedbackScreen(
@@ -133,9 +118,10 @@ class HomeScreen extends GetView<HomeController> {
               Colors.yellow.shade100), // Change the color here
         ),
         onPressed: () async {
-          await controller.ready();
+          controller.queueReady();
         },
-        child: Text((isInReadyQueue() == false) ? 'Ready' : 'Cancel Ready'));
+        child: Text(
+            (controller.isInReadyQueue() == false) ? 'Ready' : 'Cancel Ready'));
 
     Widget chatButtons = Obx(
       () => controller.localMediaStream.value == null
@@ -150,9 +136,9 @@ class HomeScreen extends GetView<HomeController> {
                   IconButton(
                     tooltip: "End call",
                     icon: const Icon(Icons.call_end),
-                    color: isInChat() ? Colors.red : Colors.white,
+                    color: controller.isInChat() ? Colors.red : Colors.white,
                     onPressed: () {
-                      if (isInChat()) {}
+                      if (controller.isInChat()) {}
                     },
                   ),
                   IconButton(
@@ -183,7 +169,7 @@ class HomeScreen extends GetView<HomeController> {
 
     Widget videoRenderLayout = SwipeDetector(
         isDragUpdate: () {
-          return isInChat();
+          return controller.isInChat();
         },
         onHorizontalDragEnd: (double score) {
           controller.sendChatScore(score).then((value) {}).catchError((error) {
@@ -226,7 +212,7 @@ class HomeScreen extends GetView<HomeController> {
           (state) => Flex(
             direction: Axis.horizontal,
             children: [
-              isInChat() == false
+              controller.isInChat() == false
                   ? Container(
                       width: 100,
                       color: Colors.white,
@@ -240,16 +226,16 @@ class HomeScreen extends GetView<HomeController> {
               ),
             ],
           ),
-          onLoading: CircularProgressIndicator(),
+          onLoading: const CircularProgressIndicator(),
           onError: (error) => Column(
             children: [
-              Text("Socket Error"),
+              const Text("Connection Error."),
               Text('$error'),
               ElevatedButton(
                   onPressed: () {
                     controller.initSocket();
                   },
-                  child: Text("Reconnect."))
+                  child: const Text("Reconnect."))
             ],
           ),
         ));
