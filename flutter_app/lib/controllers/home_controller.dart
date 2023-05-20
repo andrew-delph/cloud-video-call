@@ -209,8 +209,7 @@ class HomeController extends GetxController with StateMixin {
       feedbackId = value["feedback_id"];
       log("feedback_id: $feedbackId");
       if (feedbackId == null) {
-        log.logError(info: 'feedbackId == null');
-        log('feedbackId == null', error: true);
+        log.printError(info: 'feedbackId == null');
         return;
       }
       switch (role) {
@@ -218,7 +217,7 @@ class HomeController extends GetxController with StateMixin {
           {
             setClientHost().catchError((error) {
               log("setClientHost error! $error");
-              log.logError(info: error.toString());
+              log.printError(info: error.toString());
             }).then((value) {
               log("completed setClientHost");
             });
@@ -227,8 +226,7 @@ class HomeController extends GetxController with StateMixin {
         case "guest":
           {
             setClientGuest().catchError((error) {
-              log("setClientGuest error! $error");
-              log.logError(info: error.toString());
+              log.printError(info: error.toString());
             }).then((value) {
               log("completed setClientGuest");
             });
@@ -236,8 +234,7 @@ class HomeController extends GetxController with StateMixin {
           break;
         default:
           {
-            log("role is not host/guest: $role");
-            log.logError(info: "role is not host/guest: $role");
+            log.printError(info: "role is not host/guest: $role");
           }
           break;
       }
