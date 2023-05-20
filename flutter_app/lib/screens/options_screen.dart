@@ -30,7 +30,7 @@ class OptionsScreen extends GetView<OptionsController> {
           constraints: const BoxConstraints(
             maxWidth: 1000,
           ),
-          child: controller.loading.value
+          child: controller.loading()
               ? connectingWidget
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -45,7 +45,7 @@ class OptionsScreen extends GetView<OptionsController> {
                     ),
                     const Divider(),
                     UserProfileWidget(
-                      priority: controller.priority.value,
+                      priority: controller.priority(),
                     ),
                     const Divider(),
                     Container(
@@ -137,7 +137,7 @@ class OptionsScreen extends GetView<OptionsController> {
                         height: 50,
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: !controller.unsavedChanges.value
+                          onPressed: !controller.unsavedChanges()
                               ? null
                               : () async {
                                   await controller.updateAttributes();
@@ -226,9 +226,9 @@ class OptionsScreen extends GetView<OptionsController> {
             children: [
               const Text("Swipe feedback popup:"),
               Switch(
-                value: localPreferences.feedbackPopup.value,
+                value: localPreferences.feedbackPopup(),
                 onChanged: (bool newValue) async {
-                  localPreferences.feedbackPopup.value = newValue;
+                  localPreferences.feedbackPopup(newValue);
                 },
               )
             ],
@@ -237,9 +237,9 @@ class OptionsScreen extends GetView<OptionsController> {
             children: [
               const Text("Auto queue:"),
               Switch(
-                value: localPreferences.autoQueue.value,
+                value: localPreferences.autoQueue(),
                 onChanged: (bool newValue) async {
-                  localPreferences.autoQueue.value = newValue;
+                  localPreferences.autoQueue(newValue);
                 },
               )
             ],
@@ -279,7 +279,7 @@ class OptionsScreen extends GetView<OptionsController> {
 
     return WillPopScope(
         onWillPop: () async {
-          if (!controller.unsavedChanges.value) return true;
+          if (!controller.unsavedChanges()) return true;
           bool confirm = await showDialog(
             context: context,
             builder: (BuildContext context) {

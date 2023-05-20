@@ -201,7 +201,7 @@ class SettingsButton extends GetResponsiveView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final length = controller.deviceEntries.value.length;
+      final length = controller.deviceEntries().length;
 
       return length == 0
           ? Container()
@@ -210,7 +210,7 @@ class SettingsButton extends GetResponsiveView<HomeController> {
               // initialValue: 'selectedMenu',
               // Callback that sets the selected popup menu item.
               itemBuilder: (BuildContext context) {
-                return controller.deviceEntries.value;
+                return controller.deviceEntries();
                 // return controller.deviceEntries;
               },
             );
@@ -228,7 +228,7 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
             Container(
               color: Colors.black,
               child: RTCVideoView(
-                controller.remoteVideoRenderer.value,
+                controller.remoteVideoRenderer(),
                 // objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
               ),
             ),
@@ -238,10 +238,10 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
               child: Container(
                 alignment: Alignment.bottomRight,
                 width: Get.width / 2,
-                height: (Get.width / 2) *
-                    controller.localVideoRendererRatioHw.value,
+                height:
+                    (Get.width / 2) * controller.localVideoRendererRatioHw(),
                 child: RTCVideoView(
-                  controller.localVideoRenderer.value,
+                  controller.localVideoRenderer(),
                 ),
               ),
             ),
@@ -256,13 +256,13 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
             Expanded(
               child: Container(
                 color: Colors.black,
-                child: RTCVideoView(controller.remoteVideoRenderer.value),
+                child: RTCVideoView(controller.remoteVideoRenderer()),
               ),
             ),
             Expanded(
               child: Container(
                 color: Colors.black,
-                child: RTCVideoView(controller.localVideoRenderer.value),
+                child: RTCVideoView(controller.localVideoRenderer()),
               ),
             ),
           ],
@@ -291,22 +291,22 @@ class ButtonsOverlay extends GetView<HomeController> {
                     await controller.endChat();
                   },
                 ),
-              if (controller.localMediaStream.value != null)
+              if (controller.localMediaStream() != null)
                 IconButton(
                   tooltip: "Mute mic",
-                  color: controller.isMicMute.value ? Colors.red : Colors.white,
-                  icon: controller.isMicMute.value
+                  color: controller.isMicMute() ? Colors.red : Colors.white,
+                  icon: controller.isMicMute()
                       ? const Icon(Icons.mic_off)
                       : const Icon(Icons.mic),
                   onPressed: () {
                     controller.isMicMute.toggle();
                   },
                 ),
-              if (controller.localMediaStream.value != null)
+              if (controller.localMediaStream() != null)
                 IconButton(
                   tooltip: "Camera off",
-                  color: controller.isCamHide.value ? Colors.red : Colors.white,
-                  icon: controller.isCamHide.value
+                  color: controller.isCamHide() ? Colors.red : Colors.white,
+                  icon: controller.isCamHide()
                       ? const Icon(Icons.videocam_off)
                       : const Icon(Icons.videocam),
                   onPressed: () {

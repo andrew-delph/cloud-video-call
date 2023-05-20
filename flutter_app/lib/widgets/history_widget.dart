@@ -14,7 +14,7 @@ class HistoryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      HistoryModel? historyModel = optionsController.historyModel.value;
+      HistoryModel? historyModel = optionsController.historyModel();
 
       if (historyModel == null) return const Text("Loading history...");
 

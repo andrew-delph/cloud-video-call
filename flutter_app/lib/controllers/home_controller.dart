@@ -69,36 +69,36 @@ class HomeController extends GetxController with StateMixin {
           localVideoRenderer.srcObject = localMediaStream;
         });
       });
-      (await peerConnection.value?.senders)?.forEach((element) {
+      (await peerConnection()?.senders)?.forEach((element) {
         if (element.track?.kind == 'audio') {
           log("replacing audio...");
-          element.replaceTrack(localAudioTrack.value);
+          element.replaceTrack(localAudioTrack());
         }
       });
 
-      (await peerConnection.value?.senders)?.forEach((element) {
+      (await peerConnection()?.senders)?.forEach((element) {
         log("element.track.kind ${element.track?.kind}");
         if (element.track?.kind == 'video') {
           log("replacing video...");
-          element.replaceTrack(localVideoTrack.value);
+          element.replaceTrack(localVideoTrack());
         }
       });
     });
 
     localVideoTrack.listen((localVideoTrack) {
-      localVideoTrack?.enabled = !isCamHide.value;
+      localVideoTrack?.enabled = !isCamHide();
     });
 
     isCamHide.listen((isCamHide) {
-      localVideoTrack.value?.enabled = !isCamHide;
+      localVideoTrack()?.enabled = !isCamHide;
     });
 
     localAudioTrack.listen((localAudioTrack) {
-      Helper.setMicrophoneMute(!(isMicMute.value), localAudioTrack!);
+      Helper.setMicrophoneMute(!(isMicMute()), localAudioTrack!);
     });
 
     isMicMute.listen((isMicMute) {
-      Helper.setMicrophoneMute(!(isMicMute), localAudioTrack.value!);
+      Helper.setMicrophoneMute(!(isMicMute), localAudioTrack()!);
     });
 
     // await initSocket();
@@ -110,17 +110,17 @@ class HomeController extends GetxController with StateMixin {
   @override
   Future<void> dispose() async {
     super.dispose();
-    socket.value?.destroy();
-    await localMediaStream.value?.dispose();
-    await remoteMediaStream.value?.dispose();
-    await peerConnection.value?.close();
+    socket()?.destroy();
+    await localMediaStream()?.dispose();
+    await remoteMediaStream()?.dispose();
+    await peerConnection()?.close();
   }
 
   Future<void> initSocket() async {
     disposeSocket();
     String socketAddress = Factory.getWsHost();
 
-    log("SOCKET_ADDRESS is $socketAddress .... ${socket.value == null}");
+    log("SOCKET_ADDRESS is $socketAddress .... ${socket() == null}");
 
     // only websocket works on windows
 
@@ -194,27 +194,27 @@ class HomeController extends GetxController with StateMixin {
   }
 
   void disposeSocket() {
-    socket.value?.dispose();
+    socket()?.dispose();
   }
 
   bool isInChat() {
     return [
       RTCPeerConnectionState.RTCPeerConnectionStateConnecting,
       RTCPeerConnectionState.RTCPeerConnectionStateConnected
-    ].contains(peerConnectionState.value);
+    ].contains(peerConnectionState());
   }
 
   bool isInReadyQueue() {
-    return inReadyQueue.value;
+    return inReadyQueue();
   }
 
   Future<void> initLocalStream() async {
-    if (localMediaStream.value != null) return;
-    await localMediaStream.value?.dispose();
+    if (localMediaStream() != null) return;
+    await localMediaStream()?.dispose();
 
-    localVideoRenderer.value?.onResize = () {
-      localVideoRendererRatioHw(localVideoRenderer.value.videoHeight /
-          localVideoRenderer.value.videoWidth);
+    localVideoRenderer()?.onResize = () {
+      localVideoRendererRatioHw(
+          localVideoRenderer().videoHeight / localVideoRenderer().videoWidth);
       log("localVideoRenderer.onResize");
     };
 
@@ -222,8 +222,8 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<void> resetRemote() async {
-    if (peerConnection.value != null) {
-      await peerConnection.value?.close();
+    if (peerConnection() != null) {
+      await peerConnection()?.close();
     }
     await resetRemoteMediaStream();
   }
@@ -231,42 +231,42 @@ class HomeController extends GetxController with StateMixin {
   Future<void> queueReady() async {
     await resetRemote();
     await initLocalStream();
-    socket.value!.off("client_host");
-    socket.value!.off("client_guest");
-    socket.value!.off("match");
-    socket.value!.off("icecandidate");
+    socket()!.off("client_host");
+    socket()!.off("client_guest");
+    socket()!.off("match");
+    socket()!.off("icecandidate");
 
     // START SETUP PEER CONNECTION
     peerConnection(await Factory.createPeerConnection());
-    peerConnection.value!.onConnectionState =
+    peerConnection()!.onConnectionState =
         (RTCPeerConnectionState connectionState) {
       peerConnectionState(connectionState);
     };
     // END SETUP PEER CONNECTION
 
     // START add localMediaStream to peerConnection
-    localMediaStream.value!.getTracks().forEach((track) async {
-      await peerConnection.value!.addTrack(track, localMediaStream.value!);
+    localMediaStream()!.getTracks().forEach((track) async {
+      await peerConnection()!.addTrack(track, localMediaStream()!);
     });
 
     // START add localMediaStream to peerConnection
 
     // START collect the streams/tracks from remote
-    peerConnection.value!.onAddStream = (stream) {
+    peerConnection()!.onAddStream = (stream) {
       // log("onAddStream");
       remoteMediaStream(stream);
     };
-    peerConnection.value!.onAddTrack = (stream, track) async {
+    peerConnection()!.onAddTrack = (stream, track) async {
       // log("onAddTrack");
       await addRemoteTrack(track);
     };
-    peerConnection.value!.onTrack = (RTCTrackEvent track) async {
+    peerConnection()!.onTrack = (RTCTrackEvent track) async {
       // log("onTrack");
       await addRemoteTrack(track.track);
     };
     // END collect the streams/tracks from remote
 
-    socket.value!.on("match", (request) async {
+    socket()!.on("match", (request) async {
       List data = request as List;
       dynamic value = data[0] as dynamic;
       Function callback = data[1] as Function;
@@ -306,8 +306,8 @@ class HomeController extends GetxController with StateMixin {
     });
 
     // START HANDLE ICE CANDIDATES
-    peerConnection.value!.onIceCandidate = (event) {
-      socket.value!.emit("icecandidate", {
+    peerConnection()!.onIceCandidate = (event) {
+      socket()!.emit("icecandidate", {
         "icecandidate": {
           'candidate': event.candidate,
           'sdpMid': event.sdpMid,
@@ -315,17 +315,17 @@ class HomeController extends GetxController with StateMixin {
         }
       });
     };
-    socket.value!.on("icecandidate", (data) async {
+    socket()!.on("icecandidate", (data) async {
       // log("got ice!");
       RTCIceCandidate iceCandidate = RTCIceCandidate(
           data["icecandidate"]['candidate'],
           data["icecandidate"]['sdpMid'],
           data["icecandidate"]['sdpMlineIndex']);
-      peerConnection.value!.addCandidate(iceCandidate);
+      peerConnection()!.addCandidate(iceCandidate);
     });
     // END HANDLE ICE CANDIDATES
 
-    socket.value!.emitWithAck("ready", {'ready': true}, ack: (data) {
+    socket()!.emitWithAck("ready", {'ready': true}, ack: (data) {
       // TODO if ack timeout then do something
       log("ready ack $data");
       inReadyQueue(true);
@@ -338,11 +338,11 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<void> unReady() async {
-    socket.value!.off("client_host");
-    socket.value!.off("client_guest");
-    socket.value!.off("match");
-    socket.value!.off("icecandidate");
-    socket.value!.emitWithAck("ready", {'ready': false}, ack: (data) {
+    socket()!.off("client_host");
+    socket()!.off("client_guest");
+    socket()!.off("match");
+    socket()!.off("icecandidate");
+    socket()!.emitWithAck("ready", {'ready': false}, ack: (data) {
       log("ready ack $data");
       inReadyQueue(false);
     });
@@ -353,24 +353,24 @@ class HomeController extends GetxController with StateMixin {
     final completer = Completer<void>();
 
     RTCSessionDescription offerDescription =
-        await peerConnection.value!.createOffer();
-    await peerConnection.value!.setLocalDescription(offerDescription);
+        await peerConnection()!.createOffer();
+    await peerConnection()!.setLocalDescription(offerDescription);
 
     // send the offer
-    socket.value!.emit("client_host", {
+    socket()!.emit("client_host", {
       "offer": {
         "type": offerDescription.type,
         "sdp": offerDescription.sdp,
       },
     });
 
-    socket.value!.on("client_host", (data) {
+    socket()!.on("client_host", (data) {
       try {
         if (data['answer'] != null) {
           // log("got answer");
           RTCSessionDescription answerDescription = RTCSessionDescription(
               data['answer']["sdp"], data['answer']["type"]);
-          peerConnection.value!.setRemoteDescription(answerDescription);
+          peerConnection()!.setRemoteDescription(answerDescription);
           completer.complete();
         }
       } catch (error) {
@@ -385,21 +385,20 @@ class HomeController extends GetxController with StateMixin {
     log("you are the guest");
     final completer = Completer<void>();
 
-    socket.value!.on("client_guest", (data) async {
+    socket()!.on("client_guest", (data) async {
       try {
         if (data["offer"] != null) {
           // log("got offer");
-          await peerConnection.value!.setRemoteDescription(
-              RTCSessionDescription(
-                  data["offer"]["sdp"], data["offer"]["type"]));
+          await peerConnection()!.setRemoteDescription(RTCSessionDescription(
+              data["offer"]["sdp"], data["offer"]["type"]));
 
           RTCSessionDescription answerDescription =
-              await peerConnection.value!.createAnswer();
+              await peerConnection()!.createAnswer();
 
-          await peerConnection.value!.setLocalDescription(answerDescription);
+          await peerConnection()!.setLocalDescription(answerDescription);
 
           // send the offer
-          socket.value!.emit("client_guest", {
+          socket()!.emit("client_guest", {
             "answer": {
               "type": answerDescription.type,
               "sdp": answerDescription.sdp,
@@ -416,14 +415,14 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<void> addRemoteTrack(MediaStreamTrack track) async {
-    await remoteMediaStream.value!.addTrack(track);
-    remoteVideoRenderer.value.initialize().then((value) {
-      remoteVideoRenderer.value.srcObject = remoteMediaStream.value;
+    await remoteMediaStream()!.addTrack(track);
+    remoteVideoRenderer().initialize().then((value) {
+      remoteVideoRenderer().srcObject = remoteMediaStream();
 
       // TODO open pr or issue on https://github.com/flutter-webrtc/flutter-webrtc
       // you cannot create a MediaStream
       if (WebRTC.platformIsWeb) {
-        remoteVideoRenderer.value.muted = false;
+        remoteVideoRenderer().muted = false;
         log(" (WebRTC.platformIsWebremoteVideoRenderer!.muted = false;");
       }
     });
@@ -488,7 +487,7 @@ class HomeController extends GetxController with StateMixin {
     localPreferences.audioDeviceLabel(mediaDeviceInfo.label);
 
     await setLocalMediaStream();
-    log("got audio stream .. ${localMediaStream.value?.getAudioTracks()[0]}");
+    log("got audio stream .. ${localMediaStream()?.getAudioTracks()[0]}");
   }
 
   Future<void> changeAudioOutput(MediaDeviceInfo mediaDeviceInfo) async {
@@ -517,9 +516,9 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<List<PopupMenuEntry<MediaDeviceInfo>>> getDeviceEntries() async {
-    List<MediaDeviceInfo> mediaDevices = mediaDevicesList.value;
+    List<MediaDeviceInfo> mediaDevices = mediaDevicesList();
     int deviceCount =
-        mediaDevicesList.value.where((obj) => obj.deviceId.isNotEmpty).length;
+        mediaDevicesList().where((obj) => obj.deviceId.isNotEmpty).length;
 
     if (deviceCount == 0) {
       return [
@@ -557,7 +556,7 @@ class HomeController extends GetxController with StateMixin {
         case "videoinput":
           videoInputList.add(PopupMenuItem<MediaDeviceInfo>(
             textStyle:
-                localPreferences.videoDeviceLabel.value == mediaDeviceInfo.label
+                localPreferences.videoDeviceLabel() == mediaDeviceInfo.label
                     ? const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.blue,
@@ -576,7 +575,7 @@ class HomeController extends GetxController with StateMixin {
           audioInputList.add(PopupMenuItem<MediaDeviceInfo>(
             value: mediaDeviceInfo,
             textStyle:
-                localPreferences.audioDeviceLabel.value == mediaDeviceInfo.label
+                localPreferences.audioDeviceLabel() == mediaDeviceInfo.label
                     ? const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.blue,
