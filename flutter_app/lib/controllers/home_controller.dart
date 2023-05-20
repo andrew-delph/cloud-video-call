@@ -66,11 +66,11 @@ class HomeController extends GetxController with StateMixin {
     });
 
     localVideoTrack.listen((localVideoTrack) {
-      localVideoTrack?.enabled = isCamHide.value;
+      localVideoTrack?.enabled = !isCamHide.value;
     });
 
     isCamHide.listen((isCamHide) {
-      localVideoTrack.value?.enabled = isCamHide;
+      localVideoTrack.value?.enabled = !isCamHide;
     });
 
     localAudioTrack.listen((localAudioTrack) {
