@@ -36,7 +36,7 @@ class HomeScreen extends GetView<HomeController> {
                   : 'Cancel Ready'),
             )));
 
-    Widget videoRenderLayout = SwipeDetector(
+    Widget videoRenderLayout = FeedbackSwipeDetector(
         isDragUpdate: () {
           return controller.isInChat();
         },

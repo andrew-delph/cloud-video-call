@@ -6,13 +6,13 @@ import 'package:get/get.dart';
 
 import '../services/local_preferences_service.dart';
 
-class SwipeDetector extends StatefulWidget {
+class FeedbackSwipeDetector extends StatefulWidget {
   final Widget child;
 
   final bool Function()? isDragUpdate;
   final void Function(double score) onHorizontalDragEnd;
 
-  const SwipeDetector(
+  const FeedbackSwipeDetector(
       {super.key,
       required this.child,
       this.isDragUpdate,
@@ -20,11 +20,11 @@ class SwipeDetector extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return SwipeDetectorState();
+    return FeedbackSwipeDetectorState();
   }
 }
 
-class SwipeDetectorState extends State<SwipeDetector> {
+class FeedbackSwipeDetectorState extends State<FeedbackSwipeDetector> {
   double _positionX = 0;
 
   LocalPreferences localPreferences = Get.find();
