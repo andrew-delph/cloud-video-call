@@ -214,7 +214,7 @@ class HomeController extends GetxController with StateMixin {
       log("localVideoRenderer.onResize");
     };
 
-    await _setLocalMediaStream();
+    localMediaStream(await _getLocalMediaStream());
   }
 
   Future<void> resetRemote() async {
@@ -428,7 +428,7 @@ class HomeController extends GetxController with StateMixin {
     remoteMediaStream(await createLocalMediaStream("remote"));
   }
 
-  Future<void> _setLocalMediaStream() async {
+  Future<MediaStream> _getLocalMediaStream() async {
     final Map<String, dynamic> mediaConstraints = {
       'audio': true,
       'video': true,
@@ -468,7 +468,7 @@ class HomeController extends GetxController with StateMixin {
       mediaStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
     }
 
-    localMediaStream(mediaStream);
+    return mediaStream;
   }
 
   Future<void> changeCamera(MediaDeviceInfo mediaDeviceInfo) async {
