@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/app_service.dart';
-import '../widgets/SwipeDetector.dart';
+import '../widgets/feedback_swipe_detector.dart';
 
 class FeedbackScreen extends StatelessWidget {
   final String label;

@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 
 import '../controllers/home_controller.dart';
 import '../routes/app_pages.dart';
-import '../widgets/SwipeDetector.dart';
+import '../widgets/feedback_swipe_detector.dart';
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
