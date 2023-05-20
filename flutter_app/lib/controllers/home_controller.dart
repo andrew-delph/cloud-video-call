@@ -38,6 +38,9 @@ class HomeController extends GetxController with StateMixin {
 
   RxBool inReadyQueue = false.obs;
 
+  RxBool isMicMute = false.obs;
+  RxBool isCamHide = false.obs;
+
   @override
   onInit() async {
     super.onInit();
@@ -52,12 +55,30 @@ class HomeController extends GetxController with StateMixin {
     });
 
     localMediaStream.listen((localMediaStream) {
+      localVideoTrack(localMediaStream?.getVideoTracks()[0]);
+      localAudioTrack(localMediaStream?.getAudioTracks()[0]);
       log("localMediaStream changed!");
       localVideoRenderer.update((localVideoRenderer) {
         localVideoRenderer?.initialize().then((_) {
           localVideoRenderer.srcObject = localMediaStream;
         });
       });
+    });
+
+    localVideoTrack.listen((localVideoTrack) {
+      localVideoTrack?.enabled = isCamHide.value;
+    });
+
+    isCamHide.listen((isCamHide) {
+      localVideoTrack.value?.enabled = isCamHide;
+    });
+
+    localAudioTrack.listen((localAudioTrack) {
+      Helper.setMicrophoneMute(!(isMicMute.value), localAudioTrack!);
+    });
+
+    isMicMute.listen((isMicMute) {
+      Helper.setMicrophoneMute(!(isMicMute), localAudioTrack.value!);
     });
 
     // await initSocket();
@@ -127,7 +148,7 @@ class HomeController extends GetxController with StateMixin {
 
     mySocket.on('message', (data) => log(data));
     mySocket.on('endchat', (data) async {
-      log("got endchat event");
+      await endChat();
     });
     mySocket.onDisconnect((details) {
       change(null, status: RxStatus.error(details.toString()));
@@ -180,7 +201,7 @@ class HomeController extends GetxController with StateMixin {
     await setLocalMediaStream();
   }
 
-  Future<void> tryResetRemote() async {
+  Future<void> resetRemote() async {
     if (peerConnection.value != null) {
       await peerConnection.value?.close();
     }
@@ -188,7 +209,7 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<void> queueReady() async {
-    await tryResetRemote();
+    await resetRemote();
     await initLocalStream();
     socket.value!.off("client_host");
     socket.value!.off("client_guest");
@@ -289,6 +310,11 @@ class HomeController extends GetxController with StateMixin {
       log("ready ack $data");
       inReadyQueue(true);
     });
+  }
+
+  Future<void> endChat() async {
+    log("end chat");
+    resetRemote();
   }
 
   Future<void> unReady() async {
@@ -595,35 +621,5 @@ class HomeController extends GetxController with StateMixin {
     }
 
     return videoInputList + audioInputList; // + audioOutputList;
-  }
-
-  bool isHideCam() {
-    final finalLocalVideoTrack = localVideoTrack.value;
-    if (finalLocalVideoTrack != null) {
-      return !finalLocalVideoTrack.enabled;
-    }
-    return true;
-  }
-
-  Future<void> toggleHideCam() async {
-    final finalLocalVideoTrack = localVideoTrack.value;
-    if (finalLocalVideoTrack != null) {
-      finalLocalVideoTrack.enabled = (isHideCam());
-    }
-  }
-
-  bool isMuteMic() {
-    final finalLocalAudioTrack = localAudioTrack.value;
-    if (finalLocalAudioTrack != null) {
-      return !finalLocalAudioTrack.enabled;
-    }
-    return true;
-  }
-
-  Future<void> toggleMuteMic() async {
-    final finalLocalAudioTrack = localAudioTrack.value;
-    if (finalLocalAudioTrack != null) {
-      Helper.setMicrophoneMute(!(isMuteMic()), finalLocalAudioTrack);
-    }
   }
 }

@@ -289,31 +289,30 @@ class ButtonsOverlay extends GetView<HomeController> {
                   tooltip: "End call",
                   icon: const Icon(Icons.call_end),
                   color: Colors.red,
-                  onPressed: () {
-                    log("end call");
-                    // if (controller.isInChat()) {}
+                  onPressed: () async {
+                    await controller.endChat();
                   },
                 ),
               if (controller.localMediaStream.value != null)
                 IconButton(
                   tooltip: "Mute mic",
-                  color: controller.isMuteMic() ? Colors.red : Colors.white,
-                  icon: controller.isMuteMic()
+                  color: controller.isMicMute.value ? Colors.red : Colors.white,
+                  icon: controller.isMicMute.value
                       ? const Icon(Icons.mic_off)
                       : const Icon(Icons.mic),
                   onPressed: () {
-                    controller.toggleMuteMic();
+                    controller.isMicMute.toggle();
                   },
                 ),
               if (controller.localMediaStream.value != null)
                 IconButton(
                   tooltip: "Camera off",
-                  color: controller.isHideCam() ? Colors.red : Colors.white,
-                  icon: controller.isHideCam()
+                  color: controller.isCamHide.value ? Colors.red : Colors.white,
+                  icon: controller.isCamHide.value
                       ? const Icon(Icons.videocam_off)
                       : const Icon(Icons.videocam),
                   onPressed: () {
-                    controller.toggleHideCam();
+                    controller.isCamHide.toggle();
                   },
                 ),
               // SettingsButton(controller),
