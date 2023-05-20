@@ -112,16 +112,23 @@ class HomeScreen extends GetView<HomeController> {
     //       label: 'Submit Feedback', controller: controller, appProvider: null,);
     // }
 
-    Widget chatButton = TextButton(
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(
-              Colors.yellow.shade100), // Change the color here
-        ),
-        onPressed: () async {
-          controller.queueReady();
-        },
-        child: Text(
-            (controller.isInReadyQueue() == false) ? 'Ready' : 'Cancel Ready'));
+    Widget chatButton = Obx(() => controller.isInChat()
+        ? Container()
+        : Container(
+            width: 100,
+            color: Colors.white,
+            child: TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    Colors.yellow.shade100), // Change the color here
+              ),
+              onPressed: () async {
+                controller.queueReady();
+              },
+              child: Text((controller.isInReadyQueue() == false)
+                  ? 'Ready'
+                  : 'Cancel Ready'),
+            )));
 
     Widget chatButtons = Obx(
       () => controller.localMediaStream.value == null
@@ -212,13 +219,7 @@ class HomeScreen extends GetView<HomeController> {
           (state) => Flex(
             direction: Axis.horizontal,
             children: [
-              controller.isInChat() == false
-                  ? Container(
-                      width: 100,
-                      color: Colors.white,
-                      child: chatButton,
-                    )
-                  : Container(),
+              chatButton,
               Expanded(
                 child: Stack(
                   children: [videoRenderLayout, chatButtons],
