@@ -84,7 +84,7 @@ class HomeScreen extends GetView<HomeController> {
               chatButton,
               Expanded(
                 child: Stack(
-                  children: [videoRenderLayout, ButtonsOverlay()],
+                  children: [videoRenderLayout, const ButtonsOverlay()],
                 ),
               ),
             ],
