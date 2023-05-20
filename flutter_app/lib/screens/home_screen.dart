@@ -1,6 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/services/auth_service.dart';
-import 'package:flutter_app/utils/state_machines.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -132,66 +133,9 @@ class HomeScreen extends GetView<HomeController> {
               Colors.yellow.shade100), // Change the color here
         ),
         onPressed: () async {
-          if (!isInReadyQueue()) {
-            await controller.ready();
-          } else {
-            await controller.unReady();
-          }
+          await controller.ready();
         },
         child: Text((isInReadyQueue() == false) ? 'Ready' : 'Cancel Ready'));
-
-    Widget videoRenderLayout;
-
-    BuildContext? context = Get.context;
-    if (context != null ? context.isSmallTablet : false) {
-      double ratioHW = 0;
-
-      if (controller.localVideoRenderer.value.videoHeight != 0 &&
-          controller.localVideoRenderer.value.videoWidth != 0) {
-        ratioHW = controller.localVideoRenderer.value.videoHeight /
-            controller.localVideoRenderer.value.videoWidth;
-      }
-      videoRenderLayout = Obx(() => Stack(
-            children: [
-              Container(
-                color: Colors.black,
-                child: RTCVideoView(
-                  controller.remoteVideoRenderer.value,
-                  // objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-                ),
-              ),
-              Positioned(
-                bottom: 20, // get the size of the row buttons..?
-                right: 0,
-                child: Container(
-                  alignment: Alignment.bottomRight,
-                  width: Get.width / 2,
-                  height: (Get.width / 2) * ratioHW,
-                  child: RTCVideoView(
-                    controller.localVideoRenderer.value,
-                  ),
-                ),
-              ),
-            ],
-          ));
-    } else {
-      videoRenderLayout = Obx(() => Row(
-            children: [
-              Expanded(
-                child: Container(
-                  color: Colors.black,
-                  child: RTCVideoView(controller.remoteVideoRenderer.value),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  color: Colors.black,
-                  child: RTCVideoView(controller.localVideoRenderer.value),
-                ),
-              ),
-            ],
-          ));
-    }
 
     Widget chatButtons = Obx(
       () => controller.localMediaStream.value == null
@@ -237,7 +181,7 @@ class HomeScreen extends GetView<HomeController> {
             ),
     );
 
-    videoRenderLayout = SwipeDetector(
+    Widget videoRenderLayout = SwipeDetector(
         isDragUpdate: () {
           return isInChat();
         },
@@ -255,7 +199,7 @@ class HomeScreen extends GetView<HomeController> {
             );
           }).whenComplete(() {});
         },
-        child: videoRenderLayout);
+        child: VideoRenderLayout());
 
     return Scaffold(
         appBar: AppBar(
@@ -336,3 +280,55 @@ class HomeScreen extends GetView<HomeController> {
 //     );
 //   }
 // }
+
+class VideoRenderLayout extends GetResponsiveView<HomeController> {
+  VideoRenderLayout({super.key});
+
+  @override
+  Widget tablet() {
+    return Obx(() => Stack(
+          children: [
+            Container(
+              color: Colors.black,
+              child: RTCVideoView(
+                controller.remoteVideoRenderer.value,
+                // objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+              ),
+            ),
+            Positioned(
+              bottom: 20, // get the size of the row buttons..?
+              right: 0,
+              child: Container(
+                alignment: Alignment.bottomRight,
+                width: Get.width / 2,
+                height: (Get.width / 2) *
+                    controller.localVideoRendererRatioHw.value,
+                child: RTCVideoView(
+                  controller.localVideoRenderer.value,
+                ),
+              ),
+            ),
+          ],
+        ));
+  }
+
+  @override
+  Widget desktop() {
+    return Obx(() => Row(
+          children: [
+            Expanded(
+              child: Container(
+                color: Colors.black,
+                child: RTCVideoView(controller.remoteVideoRenderer.value),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                color: Colors.black,
+                child: RTCVideoView(controller.localVideoRenderer.value),
+              ),
+            ),
+          ],
+        ));
+  }
+}

@@ -32,6 +32,9 @@ class HomeController extends GetxController with StateMixin {
   Rx<io.Socket?> socket = Rx(null);
   String? feedbackId;
 
+  RxDouble localVideoRendererRatioHw = 0.0.obs;
+  RxDouble remoteVideoRendererRatioHw = 0.0.obs;
+
   @override
   onInit() async {
     super.onInit();
@@ -46,6 +49,7 @@ class HomeController extends GetxController with StateMixin {
     });
 
     localMediaStream.listen((localMediaStream) {
+      log("localMediaStream changed!");
       localVideoRenderer.update((localVideoRenderer) {
         localVideoRenderer?.initialize().then((_) {
           localVideoRenderer.srcObject = localMediaStream;
@@ -154,7 +158,9 @@ class HomeController extends GetxController with StateMixin {
     await localMediaStream.value?.dispose();
 
     localVideoRenderer.value?.onResize = () {
-      log("localVideoRenderer.onResize!!!!!!!!!!!!!!!!!!!!!!!!!");
+      localVideoRendererRatioHw(localVideoRenderer.value.videoHeight /
+          localVideoRenderer.value.videoWidth);
+      log("localVideoRenderer.onResize");
     };
 
     await setLocalMediaStream();
@@ -209,15 +215,14 @@ class HomeController extends GetxController with StateMixin {
       feedbackId = value["feedback_id"];
       log("feedback_id: $feedbackId");
       if (feedbackId == null) {
-        log.printError(info: 'feedbackId == null');
+        log('feedbackId == null', error: true);
         return;
       }
       switch (role) {
         case "host":
           {
             setClientHost().catchError((error) {
-              log("setClientHost error! $error");
-              log.printError(info: error.toString());
+              log("setClientHost error! $error", error: true);
             }).then((value) {
               log("completed setClientHost");
             });
