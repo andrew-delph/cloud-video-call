@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/services/auth_service.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -124,50 +126,6 @@ class HomeScreen extends GetView<HomeController> {
                   : 'Cancel Ready'),
             )));
 
-    Widget chatButtons = Obx(
-      () => controller.localMediaStream.value == null
-          ? Container()
-          : Positioned(
-              left: 0,
-              right: 0,
-              bottom: 20,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    tooltip: "End call",
-                    icon: const Icon(Icons.call_end),
-                    color: controller.isInChat() ? Colors.red : Colors.white,
-                    onPressed: () {
-                      if (controller.isInChat()) {}
-                    },
-                  ),
-                  IconButton(
-                    tooltip: "Mute mic",
-                    color: controller.isMuteMic() ? Colors.red : Colors.white,
-                    icon: controller.isMuteMic()
-                        ? const Icon(Icons.mic_off)
-                        : const Icon(Icons.mic),
-                    onPressed: () {
-                      controller.toggleMuteMic();
-                    },
-                  ),
-                  IconButton(
-                    tooltip: "Camera off",
-                    color: controller.isHideCam() ? Colors.red : Colors.white,
-                    icon: controller.isHideCam()
-                        ? const Icon(Icons.videocam_off)
-                        : const Icon(Icons.videocam),
-                    onPressed: () {
-                      controller.toggleHideCam();
-                    },
-                  ),
-                  // SettingsButton(controller),
-                ],
-              ),
-            ),
-    );
-
     Widget videoRenderLayout = SwipeDetector(
         isDragUpdate: () {
           return controller.isInChat();
@@ -216,7 +174,7 @@ class HomeScreen extends GetView<HomeController> {
               chatButton,
               Expanded(
                 child: Stack(
-                  children: [videoRenderLayout, chatButtons],
+                  children: [videoRenderLayout, ButtonsOverlay()],
                 ),
               ),
             ],
@@ -310,6 +268,57 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
               ),
             ),
           ],
+        ));
+  }
+}
+
+class ButtonsOverlay extends GetView<HomeController> {
+  const ButtonsOverlay({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => Positioned(
+          left: 0,
+          right: 0,
+          bottom: 20,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (controller.isInChat())
+                IconButton(
+                  tooltip: "End call",
+                  icon: const Icon(Icons.call_end),
+                  color: Colors.red,
+                  onPressed: () {
+                    log("end call");
+                    // if (controller.isInChat()) {}
+                  },
+                ),
+              if (controller.localMediaStream.value != null)
+                IconButton(
+                  tooltip: "Mute mic",
+                  color: controller.isMuteMic() ? Colors.red : Colors.white,
+                  icon: controller.isMuteMic()
+                      ? const Icon(Icons.mic_off)
+                      : const Icon(Icons.mic),
+                  onPressed: () {
+                    controller.toggleMuteMic();
+                  },
+                ),
+              if (controller.localMediaStream.value != null)
+                IconButton(
+                  tooltip: "Camera off",
+                  color: controller.isHideCam() ? Colors.red : Colors.white,
+                  icon: controller.isHideCam()
+                      ? const Icon(Icons.videocam_off)
+                      : const Icon(Icons.videocam),
+                  onPressed: () {
+                    controller.toggleHideCam();
+                  },
+                ),
+              // SettingsButton(controller),
+            ],
+          ),
         ));
   }
 }
