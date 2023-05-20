@@ -30,8 +30,6 @@ class HomeController extends GetxController with StateMixin {
   Rx<MediaStreamTrack?> localVideoTrack = Rx(null);
   Rx<MediaStreamTrack?> localAudioTrack = Rx(null);
 
-  Rx<RTCPeerConnectionState?> peerConnectionState = Rx(null);
-
   Rx<io.Socket?> socket = Rx(null);
   String? feedbackId;
 
@@ -39,7 +37,7 @@ class HomeController extends GetxController with StateMixin {
   RxDouble remoteVideoRendererRatioHw = 0.0.obs;
 
   RxBool inReadyQueue = false.obs;
-
+  RxBool isInChat = false.obs;
   RxBool isMicMute = false.obs;
   RxBool isCamHide = false.obs;
 
@@ -193,13 +191,6 @@ class HomeController extends GetxController with StateMixin {
     socket()?.dispose();
   }
 
-  bool isInChat() {
-    return [
-      RTCPeerConnectionState.RTCPeerConnectionStateConnecting,
-      RTCPeerConnectionState.RTCPeerConnectionStateConnected
-    ].contains(peerConnectionState());
-  }
-
   bool isInReadyQueue() {
     return inReadyQueue();
   }
@@ -236,7 +227,10 @@ class HomeController extends GetxController with StateMixin {
     peerConnection(await Factory.createPeerConnection());
     peerConnection()!.onConnectionState =
         (RTCPeerConnectionState connectionState) {
-      peerConnectionState(connectionState);
+      isInChat([
+        RTCPeerConnectionState.RTCPeerConnectionStateConnecting,
+        RTCPeerConnectionState.RTCPeerConnectionStateConnected
+      ].contains(state));
     };
     // END SETUP PEER CONNECTION
 
@@ -330,7 +324,9 @@ class HomeController extends GetxController with StateMixin {
 
   Future<void> endChat() async {
     log("end chat");
-    resetRemote();
+    socket()?.emit("endchat", true);
+    await resetRemote();
+    isInChat(false);
   }
 
   Future<void> unReady() async {
