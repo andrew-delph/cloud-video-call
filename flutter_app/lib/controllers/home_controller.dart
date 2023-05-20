@@ -485,15 +485,13 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<void> changeCamera(MediaDeviceInfo mediaDeviceInfo) async {
-    Options options = await Options.getOptions();
-    options.setVideoDevice(mediaDeviceInfo.label);
+    localPreferences.videoDeviceLabel(mediaDeviceInfo.label);
 
     await setLocalMediaStream();
   }
 
   Future<void> changeAudioInput(MediaDeviceInfo mediaDeviceInfo) async {
-    Options options = await Options.getOptions();
-    options.setAudioDevice(mediaDeviceInfo.label);
+    localPreferences.audioDeviceLabel(mediaDeviceInfo.label);
 
     await setLocalMediaStream();
     log("got audio stream .. ${localMediaStream.value?.getAudioTracks()[0]}");
@@ -551,7 +549,7 @@ class HomeController extends GetxController with StateMixin {
       ];
     }
 
-    Options options = await Options.getOptions();
+    LocalPreferences localPreferences = Get.find();
 
     List<PopupMenuEntry<MediaDeviceInfo>> videoInputList = [
       const PopupMenuItem<MediaDeviceInfo>(
@@ -577,7 +575,7 @@ class HomeController extends GetxController with StateMixin {
         case "videoinput":
           videoInputList.add(PopupMenuItem<MediaDeviceInfo>(
             textStyle:
-                (options.getVideoDevice() ?? 'Default') == mediaDeviceInfo.label
+                localPreferences.videoDeviceLabel.value == mediaDeviceInfo.label
                     ? const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.blue,
@@ -591,12 +589,12 @@ class HomeController extends GetxController with StateMixin {
             value: mediaDeviceInfo,
             child: Text(mediaDeviceInfo.label),
           ));
-          break; // The switch statement must be told to exit, or it will execute every case.
+          break;
         case "audioinput":
           audioInputList.add(PopupMenuItem<MediaDeviceInfo>(
             value: mediaDeviceInfo,
             textStyle:
-                (options.getAudioDevice() ?? 'Default') == mediaDeviceInfo.label
+                localPreferences.audioDeviceLabel.value == mediaDeviceInfo.label
                     ? const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.blue,
@@ -606,7 +604,6 @@ class HomeController extends GetxController with StateMixin {
             onTap: () {
               log("click audio input");
               changeAudioInput(mediaDeviceInfo);
-              // Helper.switchCamera(track)
             },
           ));
           break;
@@ -616,7 +613,6 @@ class HomeController extends GetxController with StateMixin {
             onTap: () {
               log("click audio input");
               changeAudioOutput(mediaDeviceInfo);
-              // Helper.switchCamera(track)
             },
             child: Text(mediaDeviceInfo.label),
           ));

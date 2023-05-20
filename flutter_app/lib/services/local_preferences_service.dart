@@ -4,8 +4,8 @@ import 'package:get_storage/get_storage.dart';
 class LocalPreferences extends GetxService {
   final autoQueue = false.obs;
   final feedbackPopup = false.obs;
-  final videoDeviceLabel = ''.obs;
-  final audioDeviceLabel = ''.obs;
+  final videoDeviceLabel = 'Default'.obs;
+  final audioDeviceLabel = 'Default'.obs;
 
   @override
   Future<void> onInit() async {
