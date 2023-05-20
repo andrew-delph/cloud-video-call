@@ -493,16 +493,6 @@ class HomeController extends GetxController with StateMixin {
 
   Future<void> changeAudioOutput(MediaDeviceInfo mediaDeviceInfo) async {
     throw "not implemented";
-    log("changeAudioOutput...");
-    // await Helper.selectAudioOutput(mediaDeviceInfo.deviceId);
-    // // var worked = await localVideoRenderer.audioOutput(mediaDeviceInfo.deviceId);
-    // log("changeAudioOutput... worked ");
-    // // await Helper.selectAudioOutput(mediaDeviceInfo.deviceId);
-    // // await navigator.mediaDevices.selectAudioOutput();
-    // localVideoRenderer.initialize().then((value) {
-    //   localVideoRenderer.srcObject = localMediaStream;
-    //   //notifyListeners();
-    // });
   }
 
   Future<void> sendChatScore(double score) async {
