@@ -31,10 +31,6 @@ class HomeController extends GetxController with StateMixin {
 
   Rx<io.Socket?> socket = Rx(null);
   String? feedbackId;
-  RxBool established = false.obs;
-
-  Machine<SocketStates> socketMachine = getSocketMachine();
-  Machine<ChatStates> chatMachine = getChatMachine();
 
   @override
   onInit() async {
@@ -57,58 +53,9 @@ class HomeController extends GetxController with StateMixin {
       });
     });
 
-    socketMachine[SocketStates.connecting].onEntry(() async {
-      change(null, status: RxStatus.loading());
-      await initSocket();
-    });
-
-    socketMachine[SocketStates.error].onTimeout(const Duration(seconds: 3), () {
-      change(null, status: RxStatus.error("Socket Error."));
-    });
-
-    chatMachine[ChatStates.ended].onEntry(() async {
-      if (socket.value != null && socket.value?.connected == true) {
-        socket.value!.emit("endchat", "endchat");
-      }
-      await tryResetRemote();
-      chatMachine.current = ChatStates.feedback;
-    });
-
-    chatMachine[ChatStates.end].onEntry(() async {
-      Options options = await Options.getOptions();
-      if (options.getAutoQueue()) {
-        chatMachine.current = ChatStates.ready;
-      } else {
-        chatMachine.current = ChatStates.waiting;
-      }
-    });
-
-    chatMachine[ChatStates.matched].onTimeout(const Duration(seconds: 10), () {
-      chatMachine.current = ChatStates.connectionError;
-    });
-
-    chatMachine[ChatStates.connectionError].onEntry(() async {
-      chatMachine.current = ChatStates.ready;
-    });
-
-    chatMachine[ChatStates.ready].onEntry(() async {
-      //TODO handle errors with ack and error
-      await readyQueue().catchError((error) async {
-        handleError(ErrorDetails("Ready", error.toString()));
-        await unReady();
-      });
-    });
-
-    await initSocket();
+    // await initSocket();
+    change(null, status: RxStatus.error("no connected."));
   }
-
-  void handleError(ErrorDetails errorDetails) {
-    if (handleErrorCallback != null) {
-      handleErrorCallback!(errorDetails);
-    }
-  }
-
-  Function(ErrorDetails errorDetails)? handleErrorCallback;
 
   int activeCount = 1;
 
@@ -116,25 +63,16 @@ class HomeController extends GetxController with StateMixin {
   Future<void> dispose() async {
     super.dispose();
     socket.value?.destroy();
-    chatMachine.stop();
-    socketMachine.stop();
     await localMediaStream.value?.dispose();
     await remoteMediaStream.value?.dispose();
     await peerConnection.value?.close();
   }
 
-  Future<void> init(
-      {Function(ErrorDetails details)? handleErrorCallback}) async {
-    this.handleErrorCallback = handleErrorCallback;
-    socketMachine.start();
-  }
-
   Future<void> initSocket() async {
-    established(false);
+    disposeSocket();
     String socketAddress = Factory.getWsHost();
 
-    print(
-        "SOCKET_ADDRESS is $socketAddress $established .... ${socket.value == null}");
+    print("SOCKET_ADDRESS is $socketAddress .... ${socket.value == null}");
 
     // only websocket works on windows
 
@@ -150,9 +88,7 @@ class HomeController extends GetxController with StateMixin {
             .disableReconnection()
             .build());
 
-    if (mySocket.connected) {
-      mySocket.dispose();
-    }
+    socket(mySocket);
 
     // force set the auth
     mySocket.auth = {"auth": token};
@@ -175,52 +111,42 @@ class HomeController extends GetxController with StateMixin {
     });
 
     mySocket.on('established', (data) {
-      print("established");
-      established(true);
-      socketMachine.current = SocketStates.established;
       change(null, status: RxStatus.success());
     });
 
     mySocket.onConnect((_) {
-      socketMachine.current = SocketStates.connected;
       mySocket.emit('message', 'from flutter app connected');
     });
 
     mySocket.on('message', (data) => print(data));
     mySocket.on('endchat', (data) async {
       print("got endchat event");
-      if (chatMachine.current?.identifier == ChatStates.connected) {
-        chatMachine.current = ChatStates.ended;
-      }
     });
     mySocket.onDisconnect((details) {
-      if (socketMachine.current != null) {
-        socketMachine.current = SocketStates.error;
-      }
+      change(null, status: RxStatus.error(details.toString()));
     });
 
-    mySocket.onConnectError((error) {
-      print('connectError $error');
-
-      handleError(ErrorDetails("Socket", error.toString()));
-      socketMachine.current = SocketStates.error;
+    mySocket.onConnectError((details) {
+      change(null, status: RxStatus.error(details.toString()));
     });
 
-    mySocket.on('error', (error) {
-      print("error $error");
-      handleError(ErrorDetails("Socket", error.toString()));
-      socketMachine.current = SocketStates.error;
+    mySocket.on('error', (details) {
+      change(null, status: RxStatus.error(details.toString()));
     });
+
+    socket(mySocket);
+
+    change(null, status: RxStatus.loading());
 
     try {
       mySocket.connect();
     } catch (error) {
-      print("socket connect error...$error");
-      handleError(ErrorDetails("Socket", error.toString()));
-      socketMachine.current = SocketStates.error;
+      change(null, status: RxStatus.error(error.toString()));
     }
+  }
 
-    socket(mySocket);
+  void disposeSocket() {
+    socket.value?.dispose();
   }
 
   Future<void> initLocalStream() async {
@@ -231,11 +157,7 @@ class HomeController extends GetxController with StateMixin {
       print("localVideoRenderer.onResize!!!!!!!!!!!!!!!!!!!!!!!!!");
     };
 
-    try {
-      await setLocalMediaStream();
-    } catch (error) {
-      handleError(ErrorDetails("initLocalStream", error.toString()));
-    }
+    await setLocalMediaStream();
   }
 
   Future<void> tryResetRemote() async {
@@ -246,10 +168,6 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<void> ready() async {
-    chatMachine.current = ChatStates.ready;
-  }
-
-  Future<void> readyQueue() async {
     await tryResetRemote();
     await initLocalStream();
     socket.value!.off("client_host");
@@ -259,14 +177,6 @@ class HomeController extends GetxController with StateMixin {
 
     // START SETUP PEER CONNECTION
     peerConnection(await Factory.createPeerConnection());
-    peerConnection.value?.onConnectionState = (state) {
-      if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
-        chatMachine.current = ChatStates.connected;
-      } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
-          state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
-        chatMachine.current = ChatStates.connectionError;
-      }
-    };
     // END SETUP PEER CONNECTION
 
     // START add localMediaStream to peerConnection
@@ -292,7 +202,6 @@ class HomeController extends GetxController with StateMixin {
     // END collect the streams/tracks from remote
 
     socket.value!.on("match", (request) async {
-      chatMachine.current = ChatStates.matched;
       List data = request as List;
       dynamic value = data[0] as dynamic;
       Function callback = data[1] as Function;
@@ -300,7 +209,8 @@ class HomeController extends GetxController with StateMixin {
       feedbackId = value["feedback_id"];
       print("feedback_id: $feedbackId");
       if (feedbackId == null) {
-        chatMachine.current = ChatStates.matchedError;
+        log.printError(info: 'feedbackId == null');
+        log('feedbackId == null', error: true);
         return;
       }
       switch (role) {
@@ -308,7 +218,7 @@ class HomeController extends GetxController with StateMixin {
           {
             setClientHost().catchError((error) {
               print("setClientHost error! $error");
-              handleError(ErrorDetails("Match Error", error.toString()));
+              log.printError(info: error.toString());
             }).then((value) {
               print("completed setClientHost");
             });
@@ -318,7 +228,7 @@ class HomeController extends GetxController with StateMixin {
           {
             setClientGuest().catchError((error) {
               print("setClientGuest error! $error");
-              handleError(ErrorDetails("Match Error", error.toString()));
+              log.printError(info: error.toString());
             }).then((value) {
               print("completed setClientGuest");
             });
@@ -326,8 +236,8 @@ class HomeController extends GetxController with StateMixin {
           break;
         default:
           {
-            chatMachine.current = ChatStates.matchedError;
             print("role is not host/guest: $role");
+            log.printError(info: "role is not host/guest: $role");
           }
           break;
       }
@@ -366,8 +276,7 @@ class HomeController extends GetxController with StateMixin {
     socket.value!.off("match");
     socket.value!.off("icecandidate");
     socket.value!.emitWithAck("ready", {'ready': false}, ack: (data) {
-      print("ready ack $data");
-      chatMachine.current = ChatStates.waiting;
+      log("ready ack $data");
     });
   }
 
@@ -512,15 +421,13 @@ class HomeController extends GetxController with StateMixin {
     MediaStreamTrack newVideoTrack =
         localMediaStream.value!.getVideoTracks()[0];
 
-    if (chatMachine.current?.identifier == ChatStates.connected) {
-      (await peerConnection.value?.senders)?.forEach((element) {
-        print("element.track.kind ${element.track?.kind}");
-        if (element.track?.kind == 'video') {
-          print("replacing video...");
-          element.replaceTrack(newVideoTrack);
-        }
-      });
-    }
+    (await peerConnection.value?.senders)?.forEach((element) {
+      print("element.track.kind ${element.track?.kind}");
+      if (element.track?.kind == 'video') {
+        print("replacing video...");
+        element.replaceTrack(newVideoTrack);
+      }
+    });
   }
 
   Future<void> changeAudioInput(MediaDeviceInfo mediaDeviceInfo) async {
@@ -530,14 +437,12 @@ class HomeController extends GetxController with StateMixin {
     await setLocalMediaStream();
     print("got audio stream .. ${localMediaStream.value?.getAudioTracks()[0]}");
 
-    if (chatMachine.current?.identifier == ChatStates.connected) {
-      (await peerConnection.value?.senders)?.forEach((element) {
-        if (element.track?.kind == 'audio') {
-          print("replacing audio...");
-          element.replaceTrack(localMediaStream.value?.getAudioTracks()[0]);
-        }
-      });
-    }
+    (await peerConnection.value?.senders)?.forEach((element) {
+      if (element.track?.kind == 'audio') {
+        print("replacing audio...");
+        element.replaceTrack(localMediaStream.value?.getAudioTracks()[0]);
+      }
+    });
   }
 
   Future<void> changeAudioOutput(MediaDeviceInfo mediaDeviceInfo) async {

@@ -113,12 +113,11 @@ class HomeScreen extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     isInChat() {
-      return controller.chatMachine.current?.identifier == ChatStates.connected;
+      return false;
     }
 
     isInReadyQueue() {
-      return controller.chatMachine.current?.identifier == ChatStates.ready ||
-          controller.chatMachine.current?.identifier == ChatStates.matched;
+      return false;
     }
 
     // if (controller.chatMachine.current?.identifier ==
@@ -209,9 +208,7 @@ class HomeScreen extends GetView<HomeController> {
                     icon: const Icon(Icons.call_end),
                     color: isInChat() ? Colors.red : Colors.white,
                     onPressed: () {
-                      if (isInChat()) {
-                        controller.chatMachine.current = ChatStates.ended;
-                      }
+                      if (isInChat()) {}
                     },
                   ),
                   IconButton(
@@ -245,8 +242,6 @@ class HomeScreen extends GetView<HomeController> {
           return isInChat();
         },
         onHorizontalDragEnd: (double score) {
-          controller.chatMachine.current =
-              ChatStates.ended; // will show feedback screen not good.
           controller.sendChatScore(score).then((value) {}).catchError((error) {
             Get.snackbar(
               "Error",
@@ -258,9 +253,7 @@ class HomeScreen extends GetView<HomeController> {
               shouldIconPulse: true,
               barBlur: 20,
             );
-          }).whenComplete(() {
-            controller.chatMachine.current = ChatStates.end;
-          });
+          }).whenComplete(() {});
         },
         child: videoRenderLayout);
 
@@ -304,7 +297,17 @@ class HomeScreen extends GetView<HomeController> {
             ],
           ),
           onLoading: CircularProgressIndicator(),
-          onError: (error) => Text('Error: $error'),
+          onError: (error) => Column(
+            children: [
+              Text("Socket Error"),
+              Text('$error'),
+              ElevatedButton(
+                  onPressed: () {
+                    controller.initSocket();
+                  },
+                  child: Text("Reconnect."))
+            ],
+          ),
         ));
   }
 }

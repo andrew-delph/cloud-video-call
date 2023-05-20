@@ -45,40 +45,40 @@ Future<void> initializeApp() async {
   log('Initialize');
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    String title = 'Random video chat';
+//   // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     String title = 'Random video chat';
 
-    return StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.idTokenChanges(),
-        builder: (BuildContext streamContext, AsyncSnapshot<User?> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // Show a loading screen while waiting for the authentication state to change
-            return const CircularProgressIndicator();
-          }
+//     return StreamBuilder<User?>(
+//         stream: FirebaseAuth.instance.idTokenChanges(),
+//         builder: (BuildContext streamContext, AsyncSnapshot<User?> snapshot) {
+//           if (snapshot.connectionState == ConnectionState.waiting) {
+//             // Show a loading screen while waiting for the authentication state to change
+//             return const CircularProgressIndicator();
+//           }
 
-          if (!snapshot.hasData) {
-            print("loggin!!!!!");
+//           if (!snapshot.hasData) {
+//             print("loggin!!!!!");
 
-            return GetMaterialApp(
-                debugShowCheckedModeBanner: false,
-                title: title,
-                theme: ThemeData(primarySwatch: Colors.green),
-                home: const LoginScreen());
-          } else {
-            print("loading app!!!!!");
-            return ChangeNotifierProvider(
-                create: (context) => AppProvider(),
-                child: GetMaterialApp(
-                    debugShowCheckedModeBanner: false,
-                    title: title,
-                    theme: ThemeData(primarySwatch: Colors.green),
-                    home: const MainScreen()));
-          }
-        });
-  }
-}
+//             return GetMaterialApp(
+//                 debugShowCheckedModeBanner: false,
+//                 title: title,
+//                 theme: ThemeData(primarySwatch: Colors.green),
+//                 home: const LoginScreen());
+//           } else {
+//             print("loading app!!!!!");
+//             return ChangeNotifierProvider(
+//                 create: (context) => AppProvider(),
+//                 child: GetMaterialApp(
+//                     debugShowCheckedModeBanner: false,
+//                     title: title,
+//                     theme: ThemeData(primarySwatch: Colors.green),
+//                     home: const MainScreen()));
+//           }
+//         });
+//   }
+// }
