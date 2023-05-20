@@ -25,6 +25,12 @@ class HomeController extends GetxController with StateMixin {
   Rx<RTCVideoRenderer> localVideoRenderer = RTCVideoRenderer().obs;
   Rx<RTCVideoRenderer> remoteVideoRenderer = RTCVideoRenderer().obs;
 
+  Rx<List<MediaDeviceInfo>> mediaDevicesList = Rx([]);
+  // List<MediaDeviceInfo>.empty(growable: true).obs;
+
+  Rx<List<PopupMenuEntry<MediaDeviceInfo>>> deviceEntries = Rx([]);
+  // List<PopupMenuEntry<MediaDeviceInfo>>.empty(growable: true).obs;
+
   Rx<MediaStreamTrack?> localVideoTrack = Rx(null);
   Rx<MediaStreamTrack?> localAudioTrack = Rx(null);
 
@@ -54,7 +60,7 @@ class HomeController extends GetxController with StateMixin {
       });
     });
 
-    localMediaStream.listen((localMediaStream) {
+    localMediaStream.listen((localMediaStream) async {
       localVideoTrack(localMediaStream?.getVideoTracks()[0]);
       localAudioTrack(localMediaStream?.getAudioTracks()[0]);
       log("localMediaStream changed!");
@@ -62,6 +68,20 @@ class HomeController extends GetxController with StateMixin {
         localVideoRenderer?.initialize().then((_) {
           localVideoRenderer.srcObject = localMediaStream;
         });
+      });
+      (await peerConnection.value?.senders)?.forEach((element) {
+        if (element.track?.kind == 'audio') {
+          log("replacing audio...");
+          element.replaceTrack(localAudioTrack.value);
+        }
+      });
+
+      (await peerConnection.value?.senders)?.forEach((element) {
+        log("element.track.kind ${element.track?.kind}");
+        if (element.track?.kind == 'video') {
+          log("replacing video...");
+          element.replaceTrack(localVideoTrack.value);
+        }
       });
     });
 
@@ -458,6 +478,10 @@ class HomeController extends GetxController with StateMixin {
       }
     }
     localMediaStream(mediaStream);
+
+    mediaDevicesList(await navigator.mediaDevices.enumerateDevices());
+
+    deviceEntries(await getDeviceEntries());
   }
 
   Future<void> changeCamera(MediaDeviceInfo mediaDeviceInfo) async {
@@ -465,17 +489,6 @@ class HomeController extends GetxController with StateMixin {
     options.setVideoDevice(mediaDeviceInfo.label);
 
     await setLocalMediaStream();
-
-    MediaStreamTrack newVideoTrack =
-        localMediaStream.value!.getVideoTracks()[0];
-
-    (await peerConnection.value?.senders)?.forEach((element) {
-      log("element.track.kind ${element.track?.kind}");
-      if (element.track?.kind == 'video') {
-        log("replacing video...");
-        element.replaceTrack(newVideoTrack);
-      }
-    });
   }
 
   Future<void> changeAudioInput(MediaDeviceInfo mediaDeviceInfo) async {
@@ -484,13 +497,6 @@ class HomeController extends GetxController with StateMixin {
 
     await setLocalMediaStream();
     log("got audio stream .. ${localMediaStream.value?.getAudioTracks()[0]}");
-
-    (await peerConnection.value?.senders)?.forEach((element) {
-      if (element.track?.kind == 'audio') {
-        log("replacing audio...");
-        element.replaceTrack(localMediaStream.value?.getAudioTracks()[0]);
-      }
-    });
   }
 
   Future<void> changeAudioOutput(MediaDeviceInfo mediaDeviceInfo) async {
@@ -529,11 +535,9 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<List<PopupMenuEntry<MediaDeviceInfo>>> getDeviceEntries() async {
-    List<MediaDeviceInfo> mediaDevices =
-        await navigator.mediaDevices.enumerateDevices();
-
+    List<MediaDeviceInfo> mediaDevices = mediaDevicesList.value;
     int deviceCount =
-        mediaDevices.where((obj) => obj.deviceId.isNotEmpty).length;
+        mediaDevicesList.value.where((obj) => obj.deviceId.isNotEmpty).length;
 
     if (deviceCount == 0) {
       return [

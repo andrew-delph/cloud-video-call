@@ -195,30 +195,28 @@ class HomeScreen extends GetView<HomeController> {
   }
 }
 
-// class SettingsButton extends StatelessWidget {
-//   const SettingsButton(this.controller, {super.key});
+class SettingsButton extends GetResponsiveView<HomeController> {
+  SettingsButton({super.key});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return FutureBuilder<List<PopupMenuEntry<MediaDeviceInfo>>>(
-//       future: controller.getDeviceEntries(),
-//       builder: (context, snapshot) {
-//         List<PopupMenuEntry<MediaDeviceInfo>> mediaList = [];
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final length = controller.deviceEntries.value.length;
 
-//         if (snapshot.hasData) {
-//           mediaList = snapshot.data ?? [];
-//         }
-
-//         return PopupMenuButton<MediaDeviceInfo>(
-//           color: Colors.white,
-//           // initialValue: 'selectedMenu',
-//           // Callback that sets the selected popup menu item.
-//           itemBuilder: (BuildContext context) => mediaList,
-//         );
-//       },
-//     );
-//   }
-// }
+      return length == 0
+          ? Container()
+          : PopupMenuButton<MediaDeviceInfo>(
+              color: Colors.white,
+              // initialValue: 'selectedMenu',
+              // Callback that sets the selected popup menu item.
+              itemBuilder: (BuildContext context) {
+                return controller.deviceEntries.value;
+                // return controller.deviceEntries;
+              },
+            );
+    });
+  }
+}
 
 class VideoRenderLayout extends GetResponsiveView<HomeController> {
   VideoRenderLayout({super.key});
@@ -315,7 +313,7 @@ class ButtonsOverlay extends GetView<HomeController> {
                     controller.isCamHide.toggle();
                   },
                 ),
-              // SettingsButton(controller),
+              SettingsButton(),
             ],
           ),
         ));

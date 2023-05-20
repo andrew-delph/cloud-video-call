@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/utils/state_machines.dart';
 
 import '../services/app_service.dart';
 import '../widgets/SwipeDetector.dart';
