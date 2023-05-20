@@ -59,41 +59,31 @@ class FeedbackSwipeDetectorState extends State<FeedbackSwipeDetector> {
           if (widget.isDragUpdate == null || widget.isDragUpdate!()) {
             if (validScore) {
               bool? confirm = localPreferences.feedbackPopup()
-                  ? await showDialog<bool>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Send Feedback'),
-                          content: Text(
-                              'Do you want to end the call with feedback ${score.toInt()}?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                localPreferences.feedbackPopup(false);
-
-                                SnackBar snackBar = const SnackBar(
-                                  content:
-                                      Text("Confirm feedback popup disabled."),
-                                );
-
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
-                                Navigator.of(context).pop(true);
-                              },
-                              child: const Text('Disable future popup'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(false),
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(true),
-                              child: const Text('Send'),
-                            ),
-                          ],
-                        );
-                      },
-                    )
+                  ? await Get.dialog(AlertDialog(
+                      title: const Text('Send Feedback'),
+                      content: Text(
+                          'Do you want to end the call with feedback ${score.toInt()}?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Get.back(result: true);
+                            localPreferences.feedbackPopup(false);
+                            Get.snackbar('Preference Updated.',
+                                'Confirm feedback popup disabled.',
+                                snackPosition: SnackPosition.BOTTOM);
+                          },
+                          child: const Text('Disable future popup'),
+                        ),
+                        TextButton(
+                          onPressed: () => Get.back(result: false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Get.back(result: true),
+                          child: const Text('Send'),
+                        ),
+                      ],
+                    ))
                   : true;
               if (confirm ?? false) {
                 widget.onHorizontalDragEnd(score);

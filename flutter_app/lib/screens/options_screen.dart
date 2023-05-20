@@ -243,25 +243,21 @@ class OptionsScreen extends GetView<OptionsController> {
     return WillPopScope(
         onWillPop: () async {
           if (!controller.unsavedChanges()) return true;
-          bool confirm = await showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text('You have unsaved changes.'),
-                content: const Text('Do you want to discard your changes?'),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: const Text('Cancel'),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(true),
-                    child: const Text('Discard'),
-                  ),
-                ],
-              );
-            },
-          );
+
+          bool confirm = await Get.dialog(AlertDialog(
+            title: const Text('You have unsaved changes.'),
+            content: const Text('Do you want to discard your changes?'),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(result: false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Get.back(result: true),
+                child: const Text('Discard'),
+              ),
+            ],
+          ));
           return confirm;
         },
         child: Scaffold(
