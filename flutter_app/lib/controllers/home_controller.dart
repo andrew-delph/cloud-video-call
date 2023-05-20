@@ -26,10 +26,6 @@ class HomeController extends GetxController with StateMixin {
   Rx<RTCVideoRenderer> remoteVideoRenderer = RTCVideoRenderer().obs;
 
   Rx<List<MediaDeviceInfo>> mediaDevicesList = Rx([]);
-  // List<MediaDeviceInfo>.empty(growable: true).obs;
-
-  Rx<List<PopupMenuEntry<MediaDeviceInfo>>> deviceEntries = Rx([]);
-  // List<PopupMenuEntry<MediaDeviceInfo>>.empty(growable: true).obs;
 
   Rx<MediaStreamTrack?> localVideoTrack = Rx(null);
   Rx<MediaStreamTrack?> localAudioTrack = Rx(null);
@@ -218,7 +214,7 @@ class HomeController extends GetxController with StateMixin {
       log("localVideoRenderer.onResize");
     };
 
-    await setLocalMediaStream();
+    await _setLocalMediaStream();
   }
 
   Future<void> resetRemote() async {
@@ -432,7 +428,7 @@ class HomeController extends GetxController with StateMixin {
     remoteMediaStream(await createLocalMediaStream("remote"));
   }
 
-  Future<void> setLocalMediaStream() async {
+  Future<void> _setLocalMediaStream() async {
     final Map<String, dynamic> mediaConstraints = {
       'audio': true,
       'video': true,
@@ -473,20 +469,18 @@ class HomeController extends GetxController with StateMixin {
     }
 
     localMediaStream(mediaStream);
-
-    deviceEntries(await getDeviceEntries());
   }
 
   Future<void> changeCamera(MediaDeviceInfo mediaDeviceInfo) async {
     localPreferences.videoDeviceLabel(mediaDeviceInfo.label);
 
-    await setLocalMediaStream();
+    await initLocalStream();
   }
 
   Future<void> changeAudioInput(MediaDeviceInfo mediaDeviceInfo) async {
     localPreferences.audioDeviceLabel(mediaDeviceInfo.label);
 
-    await setLocalMediaStream();
+    await initLocalStream();
     log("got audio stream .. ${localMediaStream()?.getAudioTracks()[0]}");
   }
 
@@ -515,8 +509,7 @@ class HomeController extends GetxController with StateMixin {
     });
   }
 
-  Future<List<PopupMenuEntry<MediaDeviceInfo>>> getDeviceEntries() async {
-    List<MediaDeviceInfo> mediaDevices = mediaDevicesList();
+  List<PopupMenuEntry<MediaDeviceInfo>> getDeviceEntries() {
     int deviceCount =
         mediaDevicesList().where((obj) => obj.deviceId.isNotEmpty).length;
 
@@ -527,7 +520,7 @@ class HomeController extends GetxController with StateMixin {
             child: const Text("Enable Media"),
             onTap: () async {
               log("Enable Media");
-              await setLocalMediaStream();
+              await initLocalStream();
             })
       ];
     }
@@ -551,7 +544,7 @@ class HomeController extends GetxController with StateMixin {
       )
     ];
 
-    for (MediaDeviceInfo mediaDeviceInfo in mediaDevices) {
+    for (MediaDeviceInfo mediaDeviceInfo in mediaDevicesList()) {
       switch (mediaDeviceInfo.kind) {
         case "videoinput":
           videoInputList.add(PopupMenuItem<MediaDeviceInfo>(

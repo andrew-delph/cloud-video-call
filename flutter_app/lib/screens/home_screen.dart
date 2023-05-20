@@ -200,21 +200,14 @@ class SettingsButton extends GetResponsiveView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      final length = controller.deviceEntries().length;
-
-      return length == 0
-          ? Container()
-          : PopupMenuButton<MediaDeviceInfo>(
-              color: Colors.white,
-              // initialValue: 'selectedMenu',
-              // Callback that sets the selected popup menu item.
-              itemBuilder: (BuildContext context) {
-                return controller.deviceEntries();
-                // return controller.deviceEntries;
-              },
-            );
-    });
+    return PopupMenuButton<MediaDeviceInfo>(
+      color: Colors.white,
+      // initialValue: 'selectedMenu',
+      // Callback that sets the selected popup menu item.
+      itemBuilder: (BuildContext context) {
+        return controller.getDeviceEntries();
+      },
+    );
   }
 }
 
