@@ -438,48 +438,42 @@ class HomeController extends GetxController with StateMixin {
       'audio': true,
       'video': true,
     };
-
     MediaStream mediaStream =
         await navigator.mediaDevices.getUserMedia(mediaConstraints);
-    Options options = await Options.getOptions();
 
-    String? audioDeviceLabel = options.getAudioDevice();
-    String? videoDeviceLabel = options.getVideoDevice();
+    String audioDeviceLabel = localPreferences.audioDeviceLabel();
+    String videoDeviceLabel = localPreferences.videoDeviceLabel();
 
-    if (audioDeviceLabel != null || videoDeviceLabel != null) {
-      String? videoDeviceId;
-      String? audioDeviceId;
-      List<MediaDeviceInfo> devices =
-          await navigator.mediaDevices.enumerateDevices();
-
-      for (MediaDeviceInfo mediaDeviceInfo in devices) {
-        switch (mediaDeviceInfo.kind) {
-          case "videoinput":
-            if (mediaDeviceInfo.label == videoDeviceLabel) {
-              videoDeviceId = mediaDeviceInfo.deviceId;
-            }
-            break;
-          case "audioinput":
-            if (mediaDeviceInfo.label == videoDeviceLabel) {
-              audioDeviceId = mediaDeviceInfo.deviceId;
-            }
-            break;
-        }
-      }
-
-      if (videoDeviceId != null || audioDeviceId != null) {
-        final Map<String, dynamic> mediaConstraints = {
-          'audio': audioDeviceId != null ? {'deviceId': audioDeviceId} : true,
-          'video': videoDeviceId != null ? {'deviceId': videoDeviceId} : true,
-        };
-
-        mediaStream =
-            await navigator.mediaDevices.getUserMedia(mediaConstraints);
-      }
-    }
-    localMediaStream(mediaStream);
+    String? videoDeviceId;
+    String? audioDeviceId;
 
     mediaDevicesList(await navigator.mediaDevices.enumerateDevices());
+
+    for (MediaDeviceInfo mediaDeviceInfo in mediaDevicesList()) {
+      switch (mediaDeviceInfo.kind) {
+        case "videoinput":
+          if (mediaDeviceInfo.label == videoDeviceLabel) {
+            videoDeviceId = mediaDeviceInfo.deviceId;
+          }
+          break;
+        case "audioinput":
+          if (mediaDeviceInfo.label == audioDeviceLabel) {
+            audioDeviceId = mediaDeviceInfo.deviceId;
+          }
+          break;
+      }
+    }
+
+    if (videoDeviceId != null || audioDeviceId != null) {
+      final Map<String, dynamic> mediaConstraints = {
+        'audio': audioDeviceId != null ? {'deviceId': audioDeviceId} : true,
+        'video': videoDeviceId != null ? {'deviceId': videoDeviceId} : true,
+      };
+
+      mediaStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+    }
+
+    localMediaStream(mediaStream);
 
     deviceEntries(await getDeviceEntries());
   }
@@ -548,8 +542,6 @@ class HomeController extends GetxController with StateMixin {
             })
       ];
     }
-
-    LocalPreferences localPreferences = Get.find();
 
     List<PopupMenuEntry<MediaDeviceInfo>> videoInputList = [
       const PopupMenuItem<MediaDeviceInfo>(
