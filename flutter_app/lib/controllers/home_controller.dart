@@ -94,8 +94,7 @@ class HomeController extends GetxController with StateMixin {
       Helper.setMicrophoneMute(!(isMicMute), localAudioTrack()!);
     });
 
-    // await initSocket();
-    change(null, status: RxStatus.error("no connected."));
+    await initSocket();
   }
 
   int activeCount = 1;
