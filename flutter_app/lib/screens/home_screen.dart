@@ -119,7 +119,11 @@ class HomeScreen extends GetView<HomeController> {
                     Colors.yellow.shade100), // Change the color here
               ),
               onPressed: () async {
-                controller.queueReady();
+                if (controller.isInReadyQueue() == false) {
+                  controller.queueReady();
+                } else {
+                  controller.unReady();
+                }
               },
               child: Text((controller.isInReadyQueue() == false)
                   ? 'Ready'
