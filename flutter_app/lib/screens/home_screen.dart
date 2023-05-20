@@ -106,12 +106,6 @@ class HomeScreen extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    // if (controller.chatMachine.current?.identifier ==
-    //     ChatStates.feedback) {
-    //   return FeedbackScreen(
-    //       label: 'Submit Feedback', controller: controller, appProvider: null,);
-    // }
-
     Widget chatButton = Obx(() => controller.isInChat()
         ? Container()
         : Container(
