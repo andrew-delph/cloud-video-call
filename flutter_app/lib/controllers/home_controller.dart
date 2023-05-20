@@ -72,7 +72,7 @@ class HomeController extends GetxController with StateMixin {
     disposeSocket();
     String socketAddress = Factory.getWsHost();
 
-    print("SOCKET_ADDRESS is $socketAddress .... ${socket.value == null}");
+    log("SOCKET_ADDRESS is $socketAddress .... ${socket.value == null}");
 
     // only websocket works on windows
 
@@ -104,7 +104,7 @@ class HomeController extends GetxController with StateMixin {
     });
 
     mySocket.emitWithAck("myping", "I am a client",
-        ack: (data) => print("ping ack"));
+        ack: (data) => log("ping ack"));
 
     mySocket.on('activeCount', (data) {
       activeCount = int.tryParse(data.toString()) ?? -1;
@@ -118,9 +118,9 @@ class HomeController extends GetxController with StateMixin {
       mySocket.emit('message', 'from flutter app connected');
     });
 
-    mySocket.on('message', (data) => print(data));
+    mySocket.on('message', (data) => log(data));
     mySocket.on('endchat', (data) async {
-      print("got endchat event");
+      log("got endchat event");
     });
     mySocket.onDisconnect((details) {
       change(null, status: RxStatus.error(details.toString()));
@@ -154,7 +154,7 @@ class HomeController extends GetxController with StateMixin {
     await localMediaStream.value?.dispose();
 
     localVideoRenderer.value?.onResize = () {
-      print("localVideoRenderer.onResize!!!!!!!!!!!!!!!!!!!!!!!!!");
+      log("localVideoRenderer.onResize!!!!!!!!!!!!!!!!!!!!!!!!!");
     };
 
     await setLocalMediaStream();
@@ -188,15 +188,15 @@ class HomeController extends GetxController with StateMixin {
 
     // START collect the streams/tracks from remote
     peerConnection.value!.onAddStream = (stream) {
-      // print("onAddStream");
+      // log("onAddStream");
       remoteMediaStream(stream);
     };
     peerConnection.value!.onAddTrack = (stream, track) async {
-      // print("onAddTrack");
+      // log("onAddTrack");
       await addRemoteTrack(track);
     };
     peerConnection.value!.onTrack = (RTCTrackEvent track) async {
-      // print("onTrack");
+      // log("onTrack");
       await addRemoteTrack(track.track);
     };
     // END collect the streams/tracks from remote
@@ -207,9 +207,9 @@ class HomeController extends GetxController with StateMixin {
       Function callback = data[1] as Function;
       String? role = value["role"];
       feedbackId = value["feedback_id"];
-      print("feedback_id: $feedbackId");
+      log("feedback_id: $feedbackId");
       if (feedbackId == null) {
-        log.printError(info: 'feedbackId == null');
+        log.logError(info: 'feedbackId == null');
         log('feedbackId == null', error: true);
         return;
       }
@@ -217,27 +217,27 @@ class HomeController extends GetxController with StateMixin {
         case "host":
           {
             setClientHost().catchError((error) {
-              print("setClientHost error! $error");
-              log.printError(info: error.toString());
+              log("setClientHost error! $error");
+              log.logError(info: error.toString());
             }).then((value) {
-              print("completed setClientHost");
+              log("completed setClientHost");
             });
           }
           break;
         case "guest":
           {
             setClientGuest().catchError((error) {
-              print("setClientGuest error! $error");
-              log.printError(info: error.toString());
+              log("setClientGuest error! $error");
+              log.logError(info: error.toString());
             }).then((value) {
-              print("completed setClientGuest");
+              log("completed setClientGuest");
             });
           }
           break;
         default:
           {
-            print("role is not host/guest: $role");
-            log.printError(info: "role is not host/guest: $role");
+            log("role is not host/guest: $role");
+            log.logError(info: "role is not host/guest: $role");
           }
           break;
       }
@@ -255,7 +255,7 @@ class HomeController extends GetxController with StateMixin {
       });
     };
     socket.value!.on("icecandidate", (data) async {
-      // print("got ice!");
+      // log("got ice!");
       RTCIceCandidate iceCandidate = RTCIceCandidate(
           data["icecandidate"]['candidate'],
           data["icecandidate"]['sdpMid'],
@@ -266,7 +266,7 @@ class HomeController extends GetxController with StateMixin {
 
     socket.value!.emitWithAck("ready", {'ready': true}, ack: (data) {
       // TODO if ack timeout then do something
-      print("ready ack $data");
+      log("ready ack $data");
     });
   }
 
@@ -281,7 +281,7 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<void> setClientHost() async {
-    print("you are the host");
+    log("you are the host");
     final completer = Completer<void>();
 
     RTCSessionDescription offerDescription =
@@ -299,7 +299,7 @@ class HomeController extends GetxController with StateMixin {
     socket.value!.on("client_host", (data) {
       try {
         if (data['answer'] != null) {
-          // print("got answer");
+          // log("got answer");
           RTCSessionDescription answerDescription = RTCSessionDescription(
               data['answer']["sdp"], data['answer']["type"]);
           peerConnection.value!.setRemoteDescription(answerDescription);
@@ -314,13 +314,13 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<void> setClientGuest() async {
-    print("you are the guest");
+    log("you are the guest");
     final completer = Completer<void>();
 
     socket.value!.on("client_guest", (data) async {
       try {
         if (data["offer"] != null) {
-          // print("got offer");
+          // log("got offer");
           await peerConnection.value!.setRemoteDescription(
               RTCSessionDescription(
                   data["offer"]["sdp"], data["offer"]["type"]));
@@ -356,7 +356,7 @@ class HomeController extends GetxController with StateMixin {
       // you cannot create a MediaStream
       if (WebRTC.platformIsWeb) {
         remoteVideoRenderer.value.muted = false;
-        print(" (WebRTC.platformIsWebremoteVideoRenderer!.muted = false;");
+        log(" (WebRTC.platformIsWebremoteVideoRenderer!.muted = false;");
       }
     });
   }
@@ -422,9 +422,9 @@ class HomeController extends GetxController with StateMixin {
         localMediaStream.value!.getVideoTracks()[0];
 
     (await peerConnection.value?.senders)?.forEach((element) {
-      print("element.track.kind ${element.track?.kind}");
+      log("element.track.kind ${element.track?.kind}");
       if (element.track?.kind == 'video') {
-        print("replacing video...");
+        log("replacing video...");
         element.replaceTrack(newVideoTrack);
       }
     });
@@ -435,11 +435,11 @@ class HomeController extends GetxController with StateMixin {
     options.setAudioDevice(mediaDeviceInfo.label);
 
     await setLocalMediaStream();
-    print("got audio stream .. ${localMediaStream.value?.getAudioTracks()[0]}");
+    log("got audio stream .. ${localMediaStream.value?.getAudioTracks()[0]}");
 
     (await peerConnection.value?.senders)?.forEach((element) {
       if (element.track?.kind == 'audio') {
-        print("replacing audio...");
+        log("replacing audio...");
         element.replaceTrack(localMediaStream.value?.getAudioTracks()[0]);
       }
     });
@@ -447,10 +447,10 @@ class HomeController extends GetxController with StateMixin {
 
   Future<void> changeAudioOutput(MediaDeviceInfo mediaDeviceInfo) async {
     throw "not implemented";
-    print("changeAudioOutput...");
+    log("changeAudioOutput...");
     // await Helper.selectAudioOutput(mediaDeviceInfo.deviceId);
     // // var worked = await localVideoRenderer.audioOutput(mediaDeviceInfo.deviceId);
-    // print("changeAudioOutput... worked ");
+    // log("changeAudioOutput... worked ");
     // // await Helper.selectAudioOutput(mediaDeviceInfo.deviceId);
     // // await navigator.mediaDevices.selectAudioOutput();
     // localVideoRenderer.initialize().then((value) {
@@ -460,7 +460,7 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<void> sendChatScore(double score) async {
-    print("sending score $score");
+    log("sending score $score");
     var url = Uri.parse("${Factory.getOptionsHost()}/providefeedback");
     final headers = {
       'Access-Control-Allow-Origin': '*',
@@ -493,7 +493,7 @@ class HomeController extends GetxController with StateMixin {
             enabled: true,
             child: const Text("Enable Media"),
             onTap: () async {
-              print("Enable Media");
+              log("Enable Media");
               await setLocalMediaStream();
             })
       ];
@@ -532,7 +532,7 @@ class HomeController extends GetxController with StateMixin {
                       )
                     : null,
             onTap: () {
-              print("click video");
+              log("click video");
               changeCamera(mediaDeviceInfo);
               // Helper.switchCamera(track)
             },
@@ -552,7 +552,7 @@ class HomeController extends GetxController with StateMixin {
                     : const TextStyle(),
             child: Text(mediaDeviceInfo.label),
             onTap: () {
-              print("click audio input");
+              log("click audio input");
               changeAudioInput(mediaDeviceInfo);
               // Helper.switchCamera(track)
             },
@@ -562,7 +562,7 @@ class HomeController extends GetxController with StateMixin {
           audioOutputList.add(PopupMenuItem<MediaDeviceInfo>(
             value: mediaDeviceInfo,
             onTap: () {
-              print("click audio input");
+              log("click audio input");
               changeAudioOutput(mediaDeviceInfo);
               // Helper.switchCamera(track)
             },
