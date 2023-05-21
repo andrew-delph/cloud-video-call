@@ -1,10 +1,15 @@
+// Dart imports:
 import 'dart:async';
 import 'dart:math';
 
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+// Project imports:
 import '../../utils/utils.dart';
 import 'map_widget.dart';
 

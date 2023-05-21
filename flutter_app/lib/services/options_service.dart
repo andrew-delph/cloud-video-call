@@ -1,5 +1,7 @@
+// Package imports:
 import 'package:get/get.dart';
 
+// Project imports:
 import '../config/factory.dart';
 import '../models/history_model.dart';
 import '../models/preferences_model.dart';

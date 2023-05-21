@@ -1,6 +1,9 @@
-import 'package:flutter_app/services/options_service.dart';
+// Package imports:
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+
+// Project imports:
+import 'package:flutter_app/services/options_service.dart';
 
 void main() {
   // setUpAll(() async {

@@ -1,6 +1,8 @@
+// Package imports:
 import 'package:get/get.dart';
 import 'package:http/http.dart';
 
+// Project imports:
 import 'auth_service.dart';
 
 class ApiService extends GetConnect {

@@ -1,10 +1,15 @@
+// Dart imports:
 import 'dart:html';
 import 'dart:ui' as ui;
 
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:google_maps/google_maps.dart';
 import 'package:google_maps/google_maps_geometry.dart';
 
+// Project imports:
 import '../../utils/utils.dart';
 import 'map_widget.dart';
 

@@ -1,6 +1,8 @@
-import 'package:flutter_app/utils/utils.dart';
+// Package imports:
 import 'package:get/get.dart';
 
+// Project imports:
+import 'package:flutter_app/utils/utils.dart';
 import '../models/history_model.dart';
 import '../models/preferences_model.dart';
 import '../services/options_service.dart';

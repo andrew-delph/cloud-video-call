@@ -1,8 +1,13 @@
+// Dart imports:
 import 'dart:math';
 
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:get/get.dart';
 
+// Project imports:
 import '../services/local_preferences_service.dart';
 
 class FeedbackSwipeDetector extends StatefulWidget {

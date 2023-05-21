@@ -1,8 +1,12 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter_app/controllers/options_controller.dart';
-import 'package:flutter_app/services/options_service.dart';
+
+// Package imports:
 import 'package:get/get.dart';
 
+// Project imports:
+import 'package:flutter_app/controllers/options_controller.dart';
+import 'package:flutter_app/services/options_service.dart';
 import '../models/history_model.dart';
 
 class HistoryWidget extends StatelessWidget {

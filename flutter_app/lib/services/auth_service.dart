@@ -1,6 +1,8 @@
+// Package imports:
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
+// Project imports:
 import '../routes/app_pages.dart';
 
 class AuthService extends GetxService {

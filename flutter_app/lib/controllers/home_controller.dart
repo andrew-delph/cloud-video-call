@@ -1,16 +1,21 @@
+// Dart imports:
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:firebase_auth/firebase_auth.dart';
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter_app/widgets/feedback_dialog.dart';
+
+// Package imports:
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart' hide navigator;
 import 'package:http/http.dart' as http;
-import 'package:socket_io_client/socket_io_client.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:socket_io_client/socket_io_client.dart';
 
+// Project imports:
+import 'package:flutter_app/widgets/feedback_dialog.dart';
 import '../config/factory.dart';
 import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';

@@ -1,11 +1,16 @@
+// Dart imports:
 import 'dart:developer';
 
+// Flutter imports:
+import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/login_screen.dart';
 import 'package:get/get.dart';
 
+// Project imports:
+import 'package:flutter_app/screens/login_screen.dart';
 import 'config/firebase_options.dart';
 import 'controllers/auth_controller.dart';
 import 'routes/app_pages.dart';

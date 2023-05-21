@@ -1,16 +1,22 @@
+// Dart imports:
 import 'dart:developer';
 
-import 'package:firebase_auth/firebase_auth.dart';
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter_app/routes/app_pages.dart';
-import 'package:flutter_app/utils/utils.dart';
+
+// Package imports:
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+
+// Project imports:
+import 'package:flutter_app/routes/app_pages.dart';
+import 'package:flutter_app/utils/utils.dart';
 import '../controllers/options_controller.dart';
 import '../services/local_preferences_service.dart';
-import '../widgets/loadging_widgets.dart';
 import '../widgets/dropdown_preference_widget.dart';
 import '../widgets/history_widget.dart';
+import '../widgets/loadging_widgets.dart';
 import '../widgets/location_options.dart';
 
 class OptionsScreen extends GetView<OptionsController> {

@@ -1,10 +1,15 @@
+// Dart imports:
 import 'dart:developer';
 
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter_app/services/auth_service.dart';
+
+// Package imports:
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart';
 
+// Project imports:
+import 'package:flutter_app/services/auth_service.dart';
 import '../controllers/home_controller.dart';
 import '../routes/app_pages.dart';
 import '../widgets/feedback_swipe_detector.dart';
