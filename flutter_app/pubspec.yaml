@@ -12,12 +12,12 @@ dependencies:
   http: ^0.13.5
   package_info_plus: ^3.1.0
   socket_io_client: ^2.0.1
+  flutter_native_splash: ^2.0.4
   # uuid: ^3.0.7
 description: A new Flutter project.
 dev_dependencies:
   change_app_package_name: ^1.1.0
   flutter_lints: ^2.0.1
-  flutter_native_splash: ^2.0.4
   flutter_test:
     sdk: flutter
   import_sorter: ^4.6.0
