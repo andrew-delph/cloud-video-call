@@ -36,7 +36,7 @@ class HomeController extends GetxController with StateMixin {
   RxDouble localVideoRendererRatioHw = 0.0.obs;
   RxDouble remoteVideoRendererRatioHw = 0.0.obs;
 
-  RxBool inReadyQueue = false.obs;
+  RxBool isInReadyQueue = false.obs;
   RxBool isInChat = false.obs;
   RxBool isMicMute = false.obs;
   RxBool isCamHide = false.obs;
@@ -93,6 +93,12 @@ class HomeController extends GetxController with StateMixin {
 
     isMicMute.listen((isMicMute) {
       Helper.setMicrophoneMute(!(isMicMute), localAudioTrack()!);
+    });
+
+    isInChat.listen((isInChat) {
+      if (isInChat) {
+        isInReadyQueue(false);
+      }
     });
 
     await initSocket();
@@ -313,7 +319,7 @@ class HomeController extends GetxController with StateMixin {
     socket()!.emitWithAck("ready", {'ready': true}, ack: (data) {
       // TODO if ack timeout then do something
       log("ready ack $data");
-      inReadyQueue(true);
+      isInReadyQueue(true);
     });
   }
 
@@ -339,7 +345,7 @@ class HomeController extends GetxController with StateMixin {
     socket()!.off("icecandidate");
     socket()!.emitWithAck("ready", {'ready': false}, ack: (data) {
       log("ready ack $data");
-      inReadyQueue(false);
+      isInReadyQueue(false);
     });
   }
 
