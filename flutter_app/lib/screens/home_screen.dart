@@ -95,22 +95,6 @@ class HomeScreen extends GetView<HomeController> {
   }
 }
 
-class SettingsButton extends GetResponsiveView<HomeController> {
-  SettingsButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton<MediaDeviceInfo>(
-      color: Colors.white,
-      // initialValue: 'selectedMenu',
-      // Callback that sets the selected popup menu item.
-      itemBuilder: (BuildContext context) {
-        return controller.getDeviceEntries();
-      },
-    );
-  }
-}
-
 class VideoRenderLayout extends GetResponsiveView<HomeController> {
   VideoRenderLayout({super.key});
 
@@ -206,9 +190,25 @@ class ButtonsOverlay extends GetView<HomeController> {
                     controller.isCamHide.toggle();
                   },
                 ),
-              SettingsButton(),
+              if (controller.localMediaStream() != null) MediaDeviceButton(),
             ],
           ),
         ));
+  }
+}
+
+class MediaDeviceButton extends GetResponsiveView<HomeController> {
+  MediaDeviceButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<MediaDeviceInfo>(
+      color: Colors.white,
+      // initialValue: 'selectedMenu',
+      // Callback that sets the selected popup menu item.
+      itemBuilder: (BuildContext context) {
+        return controller.getDeviceEntries();
+      },
+    );
   }
 }
