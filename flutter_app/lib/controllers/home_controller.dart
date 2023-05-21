@@ -93,11 +93,11 @@ class HomeController extends GetxController with StateMixin {
     });
 
     localAudioTrack.listen((localAudioTrack) {
-      Helper.setMicrophoneMute(!(isMicMute()), localAudioTrack!);
+      Helper.setMicrophoneMute(isMicMute(), localAudioTrack!);
     });
 
     isMicMute.listen((isMicMute) {
-      Helper.setMicrophoneMute(!(isMicMute), localAudioTrack()!);
+      Helper.setMicrophoneMute(isMicMute, localAudioTrack()!);
     });
 
     isInChat.listen((isInChat) {
