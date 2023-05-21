@@ -2,11 +2,10 @@
 import 'dart:developer';
 
 // Flutter imports:
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
-
+import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 
 // Project imports:
