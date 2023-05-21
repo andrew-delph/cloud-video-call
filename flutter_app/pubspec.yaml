@@ -3,6 +3,7 @@ dependencies:
   firebase_core: ^2.13.0
   flutter:
     sdk: flutter
+  flutter_native_splash: ^2.0.4
   flutter_webrtc: ^0.9.19
   geolocator: ^9.0.2
   get: ^4.6.5
@@ -12,8 +13,6 @@ dependencies:
   http: ^0.13.5
   package_info_plus: ^3.1.0
   socket_io_client: ^2.0.1
-  flutter_native_splash: ^2.0.4
-  # uuid: ^3.0.7
 description: A new Flutter project.
 dev_dependencies:
   change_app_package_name: ^1.1.0
@@ -28,4 +27,4 @@ flutter:
   uses-material-design: true
 name: flutter_app
 publish_to: none
-version: 1.0.150
+version: 1.0.151
