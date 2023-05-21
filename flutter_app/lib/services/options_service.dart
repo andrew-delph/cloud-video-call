@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../config/Factory.dart';
+import '../config/factory.dart';
 import '../models/history_model.dart';
 import '../models/preferences_model.dart';
 import 'api_service.dart';

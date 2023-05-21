@@ -1,10 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
-import '../controllers/auth_controller.dart';
-import '../main.dart';
 import '../routes/app_pages.dart';
 import '../services/auth_service.dart';
 

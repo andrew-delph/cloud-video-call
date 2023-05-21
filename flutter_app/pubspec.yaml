@@ -2,7 +2,6 @@ dependencies:
   firebase_auth: ^4.2.9
   flutter:
     sdk: flutter
-  flutter_native_splash: ^2.0.4
   flutter_webrtc: ^0.9.19
   geolocator: ^9.0.2
   get: ^4.6.5
@@ -10,12 +9,13 @@ dependencies:
   google_maps: ^6.2.0
   google_maps_flutter: ^2.2.5
   http: ^0.13.5
-  loading_animation_widget: ^1.2.0+4
+  # loading_animation_widget: ^1.2.0+4
   package_info_plus: ^3.1.0
   socket_io_client: ^2.0.1
   uuid: ^3.0.7
 description: A new Flutter project.
 dev_dependencies:
+  flutter_native_splash: ^2.0.4
   change_app_package_name: ^1.1.0
   flutter_lints: ^2.0.1
   flutter_test:

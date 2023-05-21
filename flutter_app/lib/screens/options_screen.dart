@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../controllers/options_controller.dart';
 import '../services/local_preferences_service.dart';
-import '../widgets/loading_widget.dart';
+import '../widgets/loadging_widgets.dart';
 import '../widgets/dropdown_preference_widget.dart';
 import '../widgets/history_widget.dart';
 import '../widgets/location_options.dart';

@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
-import '../config/Factory.dart';
+import '../config/factory.dart';
 import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
 import '../utils/utils.dart';
@@ -144,7 +144,7 @@ class HomeController extends GetxController with StateMixin {
 
     mySocket.on("myping", (request) async {
       List data = request as List;
-      String value = data[0] as String;
+      // String value = data[0] as String;
       Function callback = data[1] as Function;
 
       callback("flutter responded");
@@ -200,7 +200,7 @@ class HomeController extends GetxController with StateMixin {
     if (localMediaStream() != null) return;
     await localMediaStream()?.dispose();
 
-    localVideoRenderer()?.onResize = () {
+    localVideoRenderer().onResize = () {
       localVideoRendererRatioHw(
           localVideoRenderer().videoHeight / localVideoRenderer().videoWidth);
       log("localVideoRenderer.onResize");
