@@ -1,42 +1,46 @@
 import 'package:flutter_app/utils/utils.dart';
 import 'package:get/get.dart';
 
-import '../provider/options_provider.dart';
+import '../models/history_model.dart';
+import '../models/preferences_model.dart';
+import '../services/options_service.dart';
 
-class PreferencesService extends GetxController {
-  final OptionsProvider optionsProvider = OptionsProvider();
+class OptionsController extends GetxController {
+  final OptionsService optionsService;
   final RxMap<String, String> constantAttributes = <String, String>{}.obs;
   final RxMap<String, String> constantFilters = <String, String>{}.obs;
   final RxMap<String, String> customAttributes = <String, String>{}.obs;
   final RxMap<String, String> customFilters = <String, String>{}.obs;
   final RxDouble priority = (0.0).obs;
+  Rx<HistoryModel?> historyModel = Rx(null);
   RxBool unsavedChanges = false.obs;
+  RxBool loading = false.obs;
 
-  PreferencesService() {
+  OptionsController(this.optionsService) {
     constantAttributes.listen((p0) {
-      updateChanges(true);
+      unsavedChanges(true);
     });
     constantFilters.listen((p0) {
-      updateChanges(true);
+      unsavedChanges(true);
     });
     customAttributes.listen((p0) {
-      updateChanges(true);
+      unsavedChanges(true);
     });
     customFilters.listen((p0) {
-      updateChanges(true);
-    });
-    priority.listen((p0) {
-      updateChanges(true);
+      unsavedChanges(true);
     });
   }
 
-  void updateChanges(bool flag) {
-    unsavedChanges.value = flag;
-    unsavedChanges.refresh();
+  @override
+  onInit() {
+    super.onInit();
+    loadAttributes();
+    optionsService.getHistory().then((response) => historyModel(response.body));
   }
 
   Future<void> loadAttributes() async {
-    return optionsProvider.getPreferences().then((response) {
+    loading(true);
+    return optionsService.getPreferences().then((response) {
       Preferences? preferences = response.body;
 
       if (validStatusCode(response.statusCode) && preferences != null) {
@@ -49,9 +53,9 @@ class PreferencesService extends GetxController {
       constantFilters.addAll(preferences.constantFilters);
       customAttributes.addAll(preferences.customAttributes);
       customFilters.addAll(preferences.customFilters);
-      priority.value = preferences.priority;
-
-      updateChanges(false);
+      priority(preferences.priority);
+      unsavedChanges(false);
+      loading(false);
     });
   }
 
@@ -66,7 +70,8 @@ class PreferencesService extends GetxController {
         'custom': customFilters,
       }
     };
-    return optionsProvider.updatePreferences(body).then((response) {
+    loading(true);
+    return optionsService.updatePreferences(body).then((response) {
       if (validStatusCode(response.statusCode)) {
       } else {
         const String errorMsg = 'Failed to update preferences.';

@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/provider/options_provider.dart';
+import 'package:flutter_app/controllers/options_controller.dart';
+import 'package:flutter_app/services/options_service.dart';
 import 'package:get/get.dart';
 
-class HistoryWidget extends StatelessWidget {
-  Rx<HistoryModel> historyModel = HistoryModel().obs;
+import '../models/history_model.dart';
 
-  OptionsProvider optionsProvider = OptionsProvider();
+class HistoryWidget extends StatelessWidget {
+  OptionsController optionsController = Get.find();
   HistoryWidget({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    optionsProvider.getHistory().then((value) {
-      historyModel.value = value.body!;
-    });
-
     return Obx(() {
+      HistoryModel? historyModel = optionsController.historyModel();
+
+      if (historyModel == null) return const Text("Loading history...");
+
       List<Widget> historyList =
-          historyModel.value.matchHistoryList.expand((historyItem) {
+          historyModel.matchHistoryList.expand((historyItem) {
         return [
           HistoryItemWidget(
             historyItem: historyItem,
@@ -30,6 +31,8 @@ class HistoryWidget extends StatelessWidget {
       // remove the last divider
       if (historyList.isNotEmpty) {
         historyList.removeLast();
+      } else {
+        return const Text("No History...");
       }
 
       return Column(children: historyList);

@@ -1,164 +1,157 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/routes/app_pages.dart';
 import 'package:flutter_app/utils/utils.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:provider/provider.dart';
-
-import '../services/app_service.dart';
-import '../services/preferences_service.dart';
-import '../widgets/LoadingWidget.dart';
+import '../controllers/options_controller.dart';
+import '../services/local_preferences_service.dart';
+import '../widgets/loading_widget.dart';
 import '../widgets/dropdown_preference_widget.dart';
 import '../widgets/history_widget.dart';
 import '../widgets/location_options.dart';
 
-class OptionsScreen extends StatelessWidget {
-  double priority = 0;
-
-  final PreferencesService preferencesService = PreferencesService();
-
-  bool loading = false;
-
-  OptionsScreen({super.key});
+class OptionsScreen extends GetView<OptionsController> {
+  const OptionsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    AppProvider appProvider = Provider.of<AppProvider>(context);
-
-    preferencesService.loadAttributes();
-
-    Widget profile = Container(
-        alignment: Alignment.topCenter,
-        decoration: BoxDecoration(
-          color: Colors.teal,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.all(20),
-        margin: const EdgeInsets.all(20),
-        constraints: const BoxConstraints(
-          maxWidth: 1000,
-        ),
-        child: loading
-            ? connectingWidget
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Profile",
-                    style: TextStyle(
-                      fontSize: 35.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const Divider(),
-                  UserProfileWidget(
-                    priority: priority,
-                  ),
-                  const Divider(),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Attributes',
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        DropDownPreference(
-                          label: 'Gender',
-                          options: const [naValue, "Male", "Female", "Other"],
-                          preferenceMap: preferencesService.constantAttributes,
-                          mapKey: 'gender',
-                        ),
-                        DropDownPreference(
-                          label: 'Language',
-                          options: const [
-                            naValue,
-                            "English",
-                            "French",
-                            "Other"
-                          ],
-                          preferenceMap: preferencesService.constantAttributes,
-                          mapKey: 'language',
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Divider(),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Filters',
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        DropDownPreference(
-                          label: 'Gender',
-                          options: const [naValue, "Male", "Female", "Other"],
-                          preferenceMap: preferencesService.constantFilters,
-                          mapKey: 'gender',
-                        ),
-                        DropDownPreference(
-                          label: 'Language',
-                          options: const [
-                            naValue,
-                            "English",
-                            "French",
-                            "Other"
-                          ],
-                          preferenceMap: preferencesService.constantFilters,
-                          mapKey: 'language',
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Divider(),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Location Settings',
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        LocationOptionsWidget(
-                            customAttributes:
-                                preferencesService.customAttributes,
-                            customFilters: preferencesService.customFilters),
-                      ],
-                    ),
-                  ),
-                  Obx(() {
-                    return SizedBox(
-                      height: 50,
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: !preferencesService.unsavedChanges.value
-                            ? null
-                            : () async {
-                                preferencesService.updateAttributes();
-                              },
-                        child: const Text('Submit'),
+    Widget profile = Obx(() {
+      return Container(
+          alignment: Alignment.topCenter,
+          decoration: BoxDecoration(
+            color: Colors.teal,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.all(20),
+          constraints: const BoxConstraints(
+            maxWidth: 1000,
+          ),
+          child: controller.loading()
+              ? connectingWidget
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Profile",
+                      style: TextStyle(
+                        fontSize: 35.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                    );
-                  })
-                ],
-              ));
+                    ),
+                    const Divider(),
+                    UserProfileWidget(
+                      priority: controller.priority(),
+                    ),
+                    const Divider(),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Attributes',
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          DropDownPreference(
+                            label: 'Gender',
+                            options: const [naValue, "Male", "Female", "Other"],
+                            preferenceMap: controller.constantAttributes,
+                            mapKey: 'gender',
+                          ),
+                          DropDownPreference(
+                            label: 'Language',
+                            options: const [
+                              naValue,
+                              "English",
+                              "French",
+                              "Other"
+                            ],
+                            preferenceMap: controller.constantAttributes,
+                            mapKey: 'language',
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Filters',
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          DropDownPreference(
+                            label: 'Gender',
+                            options: const [naValue, "Male", "Female", "Other"],
+                            preferenceMap: controller.constantFilters,
+                            mapKey: 'gender',
+                          ),
+                          DropDownPreference(
+                            label: 'Language',
+                            options: const [
+                              naValue,
+                              "English",
+                              "French",
+                              "Other"
+                            ],
+                            preferenceMap: controller.constantFilters,
+                            mapKey: 'language',
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Location Settings',
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          LocationOptionsWidget(
+                              customAttributes: controller.customAttributes,
+                              customFilters: controller.customFilters),
+                        ],
+                      ),
+                    ),
+                    Obx(() {
+                      return SizedBox(
+                        height: 50,
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: !controller.unsavedChanges()
+                              ? null
+                              : () async {
+                                  await controller.updateAttributes();
+                                  Get.snackbar('Updated',
+                                      'Preferences have been updated',
+                                      snackPosition: SnackPosition.BOTTOM);
+                                },
+                          child: const Text('Submit'),
+                        ),
+                      );
+                    })
+                  ],
+                ));
+    });
 
     Widget history = Container(
         alignment: Alignment.topCenter,
@@ -171,7 +164,7 @@ class OptionsScreen extends StatelessWidget {
         constraints: const BoxConstraints(
           maxWidth: 1000,
         ),
-        child: loading
+        child: false
             ? connectingWidget
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -189,81 +182,32 @@ class OptionsScreen extends StatelessWidget {
                 ],
               ));
 
-    FutureBuilder devices =
-        FutureBuilder<List<PopupMenuEntry<MediaDeviceInfo>>>(
-      future: appProvider.getDeviceEntries(),
-      builder: (context, snapshot) {
-        List<Widget> mediaList = [
-          const Text(
-            "Devices",
-            style: TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+    LocalPreferences localPreferences = Get.find();
+
+    Widget preferences = Obx(() => Column(children: [
+          Row(
+            children: [
+              const Text("Swipe feedback popup:"),
+              Switch(
+                value: localPreferences.feedbackPopup(),
+                onChanged: (bool newValue) async {
+                  localPreferences.feedbackPopup(newValue);
+                },
+              )
+            ],
+          ),
+          Row(
+            children: [
+              const Text("Auto queue:"),
+              Switch(
+                value: localPreferences.autoQueue(),
+                onChanged: (bool newValue) async {
+                  localPreferences.autoQueue(newValue);
+                },
+              )
+            ],
           )
-        ];
-
-        if (snapshot.hasData) {
-          mediaList = mediaList + (snapshot.data ?? []);
-        }
-
-        return Container(
-            alignment: Alignment.topCenter,
-            decoration: BoxDecoration(
-              color: Colors.teal,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.all(20),
-            margin: const EdgeInsets.all(20),
-            constraints: const BoxConstraints(
-              maxWidth: 1000,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: mediaList,
-            ));
-      },
-    );
-
-    Widget preferences = FutureBuilder<Options>(
-      future: Options.getOptions(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          bool confirmFeedbackPopup =
-              snapshot.data?.getConfirmFeedbackPopup() ?? true;
-          bool autoQueue = snapshot.data?.getAutoQueue() ?? false;
-          return Column(children: [
-            Row(
-              children: [
-                const Text("Swipe feedback popup:"),
-                Switch(
-                  value: confirmFeedbackPopup,
-                  onChanged: (bool newValue) async {
-                    await snapshot.data?.setConfirmFeedbackPopup(newValue);
-                  },
-                )
-              ],
-            ),
-            Row(
-              children: [
-                const Text("Auto queue:"),
-                Switch(
-                  value: autoQueue,
-                  onChanged: (bool newValue) async {
-                    await snapshot.data?.setAutoQueue(newValue);
-                  },
-                )
-              ],
-            )
-          ]);
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
+        ]));
 
     Widget settings = Container(
         alignment: Alignment.topCenter,
@@ -276,7 +220,7 @@ class OptionsScreen extends StatelessWidget {
         constraints: const BoxConstraints(
           maxWidth: 1000,
         ),
-        child: loading
+        child: false
             ? connectingWidget
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -292,36 +236,43 @@ class OptionsScreen extends StatelessWidget {
                   const Divider(),
                   preferences,
                   const Divider(),
-                  devices
+                  // devices
                 ],
               ));
 
     return WillPopScope(
         onWillPop: () async {
-          if (!preferencesService.unsavedChanges.value) return true;
-          bool confirm = await showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text('You have unsaved changes.'),
-                content: const Text('Do you want to discard your changes?'),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: const Text('Cancel'),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(true),
-                    child: const Text('Discard'),
-                  ),
-                ],
-              );
-            },
-          );
+          if (!controller.unsavedChanges()) return true;
+
+          bool confirm = await Get.dialog(AlertDialog(
+            title: const Text('You have unsaved changes.'),
+            content: const Text('Do you want to discard your changes?'),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(result: false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Get.back(result: true),
+                child: const Text('Discard'),
+              ),
+            ],
+          ));
           return confirm;
         },
         child: Scaffold(
             appBar: AppBar(
+              leading: BackButton(
+                onPressed: () {
+                  log("previous: ${Get.routing.previous.isEmpty}");
+                  if (Get.routing.previous.isEmpty) {
+                    Get.toNamed(Routes.HOME);
+                  } else {
+                    Get.back();
+                  }
+                  // Get.toNamed(Routes.HOME);
+                },
+              ),
               title: const Text('Options screen'),
             ),
             body: Center(
