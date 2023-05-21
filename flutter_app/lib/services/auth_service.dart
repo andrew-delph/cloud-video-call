@@ -6,10 +6,6 @@ import 'package:get/get.dart';
 import '../routes/app_pages.dart';
 
 class AuthService extends GetxService {
-  @override
-  void onInit() {
-    super.onInit();
-  }
 
   Future<String> getToken() async {
     String? token = await FirebaseAuth.instance.currentUser?.getIdToken();

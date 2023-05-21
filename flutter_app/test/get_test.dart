@@ -1,6 +1,5 @@
 // Flutter imports:
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
 // Package imports:
 import 'package:flutter_test/flutter_test.dart';
@@ -8,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 // Project imports:
-import 'package:flutter_app/services/options_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

@@ -11,10 +11,6 @@ class AuthController extends GetxController {
   AuthController(this._authService);
 
   // Called immediately after the contoller is allocated in memory.
-  @override
-  void onInit() {
-    super.onInit();
-  }
 
   Future signInAnonymously() async {
     await FirebaseAuth.instance.signInAnonymously();

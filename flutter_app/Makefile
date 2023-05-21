@@ -22,5 +22,7 @@ format:
 analyze:
 	dart analyze
 
+fix:
+	dart fix --apply
 
 

@@ -5,7 +5,7 @@ class Preferences {
   Map<String, String> customFilters = {};
   double priority = 0.0;
 
-  Preferences() {}
+  Preferences();
 
   factory Preferences.fromJson(dynamic response) {
     Preferences preferences = Preferences();

@@ -19,13 +19,13 @@ class AppPages {
         transition: Transition.noTransition),
     GetPage(
         name: Routes.HOME,
-        page: () => HomeScreen(),
+        page: () => const HomeScreen(),
         binding: HomeBinding(),
         middlewares: [AuthMiddleware()],
         transition: Transition.fadeIn),
     GetPage(
         name: Routes.OPTIONS,
-        page: () => OptionsScreen(),
+        page: () => const OptionsScreen(),
         binding: OptionsBinding(),
         middlewares: [AuthMiddleware()],
         transition: Transition.leftToRight),

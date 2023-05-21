@@ -16,5 +16,6 @@ class AuthMiddleware extends GetMiddleware {
     if (!_authService.isAuthenticated()) {
       return RouteSettings(name: Routes.LOGIN);
     }
+    return null;
   }
 }

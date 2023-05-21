@@ -11,7 +11,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 // Project imports:
 import 'package:flutter_app/routes/app_pages.dart';
-import 'package:flutter_app/utils/utils.dart';
 import '../controllers/options_controller.dart';
 import '../services/local_preferences_service.dart';
 import '../widgets/dropdown_preference_widget.dart';
