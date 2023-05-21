@@ -7,19 +7,31 @@
         {
             "name": "flutter_app",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": [
+                "-d",
+                "chrome"
+              ]
         },
         {
             "name": "flutter_app (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "args": [
+                "-d",
+                "chrome"
+              ]
         },
         {
             "name": "flutter_app (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "args": [
+                "-d",
+                "chrome"
+              ]
         }
     ]
 }
