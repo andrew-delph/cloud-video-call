@@ -17,6 +17,10 @@ web-server:
 format:
 	flutter pub run import_sorter:main
 	dart format .
+	flutter pub run dependency_validator
+
+analyze:
+	dart analyze
 
 
 
