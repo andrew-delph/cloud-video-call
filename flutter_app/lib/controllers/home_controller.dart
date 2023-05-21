@@ -151,7 +151,7 @@ class HomeController extends GetxController with StateMixin {
       activeCount = int.tryParse(data.toString()) ?? -1;
     });
 
-    mySocket.on('established', (data) {
+    mySocket.on('established', (data) async {
       change(null, status: RxStatus.success());
     });
 
@@ -161,7 +161,7 @@ class HomeController extends GetxController with StateMixin {
 
     mySocket.on('message', (data) => log(data));
     mySocket.on('endchat', (data) async {
-      await endChat(false);
+      await endChat(!isInChat());
     });
     mySocket.onDisconnect((details) {
       change(null, status: RxStatus.error(details.toString()));
@@ -188,10 +188,6 @@ class HomeController extends GetxController with StateMixin {
 
   void disposeSocket() {
     socket()?.dispose();
-  }
-
-  bool isInReadyQueue() {
-    return inReadyQueue();
   }
 
   Future<void> initLocalStream() async {
@@ -327,7 +323,7 @@ class HomeController extends GetxController with StateMixin {
     await resetRemote();
     isInChat(false);
 
-    if (skipFeedback) {
+    if (!skipFeedback) {
       double score = await Get.dialog(FeedbackDialog());
       await sendChatScore(score);
     }

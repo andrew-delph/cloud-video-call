@@ -15,28 +15,19 @@ class FeedbackDialog extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        width: double.infinity,
-        height: double.infinity,
-        color: Colors.blue,
-        child: Column(
-          children: [
-            const Text("Send chat feedback."),
-            Slider(
-              value: score(),
-              min: min,
-              max: max,
-              onChanged: (newValue) {
-                score(newValue);
-              },
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Get.back(result: score());
-              },
-              child: const Text('Submit'),
-            ),
-          ],
-        ));
+    return AlertDialog(
+      title: const Text('Submit Feedback for your chat.'),
+      content: const Text('Do you want to meet similair chatters?'),
+      actions: [
+        TextButton(
+          onPressed: () => Get.back(result: min),
+          child: const Text('Dislike'),
+        ),
+        TextButton(
+          onPressed: () => Get.back(result: max),
+          child: const Text('Like'),
+        ),
+      ],
+    );
   }
 }
