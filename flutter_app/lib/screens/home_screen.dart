@@ -40,19 +40,9 @@ class HomeScreen extends GetView<HomeController> {
         isDragUpdate: () {
           return controller.isInChat();
         },
-        onHorizontalDragEnd: (double score) {
-          controller.sendChatScore(score).then((value) {}).catchError((error) {
-            Get.snackbar(
-              "Error",
-              error.toString(),
-              snackPosition: SnackPosition.TOP,
-              backgroundColor: Colors.red.withOpacity(.75),
-              colorText: Colors.white,
-              icon: const Icon(Icons.error, color: Colors.white),
-              shouldIconPulse: true,
-              barBlur: 20,
-            );
-          }).whenComplete(() {});
+        onHorizontalDragEnd: (double score) async {
+          await controller.endChat(true);
+          await controller.sendChatScore(score);
         },
         child: VideoRenderLayout());
 
@@ -191,7 +181,7 @@ class ButtonsOverlay extends GetView<HomeController> {
                   icon: const Icon(Icons.call_end),
                   color: Colors.red,
                   onPressed: () async {
-                    await controller.endChat();
+                    await controller.endChat(false);
                   },
                 ),
               if (controller.localMediaStream() != null)

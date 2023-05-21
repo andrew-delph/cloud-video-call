@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/widgets/feedback_dialog.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart' hide navigator;
 import 'package:http/http.dart' as http;
@@ -160,7 +161,7 @@ class HomeController extends GetxController with StateMixin {
 
     mySocket.on('message', (data) => log(data));
     mySocket.on('endchat', (data) async {
-      await endChat();
+      await endChat(false);
     });
     mySocket.onDisconnect((details) {
       change(null, status: RxStatus.error(details.toString()));
@@ -228,7 +229,7 @@ class HomeController extends GetxController with StateMixin {
       isInChat([
         RTCPeerConnectionState.RTCPeerConnectionStateConnecting,
         RTCPeerConnectionState.RTCPeerConnectionStateConnected
-      ].contains(state));
+      ].contains(connectionState));
     };
     // END SETUP PEER CONNECTION
 
@@ -320,11 +321,19 @@ class HomeController extends GetxController with StateMixin {
     });
   }
 
-  Future<void> endChat() async {
-    log("end chat");
+  Future<void> endChat(bool skipFeedback) async {
+    log("end chat skipFeedback=$skipFeedback");
     socket()?.emit("endchat", true);
     await resetRemote();
     isInChat(false);
+
+    if (skipFeedback) {
+      double score = await Get.dialog(FeedbackDialog());
+      await sendChatScore(score);
+    }
+    if (localPreferences.autoQueue()) {
+      queueReady();
+    }
   }
 
   Future<void> unReady() async {
@@ -500,6 +509,17 @@ class HomeController extends GetxController with StateMixin {
         const String errorMsg = 'Failed to provide feedback.';
         throw Exception(errorMsg);
       }
+    }).catchError((error) {
+      Get.snackbar(
+        "Error",
+        error.toString(),
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red.withOpacity(.75),
+        colorText: Colors.white,
+        icon: const Icon(Icons.error, color: Colors.white),
+        shouldIconPulse: true,
+        barBlur: 20,
+      );
     });
   }
 
