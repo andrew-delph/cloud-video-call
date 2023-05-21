@@ -1,5 +1,3 @@
-import 'package:shared_preferences/shared_preferences.dart';
-
 bool validStatusCode(int? statusCode) {
   return statusCode != null && statusCode >= 200 && statusCode < 300;
 }
