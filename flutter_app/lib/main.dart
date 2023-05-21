@@ -27,12 +27,6 @@ void main() async {
 }
 
 Future<void> initializeApp() async {
-  // await GetStorage.init();
-  // OAuthClientService _OAuthClientService = Get.put(OAuthClientService());
-  // await _OAuthClientService.initCredentials();
-  // Get.put(
-  //     AuthController(Get.put(AuthApiService()), Get.put(OAuthClientService())),
-  //     permanent: true);
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(
@@ -43,41 +37,3 @@ Future<void> initializeApp() async {
   Get.put(LocalPreferences());
   log('Initialize');
 }
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   // This widget is the root of your application.
-//   @override
-//   Widget build(BuildContext context) {
-//     String title = 'Random video chat';
-
-//     return StreamBuilder<User?>(
-//         stream: FirebaseAuth.instance.idTokenChanges(),
-//         builder: (BuildContext streamContext, AsyncSnapshot<User?> snapshot) {
-//           if (snapshot.connectionState == ConnectionState.waiting) {
-//             // Show a loading screen while waiting for the authentication state to change
-//             return const CircularProgressIndicator();
-//           }
-
-//           if (!snapshot.hasData) {
-//             print("loggin!!!!!");
-
-//             return GetMaterialApp(
-//                 debugShowCheckedModeBanner: false,
-//                 title: title,
-//                 theme: ThemeData(primarySwatch: Colors.green),
-//                 home: const LoginScreen());
-//           } else {
-//             print("loading app!!!!!");
-//             return ChangeNotifierProvider(
-//                 create: (context) => AppProvider(),
-//                 child: GetMaterialApp(
-//                     debugShowCheckedModeBanner: false,
-//                     title: title,
-//                     theme: ThemeData(primarySwatch: Colors.green),
-//                     home: const MainScreen()));
-//           }
-//         });
-//   }
-// }
