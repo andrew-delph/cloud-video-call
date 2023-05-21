@@ -187,7 +187,18 @@ class OptionsScreen extends GetView<OptionsController> {
     Widget preferences = Obx(() => Column(children: [
           Row(
             children: [
-              const Text("Swipe feedback popup:"),
+              const Text("Swipe:"),
+              Switch(
+                value: localPreferences.swipeFeedback(),
+                onChanged: (bool newValue) async {
+                  localPreferences.swipeFeedback(newValue);
+                },
+              )
+            ],
+          ),
+          Row(
+            children: [
+              const Text("Swipe popup:"),
               Switch(
                 value: localPreferences.feedbackPopup(),
                 onChanged: (bool newValue) async {
