@@ -1,3 +1,4 @@
+
 // Dart imports:
 
 // Flutter imports:
@@ -16,8 +17,8 @@ import '../controllers/home_controller.dart';
 import '../routes/app_pages.dart';
 import '../widgets/feedback_swipe_detector.dart';
 
-class HomeScreen extends GetView<HomeController> {
-  const HomeScreen({super.key});
+class ChatScreen extends GetView<HomeController> {
+  const ChatScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

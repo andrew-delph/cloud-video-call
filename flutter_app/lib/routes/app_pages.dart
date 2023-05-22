@@ -2,9 +2,9 @@
 import 'package:get/get.dart';
 
 // Project imports:
-import 'package:flutter_app/screens/home_screen.dart';
+import 'package:flutter_app/screens/chat_screen.dart';
 import 'package:flutter_app/screens/options_screen.dart';
-import '../bindings/home_binding.dart';
+import '../bindings/chat_binding.dart';
 import '../bindings/options_binding.dart';
 import '../middlewares/auth_middleware.dart';
 import '../screens/login_screen.dart';
@@ -19,8 +19,8 @@ class AppPages {
         transition: Transition.noTransition),
     GetPage(
         name: Routes.HOME,
-        page: () => const HomeScreen(),
-        binding: HomeBinding(),
+        page: () => const ChatScreen(),
+        binding: ChatBinding(),
         middlewares: [AuthMiddleware()],
         transition: Transition.fadeIn),
     GetPage(
