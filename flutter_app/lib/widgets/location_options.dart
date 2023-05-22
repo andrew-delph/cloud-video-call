@@ -1,5 +1,7 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map/plugin_api.dart';
 
 // Package imports:
 import 'package:geolocator/geolocator.dart';
@@ -7,8 +9,9 @@ import 'package:get/get.dart';
 
 // Project imports:
 import 'package:flutter_app/utils/utils.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:latlong2/latlong.dart';
 import '../utils/location.dart';
-import '../widgets/map/map_widget.dart';
 
 class LocationOptionsWidget extends StatelessWidget {
   final Map<String, String> customAttributes;
@@ -34,25 +37,25 @@ class LocationOptionsWidget extends StatelessWidget {
   }
 
   updateLocation(context) async {
-    Position pos = await getLocation().catchError((onError) {
-      String errorMsg = onError.toString();
-      SnackBar snackBar = SnackBar(
-        content: Text(errorMsg),
+    Position pos = await getLocation().catchError((error) {
+      Get.snackbar(
+        "Error",
+        error.toString(),
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red.withOpacity(.75),
+        colorText: Colors.white,
+        icon: const Icon(Icons.error, color: Colors.white),
+        shouldIconPulse: true,
+        barBlur: 20,
       );
-
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      throw onError;
     });
     customAttributes["long"] = pos.latitude.toString();
     customAttributes["lat"] = pos.longitude.toString();
     print("pos $pos ${pos.latitude} ${pos.longitude}");
 
     String msg = "Latitude: ${pos.latitude} Longitude: ${pos.longitude}";
-    SnackBar snackBar = SnackBar(
-      content: Text(msg),
-    );
 
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    Get.snackbar('Updated Location', msg, snackPosition: SnackPosition.BOTTOM);
   }
 
   LocationOptionsWidget(
@@ -61,19 +64,21 @@ class LocationOptionsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      Pair<double, double>? posPair;
-
       String? lat = customAttributes["lat"];
       String? long = customAttributes["long"];
 
-      if (long != null && lat != null) {
-        try {
-          posPair = Pair(double.parse(long), double.parse(lat));
-        } catch (e) {
-          print('Error: Invalid format for conversion');
-          posPair = null;
-        }
+      Widget updateLocationWidget = ElevatedButton(
+        onPressed: () {
+          updateLocation(context);
+        },
+        child: const Text('Update Location'),
+      );
+
+      if (long == null || lat == null) {
+        return updateLocationWidget;
       }
+
+      LatLng center = LatLng(double.parse(long), double.parse(lat));
 
       double dist = -1;
 
@@ -85,11 +90,22 @@ class LocationOptionsWidget extends StatelessWidget {
           dist = double.parse(customFilters["dist"]!);
         } catch (e) {
           print('Error: Invalid format for conversion');
-          posPair = null;
+          dist = 10000;
         }
       } else {
         print("customFilters.get('dist') == null");
       }
+
+      final mapController = MapController();
+
+      final distCircle = CircleMarker(
+          point: center,
+          color: Colors.blue.withOpacity(0.7),
+          borderStrokeWidth: 2,
+          useRadiusInMeter: true,
+          radius: 2000);
+
+      final circleMarkers = <CircleMarker>[distCircle];
 
       return Column(children: [
         Wrap(
@@ -109,16 +125,51 @@ class LocationOptionsWidget extends StatelessWidget {
                 : Container()
           ],
         ),
-        posPair != null
-            ? SizedBox(
-                width: 300,
-                height: 300,
-                child: MapWidget(posPair, dist, true, (double eventDist) {
-                  print("updating dist value $eventDist");
-                  customFilters["dist"] = eventDist.toString();
-                }),
-              )
-            : Container(),
+        Column(children: [
+          SizedBox(
+            width: 300,
+            height: 300,
+            child: FlutterMap(
+              mapController: mapController,
+              options: MapOptions(
+                enableScrollWheel: false,
+                interactiveFlags: InteractiveFlag.none,
+                center: center,
+                zoom: 11,
+                onMapReady: () {
+                  mapController.mapEventStream.listen((evt) {
+                    print("evt: ${evt.toString()}");
+                  });
+                  // And any other `MapController` dependent non-movement methods
+                },
+              ),
+              nonRotatedChildren: const [],
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                ),
+                CircleLayer(circles: circleMarkers),
+              ],
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.zoom_in),
+                onPressed: () {
+                  mapController.move(center, mapController.zoom + 1);
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.zoom_out),
+                onPressed: () {
+                  mapController.move(center, mapController.zoom - 1);
+                },
+              ),
+            ],
+          )
+        ]),
       ]);
     });
   }
