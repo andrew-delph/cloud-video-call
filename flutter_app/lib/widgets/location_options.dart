@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 
 // Project imports:
 import 'package:flutter_app/utils/utils.dart';
+import 'package:get/get.dart';
 import '../utils/location.dart';
 import '../widgets/map/map_widget.dart';
 
@@ -59,64 +60,66 @@ class LocationOptionsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Pair<double, double>? posPair;
+    return Obx(() {
+      Pair<double, double>? posPair;
 
-    String? lat = customAttributes["lat"];
-    String? long = customAttributes["long"];
+      String? lat = customAttributes["lat"];
+      String? long = customAttributes["long"];
 
-    if (long != null && lat != null) {
-      try {
-        posPair = Pair(double.parse(long), double.parse(lat));
-      } catch (e) {
-        print('Error: Invalid format for conversion');
-        posPair = null;
+      if (long != null && lat != null) {
+        try {
+          posPair = Pair(double.parse(long), double.parse(lat));
+        } catch (e) {
+          print('Error: Invalid format for conversion');
+          posPair = null;
+        }
       }
-    }
 
-    double dist = -1;
+      double dist = -1;
 
-    valueController.text = customFilters["dist"] ?? 'None';
+      valueController.text = customFilters["dist"] ?? 'None';
 
-    if (customFilters["dist"] != null) {
-      print("customFilters.get('dist') is ${customFilters["dist"]}");
-      try {
-        dist = double.parse(customFilters["dist"]!);
-      } catch (e) {
-        print('Error: Invalid format for conversion');
-        posPair = null;
+      if (customFilters["dist"] != null) {
+        print("customFilters.get('dist') is ${customFilters["dist"]}");
+        try {
+          dist = double.parse(customFilters["dist"]!);
+        } catch (e) {
+          print('Error: Invalid format for conversion');
+          posPair = null;
+        }
+      } else {
+        print("customFilters.get('dist') == null");
       }
-    } else {
-      print("customFilters.get('dist') == null");
-    }
 
-    return Column(children: [
-      Wrap(
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              updateLocation(context);
-            },
-            child: const Text('Update Location'),
-          ),
-          ElevatedButton(
-            onPressed: canReset() ? reset : null,
-            child: const Text('Clear'),
-          ),
-          isValid()
-              ? Text('Max Distance Km: ${dist < 0 ? 'None' : dist.toInt()}')
-              : Container()
-        ],
-      ),
-      posPair != null
-          ? SizedBox(
-              width: 300,
-              height: 300,
-              child: MapWidget(posPair, dist, true, (double eventDist) {
-                print("updating dist value $eventDist");
-                customFilters["dist"] = eventDist.toString();
-              }),
-            )
-          : Container(),
-    ]);
+      return Column(children: [
+        Wrap(
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                updateLocation(context);
+              },
+              child: const Text('Update Location'),
+            ),
+            ElevatedButton(
+              onPressed: canReset() ? reset : null,
+              child: const Text('Clear'),
+            ),
+            isValid()
+                ? Text('Max Distance Km: ${dist < 0 ? 'None' : dist.toInt()}')
+                : Container()
+          ],
+        ),
+        posPair != null
+            ? SizedBox(
+                width: 300,
+                height: 300,
+                child: MapWidget(posPair, dist, true, (double eventDist) {
+                  print("updating dist value $eventDist");
+                  customFilters["dist"] = eventDist.toString();
+                }),
+              )
+            : Container(),
+      ]);
+    });
   }
 }

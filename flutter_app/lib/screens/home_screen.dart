@@ -47,7 +47,8 @@ class HomeScreen extends GetView<HomeController> {
 
     return LeftNav(
         title: 'Home',
-        body: controller.obx(
+        body: SingleChildScrollView(
+            child: controller.obx(
           (state) => Obx(
             () => controller.isInReadyQueue()
                 ? videoRenderLayout
@@ -74,7 +75,7 @@ class HomeScreen extends GetView<HomeController> {
                   child: const Text("Reconnect."))
             ],
           ),
-        ));
+        )));
   }
 }
 
