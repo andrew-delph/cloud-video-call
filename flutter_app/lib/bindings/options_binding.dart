@@ -7,8 +7,5 @@ import 'package:flutter_app/services/options_service.dart';
 
 class OptionsBinding extends Bindings {
   @override
-  void dependencies() {
-    Get.put<OptionsController>(
-        OptionsController(Get.put<OptionsService>(OptionsService())));
-  }
+  void dependencies() {}
 }

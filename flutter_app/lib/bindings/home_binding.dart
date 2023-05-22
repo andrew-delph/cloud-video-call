@@ -10,7 +10,7 @@ class HomeBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<HomeController>(() => HomeController());
-    Get.put<OptionsController>(
-        OptionsController(Get.put<OptionsService>(OptionsService())));
+    Get.put<PreferencesController>(
+        PreferencesController(Get.put<OptionsService>(OptionsService())));
   }
 }

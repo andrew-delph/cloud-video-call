@@ -5,7 +5,7 @@ import 'dart:math';
 
 // Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter_app/widgets/options_widget.dart';
+import 'package:flutter_app/widgets/preferences_widget.dart';
 
 // Package imports:
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -53,7 +53,7 @@ class HomeScreen extends GetView<HomeController> {
                 ? videoRenderLayout
                 : Column(
                     children: [
-                      const OptionsWidget(),
+                      const Preferences(),
                       ElevatedButton(
                           onPressed: () {
                             controller.queueReady();

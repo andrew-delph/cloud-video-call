@@ -6,7 +6,7 @@ import 'package:flutter_app/utils/utils.dart';
 import '../models/preferences_model.dart';
 import '../services/options_service.dart';
 
-class OptionsController extends GetxController with StateMixin {
+class PreferencesController extends GetxController with StateMixin {
   final OptionsService optionsService;
   final RxMap<String, String> constantAttributes = <String, String>{}.obs;
   final RxMap<String, String> constantFilters = <String, String>{}.obs;
@@ -15,7 +15,7 @@ class OptionsController extends GetxController with StateMixin {
   final RxDouble priority = (0.0).obs;
   RxBool unsavedChanges = false.obs;
 
-  OptionsController(this.optionsService) {
+  PreferencesController(this.optionsService) {
     constantAttributes.listen((p0) {
       unsavedChanges(true);
     });

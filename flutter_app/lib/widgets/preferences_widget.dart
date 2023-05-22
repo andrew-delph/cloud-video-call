@@ -12,8 +12,8 @@ import 'location_options.dart';
 
 // Package imports:
 
-class OptionsWidget extends GetView<OptionsController> {
-  const OptionsWidget({
+class Preferences extends GetView<PreferencesController> {
+  const Preferences({
     Key? key,
   }) : super(key: key);
 
@@ -33,19 +33,6 @@ class OptionsWidget extends GetView<OptionsController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
-              "Profile",
-              style: TextStyle(
-                fontSize: 35.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            const Divider(),
-            UserProfileWidget(
-              priority: controller.priority(),
-            ),
-            const Divider(),
             Container(
               padding: const EdgeInsets.all(20),
               child: Column(
