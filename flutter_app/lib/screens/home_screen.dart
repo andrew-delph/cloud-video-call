@@ -5,6 +5,7 @@ import 'dart:math';
 
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:flutter_app/widgets/options_widget.dart';
 
 // Package imports:
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -31,18 +32,35 @@ class HomeScreen extends GetView<HomeController> {
         },
         child: VideoRenderLayout());
 
+    videoRenderLayout = Expanded(
+      child: Stack(
+        children: [videoRenderLayout, const ButtonsOverlay()],
+      ),
+    );
+
+    videoRenderLayout = Flex(
+      direction: Axis.horizontal,
+      children: [
+        videoRenderLayout,
+      ],
+    );
+
     return LeftNav(
         title: 'Home',
         body: controller.obx(
-          (state) => Flex(
-            direction: Axis.horizontal,
-            children: [
-              Expanded(
-                child: Stack(
-                  children: [videoRenderLayout, const ButtonsOverlay()],
-                ),
-              ),
-            ],
+          (state) => Obx(
+            () => controller.isInReadyQueue()
+                ? videoRenderLayout
+                : Column(
+                    children: [
+                      const OptionsWidget(),
+                      ElevatedButton(
+                          onPressed: () {
+                            controller.queueReady();
+                          },
+                          child: const Text("Start"))
+                    ],
+                  ),
           ),
           onLoading: const CircularProgressIndicator(),
           onError: (error) => Column(
