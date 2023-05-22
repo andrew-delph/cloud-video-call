@@ -4,14 +4,6 @@ import 'package:get/get.dart';
 import '../routes/app_pages.dart';
 import '../services/auth_service.dart';
 
-class NavController extends GetxController {
-  RxInt selectedIndex = 0.obs;
-
-  void changePage(int index) {
-    selectedIndex.value = index;
-  }
-}
-
 class DashboardScreen extends StatelessWidget {
   final Widget body;
   final String title;
