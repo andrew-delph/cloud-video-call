@@ -2,10 +2,11 @@
 import 'package:get/get.dart';
 
 // Project imports:
-import 'package:flutter_app/screens/home_screen.dart';
 import 'package:flutter_app/screens/history_screen.dart';
+import 'package:flutter_app/screens/home_screen.dart';
 import 'package:flutter_app/screens/options_screen.dart';
 import '../bindings/chat_binding.dart';
+import '../bindings/history_binding.dart';
 import '../bindings/options_binding.dart';
 import '../middlewares/auth_middleware.dart';
 import '../screens/login_screen.dart';
@@ -33,7 +34,7 @@ class AppPages {
     GetPage(
         name: Routes.HISTORY,
         page: () => const HistoryScreen(),
-        binding: OptionsBinding(),
+        binding: HistoryBinding(),
         middlewares: [AuthMiddleware()],
         transition: Transition.fadeIn),
   ];

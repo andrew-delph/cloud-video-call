@@ -33,166 +33,163 @@ class OptionsScreen extends GetView<OptionsController> {
           constraints: const BoxConstraints(
             maxWidth: 1000,
           ),
-          child: controller.loading()
-              ? connectingWidget
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                "Profile",
+                style: TextStyle(
+                  fontSize: 35.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const Divider(),
+              UserProfileWidget(
+                priority: controller.priority(),
+              ),
+              const Divider(),
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Column(
                   children: [
                     const Text(
-                      "Profile",
+                      'Attributes',
                       style: TextStyle(
-                        fontSize: 35.0,
+                        fontSize: 24.0,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
-                    const Divider(),
-                    UserProfileWidget(
-                      priority: controller.priority(),
+                    DropDownPreference(
+                      label: 'Gender',
+                      options: const [naValue, "Male", "Female", "Other"],
+                      preferenceMap: controller.constantAttributes,
+                      mapKey: 'gender',
                     ),
-                    const Divider(),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'Attributes',
-                            style: TextStyle(
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          DropDownPreference(
-                            label: 'Gender',
-                            options: const [naValue, "Male", "Female", "Other"],
-                            preferenceMap: controller.constantAttributes,
-                            mapKey: 'gender',
-                          ),
-                          DropDownPreference(
-                            label: 'Language',
-                            options: const [
-                              naValue,
-                              "English",
-                              "French",
-                              "Other"
-                            ],
-                            preferenceMap: controller.constantAttributes,
-                            mapKey: 'language',
-                          ),
-                        ],
-                      ),
+                    DropDownPreference(
+                      label: 'Language',
+                      options: const [naValue, "English", "French", "Other"],
+                      preferenceMap: controller.constantAttributes,
+                      mapKey: 'language',
                     ),
-                    const Divider(),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'Filters',
-                            style: TextStyle(
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          DropDownPreference(
-                            label: 'Gender',
-                            options: const [naValue, "Male", "Female", "Other"],
-                            preferenceMap: controller.constantFilters,
-                            mapKey: 'gender',
-                          ),
-                          DropDownPreference(
-                            label: 'Language',
-                            options: const [
-                              naValue,
-                              "English",
-                              "French",
-                              "Other"
-                            ],
-                            preferenceMap: controller.constantFilters,
-                            mapKey: 'language',
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Divider(),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'Location Settings',
-                            style: TextStyle(
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          LocationOptionsWidget(
-                              customAttributes: controller.customAttributes,
-                              customFilters: controller.customFilters),
-                        ],
-                      ),
-                    ),
-                    Obx(() {
-                      return SizedBox(
-                        height: 50,
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: !controller.unsavedChanges()
-                              ? null
-                              : () async {
-                                  await controller.updateAttributes();
-                                  Get.snackbar('Updated',
-                                      'Preferences have been updated',
-                                      snackPosition: SnackPosition.BOTTOM);
-                                },
-                          child: const Text('Submit'),
-                        ),
-                      );
-                    })
                   ],
-                ));
+                ),
+              ),
+              const Divider(),
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Filters',
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    DropDownPreference(
+                      label: 'Gender',
+                      options: const [naValue, "Male", "Female", "Other"],
+                      preferenceMap: controller.constantFilters,
+                      mapKey: 'gender',
+                    ),
+                    DropDownPreference(
+                      label: 'Language',
+                      options: const [naValue, "English", "French", "Other"],
+                      preferenceMap: controller.constantFilters,
+                      mapKey: 'language',
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(),
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Location Settings',
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    LocationOptionsWidget(
+                        customAttributes: controller.customAttributes,
+                        customFilters: controller.customFilters),
+                  ],
+                ),
+              ),
+              Obx(() {
+                return SizedBox(
+                  height: 50,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: !controller.unsavedChanges()
+                        ? null
+                        : () async {
+                            await controller.updateAttributes();
+                            Get.snackbar(
+                                'Updated', 'Preferences have been updated',
+                                snackPosition: SnackPosition.BOTTOM);
+                          },
+                    child: const Text('Submit'),
+                  ),
+                );
+              })
+            ],
+          ));
     });
 
     LocalPreferences localPreferences = Get.find();
 
-    Widget preferences = Obx(() => Column(children: [
-          Row(
-            children: [
-              const Text("Swipe:"),
-              Switch(
-                value: localPreferences.swipeFeedback(),
-                onChanged: (bool newValue) async {
-                  localPreferences.swipeFeedback(newValue);
-                },
-              )
-            ],
-          ),
-          Row(
-            children: [
-              const Text("Swipe popup:"),
-              Switch(
-                value: localPreferences.feedbackPopup(),
-                onChanged: (bool newValue) async {
-                  localPreferences.feedbackPopup(newValue);
-                },
-              )
-            ],
-          ),
-          Row(
-            children: [
-              const Text("Auto queue:"),
-              Switch(
-                value: localPreferences.autoQueue(),
-                onChanged: (bool newValue) async {
-                  localPreferences.autoQueue(newValue);
-                },
-              )
-            ],
-          )
-        ]));
+    Widget preferences = controller.obx(
+      (state) => Obx(() => Column(children: [
+            Row(
+              children: [
+                const Text("Swipe:"),
+                Switch(
+                  value: localPreferences.swipeFeedback(),
+                  onChanged: (bool newValue) async {
+                    localPreferences.swipeFeedback(newValue);
+                  },
+                )
+              ],
+            ),
+            Row(
+              children: [
+                const Text("Swipe popup:"),
+                Switch(
+                  value: localPreferences.feedbackPopup(),
+                  onChanged: (bool newValue) async {
+                    localPreferences.feedbackPopup(newValue);
+                  },
+                )
+              ],
+            ),
+            Row(
+              children: [
+                const Text("Auto queue:"),
+                Switch(
+                  value: localPreferences.autoQueue(),
+                  onChanged: (bool newValue) async {
+                    localPreferences.autoQueue(newValue);
+                  },
+                )
+              ],
+            )
+          ])),
+      onLoading: const CircularProgressIndicator(),
+      onError: (error) => Column(
+        children: [
+          const Text("Options Error."),
+          Text('$error'),
+        ],
+      ),
+    );
 
     Widget settings = Container(
         alignment: Alignment.topCenter,

@@ -1,45 +1,32 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
-// Package imports:
-import 'package:get/get.dart';
-
 // Project imports:
-import 'package:flutter_app/controllers/options_controller.dart';
 import '../models/history_model.dart';
 
+// Package imports:
+
+
 class HistoryWidget extends StatelessWidget {
-  OptionsController optionsController = Get.find();
-  HistoryWidget({
+  final HistoryModel historyModel;
+  const HistoryWidget({
     Key? key,
+    required this.historyModel,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      HistoryModel? historyModel = optionsController.historyModel();
+    List<Widget> historyList =
+        historyModel.matchHistoryList.expand((historyItem) {
+      return [
+        HistoryItemWidget(
+          historyItem: historyItem,
+        ),
+        const Divider()
+      ];
+    }).toList();
 
-      if (historyModel == null) return const Text("Loading history...");
-
-      List<Widget> historyList =
-          historyModel.matchHistoryList.expand((historyItem) {
-        return [
-          HistoryItemWidget(
-            historyItem: historyItem,
-          ),
-          const Divider()
-        ];
-      }).toList();
-
-      // remove the last divider
-      if (historyList.isNotEmpty) {
-        historyList.removeLast();
-      } else {
-        return const Text("No History...");
-      }
-
-      return Column(children: historyList);
-    });
+    return Column(children: historyList);
   }
 }
 
