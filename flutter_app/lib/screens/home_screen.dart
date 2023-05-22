@@ -205,31 +205,14 @@ class ButtonsOverlay extends GetView<HomeController> {
                   },
                 ),
               if (controller.localMediaStream() != null) MediaDeviceButton(),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue, // Set the text color
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(10), // Set the button's shape
-                    ),
-                    padding: const EdgeInsets.all(20), // Make the button larger
-                  ),
-                  onPressed: () async {
-                    if (controller.isInReadyQueue() == false) {
-                      controller.queueReady();
-                    } else {
-                      controller.unReady();
-                    }
-                  },
-                  child: Text((controller.isInReadyQueue() == false)
-                      ? 'Ready'
-                      : 'Cancel'))
+              IconButton(
+                icon: const Icon(Icons.cancel),
+                color: Colors.white,
+                tooltip: 'Cancel',
+                onPressed: () async {
+                  controller.unReady();
+                },
+              )
             ],
           )
         ])));
