@@ -1,4 +1,5 @@
 // Package imports:
+import 'package:flutter_app/screens/history_screen.dart';
 import 'package:get/get.dart';
 
 // Project imports:
@@ -26,6 +27,12 @@ class AppPages {
     GetPage(
         name: Routes.OPTIONS,
         page: () => const OptionsScreen(),
+        binding: OptionsBinding(),
+        middlewares: [AuthMiddleware()],
+        transition: Transition.fadeIn),
+    GetPage(
+        name: Routes.HISTORY,
+        page: () => const HistoryScreen(),
         binding: OptionsBinding(),
         middlewares: [AuthMiddleware()],
         transition: Transition.fadeIn),

@@ -44,6 +44,13 @@ class LeftNav extends StatelessWidget {
                       },
                     ),
                     IconButton(
+                      icon: const Icon(Icons.history),
+                      // tooltip: 'Options',
+                      onPressed: () {
+                        Get.toNamed(Routes.HISTORY);
+                      },
+                    ),
+                    IconButton(
                       icon: const Icon(Icons.settings),
                       // tooltip: 'Options',
                       onPressed: () {

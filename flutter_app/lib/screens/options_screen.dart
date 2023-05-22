@@ -157,35 +157,6 @@ class OptionsScreen extends GetView<OptionsController> {
                 ));
     });
 
-    Widget history = Container(
-        alignment: Alignment.topCenter,
-        decoration: BoxDecoration(
-          color: Colors.teal,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.all(20),
-        margin: const EdgeInsets.all(20),
-        constraints: const BoxConstraints(
-          maxWidth: 1000,
-        ),
-        child: false
-            ? connectingWidget
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "History",
-                    style: TextStyle(
-                      fontSize: 35.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const Divider(),
-                  HistoryWidget()
-                ],
-              ));
-
     LocalPreferences localPreferences = Get.find();
 
     Widget preferences = Obx(() => Column(children: [
@@ -280,7 +251,7 @@ class OptionsScreen extends GetView<OptionsController> {
             body: Center(
                 child: SingleChildScrollView(
                     child: Column(
-              children: [profile, history, settings, const AppDetailsWidget()],
+              children: [profile, settings, const AppDetailsWidget()],
             )))));
   }
 }
