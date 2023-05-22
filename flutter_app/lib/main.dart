@@ -35,6 +35,6 @@ Future<void> initializeApp() async {
   );
 
   Get.put(AuthController(Get.put(AuthService())), permanent: true);
-  Get.put(LocalPreferences());
+  Get.put(LocalPreferences(), permanent: true);
   log('Initialize');
 }

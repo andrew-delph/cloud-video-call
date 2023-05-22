@@ -1,7 +1,10 @@
 // Dart imports:
 
 // Flutter imports:
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_app/services/local_preferences_service.dart';
 
 // Package imports:
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -79,52 +82,85 @@ class HomeScreen extends GetView<HomeController> {
 class VideoRenderLayout extends GetResponsiveView<HomeController> {
   VideoRenderLayout({super.key});
 
-  @override
-  Widget tablet() {
-    return Obx(() => Stack(
-          children: [
-            Container(
-              color: Colors.black,
-              child: RTCVideoView(
-                controller.remoteVideoRenderer(),
-                // objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-              ),
-            ),
+  final LocalPreferences localPreferences = Get.find();
+
+  Widget localCamera() {
+    return Expanded(
+        child: Stack(children: [
+      Expanded(
+        child: Container(
+          color: Colors.black,
+          child: RTCVideoView(controller.localVideoRenderer()),
+        ),
+      ),
+      Positioned(
+          top: 10, // get the size of the row buttons..?
+          left: 10,
+          child: IconButton(
+            tooltip: "Fullscreen",
+            icon: Icon(localPreferences.fullscreen()
+                ? Icons.fullscreen
+                : Icons.fullscreen_exit),
+            color: Colors.white,
+            onPressed: () {
+              localPreferences.fullscreen.toggle();
+            },
+          ))
+    ]));
+  }
+
+  Widget remoteCamera() {
+    return Expanded(
+      child: Container(
+        color: Colors.black,
+        child: RTCVideoView(controller.remoteVideoRenderer()),
+      ),
+    );
+  }
+
+  Widget render() {
+    bool isLandscape = Get.context?.isLandscape ?? true;
+
+    return Obx(() {
+      double width = min(Get.width / 2, 300);
+
+      List<Widget> orientationList = [
+        remoteCamera(),
+        if (localPreferences.fullscreen.isTrue) localCamera()
+      ];
+
+      return Stack(
+        children: [
+          if (isLandscape)
+            Row(
+              children: orientationList,
+            )
+          else
+            Column(children: orientationList),
+          if (localPreferences.fullscreen.isFalse)
             Positioned(
-              bottom: 20, // get the size of the row buttons..?
+              top: 20, // get the size of the row buttons..?
               right: 0,
               child: Container(
                 alignment: Alignment.bottomRight,
-                width: Get.width / 2,
-                height:
-                    (Get.width / 2) * controller.localVideoRendererRatioHw(),
-                child: RTCVideoView(
-                  controller.localVideoRenderer(),
-                ),
+                width: width,
+                height: width * controller.localVideoRendererRatioHw(),
+                child: localCamera(),
               ),
-            ),
-          ],
-        ));
+            )
+        ],
+      );
+    });
   }
+
+  // @override
+  // Widget tablet() {
+  //   return render();
+  // }
 
   @override
   Widget desktop() {
-    return Obx(() => Row(
-          children: [
-            Expanded(
-              child: Container(
-                color: Colors.black,
-                child: RTCVideoView(controller.remoteVideoRenderer()),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                color: Colors.black,
-                child: RTCVideoView(controller.localVideoRenderer()),
-              ),
-            ),
-          ],
-        ));
+    return render();
   }
 }
 
