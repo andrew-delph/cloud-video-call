@@ -17,7 +17,7 @@ import '../widgets/dropdown_preference_widget.dart';
 import '../widgets/history_widget.dart';
 import '../widgets/loadging_widgets.dart';
 import '../widgets/location_options.dart';
-import 'dashboard_screen.dart';
+import '../widgets/left_nav_widget.dart';
 
 class OptionsScreen extends GetView<OptionsController> {
   const OptionsScreen({super.key});
@@ -277,7 +277,7 @@ class OptionsScreen extends GetView<OptionsController> {
           ));
           return confirm;
         },
-        child: DashboardScreen(
+        child: LeftNav(
             title: 'Options',
             body: Center(
                 child: SingleChildScrollView(

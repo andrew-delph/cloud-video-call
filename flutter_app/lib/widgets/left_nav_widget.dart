@@ -4,11 +4,11 @@ import 'package:get/get.dart';
 import '../routes/app_pages.dart';
 import '../services/auth_service.dart';
 
-class DashboardScreen extends StatelessWidget {
+class LeftNav extends StatelessWidget {
   final Widget body;
   final String title;
 
-  const DashboardScreen({super.key, required this.body, required this.title});
+  const LeftNav({super.key, required this.body, required this.title});
 
   @override
   Widget build(BuildContext context) {

@@ -15,7 +15,7 @@ import 'package:flutter_app/services/auth_service.dart';
 import '../controllers/home_controller.dart';
 import '../routes/app_pages.dart';
 import '../widgets/feedback_swipe_detector.dart';
-import 'dashboard_screen.dart';
+import '../widgets/left_nav_widget.dart';
 
 class ChatScreen extends GetView<HomeController> {
   const ChatScreen({super.key});
@@ -32,7 +32,7 @@ class ChatScreen extends GetView<HomeController> {
         },
         child: VideoRenderLayout());
 
-    return DashboardScreen(
+    return LeftNav(
         title: 'Home',
         body: controller.obx(
           (state) => Flex(
