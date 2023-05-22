@@ -95,8 +95,8 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
           child: IconButton(
             tooltip: "Fullscreen",
             icon: Icon(localPreferences.fullscreen()
-                ? Icons.fullscreen
-                : Icons.fullscreen_exit),
+                ? Icons.fullscreen_exit
+                : Icons.fullscreen),
             color: Colors.white,
             onPressed: () {
               localPreferences.fullscreen.toggle();
