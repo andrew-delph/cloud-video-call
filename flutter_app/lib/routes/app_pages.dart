@@ -2,7 +2,7 @@
 import 'package:get/get.dart';
 
 // Project imports:
-import 'package:flutter_app/screens/chat_screen.dart';
+import 'package:flutter_app/screens/home_screen.dart';
 import 'package:flutter_app/screens/history_screen.dart';
 import 'package:flutter_app/screens/options_screen.dart';
 import '../bindings/chat_binding.dart';
@@ -20,7 +20,7 @@ class AppPages {
         transition: Transition.noTransition),
     GetPage(
         name: Routes.HOME,
-        page: () => const ChatScreen(),
+        page: () => const HomeScreen(),
         binding: ChatBinding(),
         middlewares: [AuthMiddleware()],
         transition: Transition.fadeIn),

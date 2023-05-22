@@ -16,8 +16,8 @@ import '../controllers/home_controller.dart';
 import '../widgets/feedback_swipe_detector.dart';
 import '../widgets/left_nav_widget.dart';
 
-class ChatScreen extends GetView<HomeController> {
-  const ChatScreen({super.key});
+class HomeScreen extends GetView<HomeController> {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
