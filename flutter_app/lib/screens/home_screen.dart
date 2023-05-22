@@ -56,7 +56,7 @@ class HomeScreen extends GetView<HomeController> {
                       const Preferences(),
                       ElevatedButton(
                           onPressed: () {
-                            controller.queueReady();
+                            controller.ready();
                           },
                           child: const Text("Start"))
                     ],

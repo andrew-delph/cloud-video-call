@@ -221,6 +221,11 @@ class HomeController extends GetxController with StateMixin {
     await resetRemoteMediaStream();
   }
 
+  Future<void> ready() async {
+    queueReady().catchError(
+        (error) => {change(null, status: RxStatus.error(error.toString()))});
+  }
+
   Future<void> queueReady() async {
     await resetRemote();
     await initLocalStream();
