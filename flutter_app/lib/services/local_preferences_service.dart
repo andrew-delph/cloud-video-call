@@ -8,6 +8,7 @@ class LocalPreferences extends GetxService {
   final swipeFeedback = false.obs;
   final videoDeviceLabel = 'Default'.obs;
   final audioDeviceLabel = 'Default'.obs;
+  final fullscreen = false.obs;
 
   @override
   Future<void> onInit() async {
@@ -35,5 +36,8 @@ class LocalPreferences extends GetxService {
     audioDeviceLabel.value =
         box.read('audioDeviceLabel') ?? audioDeviceLabel.value;
     ever(audioDeviceLabel, (value) => box.write('audioDeviceLabel', value));
+
+    fullscreen.value = box.read('fullscreen') ?? fullscreen.value;
+    ever(fullscreen, (value) => box.write('fullscreen', value));
   }
 }
