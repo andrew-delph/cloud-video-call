@@ -42,14 +42,14 @@ class DashboardScreen extends StatelessWidget {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.home),
-                      tooltip: 'Home',
+                      // tooltip: 'Home',
                       onPressed: () {
                         Get.toNamed(Routes.HOME);
                       },
                     ),
                     IconButton(
                       icon: const Icon(Icons.settings),
-                      tooltip: 'Options',
+                      // tooltip: 'Options',
                       onPressed: () {
                         Get.toNamed(Routes.OPTIONS);
                       },

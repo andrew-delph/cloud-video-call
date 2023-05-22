@@ -278,20 +278,6 @@ class OptionsScreen extends GetView<OptionsController> {
           return confirm;
         },
         child: DashboardScreen(
-            appBar: AppBar(
-              leading: BackButton(
-                onPressed: () {
-                  log("previous: ${Get.routing.previous.isEmpty}");
-                  if (Get.routing.previous.isEmpty) {
-                    Get.toNamed(Routes.HOME);
-                  } else {
-                    Get.back();
-                  }
-                  // Get.toNamed(Routes.HOME);
-                },
-              ),
-              title: const Text('Options'),
-            ),
             title: 'Options',
             body: Center(
                 child: SingleChildScrollView(
