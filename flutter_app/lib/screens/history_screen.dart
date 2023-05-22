@@ -17,8 +17,8 @@ import '../widgets/left_nav_widget.dart';
 import '../widgets/loadging_widgets.dart';
 import '../widgets/location_options.dart';
 
-class OptionsScreen extends GetView<OptionsController> {
-  const OptionsScreen({super.key});
+class HistoryScreen extends GetView<OptionsController> {
+  const HistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

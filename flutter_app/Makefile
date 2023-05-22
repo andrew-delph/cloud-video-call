@@ -17,12 +17,10 @@ web-server:
 format:
 	flutter pub run import_sorter:main
 	dart format .
-	flutter pub run dependency_validator
+	dart fix --apply
 
 analyze:
+	flutter pub run dependency_validator
 	dart analyze
-
-fix:
-	dart fix --apply
 
 

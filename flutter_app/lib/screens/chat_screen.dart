@@ -1,19 +1,18 @@
 // Dart imports:
 
-// Flutter imports:
+// Dart imports:
 import 'dart:math';
 
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter_app/services/local_preferences_service.dart';
 
 // Package imports:
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart';
 
 // Project imports:
-import 'package:flutter_app/services/auth_service.dart';
+import 'package:flutter_app/services/local_preferences_service.dart';
 import '../controllers/home_controller.dart';
-import '../routes/app_pages.dart';
 import '../widgets/feedback_swipe_detector.dart';
 import '../widgets/left_nav_widget.dart';
 
@@ -195,13 +194,13 @@ class ButtonsOverlay extends GetView<HomeController> {
             children: [
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.blue, // Set the button color
-                    onPrimary: Colors.white, // Set the text color
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.blue, // Set the text color
                     shape: RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.circular(10), // Set the button's shape
                     ),
-                    padding: EdgeInsets.all(20), // Make the button larger
+                    padding: const EdgeInsets.all(20), // Make the button larger
                   ),
                   onPressed: () async {
                     if (controller.isInReadyQueue() == false) {
