@@ -15,9 +15,10 @@ web-server:
 
 
 format:
-	flutter pub run import_sorter:main
 	dart format .
 	dart fix --apply
+	flutter pub run import_sorter:main
+
 
 analyze:
 	flutter pub run dependency_validator
