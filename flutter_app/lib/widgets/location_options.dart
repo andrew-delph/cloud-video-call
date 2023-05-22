@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
 
 // Project imports:
 import 'package:flutter_app/utils/utils.dart';
-import 'package:get/get.dart';
 import '../utils/location.dart';
 import '../widgets/map/map_widget.dart';
 
