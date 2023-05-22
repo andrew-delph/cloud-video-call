@@ -18,28 +18,6 @@ class HomeScreen extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    Widget chatButton = Obx(() => controller.isInChat()
-        ? Container()
-        : Container(
-            width: 100,
-            color: Colors.white,
-            child: TextButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(
-                    Colors.yellow.shade100), // Change the color here
-              ),
-              onPressed: () async {
-                if (controller.isInReadyQueue() == false) {
-                  controller.queueReady();
-                } else {
-                  controller.unReady();
-                }
-              },
-              child: Text((controller.isInReadyQueue() == false)
-                  ? 'Ready'
-                  : 'Cancel Ready'),
-            )));
-
     Widget videoRenderLayout = FeedbackSwipeDetector(
         isDragUpdate: () {
           return controller.isInChat();
@@ -75,7 +53,6 @@ class HomeScreen extends GetView<HomeController> {
           (state) => Flex(
             direction: Axis.horizontal,
             children: [
-              chatButton,
               Expanded(
                 child: Stack(
                   children: [videoRenderLayout, const ButtonsOverlay()],
@@ -157,10 +134,11 @@ class ButtonsOverlay extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() => Positioned(
-          left: 0,
-          right: 0,
-          bottom: 20,
-          child: Row(
+        left: 0,
+        right: 0,
+        bottom: 20,
+        child: Column(children: [
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (controller.isInChat())
@@ -197,7 +175,32 @@ class ButtonsOverlay extends GetView<HomeController> {
               if (controller.localMediaStream() != null) MediaDeviceButton(),
             ],
           ),
-        ));
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue, // Set the button color
+                    onPrimary: Colors.white, // Set the text color
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(10), // Set the button's shape
+                    ),
+                    padding: EdgeInsets.all(20), // Make the button larger
+                  ),
+                  onPressed: () async {
+                    if (controller.isInReadyQueue() == false) {
+                      controller.queueReady();
+                    } else {
+                      controller.unReady();
+                    }
+                  },
+                  child: Text((controller.isInReadyQueue() == false)
+                      ? 'Ready'
+                      : 'Cancel'))
+            ],
+          )
+        ])));
   }
 }
 
