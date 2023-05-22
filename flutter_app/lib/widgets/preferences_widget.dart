@@ -1,12 +1,11 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_view.dart';
 
 // Project imports:
 import '../controllers/options_controller.dart';
-import '../models/history_model.dart';
-import '../screens/options_screen.dart';
 import 'dropdown_preference_widget.dart';
 import 'location_options.dart';
 

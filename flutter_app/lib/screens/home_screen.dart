@@ -5,7 +5,6 @@ import 'dart:math';
 
 // Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter_app/widgets/preferences_widget.dart';
 
 // Package imports:
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -13,6 +12,7 @@ import 'package:get/get.dart';
 
 // Project imports:
 import 'package:flutter_app/services/local_preferences_service.dart';
+import 'package:flutter_app/widgets/preferences_widget.dart';
 import '../controllers/home_controller.dart';
 import '../widgets/feedback_swipe_detector.dart';
 import '../widgets/left_nav_widget.dart';

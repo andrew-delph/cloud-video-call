@@ -6,7 +6,6 @@ import '../models/history_model.dart';
 
 // Package imports:
 
-
 class HistoryWidget extends StatelessWidget {
   final HistoryModel historyModel;
   const HistoryWidget({
