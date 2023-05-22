@@ -17,6 +17,7 @@ import '../widgets/dropdown_preference_widget.dart';
 import '../widgets/history_widget.dart';
 import '../widgets/loadging_widgets.dart';
 import '../widgets/location_options.dart';
+import 'dashboard_screen.dart';
 
 class OptionsScreen extends GetView<OptionsController> {
   const OptionsScreen({super.key});
@@ -276,7 +277,7 @@ class OptionsScreen extends GetView<OptionsController> {
           ));
           return confirm;
         },
-        child: Scaffold(
+        child: DashboardScreen(
             appBar: AppBar(
               leading: BackButton(
                 onPressed: () {
@@ -289,8 +290,9 @@ class OptionsScreen extends GetView<OptionsController> {
                   // Get.toNamed(Routes.HOME);
                 },
               ),
-              title: const Text('Options screen'),
+              title: const Text('Options'),
             ),
+            title: 'Options',
             body: Center(
                 child: SingleChildScrollView(
                     child: Column(
@@ -300,9 +302,9 @@ class OptionsScreen extends GetView<OptionsController> {
 }
 
 class UserProfileWidget extends StatelessWidget {
-  UserProfileWidget({super.key, required this.priority});
+  const UserProfileWidget({super.key, required this.priority});
 
-  double priority;
+  final double priority;
 
   @override
   Widget build(BuildContext context) {

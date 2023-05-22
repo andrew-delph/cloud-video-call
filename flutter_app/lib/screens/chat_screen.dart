@@ -1,4 +1,3 @@
-
 // Dart imports:
 
 // Flutter imports:
@@ -16,6 +15,7 @@ import 'package:flutter_app/services/auth_service.dart';
 import '../controllers/home_controller.dart';
 import '../routes/app_pages.dart';
 import '../widgets/feedback_swipe_detector.dart';
+import 'dashboard_screen.dart';
 
 class ChatScreen extends GetView<HomeController> {
   const ChatScreen({super.key});
@@ -32,27 +32,8 @@ class ChatScreen extends GetView<HomeController> {
         },
         child: VideoRenderLayout());
 
-    return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: const Text("Home"),
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.settings),
-              tooltip: 'Options',
-              onPressed: () {
-                Get.toNamed(Routes.OPTIONS);
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.logout),
-              tooltip: 'Logout',
-              onPressed: () async {
-                Get.find<AuthService>().signOut();
-              },
-            ),
-          ],
-        ),
+    return DashboardScreen(
+        title: 'Home',
         body: controller.obx(
           (state) => Flex(
             direction: Axis.horizontal,
