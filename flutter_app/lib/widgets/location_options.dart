@@ -1,16 +1,14 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map/plugin_api.dart';
 
 // Package imports:
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map/plugin_api.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:latlong2/latlong.dart';
 
 // Project imports:
-import 'package:flutter_app/utils/utils.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:latlong2/latlong.dart';
 import '../utils/location.dart';
 
 class LocationOptionsWidget extends StatelessWidget {
