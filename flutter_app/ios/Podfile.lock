@@ -4,7 +4,7 @@ PODS:
     - FirebaseAuth (~> 10.9.0)
   - Firebase/CoreOnly (10.9.0):
     - FirebaseCore (= 10.9.0)
-  - firebase_auth (4.4.0):
+  - firebase_auth (4.6.1):
     - Firebase/Auth (= 10.9.0)
     - firebase_core
     - Flutter
@@ -27,9 +27,9 @@ PODS:
   - Flutter (1.0.0)
   - flutter_native_splash (0.0.1):
     - Flutter
-  - flutter_webrtc (0.9.20):
+  - flutter_webrtc (0.9.31):
     - Flutter
-    - WebRTC-SDK (= 104.5112.09)
+    - WebRTC-SDK (= 104.5112.17)
   - geolocator_apple (1.2.0):
     - Flutter
   - GoogleUtilities/AppDelegateSwizzler (7.11.1):
@@ -54,7 +54,7 @@ PODS:
     - Flutter
     - FlutterMacOS
   - PromisesObjC (2.2.0)
-  - WebRTC-SDK (104.5112.09)
+  - WebRTC-SDK (104.5112.17)
 
 DEPENDENCIES:
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
@@ -98,7 +98,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Firebase: bd152f0f3d278c4060c5c71359db08ebcfd5a3e2
-  firebase_auth: 785778cdebb592626216222577a545abba1e09fe
+  firebase_auth: 202fb0b14e267d2a91d83b75d0ce064ef2063383
   firebase_core: fc68c0f9eec4e800b9418deff14a7e0a504016f3
   FirebaseAppCheckInterop: 7d3521f56872cf74a01792c0a095a30e054ff6ae
   FirebaseAuth: 21d5e902fcea44d0d961540fc4742966ae6118cc
@@ -106,14 +106,14 @@ SPEC CHECKSUMS:
   FirebaseCoreInternal: 971029061d326000d65bfdc21f5502c75c8b0893
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_native_splash: 52501b97d1c0a5f898d687f1646226c1f93c56ef
-  flutter_webrtc: 15c5fb4ea324f3178ff97c0f02b9467b85977e42
+  flutter_webrtc: 02c023207f972145a3bc8c7aada86754f264d563
   geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
   GoogleUtilities: 9aa0ad5a7bc171f8bae016300bfcfa3fb8425749
   GTMSessionFetcher: e8647203b65cee28c5f73d0f473d096653945e72
   package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
-  path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
+  path_provider_foundation: eaf5b3e458fc0e5fbb9940fb09980e853fe058b8
   PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
-  WebRTC-SDK: 3fa5c6fa717314fade68bffed85737484a28ad0b
+  WebRTC-SDK: 082ae4893212534a779ca233f19a9df8efd5f3bd
 
 PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3
 
