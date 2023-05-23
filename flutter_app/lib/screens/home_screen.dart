@@ -51,8 +51,7 @@ class HomeScreen extends GetView<HomeController> {
             decoration: const BoxDecoration(
               color: Colors.teal,
             ),
-            child: SingleChildScrollView(
-                child: controller.obx(
+            child: controller.obx(
               (state) => Obx(
                 () => controller.isInReadyQueue()
                     ? videoRenderLayout
@@ -79,7 +78,7 @@ class HomeScreen extends GetView<HomeController> {
                       child: const Text("Reconnect."))
                 ],
               ),
-            ))));
+            )));
   }
 }
 
