@@ -9,9 +9,12 @@ import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 
 // Project imports:
+import '../controllers/options_controller.dart';
 import '../utils/location.dart';
 
-class LocationOptionsWidget extends StatelessWidget {
+const distanceStep = 10.0;
+
+class LocationOptionsWidget extends GetView<PreferencesController> {
   final Map<String, String> customAttributes;
   final Map<String, String> customFilters;
 
@@ -54,6 +57,20 @@ class LocationOptionsWidget extends StatelessWidget {
     String msg = "Latitude: ${pos.latitude} Longitude: ${pos.longitude}";
 
     Get.snackbar('Updated Location', msg, snackPosition: SnackPosition.BOTTOM);
+  }
+
+  getDistance() {
+    return customFilters["dist"] != null
+        ? double.parse(customFilters["dist"] ?? '0')
+        : null;
+  }
+
+  updateDistance(double dist) {
+    if (dist < 1) {
+      customFilters.remove('dist');
+    } else {
+      customFilters["dist"] = dist.toString();
+    }
   }
 
   LocationOptionsWidget(
@@ -118,11 +135,40 @@ class LocationOptionsWidget extends StatelessWidget {
               onPressed: canReset() ? reset : null,
               child: const Text('Clear'),
             ),
-            isValid()
-                ? Text('Max Distance Km: ${dist < 0 ? 'None' : dist.toInt()}')
-                : Container()
           ],
         ),
+        if (getDistance() != null)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.remove),
+                onPressed: () {
+                  updateDistance(getDistance() - distanceStep);
+                },
+              ),
+              Text("Max distance: ${getDistance()}km"),
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () {
+                  updateDistance(getDistance() + distanceStep);
+                },
+              ),
+              ElevatedButton(
+                child: const Text("Disable Distance filter"),
+                onPressed: () {
+                  updateDistance(-1);
+                },
+              )
+            ],
+          )
+        else
+          ElevatedButton(
+            child: const Text("Enable Distance Filter"),
+            onPressed: () {
+              updateDistance(100);
+            },
+          ),
         Column(children: [
           SizedBox(
             width: 300,

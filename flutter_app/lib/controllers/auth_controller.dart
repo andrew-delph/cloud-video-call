@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
 // Project imports:
-import '../services/auth_service.dart';
 
 class AuthController extends GetxController {
   AuthController();
