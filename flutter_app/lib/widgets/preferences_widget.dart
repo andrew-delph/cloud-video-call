@@ -1,6 +1,5 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
-
 // Package imports:
 import 'package:get/get.dart';
 
@@ -22,7 +21,7 @@ class Preferences extends GetView<PreferencesController> {
         onLoading: const CircularProgressIndicator(),
         onError: (error) => Column(
               children: [
-                const Text("Connection Error."),
+                const Text("Preferences Error."),
                 Text('$error'),
                 ElevatedButton(
                     onPressed: () {

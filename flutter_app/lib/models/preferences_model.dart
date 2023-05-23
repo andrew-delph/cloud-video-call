@@ -33,7 +33,7 @@ class Preferences {
           MapEntry<String, String>(e.key.toString(), e.value.toString())));
     }
 
-    preferences.priority = data["priority"] as double;
+    preferences.priority = double.tryParse(data["priority"].toString()) ?? -1;
 
     return preferences;
   }
