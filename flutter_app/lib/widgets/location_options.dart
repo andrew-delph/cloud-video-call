@@ -1,4 +1,6 @@
 // Flutter imports:
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -12,7 +14,7 @@ import 'package:latlong2/latlong.dart';
 import '../controllers/options_controller.dart';
 import '../utils/location.dart';
 
-const distanceStep = 10.0;
+const distanceStep = 2;
 
 class LocationOptionsWidget extends GetView<PreferencesController> {
   final Map<String, String> customAttributes;
@@ -59,18 +61,10 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
     Get.snackbar('Updated Location', msg, snackPosition: SnackPosition.BOTTOM);
   }
 
-  getDistance() {
+  double? getDistance() {
     return customFilters["dist"] != null
         ? double.parse(customFilters["dist"] ?? '0')
         : null;
-  }
-
-  updateDistance(double dist) {
-    if (dist < 1) {
-      customFilters.remove('dist');
-    } else {
-      customFilters["dist"] = dist.toString();
-    }
   }
 
   LocationOptionsWidget(
@@ -95,32 +89,41 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
 
       LatLng center = LatLng(double.parse(long), double.parse(lat));
 
-      double dist = -1;
-
-      valueController.text = customFilters["dist"] ?? 'None';
-
-      if (customFilters["dist"] != null) {
-        print("customFilters.get('dist') is ${customFilters["dist"]}");
-        try {
-          dist = double.parse(customFilters["dist"]!);
-        } catch (e) {
-          print('Error: Invalid format for conversion');
-          dist = 10000;
-        }
-      } else {
-        print("customFilters.get('dist') == null");
-      }
-
       final mapController = MapController();
 
-      final distCircle = CircleMarker(
-          point: center,
-          color: Colors.blue.withOpacity(0.7),
-          borderStrokeWidth: 2,
-          useRadiusInMeter: true,
-          radius: 2000);
+      double? dist = getDistance();
 
-      final circleMarkers = <CircleMarker>[distCircle];
+      double s = 100;
+
+      double getZoomLevel(double dist) {
+        double zoomLevel;
+        double radius = dist * 1000 * 2;
+        double scale = radius / s / 3;
+        zoomLevel = (16 - log(scale) / log(2));
+
+        print("zoomLevel: $zoomLevel");
+        return zoomLevel;
+      }
+
+      updateDistance(double dist) {
+        if (dist < 1) {
+          customFilters.remove('dist');
+        } else {
+          customFilters["dist"] = dist.toString();
+          mapController.move(center, getZoomLevel(dist));
+        }
+      }
+
+      final circleMarkers = <CircleMarker>[];
+      if (dist != null) {
+        final distCircle = CircleMarker(
+            point: center,
+            color: Colors.blue.withOpacity(0.7),
+            borderStrokeWidth: 2,
+            useRadiusInMeter: true,
+            radius: dist * 1000);
+        circleMarkers.add(distCircle);
+      }
 
       return Column(children: [
         Wrap(
@@ -137,21 +140,21 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
             ),
           ],
         ),
-        if (getDistance() != null)
+        if (dist != null)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
                 icon: const Icon(Icons.remove),
                 onPressed: () {
-                  updateDistance(getDistance() - distanceStep);
+                  updateDistance(dist / distanceStep);
                 },
               ),
               Text("Max distance: ${getDistance()}km"),
               IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: () {
-                  updateDistance(getDistance() + distanceStep);
+                  updateDistance(dist * distanceStep);
                 },
               ),
               ElevatedButton(
@@ -179,7 +182,7 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
                 enableScrollWheel: false,
                 interactiveFlags: InteractiveFlag.none,
                 center: center,
-                zoom: 11,
+                zoom: getZoomLevel(dist ?? 100),
                 onMapReady: () {
                   mapController.mapEventStream.listen((evt) {
                     print("evt: ${evt.toString()}");
@@ -196,23 +199,6 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
               ],
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.zoom_in),
-                onPressed: () {
-                  mapController.move(center, mapController.zoom + 1);
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.zoom_out),
-                onPressed: () {
-                  mapController.move(center, mapController.zoom - 1);
-                },
-              ),
-            ],
-          )
         ]),
       ]);
     });
