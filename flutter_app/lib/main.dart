@@ -34,7 +34,7 @@ Future<void> initializeApp() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  Get.put(AuthController(), permanent: true);
+  Get.put(AuthService(), permanent: true);
   Get.put(LocalPreferences(), permanent: true);
   log('Initialize');
 }

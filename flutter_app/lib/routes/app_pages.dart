@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:flutter_app/screens/history_screen.dart';
 import 'package:flutter_app/screens/home_screen.dart';
 import 'package:flutter_app/screens/options_screen.dart';
+import '../bindings/auth_binding.dart';
 import '../bindings/history_binding.dart';
 import '../bindings/home_binding.dart';
 import '../bindings/options_binding.dart';
@@ -18,6 +19,7 @@ class AppPages {
     GetPage(
         name: Routes.LOGIN,
         page: () => const LoginScreen(),
+        binding: AuthBinding(),
         transition: Transition.noTransition),
     GetPage(
         name: Routes.HOME,
