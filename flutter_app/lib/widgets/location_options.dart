@@ -1,5 +1,6 @@
 // Flutter imports:
-import 'dart:math';
+import 'dart:developer';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
@@ -54,7 +55,7 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
     });
     customAttributes["long"] = pos.latitude.toString();
     customAttributes["lat"] = pos.longitude.toString();
-    print("pos $pos ${pos.latitude} ${pos.longitude}");
+    log("pos $pos ${pos.latitude} ${pos.longitude}");
 
     String msg = "Latitude: ${pos.latitude} Longitude: ${pos.longitude}";
 
@@ -99,9 +100,9 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
         double zoomLevel;
         double radius = dist * 1000 * 2;
         double scale = radius / s / 3;
-        zoomLevel = (16 - log(scale) / log(2));
+        zoomLevel = (16 - math.log(scale) / math.log(2));
 
-        print("zoomLevel: $zoomLevel");
+        log("zoomLevel: $zoomLevel");
         return zoomLevel;
       }
 
@@ -190,12 +191,6 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
                 interactiveFlags: InteractiveFlag.none,
                 center: center,
                 zoom: getZoomLevel(dist ?? 100),
-                onMapReady: () {
-                  mapController.mapEventStream.listen((evt) {
-                    print("evt: ${evt.toString()}");
-                  });
-                  // And any other `MapController` dependent non-movement methods
-                },
               ),
               nonRotatedChildren: const [],
               children: [
