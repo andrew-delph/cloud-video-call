@@ -33,10 +33,6 @@ class Preferences extends GetView<PreferencesController> {
             ),
         (state) => (Container(
               alignment: Alignment.topCenter,
-              padding: const EdgeInsets.all(20),
-              constraints: const BoxConstraints(
-                maxWidth: 1000,
-              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [

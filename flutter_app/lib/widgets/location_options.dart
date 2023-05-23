@@ -144,8 +144,9 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
           Wrap(
             alignment: WrapAlignment.center,
             runAlignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Row(children: [
+              Row(mainAxisSize: MainAxisSize.min, children: [
                 IconButton(
                   icon: const Icon(Icons.remove),
                   onPressed: () {
