@@ -42,7 +42,7 @@ class HomeScreen extends GetView<HomeController> {
         title: 'Home',
         body: controller.obx(
           (state) => Obx(
-            () => controller.isInReadyQueue()
+            () => (controller.isInReadyQueue() || controller.isInChat())
                 ? videoRenderLayout
                 : SingleChildScrollView(
                     child: Column(
