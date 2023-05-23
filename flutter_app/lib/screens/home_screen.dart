@@ -201,14 +201,15 @@ class ButtonsOverlay extends GetView<HomeController> {
                   },
                 ),
               if (controller.localMediaStream() != null) MediaDeviceButton(),
-              IconButton(
-                icon: const Icon(Icons.cancel),
-                color: Colors.white,
-                tooltip: 'Cancel',
-                onPressed: () async {
-                  controller.unReady();
-                },
-              )
+              if (!controller.isInChat())
+                IconButton(
+                  icon: const Icon(Icons.cancel),
+                  color: Colors.white,
+                  tooltip: 'Cancel',
+                  onPressed: () async {
+                    controller.unReady();
+                  },
+                )
             ],
           )
         ])));
