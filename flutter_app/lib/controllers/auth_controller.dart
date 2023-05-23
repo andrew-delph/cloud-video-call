@@ -6,9 +6,7 @@ import 'package:get/get.dart';
 import '../services/auth_service.dart';
 
 class AuthController extends GetxController {
-  final AuthService _authService;
-
-  AuthController(this._authService);
+  AuthController();
 
   // Called immediately after the contoller is allocated in memory.
 
