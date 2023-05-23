@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 const String naValue = "Skip";
 
 class DropDownPreference extends StatelessWidget {
+  final bool enableNaValue;
   final String label;
   final String mapKey;
   final List<String> options;
@@ -17,7 +18,16 @@ class DropDownPreference extends StatelessWidget {
       required this.label,
       required this.options,
       required this.preferenceMap,
-      required this.mapKey});
+      required this.mapKey,
+      required this.enableNaValue});
+
+  List<String> getOptions() {
+    if (enableNaValue) {
+      return [naValue, ...options];
+    } else {
+      return options;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +48,13 @@ class DropDownPreference extends StatelessWidget {
                 color: Colors.purpleAccent,
               ),
               onChanged: (String? value) {
-                preferenceMap[mapKey] = value!;
+                if (value == naValue) {
+                  preferenceMap.remove(mapKey);
+                } else {
+                  preferenceMap[mapKey] = value!;
+                }
               },
-              items: options.map<DropdownMenuItem<String>>((String value) {
+              items: getOptions().map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                     value: value,
                     child: SizedBox(

@@ -49,19 +49,16 @@ class Preferences extends GetView<PreferencesController> {
                           ),
                         ),
                         DropDownPreference(
+                          enableNaValue: true,
                           label: 'Gender',
-                          options: const [naValue, "Male", "Female", "Other"],
+                          options: const ["Male", "Female", "Other"],
                           preferenceMap: controller.constantAttributes,
                           mapKey: 'gender',
                         ),
                         DropDownPreference(
+                          enableNaValue: true,
                           label: 'Language',
-                          options: const [
-                            naValue,
-                            "English",
-                            "French",
-                            "Other"
-                          ],
+                          options: const ["English", "French", "Other"],
                           preferenceMap: controller.constantAttributes,
                           mapKey: 'language',
                         ),
@@ -82,19 +79,16 @@ class Preferences extends GetView<PreferencesController> {
                           ),
                         ),
                         DropDownPreference(
+                          enableNaValue: true,
                           label: 'Gender',
-                          options: const [naValue, "Male", "Female", "Other"],
+                          options: const ["Male", "Female", "Other"],
                           preferenceMap: controller.constantFilters,
                           mapKey: 'gender',
                         ),
                         DropDownPreference(
+                          enableNaValue: true,
                           label: 'Language',
-                          options: const [
-                            naValue,
-                            "English",
-                            "French",
-                            "Other"
-                          ],
+                          options: const ["English", "French", "Other"],
                           preferenceMap: controller.constantFilters,
                           mapKey: 'language',
                         ),
