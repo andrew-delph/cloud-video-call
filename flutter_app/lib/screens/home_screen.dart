@@ -22,7 +22,9 @@ class HomeScreen extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    Widget videoRenderLayout = FeedbackSwipeDetector(
+    Widget videoRenderLayout = VideoRenderLayout();
+
+    videoRenderLayout = FeedbackSwipeDetector(
         isDragUpdate: () {
           return controller.isInChat();
         },
@@ -30,7 +32,7 @@ class HomeScreen extends GetView<HomeController> {
           await controller.endChat(true);
           await controller.sendChatScore(score);
         },
-        child: VideoRenderLayout());
+        child: videoRenderLayout);
 
     videoRenderLayout = Expanded(
       child: Stack(
@@ -47,38 +49,34 @@ class HomeScreen extends GetView<HomeController> {
 
     return LeftNav(
         title: 'Home',
-        body: Container(
-            decoration: const BoxDecoration(
-              color: Colors.teal,
-            ),
-            child: controller.obx(
-              (state) => Obx(
-                () => controller.isInReadyQueue()
-                    ? videoRenderLayout
-                    : Column(
-                        children: [
-                          const Preferences(),
-                          ElevatedButton(
-                              onPressed: () {
-                                controller.ready();
-                              },
-                              child: const Text("Start"))
-                        ],
-                      ),
-              ),
-              onLoading: const CircularProgressIndicator(),
-              onError: (error) => Column(
-                children: [
-                  const Text("Connection Error."),
-                  Text('$error'),
-                  ElevatedButton(
-                      onPressed: () {
-                        controller.initSocket();
-                      },
-                      child: const Text("Reconnect."))
-                ],
-              ),
-            )));
+        body: controller.obx(
+          (state) => Obx(
+            () => controller.isInReadyQueue()
+                ? videoRenderLayout
+                : Column(
+                    children: [
+                      const Preferences(),
+                      ElevatedButton(
+                          onPressed: () {
+                            controller.ready();
+                          },
+                          child: const Text("Start"))
+                    ],
+                  ),
+          ),
+          onLoading: const CircularProgressIndicator(),
+          onError: (error) => Column(
+            children: [
+              const Text("Connection Error."),
+              Text('$error'),
+              ElevatedButton(
+                  onPressed: () {
+                    controller.initSocket();
+                  },
+                  child: const Text("Reconnect."))
+            ],
+          ),
+        ));
   }
 }
 
