@@ -569,6 +569,21 @@ class HomeController extends GetxController with StateMixin {
       )
     ];
 
+    List<PopupMenuEntry<MediaDeviceInfo>> optionsList = [
+      const PopupMenuItem<MediaDeviceInfo>(
+        enabled: false,
+        child: Text("Options"),
+      )
+    ];
+
+    optionsList.add(PopupMenuItem<MediaDeviceInfo>(
+      textStyle: const TextStyle(),
+      child: const Text("Reload devices"),
+      onTap: () {
+        _getLocalMediaStream();
+      },
+    ));
+
     for (MediaDeviceInfo mediaDeviceInfo in mediaDevicesList()) {
       switch (mediaDeviceInfo.kind) {
         case "videoinput":
@@ -619,6 +634,6 @@ class HomeController extends GetxController with StateMixin {
       }
     }
 
-    return videoInputList + audioInputList; // + audioOutputList;
+    return videoInputList + audioInputList + optionsList; // + audioOutputList;
   }
 }
