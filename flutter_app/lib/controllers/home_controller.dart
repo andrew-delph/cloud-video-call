@@ -202,7 +202,6 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<void> initLocalStream() async {
-    if (localMediaStream() != null) return;
     await localMediaStream()?.dispose();
 
     localVideoRenderer().onResize = () {
