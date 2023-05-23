@@ -34,17 +34,8 @@ class HomeScreen extends GetView<HomeController> {
         },
         child: videoRenderLayout);
 
-    videoRenderLayout = Expanded(
-      child: Stack(
-        children: [videoRenderLayout, const ButtonsOverlay()],
-      ),
-    );
-
-    videoRenderLayout = Flex(
-      direction: Axis.horizontal,
-      children: [
-        videoRenderLayout,
-      ],
+    videoRenderLayout = Stack(
+      children: [videoRenderLayout, const ButtonsOverlay()],
     );
 
     return LeftNav(
@@ -53,7 +44,8 @@ class HomeScreen extends GetView<HomeController> {
           (state) => Obx(
             () => controller.isInReadyQueue()
                 ? videoRenderLayout
-                : Column(
+                : SingleChildScrollView(
+                    child: Column(
                     children: [
                       const Preferences(),
                       ElevatedButton(
@@ -62,7 +54,7 @@ class HomeScreen extends GetView<HomeController> {
                           },
                           child: const Text("Start"))
                     ],
-                  ),
+                  )),
           ),
           onLoading: const CircularProgressIndicator(),
           onError: (error) => Column(
@@ -121,6 +113,8 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
 
     return Obx(() {
       double width = min(Get.width / 2, 300);
+
+      // localPreferences.fullscreen(true);
 
       List<Widget> orientationList = [
         remoteCamera(),

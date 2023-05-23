@@ -19,8 +19,8 @@ class HistoryScreen extends GetView<HistoryController> {
     return LeftNav(
         title: 'History',
         body: controller.obx(
-          (state) => Center(
-              child: SingleChildScrollView(
+          (state) => SingleChildScrollView(
+              child: Center(
                   child: Column(
             children: [
               Container(

@@ -50,7 +50,8 @@ class OptionsScreen extends GetView<PreferencesController> {
                 constraints: const BoxConstraints(
                   maxWidth: 1000,
                 ),
-                child: Column(
+                child: SingleChildScrollView(
+                    child: Column(
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,7 +119,7 @@ class OptionsScreen extends GetView<PreferencesController> {
                     ),
                     const AppDetailsWidget()
                   ],
-                ))));
+                )))));
 
     // child: LeftNav(title: 'Options', body: profile));
   }

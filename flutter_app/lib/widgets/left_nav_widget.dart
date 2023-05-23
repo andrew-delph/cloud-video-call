@@ -59,13 +59,7 @@ class LeftNav extends StatelessWidget {
                     ),
                   ],
                 )),
-            SingleChildScrollView(child: body),
-            // SingleChildScrollView(child: Expanded(child: body)),
-            // SingleChildScrollView(
-            //     child: ConstrainedBox(
-            //   constraints: BoxConstraints(maxWidth: Get.width),
-            //   child: Expanded(child: body),
-            // )),
+            Expanded(child: body)
           ],
         ));
   }
