@@ -223,6 +223,7 @@ class MediaDeviceButton extends GetResponsiveView<HomeController> {
   Widget build(BuildContext context) {
     return PopupMenuButton<MediaDeviceInfo>(
       color: Colors.white,
+      icon: Icon(Icons.settings),
       // initialValue: 'selectedMenu',
       // Callback that sets the selected popup menu item.
       itemBuilder: (BuildContext context) {
