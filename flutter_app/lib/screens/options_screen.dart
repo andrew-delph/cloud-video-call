@@ -10,6 +10,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 // Project imports:
 import '../controllers/options_controller.dart';
+import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
 import '../widgets/left_nav_widget.dart';
 import '../widgets/loadging_widgets.dart';
@@ -19,109 +20,7 @@ class OptionsScreen extends GetView<PreferencesController> {
 
   @override
   Widget build(BuildContext context) {
-    Widget profile = Obx(() {
-      return Container(
-          alignment: Alignment.topCenter,
-          padding: const EdgeInsets.all(20),
-          constraints: const BoxConstraints(
-            maxWidth: 1000,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text(
-                "Profile",
-                style: TextStyle(
-                  fontSize: 35.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              const Divider(),
-              UserProfileWidget(
-                priority: controller.priority(),
-              ),
-            ],
-          ));
-    });
-
     LocalPreferences localPreferences = Get.find();
-
-    Widget preferences = controller.obx(
-      (state) => Obx(() => Column(children: [
-            Row(
-              children: [
-                const Text("Swipe:"),
-                Switch(
-                  value: localPreferences.swipeFeedback(),
-                  onChanged: (bool newValue) async {
-                    localPreferences.swipeFeedback(newValue);
-                  },
-                )
-              ],
-            ),
-            Row(
-              children: [
-                const Text("Swipe popup:"),
-                Switch(
-                  value: localPreferences.feedbackPopup(),
-                  onChanged: (bool newValue) async {
-                    localPreferences.feedbackPopup(newValue);
-                  },
-                )
-              ],
-            ),
-            Row(
-              children: [
-                const Text("Auto queue:"),
-                Switch(
-                  value: localPreferences.autoQueue(),
-                  onChanged: (bool newValue) async {
-                    localPreferences.autoQueue(newValue);
-                  },
-                )
-              ],
-            )
-          ])),
-      onLoading: const CircularProgressIndicator(),
-      onError: (error) => Column(
-        children: [
-          const Text("Options Error."),
-          Text('$error'),
-        ],
-      ),
-    );
-
-    Widget settings = Container(
-        alignment: Alignment.topCenter,
-        decoration: BoxDecoration(
-          color: Colors.teal,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.all(20),
-        margin: const EdgeInsets.all(20),
-        constraints: const BoxConstraints(
-          maxWidth: 1000,
-        ),
-        child: false
-            ? connectingWidget
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Settings",
-                    style: TextStyle(
-                      fontSize: 35.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const Divider(),
-                  preferences,
-                  const Divider(),
-                  // devices
-                ],
-              ));
 
     return WillPopScope(
         onWillPop: () async {
@@ -145,22 +44,93 @@ class OptionsScreen extends GetView<PreferencesController> {
         },
         child: LeftNav(
             title: 'Options',
-            body: Center(
-                child: SingleChildScrollView(
-                    child: Column(
-              children: [profile, settings, const AppDetailsWidget()],
-            )))));
+            body: Container(
+                alignment: Alignment.topCenter,
+                padding: const EdgeInsets.all(20),
+                constraints: const BoxConstraints(
+                  maxWidth: 1000,
+                ),
+                child: Column(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: const [
+                        Text(
+                          "Profile",
+                          style: TextStyle(
+                            fontSize: 35.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Divider(),
+                        UserProfileWidget(),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Settings",
+                          style: TextStyle(
+                            fontSize: 35.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const Divider(),
+                        Column(children: [
+                          Row(
+                            children: [
+                              const Text("Swipe:"),
+                              Switch(
+                                value: localPreferences.swipeFeedback(),
+                                onChanged: (bool newValue) async {
+                                  localPreferences.swipeFeedback(newValue);
+                                },
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              const Text("Swipe popup:"),
+                              Switch(
+                                value: localPreferences.feedbackPopup(),
+                                onChanged: (bool newValue) async {
+                                  localPreferences.feedbackPopup(newValue);
+                                },
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              const Text("Auto queue:"),
+                              Switch(
+                                value: localPreferences.autoQueue(),
+                                onChanged: (bool newValue) async {
+                                  localPreferences.autoQueue(newValue);
+                                },
+                              )
+                            ],
+                          )
+                        ]),
+                      ],
+                    ),
+                    const AppDetailsWidget()
+                  ],
+                ))));
+
+    // child: LeftNav(title: 'Options', body: profile));
   }
 }
 
-class UserProfileWidget extends StatelessWidget {
-  const UserProfileWidget({super.key, required this.priority});
-
-  final double priority;
+class UserProfileWidget extends GetView<PreferencesController> {
+  const UserProfileWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    User? user = FirebaseAuth.instance.currentUser;
+    AuthService authService = Get.find();
+    User? user = authService.user();
 
     if (user == null) return const Text("Failed to load user.");
 
@@ -185,7 +155,10 @@ class UserProfileWidget extends StatelessWidget {
                 ),
               ]),
         Row(
-          children: [const Text("Priority: "), Text("$priority")],
+          children: [
+            const Text("Priority: "),
+            Text("${controller.priority()}")
+          ],
         )
       ],
     );
@@ -209,10 +182,8 @@ class AppDetailsWidget extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              ListTile(
-                title: const Text("Version", textAlign: TextAlign.center),
-                subtitle: Text(version, textAlign: TextAlign.center),
-              ),
+              const Text("Version", textAlign: TextAlign.center),
+              Text(version, textAlign: TextAlign.center)
             ],
           );
         });

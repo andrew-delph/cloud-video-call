@@ -6,6 +6,16 @@ import 'package:get/get.dart';
 import '../routes/app_pages.dart';
 
 class AuthService extends GetxService {
+  Rx<User?> user = Rx(null);
+
+  @override
+  onInit() {
+    super.onInit();
+    FirebaseAuth.instance.userChanges().listen((changeUser) {
+      user(changeUser);
+    });
+  }
+
   Future<String> getToken() async {
     String? token = await FirebaseAuth.instance.currentUser?.getIdToken();
 
@@ -17,7 +27,7 @@ class AuthService extends GetxService {
   }
 
   bool isAuthenticated() {
-    return FirebaseAuth.instance.currentUser != null;
+    return user() != null;
   }
 
   signOut() async {
