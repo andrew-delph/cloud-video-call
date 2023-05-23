@@ -106,11 +106,14 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
       }
 
       updateDistance(double dist) {
-        if (dist < 1) {
+        if (dist < 5) {
           customFilters.remove('dist');
         } else {
-          customFilters["dist"] = dist.toString();
-          mapController.move(center, getZoomLevel(dist));
+          double zoom = getZoomLevel(dist);
+          if (zoom > 0) {
+            customFilters["dist"] = dist.toString();
+            mapController.move(center, getZoomLevel(dist));
+          }
         }
       }
 
