@@ -66,6 +66,12 @@ class HomeController extends GetxController with StateMixin {
       localVideoRenderer.update((localVideoRenderer) {
         localVideoRenderer?.initialize().then((_) {
           localVideoRenderer.srcObject = localMediaStream;
+        }).then((value) {
+          localVideoRenderer.onResize = () {
+            localVideoRendererRatioHw(
+                localVideoRenderer.videoHeight / localVideoRenderer.videoWidth);
+            log("localVideoRenderer.onResize");
+          };
         });
       });
       (await peerConnection()?.senders)?.forEach((element) {
@@ -203,12 +209,6 @@ class HomeController extends GetxController with StateMixin {
 
   Future<void> initLocalStream() async {
     await localMediaStream()?.dispose();
-
-    localVideoRenderer().onResize = () {
-      localVideoRendererRatioHw(
-          localVideoRenderer().videoHeight / localVideoRenderer().videoWidth);
-      log("localVideoRenderer.onResize");
-    };
 
     localMediaStream(await _getLocalMediaStream());
   }
