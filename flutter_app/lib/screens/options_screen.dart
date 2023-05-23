@@ -22,12 +22,7 @@ class OptionsScreen extends GetView<PreferencesController> {
     Widget profile = Obx(() {
       return Container(
           alignment: Alignment.topCenter,
-          decoration: BoxDecoration(
-            color: Colors.teal,
-            borderRadius: BorderRadius.circular(12),
-          ),
           padding: const EdgeInsets.all(20),
-          margin: const EdgeInsets.all(20),
           constraints: const BoxConstraints(
             maxWidth: 1000,
           ),

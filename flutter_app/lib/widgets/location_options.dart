@@ -141,22 +141,25 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
           ],
         ),
         if (dist != null)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Wrap(
+            alignment: WrapAlignment.center,
+            runAlignment: WrapAlignment.center,
             children: [
-              IconButton(
-                icon: const Icon(Icons.remove),
-                onPressed: () {
-                  updateDistance(dist / distanceStep);
-                },
-              ),
-              Text("Max distance: ${getDistance()}km"),
-              IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: () {
-                  updateDistance(dist * distanceStep);
-                },
-              ),
+              Row(children: [
+                IconButton(
+                  icon: const Icon(Icons.remove),
+                  onPressed: () {
+                    updateDistance(dist / distanceStep);
+                  },
+                ),
+                Text("Max distance: ${getDistance()}km"),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    updateDistance(dist * distanceStep);
+                  },
+                )
+              ]),
               ElevatedButton(
                 child: const Text("Disable Distance filter"),
                 onPressed: () {

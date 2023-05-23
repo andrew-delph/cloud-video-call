@@ -47,35 +47,39 @@ class HomeScreen extends GetView<HomeController> {
 
     return LeftNav(
         title: 'Home',
-        body: SingleChildScrollView(
-            child: controller.obx(
-          (state) => Obx(
-            () => controller.isInReadyQueue()
-                ? videoRenderLayout
-                : Column(
-                    children: [
-                      const Preferences(),
-                      ElevatedButton(
-                          onPressed: () {
-                            controller.ready();
-                          },
-                          child: const Text("Start"))
-                    ],
-                  ),
-          ),
-          onLoading: const CircularProgressIndicator(),
-          onError: (error) => Column(
-            children: [
-              const Text("Connection Error."),
-              Text('$error'),
-              ElevatedButton(
-                  onPressed: () {
-                    controller.initSocket();
-                  },
-                  child: const Text("Reconnect."))
-            ],
-          ),
-        )));
+        body: Container(
+            decoration: const BoxDecoration(
+              color: Colors.teal,
+            ),
+            child: SingleChildScrollView(
+                child: controller.obx(
+              (state) => Obx(
+                () => controller.isInReadyQueue()
+                    ? videoRenderLayout
+                    : Column(
+                        children: [
+                          const Preferences(),
+                          ElevatedButton(
+                              onPressed: () {
+                                controller.ready();
+                              },
+                              child: const Text("Start"))
+                        ],
+                      ),
+              ),
+              onLoading: const CircularProgressIndicator(),
+              onError: (error) => Column(
+                children: [
+                  const Text("Connection Error."),
+                  Text('$error'),
+                  ElevatedButton(
+                      onPressed: () {
+                        controller.initSocket();
+                      },
+                      child: const Text("Reconnect."))
+                ],
+              ),
+            ))));
   }
 }
 
