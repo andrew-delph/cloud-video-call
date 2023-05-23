@@ -133,7 +133,7 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
             ),
             ElevatedButton(
               onPressed: canReset() ? reset : null,
-              child: const Text('Clear'),
+              child: const Text('Remove Location'),
             ),
           ],
         ),
