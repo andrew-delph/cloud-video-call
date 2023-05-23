@@ -112,7 +112,7 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
     bool isLandscape = Get.context?.isLandscape ?? true;
 
     return Obx(() {
-      double width = min(Get.width / 2, 300);
+      double width = min(Get.width / 4, 300);
 
       // localPreferences.fullscreen(true);
 
