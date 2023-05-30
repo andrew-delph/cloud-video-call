@@ -7,15 +7,15 @@ It seems there are issues using plan-b and vpns for mobile.
 final Map<String, dynamic> rtcConfiguration = {
   "sdpSemantics": "unified-plan", //"plan-b",
   "iceServers": [
-    {
-      "urls": [
-        "stun:stun1.l.google.com:19302",
-        "stun:stun2.l.google.com:19302"
-      ],
-    },
-    {
-      "urls": "stun:relay.metered.ca:80",
-    },
+    // {
+    //   "urls": [
+    //     "stun:stun1.l.google.com:19302",
+    //     "stun:stun2.l.google.com:19302"
+    //   ],
+    // },
+    // {
+    //   "urls": "stun:relay.metered.ca:80",
+    // },
     {
       "urls": "turn:relay.metered.ca:80",
       "username": "db5611baf2f55446ccb6a207",
