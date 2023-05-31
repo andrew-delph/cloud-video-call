@@ -392,11 +392,17 @@ class HomeController extends GetxController with StateMixin {
 
   Future<void> setClientHost() async {
     log("you are the host");
+
+    final tempPeerConnection = peerConnection();
+    if (tempPeerConnection == null) {
+      print("peerConnection is null");
+      throw "peerConnection is null";
+    }
     final completer = Completer<void>();
 
     RTCSessionDescription offerDescription =
-        await peerConnection()!.createOffer();
-    await peerConnection()!.setLocalDescription(offerDescription);
+        await tempPeerConnection.createOffer();
+    await tempPeerConnection.setLocalDescription(offerDescription);
 
     // send the offer
     socket()!.emit("client_host", {
@@ -412,7 +418,7 @@ class HomeController extends GetxController with StateMixin {
           // log("got answer");
           RTCSessionDescription answerDescription = RTCSessionDescription(
               data['answer']["sdp"], data['answer']["type"]);
-          peerConnection()!.setRemoteDescription(answerDescription);
+          tempPeerConnection.setRemoteDescription(answerDescription);
           completer.complete();
         }
       } catch (error) {
@@ -425,19 +431,24 @@ class HomeController extends GetxController with StateMixin {
 
   Future<void> setClientGuest() async {
     log("you are the guest");
+    final tempPeerConnection = peerConnection();
+    if (tempPeerConnection == null) {
+      print("peerConnection is null");
+      throw "peerConnection is null";
+    }
     final completer = Completer<void>();
 
     socket()!.on("client_guest", (data) async {
       try {
         if (data["offer"] != null) {
           // log("got offer");
-          await peerConnection()!.setRemoteDescription(RTCSessionDescription(
+          await tempPeerConnection.setRemoteDescription(RTCSessionDescription(
               data["offer"]["sdp"], data["offer"]["type"]));
 
           RTCSessionDescription answerDescription =
-              await peerConnection()!.createAnswer();
+              await tempPeerConnection.createAnswer();
 
-          await peerConnection()!.setLocalDescription(answerDescription);
+          await tempPeerConnection.setLocalDescription(answerDescription);
 
           // send the offer
           socket()!.emit("client_guest", {
