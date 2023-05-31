@@ -224,8 +224,6 @@ class MediaDeviceButton extends GetResponsiveView<HomeController> {
     return PopupMenuButton<MediaDeviceInfo>(
       color: Colors.white,
       icon: const Icon(Icons.settings, color: Colors.white),
-      // initialValue: 'selectedMenu',
-      // Callback that sets the selected popup menu item.
       itemBuilder: (BuildContext context) {
         return controller.getDeviceEntries();
       },
