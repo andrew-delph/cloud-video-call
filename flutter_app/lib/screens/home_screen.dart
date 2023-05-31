@@ -217,6 +217,7 @@ class ButtonsOverlay extends GetView<HomeController> {
 }
 
 class MediaDeviceButton extends GetResponsiveView<HomeController> {
+  // display all media devices
   MediaDeviceButton({super.key});
 
   @override
