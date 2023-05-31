@@ -335,6 +335,7 @@ class HomeController extends GetxController with StateMixin {
 
     // START HANDLE ICE CANDIDATES
     peerConnection()!.onIceCandidate = (event) {
+      print("my candidate: ${event.candidate.toString()}");
       socket()!.emit("icecandidate", {
         "icecandidate": {
           'candidate': event.candidate,
@@ -344,7 +345,7 @@ class HomeController extends GetxController with StateMixin {
       });
     };
     socket()!.on("icecandidate", (data) async {
-      // log("got ice!");
+      print("other candidate: ${data["icecandidate"]['candidate'].toString()}");
       RTCIceCandidate iceCandidate = RTCIceCandidate(
           data["icecandidate"]['candidate'],
           data["icecandidate"]['sdpMid'],
