@@ -121,9 +121,22 @@ class HomeController extends GetxController with StateMixin {
   Future<void> dispose() async {
     super.dispose();
     socket()?.destroy();
-    await localMediaStream()?.dispose();
-    await remoteMediaStream()?.dispose();
-    await peerConnection()?.close();
+    try {
+      await localMediaStream()?.dispose();
+    } catch (error) {
+      print("error: $error");
+    }
+    try {
+      await remoteMediaStream()?.dispose();
+    } catch (error) {
+      print("error: $error");
+    }
+
+    try {
+      await peerConnection()?.close();
+    } catch (error) {
+      print("error: $error");
+    }
   }
 
   Future<void> initSocket() async {
