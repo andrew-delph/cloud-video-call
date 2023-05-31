@@ -250,8 +250,10 @@ export default async function () {
                   data && data.data && data.data.role,
                 'match has other': (data: any) =>
                   data && data.data && data.data.other,
-                'match has score': (data: any) =>
+                  'match has score': (data: any) =>
                   data && data.data && data.data.score != null,
+                  'match has iceservers': (data: any) =>
+                  data && data.data && data.data.iceServers != null && Array.isArray(data.data.iceServers) && data.data.iceServers.length > 0,
               });
               return data.data;
             })
