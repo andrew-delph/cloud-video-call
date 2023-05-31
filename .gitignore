@@ -45,3 +45,5 @@ test.json
 test.js
 flutter_app/GetStorage.bak
 flutter_app/GetStorage.gs
+
+.prettierignore
