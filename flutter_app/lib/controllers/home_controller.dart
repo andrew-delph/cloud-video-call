@@ -228,7 +228,11 @@ class HomeController extends GetxController with StateMixin {
 
   Future<void> resetRemote() async {
     if (peerConnection() != null) {
-      await peerConnection()?.close();
+      try {
+        await peerConnection()?.close();
+      } catch (error) {
+        print("error: $error");
+      }
     }
     await resetRemoteMediaStream();
   }
