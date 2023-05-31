@@ -1,5 +1,6 @@
 import { createAdapter } from '@socket.io/redis-adapter';
 import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
+import axios from 'axios';
 import * as common from 'common';
 import {
   Neo4jClient,
@@ -31,19 +32,17 @@ common.listenGlobalExceptions(async () => {
 
 const logger = common.getLogger();
 
+dotenv.config();
+
 const port = 80;
 const app = express();
+
 app.get(`/health`, (req, res) => {
   logger.debug(`got health check`);
   res.send(`Health is good.`);
 });
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
 
 const neo4jRpcClient = createNeo4jClient();
-
-dotenv.config();
 
 const matchTimeout = 5000;
 
@@ -56,6 +55,19 @@ const io = new Server(httpServer, {});
 
 let rabbitConnection: Connection;
 let rabbitChannel: Channel;
+
+const iceServers: never[] = [];
+
+async function loadIceServers() {
+  const METERED_API_KEY = process.env.METERED_API_KEY;
+  const response = await axios.get(
+    `https://andrewdelph.metered.live/api/v1/turn/credentials?apiKey=${METERED_API_KEY}`,
+  );
+
+  iceServers.push(...((await response.data) as []));
+
+  logger.info(`iceServers loaded.`);
+}
 
 export async function matchConsumer() {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
@@ -70,6 +82,8 @@ export async function matchConsumer() {
   subRedisClient = common.createRedisClient();
 
   logger.info(`redis connected.`);
+
+  await loadIceServers();
 
   io.adapter(createAdapter(pubRedisClient, subRedisClient));
 
@@ -113,6 +127,10 @@ export async function matchConsumer() {
       noAck: false,
     },
   );
+
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
 }
 
 export const match = async (msgContent: MatchMessage) => {
@@ -195,6 +213,7 @@ export const match = async (msgContent: MatchMessage) => {
             feedback_id: matchResponse.getRelationshipId1(),
             other: userId2,
             score: score,
+            iceServers: iceServers,
           },
           (err: any, response: any) => {
             if (err) {
@@ -216,6 +235,7 @@ export const match = async (msgContent: MatchMessage) => {
             feedback_id: matchResponse.getRelationshipId2(),
             other: userId1,
             score: score,
+            iceServers: iceServers,
           },
           (err: any, response: any) => {
             if (err) {
