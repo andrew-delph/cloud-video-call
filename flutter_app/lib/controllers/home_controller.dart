@@ -251,8 +251,9 @@ class HomeController extends GetxController with StateMixin {
     socket()!.off("icecandidate");
 
     // START SETUP PEER CONNECTION
-    peerConnection(await Factory.createPeerConnection());
-    peerConnection()!.onConnectionState =
+
+    final tempPeerConnection = await Factory.createPeerConnection();
+    tempPeerConnection.onConnectionState =
         (RTCPeerConnectionState connectionState) {
       isInChat([
         RTCPeerConnectionState.RTCPeerConnectionStateConnecting,
@@ -264,21 +265,21 @@ class HomeController extends GetxController with StateMixin {
 
     // START add localMediaStream to peerConnection
     localMediaStream()!.getTracks().forEach((track) async {
-      await peerConnection()!.addTrack(track, localMediaStream()!);
+      await tempPeerConnection.addTrack(track, localMediaStream()!);
     });
 
     // START add localMediaStream to peerConnection
 
     // START collect the streams/tracks from remote
-    peerConnection()!.onAddStream = (stream) {
+    tempPeerConnection.onAddStream = (stream) {
       // log("onAddStream");
       remoteMediaStream(stream);
     };
-    peerConnection()!.onAddTrack = (stream, track) async {
+    tempPeerConnection.onAddTrack = (stream, track) async {
       // log("onAddTrack");
       await addRemoteTrack(track);
     };
-    peerConnection()!.onTrack = (RTCTrackEvent track) async {
+    tempPeerConnection.onTrack = (RTCTrackEvent track) async {
       // log("onTrack");
       await addRemoteTrack(track.track);
     };
@@ -303,7 +304,7 @@ class HomeController extends GetxController with StateMixin {
         throw 'iceServers == null';
       }
 
-      peerConnection()!
+      tempPeerConnection
           .setConfiguration(Factory.getRtcConfiguration(iceServers));
       switch (role) {
         case "host":
@@ -334,7 +335,7 @@ class HomeController extends GetxController with StateMixin {
     });
 
     // START HANDLE ICE CANDIDATES
-    peerConnection()!.onIceCandidate = (event) {
+    tempPeerConnection.onIceCandidate = (event) {
       print("my candidate: ${event.candidate.toString()}");
       socket()!.emit("icecandidate", {
         "icecandidate": {
@@ -350,9 +351,11 @@ class HomeController extends GetxController with StateMixin {
           data["icecandidate"]['candidate'],
           data["icecandidate"]['sdpMid'],
           data["icecandidate"]['sdpMlineIndex']);
-      peerConnection()!.addCandidate(iceCandidate);
+      tempPeerConnection.addCandidate(iceCandidate);
     });
     // END HANDLE ICE CANDIDATES
+
+    peerConnection(tempPeerConnection);
 
     socket()!.emitWithAck("ready", {'ready': true}, ack: (data) {
       // TODO if ack timeout then do something
