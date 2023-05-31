@@ -242,6 +242,7 @@ class HomeController extends GetxController with StateMixin {
         RTCPeerConnectionState.RTCPeerConnectionStateConnected
       ].contains(connectionState));
     };
+
     // END SETUP PEER CONNECTION
 
     // START add localMediaStream to peerConnection
@@ -271,12 +272,22 @@ class HomeController extends GetxController with StateMixin {
       dynamic value = data[0] as dynamic;
       Function callback = data[1] as Function;
       String? role = value["role"];
+
+      List? iceServers = value["iceServers"];
       feedbackId = value["feedback_id"];
       log("feedback_id: $feedbackId");
       if (feedbackId == null) {
         log('feedbackId == null', error: true);
-        return;
+        throw 'feedbackId == null';
       }
+
+      if (iceServers == null) {
+        log('iceServers == null', error: true);
+        throw 'iceServers == null';
+      }
+
+      peerConnection()!
+          .setConfiguration(Factory.getRtcConfiguration(iceServers));
       switch (role) {
         case "host":
           {
