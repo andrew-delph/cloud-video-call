@@ -1,11 +1,14 @@
+import {
+  calcScoreThreshold,
+  calcScoreZset,
+  expireScoreZset,
+  getRelationshipScores,
+} from './relationship_calculations';
+import { FilteredUserType, RelationshipScoreType } from './types';
 import { connect, ConsumeMessage } from 'amqplib';
-import * as common from 'common';
-import Client from 'ioredis';
-import Redlock, { ResourceLockedError, ExecutionError } from 'redlock';
 import amqp from 'amqplib';
-import moment from 'moment';
-import express from 'express';
-
+import * as common from 'common';
+import { listenGlobalExceptions } from 'common';
 import {
   createNeo4jClient,
   GetRelationshipScoresRequest,
@@ -25,7 +28,6 @@ import {
   readyRoutingKey,
   FilterObject,
 } from 'common-messaging';
-import { listenGlobalExceptions } from 'common';
 import {
   parseMatchmakerMessage,
   parseReadyMessage,
@@ -33,13 +35,10 @@ import {
   sendMatchQueue,
   sendReadyQueue,
 } from 'common-messaging/src/message_helper';
-import {
-  calcScoreThreshold,
-  calcScoreZset,
-  expireScoreZset,
-  getRelationshipScores,
-} from './relationship_calculations';
-import { FilteredUserType, RelationshipScoreType } from './types';
+import express from 'express';
+import Client from 'ioredis';
+import moment from 'moment';
+import Redlock, { ResourceLockedError, ExecutionError } from 'redlock';
 
 const logger = common.getLogger();
 

@@ -1,5 +1,5 @@
-import { assert } from 'chai';
 import { cosineSimilarity, cosineSimilarityFunc } from '../src/utils';
+import { assert } from 'chai';
 import { memoize } from 'lodash';
 
 describe(`basic`, function () {

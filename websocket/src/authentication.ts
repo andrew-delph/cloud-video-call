@@ -1,9 +1,8 @@
-import { getLogger, getUid } from 'common';
-import { Socket } from 'socket.io';
-import { mainRedisClient } from './socketio_server';
-
-import * as common from 'common';
 import { cleanSocket, registerSocket } from './management';
+import { mainRedisClient } from './socketio_server';
+import { getLogger, getUid } from 'common';
+import * as common from 'common';
+import { Socket } from 'socket.io';
 
 const logger = getLogger();
 

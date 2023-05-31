@@ -1,9 +1,10 @@
-import * as neo4j from 'neo4j-driver';
-import { v4 as uuid } from 'uuid';
+import { createDotGraph, createRidgeLineChart } from './chart';
 import { printResults } from './neo4j_index';
 import { Person, getPerson, indexToColor } from './person';
-import { createDotGraph, createRidgeLineChart } from './chart';
 import async from 'async';
+import * as neo4j from 'neo4j-driver';
+import { v4 as uuid } from 'uuid';
+
 const maxRetryTimeMs = 15 * 1000;
 
 export let driver: neo4j.Driver;

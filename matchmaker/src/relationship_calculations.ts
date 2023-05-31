@@ -1,4 +1,3 @@
-import * as common from 'common';
 import {
   RetryError,
   realtionshipScoreCacheEx,
@@ -7,11 +6,12 @@ import {
   stripUserId,
   createFilterSet,
 } from './matchmaker';
+import { FilteredUserType, RelationshipScoreType } from './types';
+import * as common from 'common';
 import {
   GetRelationshipScoresRequest,
   GetRelationshipScoresResponse,
 } from 'common-messaging';
-import { FilteredUserType, RelationshipScoreType } from './types';
 
 const logger = common.getLogger();
 

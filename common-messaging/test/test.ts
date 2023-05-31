@@ -1,7 +1,7 @@
-import { assert } from 'chai';
 import { FilterObject, ReadyMessage } from '../src';
-import { bufferToUint8Array, messageToBuffer } from '../src/utils';
 import { parseReadyMessage } from '../src/message_helper';
+import { bufferToUint8Array, messageToBuffer } from '../src/utils';
+import { assert } from 'chai';
 
 describe(`basic`, function () {
   it(`test equal`, function () {

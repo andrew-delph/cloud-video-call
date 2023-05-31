@@ -1,3 +1,5 @@
+import { poolCalcScore } from './consine_worker';
+import * as funcs from './neo4j_functions';
 import { printResults } from './neo4j_index';
 import {
   userFunctions,
@@ -9,10 +11,7 @@ import {
   createRandom,
   userdIdToType,
 } from './person';
-
-import * as funcs from './neo4j_functions';
 import * as neo4j from 'neo4j-driver';
-import { poolCalcScore } from './consine_worker';
 
 const Pool = require(`multiprocessing`).Pool;
 

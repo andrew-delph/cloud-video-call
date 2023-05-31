@@ -1,11 +1,10 @@
-const P = require(`bluebird`);
-import * as math from 'mathjs';
-
-import * as neo4j from 'neo4j-driver';
-
-import { memoize } from 'lodash';
-import { LRUCache } from 'typescript-lru-cache';
 import { userdIdToType } from './person';
+import { memoize } from 'lodash';
+import * as math from 'mathjs';
+import * as neo4j from 'neo4j-driver';
+import { LRUCache } from 'typescript-lru-cache';
+
+const P = require(`bluebird`);
 
 const cache = new LRUCache<string, string>({ maxSize: 10000 });
 

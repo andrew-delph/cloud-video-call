@@ -2,8 +2,8 @@
 // file: proto/neo4j.proto
 
 /* tslint:disable */
-/* eslint-disable */
 
+/* eslint-disable */
 import * as jspb from 'google-protobuf';
 
 export class CreateUserRequest extends jspb.Message {

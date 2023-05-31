@@ -1,9 +1,8 @@
-import * as math from 'mathjs';
-
+import * as common from 'common';
 import { memoize, throttle } from 'lodash';
+import * as math from 'mathjs';
 import { LRUCache } from 'typescript-lru-cache';
 
-import * as common from 'common';
 const logger = common.getLogger();
 
 // Create a cache. Optional options object can be passed in.

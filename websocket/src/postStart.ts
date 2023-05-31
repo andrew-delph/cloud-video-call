@@ -1,6 +1,6 @@
-import { getLogger } from 'common';
 import { cleanAllSocketServer } from './management';
 import { getServer } from './socketio_server';
+import { getLogger } from 'common';
 
 const logger = getLogger();
 

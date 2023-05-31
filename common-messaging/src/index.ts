@@ -1,5 +1,5 @@
-import * as grpcLocal from '@grpc/grpc-js';
 import { Neo4jClient as LocalNeo4jClient } from './gen/proto/neo4j_grpc_pb';
+import * as grpcLocal from '@grpc/grpc-js';
 
 export * from './gen/proto/neo4j_grpc_pb';
 export * from './gen/proto/neo4j_pb';

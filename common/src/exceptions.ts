@@ -1,4 +1,5 @@
 import { getLogger } from './logger';
+
 const logger = getLogger();
 
 export const listenGlobalExceptions = (clean_up?: () => Promise<void>) => {

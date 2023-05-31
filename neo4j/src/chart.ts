@@ -1,8 +1,11 @@
-const fs = require(`fs`);
-import * as d3 from 'd3';
-import ChartJSImage from 'chart.js-image';
-const svg2img = require(`svg2img`);
 import { createCanvas } from 'canvas';
+import ChartJSImage from 'chart.js-image';
+import * as d3 from 'd3';
+
+const fs = require(`fs`);
+
+const svg2img = require(`svg2img`);
+
 const D3Node = require(`d3-node`);
 
 const canvasModule = require(`canvas`); // supports node-canvas v1 & v2.x

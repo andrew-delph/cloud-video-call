@@ -1,7 +1,5 @@
-import * as neo4j from 'neo4j-driver';
 import * as lp from './lp_pipeling';
 import * as funcs from './neo4j_functions';
-
 import * as nodembeddings_flow from './nodembeddings_flow';
 import {
   userFunctions,
@@ -10,6 +8,7 @@ import {
   createGroupA,
   createGroupB,
 } from './person';
+import * as neo4j from 'neo4j-driver';
 
 console.log(`starting neo4j_index`);
 let results: neo4j.QueryResult;

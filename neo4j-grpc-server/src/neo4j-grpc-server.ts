@@ -1,4 +1,12 @@
 import {
+  UserPreferences,
+  compareUserFilters,
+  readUserPreferences,
+  writeUserPreferencesDatabase,
+} from './UserPreferences';
+import { cosineSimilarity } from './utils';
+import * as common from 'common';
+import {
   CreateMatchRequest,
   CreateMatchResponse,
   CreateUserRequest,
@@ -23,15 +31,7 @@ import {
   grpc,
 } from 'common-messaging';
 import * as neo4j from 'neo4j-driver';
-import * as common from 'common';
 import { v4 } from 'uuid';
-import {
-  UserPreferences,
-  compareUserFilters,
-  readUserPreferences,
-  writeUserPreferencesDatabase,
-} from './UserPreferences';
-import { cosineSimilarity } from './utils';
 
 common.listenGlobalExceptions(async () => {
   await server.tryShutdown(() => {

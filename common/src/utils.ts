@@ -1,8 +1,8 @@
 import { getLogger } from './logger';
+import { activeSetName, recentlyActiveUserSet } from './variables';
+import amqp from 'amqplib';
 import { getAuth } from 'firebase-admin/auth';
 import Client from 'ioredis';
-import amqp from 'amqplib';
-import { activeSetName, recentlyActiveUserSet } from './variables';
 import moment from 'moment';
 
 const logger = getLogger();

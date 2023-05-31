@@ -4,9 +4,9 @@ import {
   redisClient,
   userPreferencesCacheEx,
 } from './neo4j-grpc-server';
-import * as neo4j from 'neo4j-driver';
 import * as common from 'common';
 import haversine from 'haversine-distance';
+import * as neo4j from 'neo4j-driver';
 
 const logger = common.getLogger();
 

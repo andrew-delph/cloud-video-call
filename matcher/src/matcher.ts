@@ -1,12 +1,6 @@
 import { createAdapter } from '@socket.io/redis-adapter';
-import { createServer } from 'http';
-import { Server } from 'socket.io';
-import * as dotenv from 'dotenv';
+import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
 import * as common from 'common';
-import Client from 'ioredis';
-
-import { v4 as uuid } from 'uuid';
-
 import {
   Neo4jClient,
   grpc,
@@ -20,7 +14,16 @@ import {
   matchmakerQueueName,
   MatchMessage,
 } from 'common-messaging';
+import {
+  parseMatchMessage,
+  sendReadyQueue,
+} from 'common-messaging/src/message_helper';
+import * as dotenv from 'dotenv';
 import express from 'express';
+import { createServer } from 'http';
+import Client from 'ioredis';
+import { Server } from 'socket.io';
+import { v4 as uuid } from 'uuid';
 
 common.listenGlobalExceptions(async () => {
   logger.debug(`clean up matcher`);
@@ -39,12 +42,6 @@ app.listen(port, () => {
 });
 
 const neo4jRpcClient = createNeo4jClient();
-
-import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
-import {
-  parseMatchMessage,
-  sendReadyQueue,
-} from 'common-messaging/src/message_helper';
 
 dotenv.config();
 

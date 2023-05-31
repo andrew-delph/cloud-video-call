@@ -1,9 +1,10 @@
-import amqp from 'amqplib';
 import {
   ReadyMessage,
   MatchmakerMessage,
   MatchMessage,
 } from './gen/proto/rabbitmq_pb';
+import { messageToBuffer } from './utils';
+import { bufferToUint8Array } from './utils';
 import {
   delayExchange,
   matchQueueName,
@@ -11,8 +12,7 @@ import {
   maxPriority,
   readyRoutingKey,
 } from './variables';
-import { messageToBuffer } from './utils';
-import { bufferToUint8Array } from './utils';
+import amqp from 'amqplib';
 
 export async function sendMatchmakerQueue(
   rabbitChannel: amqp.Channel,

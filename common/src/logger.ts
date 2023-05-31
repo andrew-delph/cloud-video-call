@@ -1,4 +1,5 @@
 import { createLogger, transports, format, config } from 'winston';
+
 export const getLogger = () => {
   return createLogger({
     level: `debug`,

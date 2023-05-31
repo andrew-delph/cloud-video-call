@@ -1,23 +1,3 @@
-import { createAdapter } from '@socket.io/redis-adapter';
-import * as dotenv from 'dotenv';
-import express from 'express';
-import { createServer } from 'http';
-import Client from 'ioredis';
-import { Server, Socket } from 'socket.io';
-import { v4 as uuid } from 'uuid';
-import * as common from 'common';
-import { initializeApp } from 'firebase-admin/app';
-import { throttle } from 'lodash';
-import amqp from 'amqplib';
-
-import {
-  CreateUserRequest,
-  CreateUserResponse,
-  ReadyMessage,
-  createNeo4jClient,
-  matchmakerQueueName,
-} from 'common-messaging';
-import { listenGlobalExceptions } from 'common';
 import { auth_middleware } from './authentication';
 import {
   cleanMySocketServer,
@@ -25,7 +5,26 @@ import {
   registerSocketReady,
   unregisterSocketReady,
 } from './management';
+import { createAdapter } from '@socket.io/redis-adapter';
+import amqp from 'amqplib';
+import * as common from 'common';
+import { listenGlobalExceptions } from 'common';
+import {
+  CreateUserRequest,
+  CreateUserResponse,
+  ReadyMessage,
+  createNeo4jClient,
+  matchmakerQueueName,
+} from 'common-messaging';
 import { sendMatchmakerQueue } from 'common-messaging/src/message_helper';
+import * as dotenv from 'dotenv';
+import express from 'express';
+import { initializeApp } from 'firebase-admin/app';
+import { createServer } from 'http';
+import Client from 'ioredis';
+import { throttle } from 'lodash';
+import { Server, Socket } from 'socket.io';
+import { v4 as uuid } from 'uuid';
 
 const logger = common.getLogger();
 
