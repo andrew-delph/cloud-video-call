@@ -362,10 +362,10 @@ class HomeController extends GetxController with StateMixin {
     await resetRemote();
     isInChat(false);
 
-    if (!skipFeedback) {
-      double score = await Get.dialog(FeedbackDialog());
-      await sendChatScore(score);
-    }
+    // if (!skipFeedback) {
+    //   double score = await Get.dialog(FeedbackDialog());
+    //   await sendChatScore(score);
+    // }
     if (localPreferences.autoQueue()) {
       queueReady();
     }
