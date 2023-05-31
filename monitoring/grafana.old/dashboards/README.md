@@ -3,7 +3,7 @@
 Add custom dashboards here, then start the [docker-compose](../../docker-compose.yml) to have the dashboards provisioned at startup. Use folders to group related dashboards.
 The docker-compose setup comes with some pre-built Grafana dashboards. One for listing the discrete test runs as a list, one for visualizing the results of a specific test run, and another for Apdex score.
 
->Note: The dashboards work with the Native Histogram mapping so it is required to enable it.
+> Note: The dashboards work with the Native Histogram mapping so it is required to enable it.
 
 ### Test result dashboard
 
@@ -40,15 +40,14 @@ The board is structured into 4 sections
 
 [<img src="/images/prometheus-dashboard-k6-test-runs.png" width="500"/>](/images/prometheus-dashboard-k6-test-runs.png)
 
->Note: This dashboard depends on the use of testid tag
-
+> Note: This dashboard depends on the use of testid tag
 
 #### Apdex Overview Dashboard
 
 [<img src="/images/prometheus-dashboard-k6-test-result-apdex.png" width="500"/>](/images/prometheus-dashboard-k6-test-result-apdex.png)
 
-The Apdex score is calculated based on your SLA ```([T]target time (seconds) Apdex
-    variable, default 0.3 sec)``` required where you can define a response time threshold of T seconds, where all responses handled in T seconds or less satisfy the end user.
+The Apdex score is calculated based on your SLA `([T]target time (seconds) Apdex
+    variable, default 0.3 sec)` required where you can define a response time threshold of T seconds, where all responses handled in T seconds or less satisfy the end user.
 
 If you want to know more
 
@@ -56,7 +55,7 @@ If you want to know more
 
 <https://en.wikipedia.org/wiki/Apdex>
 
-<!-- 
+<!--
 
 #### Custom Metrics Example Dashboard
 
