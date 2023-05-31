@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 class LocalPreferences extends GetxService {
-  final autoQueue = false.obs;
+  final autoQueue = true.obs;
   final feedbackPopup = false.obs;
   final swipeFeedback = false.obs;
   final videoDeviceLabel = 'Default'.obs;
