@@ -56,9 +56,13 @@ const io = new Server(httpServer, {});
 let rabbitConnection: Connection;
 let rabbitChannel: Channel;
 
-const iceServers: never[] = [];
-
+const iceServers: any[] = [
+  {
+    urls: [`stun:stun1.l.google.com:19302`, `stun:stun2.l.google.com:19302`],
+  },
+];
 async function loadIceServers() {
+  return;
   const METERED_API_KEY = process.env.METERED_API_KEY;
   const response = await axios.get(
     `https://andrewdelph.metered.live/api/v1/turn/credentials?apiKey=${METERED_API_KEY}`,
@@ -254,8 +258,11 @@ export const match = async (msgContent: MatchMessage) => {
 
   return await matchPromiseChain()
     .catch(async (error: any) => {
-      logger.debug(`pairing failed with: ${error}`);
-      throw `pairing failed with: ${error}`;
+      const errorMsg = `pairing failed with: ${error}`;
+      logger.debug(errorMsg);
+      io.in(socket1).emit(`message`, errorMsg);
+      io.in(socket2).emit(`message`, errorMsg);
+      throw errorMsg;
     })
     .then(async () => {
       logger.debug(`match sucessful ${[userId1, userId2]}`);
