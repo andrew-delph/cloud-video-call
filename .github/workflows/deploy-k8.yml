@@ -16,7 +16,7 @@ jobs:
       - name: Install CLI tools from OpenShift Mirror (knative)
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          kn: 'latest'
+          kn: '1.7.1'
       - uses: tale/kubectl-action@v1
         with:
           base64-kube-config: ${{ secrets.KUBE_CONFIG }}
