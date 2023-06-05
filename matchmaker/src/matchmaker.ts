@@ -27,6 +27,7 @@ import {
   delayExchange,
   readyRoutingKey,
   FilterObject,
+  userNotificationQueue,
 } from 'common-messaging';
 import {
   parseMatchmakerMessage,
@@ -34,6 +35,7 @@ import {
   sendMatchmakerQueue,
   sendMatchQueue,
   sendReadyQueue,
+  sendUserNotification,
 } from 'common-messaging/src/message_helper';
 import express from 'express';
 import Client from 'ioredis';
@@ -130,6 +132,10 @@ const connectRabbit = async () => {
   });
 
   await rabbitChannel.bindQueue(readyQueueName, delayExchange, readyRoutingKey);
+
+  await rabbitChannel.assertQueue(userNotificationQueue, {
+    durable: true,
+  });
 
   logger.info(`rabbit connected`);
 };
@@ -403,6 +409,17 @@ async function matchmakerFlow(
   const filterSet: Set<FilteredUserType> = await createFilterSet(
     readyMessage.getUserId(),
     readySet,
+  );
+
+  // send data here...
+  await sendUserNotification(
+    rabbitChannel,
+    readyMessage.getUserId(),
+    `matchmakerProgess`,
+    {
+      readySize: readySet.size,
+      filterSize: filterSet.size,
+    },
   );
 
   if (filterSet.size == 0) throw new RetryError(`filterSet is 0`);

@@ -14,9 +14,11 @@ import {
   matchQueueName,
   matchmakerQueueName,
   MatchMessage,
+  userNotificationQueue,
 } from 'common-messaging';
 import {
   parseMatchMessage,
+  parseUserNotification,
   sendReadyQueue,
 } from 'common-messaging/src/message_helper';
 import * as dotenv from 'dotenv';
@@ -79,6 +81,10 @@ export async function matchConsumer() {
   await rabbitChannel.assertQueue(matchQueueName, {
     durable: true,
   });
+
+  await rabbitChannel.assertQueue(userNotificationQueue, {
+    durable: true,
+  });
   logger.info(`rabbitmq connected`);
 
   mainRedisClient = common.createRedisClient();
@@ -123,6 +129,55 @@ export async function matchConsumer() {
 
           await sendReadyQueue(rabbitChannel, userId2, 0, 0, 0);
         }
+      } finally {
+        rabbitChannel.ack(msg);
+      }
+    },
+    {
+      noAck: false,
+    },
+  );
+
+  rabbitChannel.consume(
+    userNotificationQueue,
+    async (msg: ConsumeMessage | null) => {
+      if (msg == null) {
+        logger.error(`msg is null.`);
+        return;
+      }
+
+      let userId: string = ``;
+      let eventName: string = ``;
+      let jsonData: string = ``;
+
+      try {
+        const msgContent = parseUserNotification(msg.content);
+        userId = msgContent.getUserId();
+        eventName = msgContent.getEventName();
+        jsonData = msgContent.getJsonData();
+
+        const socket = await mainRedisClient.hget(
+          common.connectedAuthMapName,
+          userId,
+        );
+
+        if (!userId || !eventName || !jsonData) {
+          const msg = `!userId ${userId} || !eventName ${eventName}|| !jsonData ${jsonData}`;
+          logger.error(msg);
+          throw `!userId ${userId} || !eventName ${eventName}|| !jsonData ${jsonData}`;
+        }
+
+        if (!socket) {
+          throw `userId ${userId} socket is null`;
+        }
+
+        logger.info(
+          `User Notification: userid ${userId}, eventName: ${eventName}`,
+        );
+
+        io.in(socket).emit(eventName, JSON.parse(jsonData));
+      } catch (e) {
+        logger.debug(`userNotification error=` + e); // TODO fix for types
       } finally {
         rabbitChannel.ack(msg);
       }

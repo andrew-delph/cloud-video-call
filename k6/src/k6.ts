@@ -88,6 +88,8 @@ const match_success = new Rate(`match_success`);
 const error_counter = new Counter(`error_counter`);
 const success_counter = new Counter(`success_counter`);
 
+const matchmakerProgess = new Counter(`matchmakerProgess`);
+
 const valid_score = new Counter(`valid_score`);
 const invalid_score = new Counter(`invalid_score`);
 
@@ -187,6 +189,10 @@ export default async function () {
   const myUser = await usersLib.fromRedis(auth);
 
   const socket = new K6SocketIoExp(ws_url, { auth: auth }, {});
+
+  socket.setEventMessageHandle(`matchmakerProgess` ,(data: any, callback: any) => {
+    matchmakerProgess.add(1, { type: myUser.getTypeString()});
+  })
 
   socket.setOnClose(async () => {
     await redisClient.rpush(authKeysName, auth);

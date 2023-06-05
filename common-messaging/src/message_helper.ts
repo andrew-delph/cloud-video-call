@@ -12,6 +12,7 @@ import {
   matchmakerQueueName,
   maxPriority,
   readyRoutingKey,
+  userNotificationQueue,
 } from './variables';
 import amqp from 'amqplib';
 
@@ -81,6 +82,25 @@ export async function sendMatchQueue(
 
 export function parseMatchMessage(buffer: Buffer) {
   return MatchMessage.deserializeBinary(bufferToUint8Array(buffer));
+}
+
+export async function sendUserNotification(
+  rabbitChannel: amqp.Channel,
+  userId: string,
+  eventName: string,
+  data: any,
+) {
+  const userNotificationMessage: UserNotificationMessage =
+    new UserNotificationMessage();
+
+  userNotificationMessage.setUserId(userId);
+  userNotificationMessage.setEventName(eventName);
+  userNotificationMessage.setJsonData(JSON.stringify(data));
+
+  await rabbitChannel.sendToQueue(
+    userNotificationQueue,
+    messageToBuffer(userNotificationMessage),
+  );
 }
 
 export function parseUserNotification(buffer: Buffer) {
