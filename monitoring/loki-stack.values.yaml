@@ -62,8 +62,10 @@ prometheus:
       # - web.enable-remote-write-receiver
       # - log.level=debug
     persistentVolume:
-      enabled: false
-      existingClaim: storage-loki-0
+      enabled: true
+      size: 40Gi
+      accessModes:
+        - ReadWriteMany
       mountPath: /prometheus
   alertmanager:
     enabled: false
