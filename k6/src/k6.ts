@@ -192,6 +192,8 @@ export default async function () {
 
   socket.setEventMessageHandle(`matchmakerProgess` ,(data: any, callback: any) => {
     matchmakerProgess.add(1, { type: myUser.getTypeString()});
+    check(data, {'valid matchmakerProgess': (data: any) =>
+    data && data.readySize!=null && data.filterSize!=null})
   })
 
   socket.setOnClose(async () => {
