@@ -604,14 +604,14 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "builder",
-          "expr": "sum(k6_invalid_score_total{testid=~\"$testid\", type=~\"$type\"})",
+          "editorMode": "code",
+          "expr": "sum(k6_valid_score_total{testid=~\"$testid\", type=~\"$type\"})",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Invalid Match Counter",
+      "title": "Valid Match Counter",
       "type": "stat"
     },
     {
@@ -1009,8 +1009,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               },
               {
                 "color": "#EAB839",
@@ -1268,8 +1267,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4593,8 +4591,8 @@
       {
         "current": {
           "selected": false,
-          "text": "test-06-05-17-11-31",
-          "value": "test-06-05-17-11-31"
+          "text": "test-06-05-17-35-37",
+          "value": "test-06-05-17-35-37"
         },
         "datasource": {
           "type": "prometheus",
@@ -4653,6 +4651,6 @@
   "timezone": "",
   "title": "Test Result",
   "uid": "01npcT44k",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
