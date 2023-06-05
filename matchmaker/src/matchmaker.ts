@@ -411,6 +411,8 @@ async function matchmakerFlow(
     readySet,
   );
 
+  const activeSize = await mainRedisClient.scard(common.activeSetName);
+
   // send data here...
   await sendUserNotification(
     rabbitChannel,
@@ -419,6 +421,7 @@ async function matchmakerFlow(
     {
       readySize: readySet.size,
       filterSize: filterSet.size,
+      activeSize: activeSize,
     },
   );
 
