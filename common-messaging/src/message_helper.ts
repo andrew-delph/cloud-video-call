@@ -2,6 +2,7 @@ import {
   ReadyMessage,
   MatchmakerMessage,
   MatchMessage,
+  UserNotificationMessage,
 } from './gen/proto/rabbitmq_pb';
 import { messageToBuffer } from './utils';
 import { bufferToUint8Array } from './utils';
@@ -80,4 +81,8 @@ export async function sendMatchQueue(
 
 export function parseMatchMessage(buffer: Buffer) {
   return MatchMessage.deserializeBinary(bufferToUint8Array(buffer));
+}
+
+export function parseUserNotification(buffer: Buffer) {
+  return UserNotificationMessage.deserializeBinary(bufferToUint8Array(buffer));
 }
