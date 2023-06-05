@@ -27,7 +27,7 @@ logger.info(`Value of JOB: ${job}`);
       */
 
       const activeUsers = Array.from(
-        await common.getRecentlyActiveUsers(redisClient, 10),
+        await common.getRecentlyActiveUsers(redisClient, 60),
       );
 
       if (activeUsers.length < 5) {
