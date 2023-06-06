@@ -78,7 +78,7 @@ const maxReadyDelaySeconds = 5;
 const maxPriorityDelay = 2;
 const maxCooldownAttemps = maxCooldownDelay ** (1 / cooldownScalerValue);
 
-const lastMatchedCooldownMinutes = 10; // filter of last matches
+const lastMatchedCooldownMinutes = 0; // filter of last matches
 
 const relationShipScoresSortFunc = (
   a: [string, RelationshipScoreType],
@@ -477,7 +477,8 @@ async function matchmakerFlow(
     readyMessage.getUserId(),
   )},${stripUserId(otherId)}]`;
 
-  if (highestScore.prob <= 0 && highestScore.score <= scoreThreshold) {
+  if (highestScore.prob <= 0 && highestScore.score <= scorePercentile) {
+    //scoreThreshold
     if (
       readyMessage.getPriority() >= 0 &&
       readyMessage.getCooldownAttempts() <= maxCooldownAttemps
