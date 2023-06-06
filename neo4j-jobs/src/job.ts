@@ -46,7 +46,7 @@ logger.info(`Value of JOB: ${job}`);
         activeUsers,
       );
 
-      logger.info(`graph: ${JSON.stringify(results.records[0])}`);
+      logger.debug(`graph: ${JSON.stringify(results.records[0])}`);
 
       results = await funcs.run(
         `
@@ -63,7 +63,7 @@ logger.info(`Value of JOB: ${job}`);
         `,
       );
 
-      logger.info(`articleRank: ${JSON.stringify(results.records[0])}`);
+      logger.debug(`articleRank: ${JSON.stringify(results.records[0])}`);
 
       results = await funcs.run(
         `
@@ -77,7 +77,7 @@ logger.info(`Value of JOB: ${job}`);
         `,
       );
 
-      logger.info(`louvain: ${JSON.stringify(results.records[0])}`);
+      logger.debug(`louvain: ${JSON.stringify(results.records[0])}`);
 
       results = await funcs.run(
         `
@@ -86,6 +86,7 @@ logger.info(`Value of JOB: ${job}`);
             nodeLabels: ['Person'],
             relationshipTypes: ['FEEDBACK'],
             relationshipWeightProperty: 'score',
+            // relationshipTypes: ['FRIENDS'],
             featureProperties: ['values','priority','community'],
             propertyRatio: 0.0,
             nodeSelfInfluence: 0.5,
@@ -98,7 +99,7 @@ logger.info(`Value of JOB: ${job}`);
         `,
       );
 
-      logger.info(`fastRP: ${JSON.stringify(results.records[0])}`);
+      logger.debug(`fastRP: ${JSON.stringify(results.records[0])}`);
 
       results = await funcs.run(
         `
