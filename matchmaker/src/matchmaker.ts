@@ -547,7 +547,7 @@ const neo4jCheckUserFiltersRequest = (
 ) => {
   return new Promise<CheckUserFiltersResponse>(async (resolve, reject) => {
     try {
-      await neo4jRpcClient.checkUserFilters(
+      neo4jRpcClient.checkUserFilters(
         checkUserFiltersRequest,
         (error: any, response: CheckUserFiltersResponse) => {
           if (error) {
@@ -561,9 +561,6 @@ const neo4jCheckUserFiltersRequest = (
       logger.error(`checkUserFiltersRequest error: ${e}`);
       reject(e);
     }
-  }).catch((e) => {
-    logger.error(`neo4jCheckUserFiltersRequest:`, e);
-    throw new RetryError(e);
   });
 };
 

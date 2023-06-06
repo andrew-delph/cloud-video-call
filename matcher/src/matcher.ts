@@ -312,15 +312,16 @@ export const match = async (msgContent: MatchMessage) => {
   };
 
   return await matchPromiseChain()
+    .then(async () => {
+      io.in(socket1).emit(`match`, { success: true });
+      io.in(socket2).emit(`match`, { success: true });
+    })
     .catch(async (error: any) => {
       const errorMsg = `pairing failed with: ${error}`;
       logger.debug(errorMsg);
-      io.in(socket1).emit(`message`, errorMsg);
-      io.in(socket2).emit(`message`, errorMsg);
+      io.in(socket1).emit(`match`, { success: false, error_msg: errorMsg });
+      io.in(socket2).emit(`match`, { success: false, error_msg: errorMsg });
       throw errorMsg;
-    })
-    .then(async () => {
-      logger.debug(`match sucessful ${[userId1, userId2]}`);
     });
 };
 

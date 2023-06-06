@@ -15,7 +15,7 @@ pkourier:
 apply:
 	kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml --wait
 	kubectl create namespace knative-serving || echo "namespace already exists"
-	kubectl apply -f https://github.com/knative/operator/releases/download/knative-v1.10.2/operator.yaml --wait
+	kubectl apply -f https://github.com/knative/operator/releases/download/knative-v1.9.2/operator.yaml --wait
 	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml --wait
 	kubectl apply -f https://github.com/knative/net-certmanager/releases/download/knative-v1.7.0/release.yaml --wait
 	kubectl apply -f ./knative.yaml --wait
