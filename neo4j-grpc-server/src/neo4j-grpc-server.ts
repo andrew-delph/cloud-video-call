@@ -29,14 +29,13 @@ import {
   MatchHistoryRequest,
   Match,
   grpc,
+  FilterObject,
 } from 'common-messaging';
 import * as neo4j from 'neo4j-driver';
 import { v4 } from 'uuid';
 
 common.listenGlobalExceptions(async () => {
-  await server.tryShutdown(() => {
-    logger.info(`try shutdown completed`);
-  });
+  await server.forceShutdown();
 });
 
 export const userPreferencesCacheEx = 60 * 60 * 2;
@@ -432,10 +431,19 @@ const checkUserFilters = async (
 ): Promise<void> => {
   const start_time = performance.now();
   const session = driver.session();
-  for (let filter of call.request.getFiltersList()) {
-    filter.setPassed(
-      await compareUserFilters(filter.getUserId1(), filter.getUserId2()),
+
+  const reply = new CheckUserFiltersResponse();
+
+  for (let requestFilter of call.request.getFiltersList()) {
+    const responseFilter = new FilterObject();
+    responseFilter.setPassed(
+      await compareUserFilters(
+        requestFilter.getUserId1(),
+        requestFilter.getUserId2(),
+      ),
     );
+    responseFilter.setUserId1(requestFilter.getUserId1());
+    responseFilter.setUserId2(requestFilter.getUserId2());
 
     const results = await session.run(
       `
@@ -444,18 +452,22 @@ const checkUserFilters = async (
       ORDER by r.createDate DESC
       LIMIT 1
       `,
-      { userId1: filter.getUserId1(), userId2: filter.getUserId2() },
+      {
+        userId1: requestFilter.getUserId1(),
+        userId2: requestFilter.getUserId2(),
+      },
     );
 
     if (results.records.length > 0) {
-      filter.setLastMatchedTime(`${results.records[0].get(`r.createDate`)}`);
+      responseFilter.setLastMatchedTime(
+        `${results.records[0].get(`r.createDate`)}`,
+      );
+    } else {
+      responseFilter.setLastMatchedTime(``);
     }
+    reply.addFilters(responseFilter);
   }
   await session.close();
-
-  const reply = new CheckUserFiltersResponse();
-
-  reply.setFiltersList(call.request.getFiltersList());
 
   const duration = (performance.now() - start_time) / 1000;
   if (duration > durationWarn) {
