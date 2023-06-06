@@ -27,8 +27,7 @@
   "scripts": {
     "local": "npm run webpack && bash ./run-local.sh dist/k6.js",
     "webpack": "webpack --no-color",
-    "webpack:watch": "webpack --progress --watch",
-    "test": "npm run webpack && k6 run dist/test.js"
+    "webpack:watch": "webpack --progress --watch"
   },
   "keywords": [
     "k6"
@@ -39,6 +38,7 @@
     "@types/k6": "^0.44.1",
     "cheerio": "^1.0.0-rc.3",
     "faker": "^5.5.3",
+    "rxjs": "^7.8.1",
     "xml2js": "^0.4.19"
   }
 }

@@ -1,6 +1,14 @@
 import { uuidv4 as uuid } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { setTimeout, clearTimeout } from 'k6/experimental/timers';
 import { check } from 'k6';
+import { ReplaySubject, take } from 'rxjs';
+
+class CustomReplaySubject extends ReplaySubject<any> {
+
+  take(num:number):Promise<any>{
+    return this.pipe(take(num)).toPromise();
+  }
+}
 
 export enum responseType {
   open,
@@ -207,28 +215,35 @@ export abstract class K6SocketIoBase {
     );
   }
 
-  expectMessage(event: string, timeout = 0) {
+  expectMessage(event: string, timeout = 0,expected_num=1):CustomReplaySubject {
     const startTime = Date.now();
     const waitingEventId: string = `${event}-${uuid()}`;
     const wrapper = this;
+    let recieved_num = 0;
 
-    return new Promise((resolve, reject) => {
-      wrapper.waitingEventMap[waitingEventId] = reject;
+    const expectSubject = new CustomReplaySubject();
 
-      const eventMessageHandle = (data: any, callback: any) => {
-        const elapsed = Date.now() - startTime;
-        const isSuccess = elapsed < timeout;
+    const eventMessageHandle = (data: any, callback: any) => {
+      console.log(`got expected msg`,event,data)
+      recieved_num = recieved_num+ 1;
+      const elapsed = Date.now() - startTime;
+      const isSuccess = elapsed < timeout || timeout==0;
+
+      if(recieved_num == expected_num){
         delete wrapper.waitingEventMap[waitingEventId];
         delete wrapper.eventMessageHandleMap[event];
+      }
 
-        if (isSuccess || timeout == 0) {
-          resolve({ data, callback, elapsed });
-        } else {
-          reject(`timeout reached for ${waitingEventId}`);
-        }
-      };
-      wrapper.eventMessageHandleMap[event] = eventMessageHandle;
-    });
+      if (isSuccess) {
+        expectSubject.next({ data, callback, elapsed });
+      } else {
+        expectSubject.error(Error(`timeout reached for ${waitingEventId}`));
+      }
+    };
+    wrapper.setEventMessageHandle(event,eventMessageHandle);
+    wrapper.waitingEventMap[waitingEventId] = expectSubject.error;
+
+    return expectSubject;
   }
 
   sendWithAck(event: string, data: any, timeout = 0) {

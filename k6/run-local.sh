@@ -11,4 +11,5 @@ IMAGE_NAME=${IMAGE_NAME:="andrewdelph/k6-tests:latest"}
 
 echo $PWD
 
-docker run -e "WS_HOST=ws://ws.andrewdelph.com/socket.io/?EIO=4&transport=websocket" -e "OPTIONS_HOST=http://options.andrewdelph.com" --network=host -v $PWD:/scripts -it --rm $IMAGE_NAME run /scripts/$1 --tag testid=local-test
+
+k6 run --env "WS_HOST=ws://ws.andrewdelph.com/socket.io/?EIO=4&transport=websocket" --env "OPTIONS_HOST=http://options.andrewdelph.com" dist/k6.js

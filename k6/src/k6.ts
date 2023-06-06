@@ -8,11 +8,11 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus = 30;
+const vus = 4;
 const authKeysNum = vus *2; // number of users created for each parallel instance running
-const iterations = authKeysNum * 1000;
+const iterations = authKeysNum * 1000;//authKeysNum * 1000;
 
-const nukeData = false; // this doesnt work with multile running instances
+const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = true; // update attributes/filters in neo4j
@@ -20,7 +20,7 @@ const updatePreferences = true; // update attributes/filters in neo4j
 const validMatchChatTime = 0; //60 * 5; // number of seconds to delay if valid match
 const invalidMatchChatTime = 0; //60 * 5;
 
-const matches = 5//Infinity; // number of matches per vus. -1 is inf
+const matches = 1//Infinity; // number of matches per vus. -1 is inf
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
@@ -38,7 +38,7 @@ userFunctions.push(usersLib.createGroupB);
 
 const updateAuthVars = () => {
   if (uniqueAuthIds) {
-    uniqueAuthKey = `${exec.vu.tags[`testid`]}_`;
+    uniqueAuthKey = `${exec.vu.tags[`testid`] || `local`}_`;
     runnerId = `${Math.random().toFixed(5)}_`;
   }
 
@@ -190,10 +190,12 @@ export default async function () {
 
   const socket = new K6SocketIoExp(ws_url, { auth: auth }, {});
 
-  socket.setEventMessageHandle(`matchmakerProgess` ,(data: any, callback: any) => {
-    matchmakerProgess.add(1, { type: myUser.getTypeString()});
-    check(data, {'valid matchmakerProgess': (data: any) =>
-    data && data.readySize!=null && data.filterSize!=null})
+  socket.setEventMessageHandle(`matchmakerProgess`, (data: any, callback: any) => {
+    matchmakerProgess.add(1, { type: myUser.getTypeString() });
+    check(data, {
+      'valid matchmakerProgess': (data: any) =>
+        data && data.readySize != null && data.filterSize != null
+    })
   })
 
   socket.setOnClose(async () => {
@@ -206,8 +208,9 @@ export default async function () {
     socket.on(`error`, () => {
       error_counter.add(1, { type: myUser.getTypeString() });
     });
+
     socket
-      .expectMessage(`established`)
+      .expectMessage(`established`).take(1)
       .catch((error) => {
         console.info(`failed established`);
         established_success.add(false, { type: myUser.getTypeString() });
@@ -220,7 +223,7 @@ export default async function () {
         // start the match sequence
         for (let i = 0; i < matches; i++) {
           await (() => {
-            expectMatch = socket.expectMessage(`match`);
+            expectMatch = socket.expectMessage(`match`, 0, 2);
             const readyPromise = socket.sendWithAck(`ready`, {});
             return readyPromise;
           })()
@@ -233,15 +236,13 @@ export default async function () {
               console.log(`ready..`);
               ready_success.add(true, { type: myUser.getTypeString() });
               ready_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
-              return expectMatch;
+              console.log(`before expectMatch.take(1)`)
+              const temp = expectMatch.take(1);
+              console.log(`temp: ${typeof temp}`)
+              return temp;
             })
-            .catch((error) => {
-              console.info(`failed match`);
-              match_success.add(false, { type: myUser.getTypeString() });
-              return Promise.reject(error);
-            })
-            .then((data: any) => {
-              console.log(`match`);
+            .then(async (data: any) => {
+              console.log(`match 1`);
               if (typeof data.callback === `function`) {
                 data.callback(`ok`);
               }
@@ -258,12 +259,27 @@ export default async function () {
                   data && data.data && data.data.role,
                 'match has other': (data: any) =>
                   data && data.data && data.data.other,
-                  'match has score': (data: any) =>
+                'match has score': (data: any) =>
                   data && data.data && data.data.score != null,
-                  'match has iceservers': (data: any) =>
+                'match has iceservers': (data: any) =>
                   data && data.data && data.data.iceServers != null && Array.isArray(data.data.iceServers) && data.data.iceServers.length > 0,
               });
+
+              const matchSuccess = await expectMatch.take(2)
+
+              if (!matchSuccess|| !matchSuccess.data || !matchSuccess.data.success) {
+                console.log(`matchSuccess.success is incorrect: ${JSON.stringify(matchSuccess)}`)
+                throw `matchSuccess.success is incorrect: ${matchSuccess.data.success}`
+              }
+              else {
+                console.log(`matchSuccess.success: ${matchSuccess.data.success}`)
+              }
+
               return data.data;
+            }).catch((error) => {
+              console.info(`failed match`);
+              match_success.add(false, { type: myUser.getTypeString() });
+              return Promise.reject(error);
             })
             .then(async (data: any) => {
               // prediction_score_trend.add(data.score);
