@@ -13,7 +13,7 @@ spec:
         spec:
           containers:
             - name: neo4j-jobs
-              image: andrewdelph/video-call-neo4j-jobs:latest
+              image: ghcr.io/andrew-delph/video-call-neo4j-jobs:latest
               imagePullPolicy: Always
               env:
                 - name: JOB
@@ -35,7 +35,7 @@ spec:
         spec:
           containers:
             - name: neo4j-jobs
-              image: andrewdelph/video-call-neo4j-jobs:latest
+              image: ghcr.io/andrew-delph/video-call-neo4j-jobs:latest
               imagePullPolicy: Always
               env:
                 - name: JOB
@@ -57,7 +57,7 @@ spec:
           terminationGracePeriodSeconds: 300
           containers:
             - name: neo4j-jobs
-              image: andrewdelph/video-call-neo4j-jobs:latest
+              image: ghcr.io/andrew-delph/video-call-neo4j-jobs:latest
               imagePullPolicy: Always
               env:
                 - name: JOB

@@ -22,7 +22,7 @@ spec:
         - envFrom:
             - configMapRef:
                 name: secrets
-          image: andrewdelph/video-call-matcher:latest
+          image: ghcr.io/andrew-delph/video-call-matcher:latest
           name: matcher
           ports:
             - containerPort: 80

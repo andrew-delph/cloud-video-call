@@ -27,7 +27,7 @@ spec:
     spec:
       # initContainers:
       #   - name: init
-      #     image: andrewdelph/grafana_init:latest
+      #     image: ghcr.io/andrew-delph/grafana_init:latest
       #     volumeMounts:
       #       - name: grafana-claim0
       #         mountPath: /etc
@@ -39,7 +39,7 @@ spec:
               value: Admin
             - name: GF_AUTH_BASIC_ENABLED
               value: 'false'
-          image: andrewdelph/grafana_video_call:latest
+          image: ghcr.io/andrew-delph/grafana_video_call:latest
           name: grafana
           ports:
             - containerPort: 3000

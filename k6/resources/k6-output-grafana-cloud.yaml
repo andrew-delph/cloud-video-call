@@ -21,7 +21,7 @@ spec:
   arguments: --tag testid=k6-output-grafana-cloud --verbose
   runner:
     # TODO Change the image to your published image!
-    image: andrewdelph/k6-tests:latest
+    image: ghcr.io/andrew-delph/k6-tests:latest
     env:
       - name: K6_OUT
         value: xk6-prometheus-rw

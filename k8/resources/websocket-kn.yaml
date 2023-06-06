@@ -14,7 +14,7 @@ spec:
       timeoutSeconds: 3600
       priorityClassName: 'mid-priority'
       containers:
-        - image: andrewdelph/video-call-websocket:latest
+        - image: ghcr.io/andrew-delph/video-call-websocket:latest
           envFrom:
             - configMapRef:
                 name: secrets

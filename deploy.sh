@@ -18,6 +18,6 @@ kn version
 
 kubectl rollout restart deployment/matcher
 kubectl rollout restart deployment/matchmaker
-kn service update options --image=andrewdelph/video-call-options:latest --wait
-kn service update websocket --image=andrewdelph/video-call-websocket:latest --wait
-kn service update neo4j-grpc-server --image=andrewdelph/video-call-neo4j-grpc-server:latest --wait
+kn service update options --image=ghcr.io/andrew-delph/video-call-options:latest --wait
+kn service update websocket --image=ghcr.io/andrew-delph/video-call-websocket:latest --wait
+kn service update neo4j-grpc-server --image=ghcr.io/andrew-delph/video-call-neo4j-grpc-server:latest --wait

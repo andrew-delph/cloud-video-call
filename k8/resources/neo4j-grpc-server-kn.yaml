@@ -14,7 +14,7 @@ spec:
       containerConcurrency: 1
       priorityClassName: 'mid-priority'
       containers:
-        - image: andrewdelph/video-call-neo4j-grpc-server:latest
+        - image: ghcr.io/andrew-delph/video-call-neo4j-grpc-server:latest
           ports:
             - name: h2c
               containerPort: 80

@@ -73,7 +73,7 @@ container_push(
    name = "image_push",
    image = ":image",
    format = "Docker",
-   registry = "docker.io",
-   repository = "andrewdelph/video-call-matcher",
+   registry = "ghcr.io",
+   repository = "andrew-delph/video-call-matcher",
    tag = "latest",
 )

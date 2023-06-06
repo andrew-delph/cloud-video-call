@@ -1,6 +1,6 @@
 
 image:
-	docker build -t andrewdelph/grafana_video_call:latest .
-	docker push andrewdelph/grafana_video_call:latest
+	docker build -t ghcr.io/andrew-delph/grafana_video_call:latest .
+	docker push ghcr.io/andrew-delph/grafana_video_call:latest
 
 	kubectl rollout restart -n monitoring deployment grafana

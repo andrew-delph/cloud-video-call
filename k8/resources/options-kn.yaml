@@ -13,7 +13,7 @@ spec:
     spec:
       priorityClassName: 'mid-priority'
       containers:
-        - image: andrewdelph/video-call-options:latest
+        - image: ghcr.io/andrew-delph/video-call-options:latest
           envFrom:
             - configMapRef:
                 name: secrets
