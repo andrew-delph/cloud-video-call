@@ -22,6 +22,11 @@ spec:
       ingress-class: 'kourier.ingress.networking.knative.dev'
       auto-tls: Enabled
       # http-protocol: Redirected
+    gc:
+      min-non-active-revisions: '0'
+      max-non-active-revisions: '0'
+      retain-since-create-time: 'disabled'
+      retain-since-last-active-time: 'disabled'
   deployments:
     - name: activator
       resources:
