@@ -293,14 +293,13 @@ class HomeController extends GetxController with StateMixin {
 
       bool? success = value["success"];
 
-      if(success!=null){
-        if(success){
+      if (success != null) {
+        if (success) {
           return;
-        }
-        else{
+        } else {
           String? error_msg = value["error_msg"];
-          print("Failed to match: $error_msg")
-          await queueReady()
+          print("Failed to match: $error_msg");
+          queueReady();
           return;
         }
       }
