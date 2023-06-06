@@ -259,6 +259,12 @@ class HomeController extends GetxController with StateMixin {
         RTCPeerConnectionState.RTCPeerConnectionStateConnecting,
         RTCPeerConnectionState.RTCPeerConnectionStateConnected
       ].contains(connectionState));
+
+      // if Failed it means the webrtc connection did not work and queue ready again
+      if (connectionState ==
+          RTCPeerConnectionState.RTCPeerConnectionStateFailed) {
+        queueReady();
+      }
     };
 
     // END SETUP PEER CONNECTION
