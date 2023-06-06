@@ -70,9 +70,9 @@ logger.info(`Value of JOB: ${job}`);
           CALL gds.louvain.mutate('shortPredictGraph', 
           {  
             nodeLabels: ['Person'],
-            relationshipTypes: ['FEEDBACK'],
-            relationshipWeightProperty: 'score',
-            // relationshipTypes: ['FRIENDS'],
+            // relationshipTypes: ['FEEDBACK'],
+            // relationshipWeightProperty: 'score',
+            relationshipTypes: ['FRIENDS'],
             mutateProperty: 'community' 
           }
           )
@@ -86,9 +86,9 @@ logger.info(`Value of JOB: ${job}`);
           CALL gds.fastRP.mutate('shortPredictGraph',
           {
             nodeLabels: ['Person'],
-            relationshipTypes: ['FEEDBACK'],
-            relationshipWeightProperty: 'score',
-            // relationshipTypes: ['FRIENDS'],
+            // relationshipTypes: ['FEEDBACK'],
+            // relationshipWeightProperty: 'score',
+            relationshipTypes: ['FRIENDS'],
             featureProperties: ['values','priority','community'],
             propertyRatio: 0.0,
             nodeSelfInfluence: 0.5,

@@ -8,9 +8,9 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus = 4;
-const authKeysNum = vus *2; // number of users created for each parallel instance running
-const iterations = authKeysNum * 1000;//authKeysNum * 1000;
+const vus = 30;
+const authKeysNum = 100; // number of users created for each parallel instance running
+const iterations = 999999;//authKeysNum * 1000;
 
 const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created

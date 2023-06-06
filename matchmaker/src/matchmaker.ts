@@ -29,14 +29,7 @@ import {
   FilterObject,
   userNotificationQueue,
 } from 'common-messaging';
-import {
-  parseMatchmakerMessage,
-  parseReadyMessage,
-  sendMatchmakerQueue,
-  sendMatchQueue,
-  sendReadyQueue,
-  sendUserNotification,
-} from 'common-messaging/src/message_helper';
+import { message_helper } from 'common-messaging';
 import express from 'express';
 import Client from 'ioredis';
 import moment from 'moment';
@@ -68,7 +61,7 @@ let lockRedisClient: Client;
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
 
-const prefetch = 20;
+const prefetch = 40;
 
 export const realtionshipScoreCacheEx = 60;
 
@@ -186,7 +179,9 @@ export async function startReadyConsumer() {
         return;
       }
 
-      const matchmakerMessage = parseMatchmakerMessage(msg.content);
+      const matchmakerMessage = message_helper.parseMatchmakerMessage(
+        msg.content,
+      );
 
       const userId = matchmakerMessage.getUserId();
 
@@ -222,7 +217,7 @@ export async function startReadyConsumer() {
         )} attempt=${cooldownAttempts} delay=${delaySeconds.toFixed(1)}`,
       );
 
-      await sendReadyQueue(
+      await message_helper.sendReadyQueue(
         rabbitChannel,
         userId,
         priority,
@@ -245,7 +240,7 @@ export async function startReadyConsumer() {
         return;
       }
 
-      const readyMessage = parseReadyMessage(msg.content);
+      const readyMessage = message_helper.parseReadyMessage(msg.content);
 
       const userId = readyMessage.getUserId();
 
@@ -269,7 +264,7 @@ export async function startReadyConsumer() {
           rabbitChannel.nack(msg);
         } else if (e instanceof CooldownRetryError) {
           logger.debug(`CooldownRetryError ${userId} ${e}`);
-          await sendMatchmakerQueue(
+          await message_helper.sendMatchmakerQueue(
             rabbitChannel,
             userId,
             readyMessage.getCooldownAttempts() + 1,
@@ -414,7 +409,7 @@ async function matchmakerFlow(
   const activeSize = await mainRedisClient.scard(common.activeSetName);
 
   // send data here...
-  await sendUserNotification(
+  await message_helper.sendUserNotification(
     rabbitChannel,
     readyMessage.getUserId(),
     `matchmakerProgess`,
@@ -531,7 +526,12 @@ async function matchmakerFlow(
         throw new RetryError(`otherId is no longer ready`);
       }
 
-      await sendMatchQueue(rabbitChannel, readyMessage.getUserId(), otherId, 1);
+      await message_helper.sendMatchQueue(
+        rabbitChannel,
+        readyMessage.getUserId(),
+        otherId,
+        1,
+      );
 
       // remove both from ready set
       await mainRedisClient.srem(common.readySetName, readyMessage.getUserId());

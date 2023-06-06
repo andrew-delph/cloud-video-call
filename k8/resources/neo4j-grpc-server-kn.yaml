@@ -11,7 +11,7 @@ spec:
         autoscaling.knative.dev/max-scale: '3'
         autoscaling.knative.dev/class: 'kpa.autoscaling.knative.dev'
     spec:
-      containerConcurrency: 1
+      # containerConcurrency: 20
       priorityClassName: 'mid-priority'
       containers:
         - image: ghcr.io/andrew-delph/video-call-neo4j-grpc-server:latest

@@ -185,9 +185,6 @@ importers:
 
   matchmaker:
     dependencies:
-      '@types/express':
-        specifier: ^4.17.17
-        version: 4.17.17
       amqplib:
         specifier: ^0.10.3
         version: 0.10.3
@@ -225,6 +222,9 @@ importers:
       '@types/amqplib':
         specifier: ^0.10.1
         version: 0.10.1
+      '@types/express':
+        specifier: ^4.17.17
+        version: 4.17.17
       '@types/lodash.throttle':
         specifier: ^4.1.7
         version: 4.1.7
