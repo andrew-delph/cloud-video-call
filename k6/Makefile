@@ -1,10 +1,10 @@
 
-export IMAGE_NAME=ghcr.io/andrew-delph/k6_tests:latest
+export IMAGE_NAME=andrewdelph/k6_tests:latest
 
 
 build:
-	docker build -t ghcr.io/andrew-delph/k6-tests:latest .
-	docker push ghcr.io/andrew-delph/k6-tests:latest
+	docker build -t andrewdelph/k6-tests:latest .
+	docker push andrewdelph/k6-tests:latest
 
 init:
 	@echo "init"

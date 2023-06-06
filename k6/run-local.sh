@@ -7,7 +7,7 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
-IMAGE_NAME=${IMAGE_NAME:="ghcr.io/andrew-delph/k6-tests:latest"}
+IMAGE_NAME=${IMAGE_NAME:="andrewdelph/k6-tests:latest"}
 
 echo $PWD
 
