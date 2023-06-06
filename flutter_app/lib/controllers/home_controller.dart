@@ -291,6 +291,20 @@ class HomeController extends GetxController with StateMixin {
       Function callback = data[1] as Function;
       String? role = value["role"];
 
+      bool? success = value["success"];
+
+      if(success!=null){
+        if(success){
+          return;
+        }
+        else{
+          String? error_msg = value["error_msg"];
+          print("Failed to match: $error_msg")
+          await queueReady()
+          return;
+        }
+      }
+
       List? iceServers = value["iceServers"];
       feedbackId = value["feedback_id"];
       log("feedback_id: $feedbackId");
