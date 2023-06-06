@@ -70,7 +70,9 @@ logger.info(`Value of JOB: ${job}`);
           CALL gds.louvain.mutate('shortPredictGraph', 
           {  
             nodeLabels: ['Person'],
-            relationshipTypes: ['FRIENDS'],
+            relationshipTypes: ['FEEDBACK'],
+            relationshipWeightProperty: 'score',
+            // relationshipTypes: ['FRIENDS'],
             mutateProperty: 'community' 
           }
           )
