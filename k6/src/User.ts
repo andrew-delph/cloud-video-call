@@ -42,9 +42,9 @@ export const createMale = (auth: string): User => {
   let attributes: any = { constant: { gender: `male` } };
   let filters = { constant: {} };
   // filters = { constant: { gender: `female` } };
-  if (Math.random() > 0.5) {
-    attributes = { constant: {} };
-  }
+  // if (Math.random() > 0.5) {
+  //   attributes = { constant: {} };
+  // }
 
   return new User(auth, attributes, filters, UserType.Male);
 };
@@ -82,14 +82,14 @@ export const createHot = (auth: string): User => {
 };
 
 export const createGroupA = (auth: string): User => {
-  const attributes = {};
+  const attributes = {group:`aaa`};
   const filters = {};
 
   return new User(auth, attributes, filters, UserType.GroupA);
 };
 
 export const createGroupB = (auth: string): User => {
-  const attributes = {};
+  const attributes = {group:`bbb`};
   const filters = {};
 
   return new User(auth, attributes, filters, UserType.GroupB);
