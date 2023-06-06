@@ -31,9 +31,9 @@ export const createFemale = (auth: string): User => {
   let attributes: any = { constant: { gender: `female` } };
   let filters = { constant: {} };
   // filters = { constant: { gender: `male` } };
-  if (Math.random() > 0.5) {
-    attributes = { constant: {} };
-  }
+  // if (Math.random() > 0.5) {
+  //   attributes = { constant: {} };
+  // }
 
   return new User(auth, attributes, filters, UserType.Female);
 };
