@@ -12,7 +12,7 @@ const vus = 30;
 const authKeysNum = vus *2; // number of users created for each parallel instance running
 const iterations = authKeysNum * 1000;
 
-const nukeData = true; // this doesnt work with multile running instances
+const nukeData = false; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = true; // update attributes/filters in neo4j
