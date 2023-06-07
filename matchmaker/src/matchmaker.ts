@@ -71,7 +71,7 @@ const maxReadyDelaySeconds = 5;
 const maxPriorityDelay = 2;
 const maxCooldownAttemps = maxCooldownDelay ** (1 / cooldownScalerValue);
 
-const lastMatchedCooldownMinutes = 0; // filter of last matches
+const lastMatchedCooldownMinutes = 10; // filter of last matches
 
 const relationShipScoresSortFunc = (
   a: [string, RelationshipScoreType],
@@ -456,12 +456,12 @@ async function matchmakerFlow(
     2,
   )} threshold=${scoreThreshold.toFixed(2)}`;
 
-  const highestScoreString = `prob=${highestScore.prob.toFixed(
-    2,
-  )} score=${highestScore.score.toFixed(2)} lastMatchMins=${moment().diff(
-    highestScore.latest_match,
-    `minutes`,
-  )}`;
+  // const highestScoreString = `score=${highestScore.score.toFixed(
+  //   2,
+  // )} prob=${highestScore.prob.toFixed(2)}  lastMatchMins=${moment().diff(
+  //   highestScore.latest_match,
+  //   `minutes`,
+  // )}`;
 
   // const lowestScore = relationShipScores[relationShipScores.length - 1][1];
   // const lowestScoreString = `lowestScore={prob=${lowestScore.prob.toFixed(
@@ -487,9 +487,17 @@ async function matchmakerFlow(
     }
   }
 
-  logger.info(
-    `scores=${relationShipScores.length} ${cooldownString} ${scoreThreasholdString} ${matchedString} ${highestScoreString} `,
-  );
+  const matchedMsg = [
+    `percentile=${scorePercentile.toFixed(2)}`,
+    `score=${highestScore.score.toFixed(2)}`,
+    `matched=[${stripUserId(readyMessage.getUserId())},${stripUserId(
+      otherId,
+    )}]`,
+    `scores=${relationShipScores.length}`,
+    `attempts=${readyMessage.getCooldownAttempts()}`,
+  ];
+
+  logger.info(matchedMsg.join(` `));
 
   // listen and publish on otherId
   registerSubscriptionListener(otherId);

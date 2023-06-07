@@ -171,7 +171,7 @@ export async function matchConsumer() {
           throw `userId ${userId} socket is null`;
         }
 
-        logger.info(
+        logger.debug(
           `User Notification: userid ${userId}, eventName: ${eventName}`,
         );
 

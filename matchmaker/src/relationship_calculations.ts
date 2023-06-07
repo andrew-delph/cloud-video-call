@@ -39,6 +39,7 @@ export async function calcScoreZset(userId: string) {
   for (let relationshipScore of activeRelationshipScores) {
     const otherId = relationshipScore[0];
     const scoreObj = relationshipScore[1];
+    if (scoreObj.score <= -1) continue; // threshhold scores were way to low
 
     await mainRedisClient.zadd(
       getUserScoreZsetCacheKey(userId),

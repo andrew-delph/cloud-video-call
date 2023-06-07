@@ -15,12 +15,12 @@ const iterations = 999999;//authKeysNum * 1000;
 const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
-const updatePreferences = true; // update attributes/filters in neo4j
+const updatePreferences = false; // update attributes/filters in neo4j
 
-const validMatchChatTime = 0; //60 * 5; // number of seconds to delay if valid match
+const validMatchChatTime =0; //60 * 5; // number of seconds to delay if valid match
 const invalidMatchChatTime = 0; //60 * 5;
 
-const matches = 1//Infinity; // number of matches per vus. -1 is inf
+const matches = 5//Infinity; // number of matches per vus. -1 is inf
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
@@ -236,10 +236,7 @@ export default async function () {
               console.log(`ready..`);
               ready_success.add(true, { type: myUser.getTypeString() });
               ready_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
-              console.log(`before expectMatch.take(1)`)
-              const temp = expectMatch.take(1);
-              console.log(`temp: ${typeof temp}`)
-              return temp;
+              return expectMatch.take(1);;
             })
             .then(async (data: any) => {
               console.log(`match 1`);
@@ -327,7 +324,7 @@ export default async function () {
       })
       .catch((error) => {
         error_counter.add(1, { type: myUser.getTypeString() });
-        console.info(error);
+        console.error(error);
       })
       .finally(async () => {
         socket.close();
