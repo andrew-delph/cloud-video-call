@@ -58,7 +58,7 @@ done
 
 curl -sS https://2ip.io
 
-/hola-proxy -bind-address 0.0.0.0:8080 -proxy-type peer >/dev/null 2>&1 &
+/hola-proxy -bind-address 0.0.0.0:8080 -proxy-type peer &
 
 echo "started proxy"
 
