@@ -1,5 +1,5 @@
 import axios from 'axios';
-import puppeteer, { Browser } from 'puppeteer';
+import puppeteer, { Browser } from 'puppeteer-core';
 import { Command } from 'commander';
 import * as common from 'common';
 

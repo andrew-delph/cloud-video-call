@@ -14,10 +14,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "common": "link:../common",
     "axios": "^1.4.0",
     "commander": "^10.0.1",
-    "puppeteer": "^20.5.0",
+    "common": "link:../common",
+    "puppeteer-core": "^20.5.0",
     "request-promise": "^4.2.6"
   },
   "devDependencies": {
