@@ -2,11 +2,11 @@
 apply:
 	make push
 	make delete || echo "delete error"
-	kubectl apply -f ./deployment.yaml --wait
+	kubectl apply -f ./resources/. --wait
 
 
 delete:
-	kubectl delete -f ./deployment.yaml --wait
+	kubectl delete -f ./resources/deployment.yaml --wait
 
 image:
 	bazel run image
