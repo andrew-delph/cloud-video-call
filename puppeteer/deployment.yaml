@@ -11,7 +11,7 @@ metadata:
 spec:
   containers:
     - name: runner
-      image: andrew-delph/video-call-puppeteer
+      image: ghcr.io/andrew-delph/video-call-puppeteer:latest
       imagePullPolicy: Always
       securityContext:
         capabilities:

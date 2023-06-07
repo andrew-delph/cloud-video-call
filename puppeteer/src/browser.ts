@@ -209,6 +209,7 @@ const user_viewed = new common.prom.Counter({
     const video: any = document.getElementById(`othervideo`);
     let previousSource = video.src;
 
+    //  TODO: check if this works
     video.addEventListener(`loadedmetadata`, () => {
       const myWindow: any = window;
       myWindow.onCustomEvent(`loadedmetadata`);
@@ -232,7 +233,7 @@ const user_viewed = new common.prom.Counter({
       await page.screenshot({ path: `screenshots/screenshot.png` });
     }
 
-    await delay(1000 * 5 + 1000 * 20 * Math.random());
+    await delay(1000 * 5 + 1000 * 10 * Math.random());
   }
 
   // await delay(1000 * 60 * 5);
