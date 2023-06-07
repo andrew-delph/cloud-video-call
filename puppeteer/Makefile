@@ -6,7 +6,7 @@ apply:
 
 
 delete:
-	kubectl delete -f ./deployment.yaml
+	kubectl delete -f ./deployment.yaml --wait
 
 image:
 	bazel run image
