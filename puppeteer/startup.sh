@@ -88,4 +88,4 @@ done
 
 mkdir -p screenshots
 
-node /app/dist/omegle.js
+node /app/dist/browser.js

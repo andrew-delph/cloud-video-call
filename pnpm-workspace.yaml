@@ -8,3 +8,4 @@ packages:
   - 'matchmaker'
   - 'matcher'
   - 'options'
+  - 'puppeteer'

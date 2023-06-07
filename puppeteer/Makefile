@@ -1,6 +1,7 @@
 
 apply:
 	make image
+	make push
 	make delete || echo "delete error"
 	kubectl apply -f ./deployment.yaml --wait
 	sleep 20
@@ -11,6 +12,8 @@ delete:
 
 image:
 	docker build -t andrewdelph/omegle:latest .
+
+push:
 	docker push andrewdelph/omegle:latest
 
 test:
@@ -20,7 +23,7 @@ test:
 	
 
 proxy:
-	# make image
+	make image
 	docker run -it -e PROXY=true -p 127.0.0.1:8080:8080 --cap-add=NET_ADMIN andrewdelph/omegle:latest
 
 
@@ -30,4 +33,4 @@ convert:
 
 
 clean:
-	rm -rf screenshots/*
+	sudo rm -rf screenshots/*
