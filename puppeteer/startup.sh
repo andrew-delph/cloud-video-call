@@ -3,7 +3,9 @@ set -e
 
 echo "dns before"
 cat /etc/resolv.conf
-echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+resolv_conf=$(cat /etc/resolv.conf)
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "$resolv_conf" >> /etc/resolv.conf
 echo "dns after"
 cat /etc/resolv.conf
 
