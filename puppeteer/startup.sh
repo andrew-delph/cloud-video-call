@@ -73,7 +73,7 @@ while true; do
         echo "Proxy is ready"
         break
     else
-        echo "Proxy is not yet ready. Retrying in 5 second."
+        echo "Proxy is not yet ready. Retrying in 1 second."
         sleep 1
         counter=$((counter + 1))
     fi
