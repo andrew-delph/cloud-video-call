@@ -39,7 +39,7 @@ while true; do
     # Check if the maximum wait time of 20 seconds has been reached
     if [ $counter -ge 20 ]; then
         echo "VPN connection timed out after 20 seconds."
-        exit
+        exit 1
     fi
     
     # ip addr show tun0 || echo .
@@ -67,7 +67,7 @@ while true; do
     # Check if the maximum wait time of 20 seconds has been reached
     if [ $counter -ge 20 ]; then
         echo "Proxy connection timed out after 20 seconds."
-        exit
+        exit 1
     fi
     if nc -z "localhost" "8080"; then
         echo "Proxy is ready"
