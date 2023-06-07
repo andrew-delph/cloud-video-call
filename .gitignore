@@ -49,4 +49,3 @@ flutter_app/GetStorage.gs
 .prettierignore
 monitoring/release.yaml
 
-puppeteer/

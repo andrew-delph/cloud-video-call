@@ -1,0 +1,25 @@
+{
+  "name": "omegle-scripts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "ts-node src/omegle.ts",
+    "run": " while true; do npm run test; done",
+    "test-webcam": "ts-node src/test-webcam.ts",
+    "curl": "./curl.sh #> output.txt 2>&1",
+    "proxy": "./hola-proxy.sh",
+    "ip": "curl https://2ip.io"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "puppeteer": "^19.11.1",
+    "request-promise": "^4.2.6",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.3"
+  }
+}

@@ -1,0 +1,11 @@
+services:
+  vpn:
+    image: andrewdelph/omegle:latest
+    restart: always
+    scale: 10
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./screenshots:/app/screenshots/
+
+

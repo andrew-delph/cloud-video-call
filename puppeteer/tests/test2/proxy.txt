@@ -1,0 +1,185 @@
+candidate candidate:4101800578 1 udp 2122260223 192.168.49.1 52331 typ host generation 0 ufrag 26HG network-id 1
+candidate candidate:2537879429 1 udp 2122194687 172.17.0.1 60307 typ host generation 0 ufrag 26HG network-id 2
+candidate candidate:862755497 1 udp 2122129151 192.168.1.11 57694 typ host generation 0 ufrag 26HG network-id 3 network-cost 10
+candidate candidate:4118605988 1 udp 1686052607 69.157.158.40 52331 typ srflx raddr 192.168.49.1 rport 52331 generation 0 ufrag 26HG network-id 1
+candidate candidate:799891631 1 udp 1685987071 69.157.158.40 60307 typ srflx raddr 172.17.0.1 rport 60307 generation 0 ufrag 26HG network-id 2
+candidate candidate:845998223 1 udp 1685921535 69.157.158.40 57694 typ srflx raddr 192.168.1.11 rport 57694 generation 0 ufrag 26HG network-id 3 network-cost 10
+candidate candidate:181818902 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag 26HG network-id 1
+candidate candidate:1777214225 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag 26HG network-id 2
+candidate candidate:3452325437 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag 26HG network-id 3 network-cost 10
+candidate candidate:2646746071 1 udp 2122260223 192.168.49.1 51665 typ host generation 0 ufrag ocwK network-id 1
+candidate candidate:2749103562 1 udp 2122194687 172.17.0.1 55148 typ host generation 0 ufrag ocwK network-id 2
+candidate candidate:1517468844 1 udp 2122129151 192.168.1.11 51363 typ host generation 0 ufrag ocwK network-id 3 network-cost 10
+candidate candidate:4159297789 1 udp 1685987071 69.157.158.40 55148 typ srflx raddr 172.17.0.1 rport 55148 generation 0 ufrag ocwK network-id 2
+candidate candidate:1187054486 1 udp 1686052607 69.157.158.40 51665 typ srflx raddr 192.168.49.1 rport 51665 generation 0 ufrag ocwK network-id 1
+candidate candidate:2171706605 1 udp 1685921535 69.157.158.40 51363 typ srflx raddr 192.168.1.11 rport 51363 generation 0 ufrag ocwK network-id 3 network-cost 10
+candidate candidate:3809329487 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag ocwK network-id 1
+candidate candidate:3709083474 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag ocwK network-id 2
+candidate candidate:616390196 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag ocwK network-id 3 network-cost 10
+candidate candidate:2947800092 1 udp 2122260223 192.168.49.1 46936 typ host generation 0 ufrag LUKx network-id 1
+candidate candidate:2443837953 1 udp 2122194687 172.17.0.1 51269 typ host generation 0 ufrag LUKx network-id 2
+candidate candidate:1745044327 1 udp 2122129151 192.168.1.11 57656 typ host generation 0 ufrag LUKx network-id 3 network-cost 10
+candidate candidate:1957755997 1 udp 1686052607 69.157.158.40 46936 typ srflx raddr 192.168.49.1 rport 46936 generation 0 ufrag LUKx network-id 1
+candidate candidate:3315083062 1 udp 1685987071 69.157.158.40 51269 typ srflx raddr 172.17.0.1 rport 51269 generation 0 ufrag LUKx network-id 2
+candidate candidate:3003147046 1 udp 1685921535 69.157.158.40 57656 typ srflx raddr 192.168.1.11 rport 57656 generation 0 ufrag LUKx network-id 3 network-cost 10
+candidate candidate:3514580612 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag LUKx network-id 1
+candidate candidate:4016431257 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag LUKx network-id 2
+candidate candidate:382509567 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag LUKx network-id 3 network-cost 10
+candidate candidate:3703199318 1 udp 2122260223 192.168.49.1 34651 typ host generation 0 ufrag i5Ur network-id 1
+candidate candidate:3802368075 1 udp 2122194687 172.17.0.1 53842 typ host generation 0 ufrag i5Ur network-id 2
+candidate candidate:453691693 1 udp 2122129151 192.168.1.11 50242 typ host generation 0 ufrag i5Ur network-id 3 network-cost 10
+candidate candidate:3703199318 1 udp 2122260223 192.168.49.1 46871 typ host generation 0 ufrag i5Ur network-id 1
+candidate candidate:3802368075 1 udp 2122194687 172.17.0.1 51805 typ host generation 0 ufrag i5Ur network-id 2
+candidate candidate:453691693 1 udp 2122129151 192.168.1.11 56460 typ host generation 0 ufrag i5Ur network-id 3 network-cost 10
+candidate candidate:129594903 1 udp 1686052607 69.157.158.40 34651 typ srflx raddr 192.168.49.1 rport 34651 generation 0 ufrag i5Ur network-id 1
+candidate candidate:3221875052 1 udp 1685921535 69.157.158.40 56460 typ srflx raddr 192.168.1.11 rport 56460 generation 0 ufrag i5Ur network-id 3 network-cost 10
+candidate candidate:3063000444 1 udp 1685987071 69.157.158.40 53842 typ srflx raddr 172.17.0.1 rport 53842 generation 0 ufrag i5Ur network-id 2
+candidate candidate:3063000444 1 udp 1685987071 69.157.158.40 51805 typ srflx raddr 172.17.0.1 rport 51805 generation 0 ufrag i5Ur network-id 2
+candidate candidate:3221875052 1 udp 1685921535 69.157.158.40 50242 typ srflx raddr 192.168.1.11 rport 50242 generation 0 ufrag i5Ur network-id 3 network-cost 10
+candidate candidate:129594903 1 udp 1686052607 69.157.158.40 46871 typ srflx raddr 192.168.49.1 rport 46871 generation 0 ufrag i5Ur network-id 1
+candidate candidate:2725622990 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag i5Ur network-id 1
+candidate candidate:2624350931 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag i5Ur network-id 2
+candidate candidate:1707420597 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag i5Ur network-id 3 network-cost 10
+candidate candidate:2725622990 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag i5Ur network-id 1
+candidate candidate:2624350931 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag i5Ur network-id 2
+candidate candidate:1707420597 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag i5Ur network-id 3 network-cost 10
+candidate candidate:1672435172 1 udp 2122260223 192.168.49.1 56060 typ host generation 0 ufrag p/VM network-id 1
+candidate candidate:9904355 1 udp 2122194687 172.17.0.1 37262 typ host generation 0 ufrag p/VM network-id 2
+candidate candidate:2764000719 1 udp 2122129151 192.168.1.11 33601 typ host generation 0 ufrag p/VM network-id 3 network-cost 10
+candidate candidate:1672435172 1 udp 2122260223 192.168.49.1 40166 typ host generation 0 ufrag p/VM network-id 1
+candidate candidate:9904355 1 udp 2122194687 172.17.0.1 56064 typ host generation 0 ufrag p/VM network-id 2
+candidate candidate:2764000719 1 udp 2122129151 192.168.1.11 54774 typ host generation 0 ufrag p/VM network-id 3 network-cost 10
+candidate candidate:1655646146 1 udp 1686052607 69.157.158.40 40166 typ srflx raddr 192.168.49.1 rport 40166 generation 0 ufrag p/VM network-id 1
+candidate candidate:2780774377 1 udp 1685921535 69.157.158.40 54774 typ srflx raddr 192.168.1.11 rport 54774 generation 0 ufrag p/VM network-id 3 network-cost 10
+candidate candidate:2780774377 1 udp 1685921535 69.157.158.40 33601 typ srflx raddr 192.168.1.11 rport 33601 generation 0 ufrag p/VM network-id 3 network-cost 10
+candidate candidate:3095312329 1 udp 1685987071 69.157.158.40 37262 typ srflx raddr 172.17.0.1 rport 37262 generation 0 ufrag p/VM network-id 2
+candidate candidate:3095312329 1 udp 1685987071 69.157.158.40 56064 typ srflx raddr 172.17.0.1 rport 56064 generation 0 ufrag p/VM network-id 2
+candidate candidate:1655646146 1 udp 1686052607 69.157.158.40 56060 typ srflx raddr 192.168.49.1 rport 56060 generation 0 ufrag p/VM network-id 1
+candidate candidate:2634383728 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag p/VM network-id 1
+candidate candidate:4265473143 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag p/VM network-id 2
+candidate candidate:1511364955 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag p/VM network-id 3 network-cost 10
+candidate candidate:2634383728 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag p/VM network-id 1
+candidate candidate:4265473143 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag p/VM network-id 2
+candidate candidate:1511364955 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag p/VM network-id 3 network-cost 10
+candidate candidate:1394095559 1 udp 2122260223 192.168.49.1 46212 typ host generation 0 ufrag QzAU network-id 1
+candidate candidate:1828842458 1 udp 2122194687 172.17.0.1 41141 typ host generation 0 ufrag QzAU network-id 2
+candidate candidate:2494081724 1 udp 2122129151 192.168.1.11 59052 typ host generation 0 ufrag QzAU network-id 3 network-cost 10
+candidate candidate:2283476358 1 udp 1686052607 69.157.158.40 46212 typ srflx raddr 192.168.49.1 rport 46212 generation 0 ufrag QzAU network-id 1
+candidate candidate:959696621 1 udp 1685987071 69.157.158.40 41141 typ srflx raddr 172.17.0.1 rport 41141 generation 0 ufrag QzAU network-id 2
+candidate candidate:1336642301 1 udp 1685921535 69.157.158.40 59052 typ srflx raddr 192.168.1.11 rport 59052 generation 0 ufrag QzAU network-id 3 network-cost 10
+candidate candidate:769120095 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag QzAU network-id 1
+candidate candidate:332269890 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag QzAU network-id 2
+candidate candidate:3932637220 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag QzAU network-id 3 network-cost 10
+candidate candidate:2496926629 1 udp 2122260223 192.168.49.1 52798 typ host generation 0 ufrag z8Rw network-id 1
+candidate candidate:4159465122 1 udp 2122194687 172.17.0.1 58587 typ host generation 0 ufrag z8Rw network-id 2
+candidate candidate:1405356942 1 udp 2122129151 192.168.1.11 47054 typ host generation 0 ufrag z8Rw network-id 3 network-cost 10
+candidate candidate:2496926629 1 udp 2122260223 192.168.49.1 52150 typ host generation 0 ufrag z8Rw network-id 1
+candidate candidate:4159465122 1 udp 2122194687 172.17.0.1 42910 typ host generation 0 ufrag z8Rw network-id 2
+candidate candidate:1405356942 1 udp 2122129151 192.168.1.11 49725 typ host generation 0 ufrag z8Rw network-id 3 network-cost 10
+candidate candidate:1325789576 1 udp 1685987071 69.157.158.40 58587 typ srflx raddr 172.17.0.1 rport 58587 generation 0 ufrag z8Rw network-id 2
+candidate candidate:2513723779 1 udp 1686052607 69.157.158.40 52150 typ srflx raddr 192.168.49.1 rport 52150 generation 0 ufrag z8Rw network-id 1
+candidate candidate:1388607912 1 udp 1685921535 69.157.158.40 49725 typ srflx raddr 192.168.1.11 rport 49725 generation 0 ufrag z8Rw network-id 3 network-cost 10
+candidate candidate:1325789576 1 udp 1685987071 69.157.158.40 42910 typ srflx raddr 172.17.0.1 rport 42910 generation 0 ufrag z8Rw network-id 2
+candidate candidate:2513723779 1 udp 1686052607 69.157.158.40 52798 typ srflx raddr 192.168.49.1 rport 52798 generation 0 ufrag z8Rw network-id 1
+candidate candidate:1388607912 1 udp 1685921535 69.157.158.40 47054 typ srflx raddr 192.168.1.11 rport 47054 generation 0 ufrag z8Rw network-id 3 network-cost 10
+candidate candidate:1786693425 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag z8Rw network-id 1
+candidate candidate:155628086 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag z8Rw network-id 2
+candidate candidate:2909724442 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag z8Rw network-id 3 network-cost 10
+candidate candidate:1786693425 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag z8Rw network-id 1
+candidate candidate:155628086 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag z8Rw network-id 2
+candidate candidate:2909724442 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag z8Rw network-id 3 network-cost 10
+candidate candidate:2819549941 1 udp 2122260223 192.168.49.1 51468 typ host generation 0 ufrag OYeg network-id 1
+candidate candidate:3752274962 1 udp 2122194687 172.17.0.1 32830 typ host generation 0 ufrag OYeg network-id 2
+candidate candidate:3476628878 1 udp 2122129151 192.168.1.11 38978 typ host generation 0 ufrag OYeg network-id 3 network-cost 10
+candidate candidate:283606495 1 udp 1686052607 69.157.158.40 51468 typ srflx raddr 192.168.49.1 rport 51468 generation 0 ufrag OYeg network-id 1
+candidate candidate:869610212 1 udp 1685987071 69.157.158.40 32830 typ srflx raddr 172.17.0.1 rport 32830 generation 0 ufrag OYeg network-id 2
+candidate candidate:2010165924 1 udp 1685921535 69.157.158.40 38978 typ srflx raddr 192.168.1.11 rport 38978 generation 0 ufrag OYeg network-id 3 network-cost 10
+candidate candidate:3599814648 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag OYeg network-id 1
+candidate candidate:2704869663 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag OYeg network-id 2
+candidate candidate:2980511875 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag OYeg network-id 3 network-cost 10
+candidate candidate:1788538023 1 udp 2122260223 192.168.49.1 60462 typ host generation 0 ufrag CN92 network-id 1
+candidate candidate:1417884346 1 udp 2122194687 172.17.0.1 37354 typ host generation 0 ufrag CN92 network-id 2
+candidate candidate:2905240540 1 udp 2122129151 192.168.1.11 59746 typ host generation 0 ufrag CN92 network-id 3 network-cost 10
+candidate candidate:11605901 1 udp 1685987071 69.157.158.40 37354 typ srflx raddr 172.17.0.1 rport 37354 generation 0 ufrag CN92 network-id 2
+candidate candidate:2979646694 1 udp 1686052607 69.157.158.40 60462 typ srflx raddr 192.168.49.1 rport 60462 generation 0 ufrag CN92 network-id 1
+candidate candidate:1982419869 1 udp 1685921535 69.157.158.40 59746 typ srflx raddr 192.168.1.11 rport 59746 generation 0 ufrag CN92 network-id 3 network-cost 10
+candidate candidate:341118527 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag CN92 network-id 1
+candidate candidate:709677090 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag CN92 network-id 2
+candidate candidate:3555037508 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag CN92 network-id 3 network-cost 10
+candidate candidate:1702082898 1 udp 2122260223 192.168.49.1 40275 typ host generation 0 ufrag /LQH network-id 1
+candidate candidate:1533699919 1 udp 2122194687 172.17.0.1 58884 typ host generation 0 ufrag /LQH network-id 2
+candidate candidate:2730698281 1 udp 2122129151 192.168.1.11 48083 typ host generation 0 ufrag /LQH network-id 3 network-cost 10
+candidate candidate:1702082898 1 udp 2122260223 192.168.49.1 47065 typ host generation 0 ufrag /LQH network-id 1
+candidate candidate:1533699919 1 udp 2122194687 172.17.0.1 55167 typ host generation 0 ufrag /LQH network-id 2
+candidate candidate:2730698281 1 udp 2122129151 192.168.1.11 49290 typ host generation 0 ufrag /LQH network-id 3 network-cost 10
+candidate candidate:257442424 1 udp 1685987071 69.157.158.40 58884 typ srflx raddr 172.17.0.1 rport 58884 generation 0 ufrag /LQH network-id 2
+candidate candidate:257442424 1 udp 1685987071 69.157.158.40 55167 typ srflx raddr 172.17.0.1 rport 55167 generation 0 ufrag /LQH network-id 2
+candidate candidate:2042627688 1 udp 1685921535 69.157.158.40 48083 typ srflx raddr 192.168.1.11 rport 48083 generation 0 ufrag /LQH network-id 3 network-cost 10
+candidate candidate:2042627688 1 udp 1685921535 69.157.158.40 49290 typ srflx raddr 192.168.1.11 rport 49290 generation 0 ufrag /LQH network-id 3 network-cost 10
+candidate candidate:3195050259 1 udp 1686052607 69.157.158.40 40275 typ srflx raddr 192.168.49.1 rport 40275 generation 0 ufrag /LQH network-id 1
+candidate candidate:3195050259 1 udp 1686052607 69.157.158.40 47065 typ srflx raddr 192.168.49.1 rport 47065 generation 0 ufrag /LQH network-id 1
+candidate candidate:465329098 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag /LQH network-id 1
+candidate candidate:631604695 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag /LQH network-id 2
+candidate candidate:3691824305 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag /LQH network-id 3 network-cost 10
+candidate candidate:465329098 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag /LQH network-id 1
+candidate candidate:631604695 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag /LQH network-id 2
+candidate candidate:3691824305 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag /LQH network-id 3 network-cost 10
+candidate candidate:3416049082 1 udp 2122260223 192.168.49.1 51964 typ host generation 0 ufrag Z kC network-id 1
+candidate candidate:3157590877 1 udp 2122194687 172.17.0.1 34511 typ host generation 0 ufrag Z kC network-id 2
+candidate candidate:2896890561 1 udp 2122129151 192.168.1.11 55104 typ host generation 0 ufrag Z kC network-id 3 network-cost 10
+candidate candidate:1346837931 1 udp 1685987071 69.157.158.40 34511 typ srflx raddr 172.17.0.1 rport 34511 generation 0 ufrag Z kC network-id 2
+candidate candidate:1937068688 1 udp 1686052607 69.157.158.40 51964 typ srflx raddr 192.168.49.1 rport 51964 generation 0 ufrag Z kC network-id 1
+candidate candidate:339910123 1 udp 1685921535 69.157.158.40 55104 typ srflx raddr 192.168.1.11 rport 55104 generation 0 ufrag Z kC network-id 3 network-cost 10
+candidate candidate:3036864695 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag Z kC network-id 1
+candidate candidate:3265996368 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag Z kC network-id 2
+candidate candidate:3526701004 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag Z kC network-id 3 network-cost 10
+candidate candidate:3883148011 1 udp 2122260223 192.168.49.1 60358 typ host generation 0 ufrag c9/l network-id 1
+candidate candidate:2219595756 1 udp 2122194687 172.17.0.1 56468 typ host generation 0 ufrag c9/l network-id 2
+candidate candidate:543439552 1 udp 2122129151 192.168.1.11 56471 typ host generation 0 ufrag c9/l network-id 3 network-cost 10
+candidate candidate:560220390 1 udp 1685921535 69.157.158.40 56471 typ srflx raddr 192.168.1.11 rport 56471 generation 0 ufrag c9/l network-id 3 network-cost 10
+candidate candidate:3866382541 1 udp 1686052607 69.157.158.40 60358 typ srflx raddr 192.168.49.1 rport 60358 generation 0 ufrag c9/l network-id 1
+candidate candidate:1017495750 1 udp 1685987071 69.157.158.40 56468 typ srflx raddr 172.17.0.1 rport 56468 generation 0 ufrag c9/l network-id 2
+candidate candidate:434042495 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag c9/l network-id 1
+candidate candidate:2061927288 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag c9/l network-id 2
+candidate candidate:3738103380 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag c9/l network-id 3 network-cost 10
+candidate candidate:2914980135 1 udp 2122260223 192.168.49.1 54586 typ host generation 0 ufrag UkUH network-id 1
+candidate candidate:2477182778 1 udp 2122194687 172.17.0.1 37576 typ host generation 0 ufrag UkUH network-id 2
+candidate candidate:1779404380 1 udp 2122129151 192.168.1.11 47757 typ host generation 0 ufrag UkUH network-id 3 network-cost 10
+candidate candidate:2970398237 1 udp 1685921535 69.157.158.40 47757 typ srflx raddr 192.168.1.11 rport 47757 generation 0 ufrag UkUH network-id 3 network-cost 10
+candidate candidate:3348425229 1 udp 1685987071 69.157.158.40 37576 typ srflx raddr 172.17.0.1 rport 37576 generation 0 ufrag UkUH network-id 2
+candidate candidate:1992044902 1 udp 1686052607 69.157.158.40 54586 typ srflx raddr 192.168.49.1 rport 54586 generation 0 ufrag UkUH network-id 1
+candidate candidate:3547395007 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag UkUH network-id 1
+candidate candidate:3983093154 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag UkUH network-id 2
+candidate candidate:348155076 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag UkUH network-id 3 network-cost 10
+candidate candidate:2414677527 1 udp 2122260223 192.168.49.1 41698 typ host generation 0 ufrag 2Epd network-id 1
+candidate candidate:3973413648 1 udp 2122194687 172.17.0.1 43764 typ host generation 0 ufrag 2Epd network-id 2
+candidate candidate:1224545852 1 udp 2122129151 192.168.1.11 43504 typ host generation 0 ufrag 2Epd network-id 3 network-cost 10
+candidate candidate:2414677527 1 udp 2122260223 192.168.49.1 47316 typ host generation 0 ufrag 2Epd network-id 1
+candidate candidate:3973413648 1 udp 2122194687 172.17.0.1 53962 typ host generation 0 ufrag 2Epd network-id 2
+candidate candidate:1224545852 1 udp 2122129151 192.168.1.11 34587 typ host generation 0 ufrag 2Epd network-id 3 network-cost 10
+candidate candidate:1413278778 1 udp 1685987071 69.157.158.40 43764 typ srflx raddr 172.17.0.1 rport 43764 generation 0 ufrag 2Epd network-id 2
+candidate candidate:1413278778 1 udp 1685987071 69.157.158.40 53962 typ srflx raddr 172.17.0.1 rport 53962 generation 0 ufrag 2Epd network-id 2
+candidate candidate:2397928497 1 udp 1686052607 69.157.158.40 47316 typ srflx raddr 192.168.49.1 rport 47316 generation 0 ufrag 2Epd network-id 1
+candidate candidate:1241343002 1 udp 1685921535 69.157.158.40 34587 typ srflx raddr 192.168.1.11 rport 34587 generation 0 ufrag 2Epd network-id 3 network-cost 10
+candidate candidate:2397928497 1 udp 1686052607 69.157.158.40 41698 typ srflx raddr 192.168.49.1 rport 41698 generation 0 ufrag 2Epd network-id 1
+candidate candidate:1241343002 1 udp 1685921535 69.157.158.40 43504 typ srflx raddr 192.168.1.11 rport 43504 generation 0 ufrag 2Epd network-id 3 network-cost 10
+candidate candidate:1900534403 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag 2Epd network-id 1
+candidate candidate:310357892 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag 2Epd network-id 2
+candidate candidate:3059204776 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag 2Epd network-id 3 network-cost 10
+candidate candidate:1900534403 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag 2Epd network-id 1
+candidate candidate:310357892 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag 2Epd network-id 2
+candidate candidate:3059204776 1 tcp 1518149375 192.168.1.11 9 typ host tcptype active generation 0 ufrag 2Epd network-id 3 network-cost 10
+candidate candidate:2947567401 1 udp 2122260223 192.168.49.1 33476 typ host generation 0 ufrag yKXq network-id 1
+candidate candidate:3431479854 1 udp 2122194687 172.17.0.1 33924 typ host generation 0 ufrag yKXq network-id 2
+candidate candidate:1755338498 1 udp 2122129151 192.168.1.11 34598 typ host generation 0 ufrag yKXq network-id 3 network-cost 10
+candidate candidate:2947567401 1 udp 2122260223 192.168.49.1 44573 typ host generation 0 ufrag yKXq network-id 1
+candidate candidate:3431479854 1 udp 2122194687 172.17.0.1 57100 typ host generation 0 ufrag yKXq network-id 2
+candidate candidate:1755338498 1 udp 2122129151 192.168.1.11 54763 typ host generation 0 ufrag yKXq network-id 3 network-cost 10
+candidate candidate:2930785551 1 udp 1686052607 69.157.158.40 33476 typ srflx raddr 192.168.49.1 rport 33476 generation 0 ufrag yKXq network-id 1
+candidate candidate:2930785551 1 udp 1686052607 69.157.158.40 44573 typ srflx raddr 192.168.49.1 rport 44573 generation 0 ufrag yKXq network-id 1
+candidate candidate:1772102948 1 udp 1685921535 69.157.158.40 34598 typ srflx raddr 192.168.1.11 rport 34598 generation 0 ufrag yKXq network-id 3 network-cost 10
+candidate candidate:1772102948 1 udp 1685921535 69.157.158.40 54763 typ srflx raddr 192.168.1.11 rport 54763 generation 0 ufrag yKXq network-id 3 network-cost 10
+candidate candidate:1952558340 1 udp 1685987071 69.157.158.40 57100 typ srflx raddr 172.17.0.1 rport 57100 generation 0 ufrag yKXq network-id 2
+candidate candidate:1952558340 1 udp 1685987071 69.157.158.40 33924 typ srflx raddr 172.17.0.1 rport 33924 generation 0 ufrag yKXq network-id 2
+candidate candidate:1360698301 1 tcp 1518280447 192.168.49.1 9 typ host tcptype active generation 0 ufrag yKXq network-id 1
+candidate candidate:841150138 1 tcp 1518214911 172.17.0.1 9 typ host tcptype active generation 0 ufrag yKXq network-id 2
