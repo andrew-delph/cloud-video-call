@@ -5,6 +5,10 @@ apply:
 	kubectl apply -f ./resources/. --wait
 
 
+pods:
+	kubectl get pods -n bot
+
+
 delete:
 	kubectl delete -f ./resources/deployment.yaml --wait
 
