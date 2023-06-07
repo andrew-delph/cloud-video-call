@@ -3,7 +3,7 @@ set -e
 
 echo "dns before"
 cat /etc/resolv.conf
-echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 echo "dns after"
 cat /etc/resolv.conf
 
@@ -78,6 +78,8 @@ while true; do
         counter=$((counter + 1))
     fi
 done
+
+curl -sS https://2ip.io
 
 if [ ! -v RUN_COMMAND ] || [ -v PROXY ]; then
     echo "RUN_COMMAND=$RUN_COMMAND PROXY=$PROXY";
