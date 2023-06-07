@@ -18,7 +18,7 @@ push:
 
 test:
 	make image
-	docker run -it -v ./screenshots:/app/screenshots/ --cap-add=NET_ADMIN bazel/puppeteer:image
+	docker run -it -v ./screenshots:/screenshots/ --cap-add=NET_ADMIN bazel/puppeteer:image
 
 
 proxy:

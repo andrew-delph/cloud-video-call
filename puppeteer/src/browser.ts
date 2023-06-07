@@ -24,7 +24,7 @@ console.log(`Webcam file:`, webcamFile);
   const useProxy = true;
   let useAuth = true;
   const headless = false;
-  const screenshot = false;
+  const screenshot = true;
 
   let url = `https://www.omegle.com/`;
 
