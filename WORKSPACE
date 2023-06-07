@@ -110,3 +110,10 @@ container_pull(
     registry = "docker.io",
     repository = "debian",
 )
+
+container_pull(
+  name = "ubuntu",
+  registry = "docker.io",
+  repository = "ubuntu",
+  tag = "latest"
+)

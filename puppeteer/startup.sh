@@ -58,14 +58,7 @@ done
 
 curl -sS https://2ip.io
 
-echo "starting proxy PROXY=$PROXY"
-
-if [ -n "$PROXY" ]; then
-  /proxy/hola-proxy -bind-address 0.0.0.0:8080 -proxy-type peer
-  exit
-fi
-
-/proxy/hola-proxy -bind-address 0.0.0.0:8080 -proxy-type peer >/dev/null 2>&1 &
+/hola-proxy -bind-address 0.0.0.0:8080 -proxy-type peer >/dev/null 2>&1 &
 
 echo "started proxy"
 
@@ -73,7 +66,7 @@ counter=0
 while true; do
     # Check if the maximum wait time of 20 seconds has been reached
     if [ $counter -ge 4 ]; then
-        echo "VPN connection timed out after 20 seconds."
+        echo "Proxy connection timed out after 20 seconds."
         break
     fi
     if nc -z "localhost" "8080"; then
@@ -86,6 +79,11 @@ while true; do
     fi
 done
 
-mkdir -p screenshots
-
-node /app/dist/browser.js
+if [ ! -v RUN_COMMAND ] || [ -v PROXY ]; then
+    echo "RUN_COMMAND=$RUN_COMMAND PROXY=$PROXY";
+    while true; do sleep 10; done
+else
+    echo "RUN_COMMAND IS $RUN_COMMAND";
+    mkdir -p screenshots
+    bash $RUN_COMMAND
+fi

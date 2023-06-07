@@ -61,16 +61,63 @@ container_layer(
     tars = [":node_modules_tar"],
 )
 
+load("@io_bazel_rules_docker//docker/util:run.bzl", "container_run_and_commit_layer")
+
+container_run_and_commit_layer(
+    name = "proxy_layer",
+    image = "@ubuntu//image",
+    commands = [
+        "apt update",
+        "apt install curl -y",
+        "curl -LOJ https://github.com/Snawoot/hola-proxy/releases/download/v1.9.1/hola-proxy.linux-amd64",
+        "mv hola-proxy.linux-amd64 hola-proxy",
+        "chmod +x hola-proxy"
+    ],
+)
+
+container_run_and_commit_layer(
+    name = "openvpn_layer",
+    image = "@ubuntu//image",
+    commands = [
+        "apt update",
+        "apt install openvpn easy-rsa curl netcat net-tools iputils-ping dnsutils tcpdump -y",
+        ],
+)
+
+container_run_and_commit_layer(
+    name = "puppeteer_layer",
+    image = "@ubuntu//image",
+    commands = [
+        "apt update",
+        "apt install -y fonts-liberation gconf-service libappindicator1 libasound2 libatk1.0-0 libcairo2 libcups2 libfontconfig1 libgbm-dev libgdk-pixbuf2.0-0 libgtk-3-0 libicu-dev libjpeg-dev libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libpng-dev libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 xdg-utils",
+        "apt install -y wget curl unzip",
+        "curl -LO https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb",
+        "apt-get install -y ./google-chrome-stable_current_amd64.deb",
+        "rm google-chrome-stable_current_amd64.deb"
+        ],
+)
+
 container_image(
     name = "image",
-    architecture = "amd64",
-    base = "@debian_amd64//image",
-    cmd = ["/app/puppeteer/puppeteer"],
-    entrypoint = ["bash"],
+    base = "@ubuntu//image",
+    files = [
+        "startup.sh",
+        "pia-openvpn",
+        "input.mjpeg"
+    ],
     layers = [
+        "proxy_layer",
+        "openvpn_layer",
+        "puppeteer_layer",
         ":app_layer",
         ":node_modules_layer",
     ],
+    cmd = ["/startup.sh"],
+    env = {
+        "DOCKER": "true",
+        "RUN_COMMAND":"/app/puppeteer/puppeteer --webcam-file input.mjpeg",
+        "PUPPETEER_EXECUTABLE_PATH":"/usr/bin/google-chrome-stable"
+    },
 )
 
 container_push(
@@ -81,3 +128,4 @@ container_push(
    repository = "andrew-delph/video-call-puppeteer",
    tag = "latest",
 )
+

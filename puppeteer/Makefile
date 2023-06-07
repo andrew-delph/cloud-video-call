@@ -11,20 +11,19 @@ delete:
 	kubectl delete -f ./deployment.yaml
 
 image:
-	docker build -t andrewdelph/omegle:latest .
+	bazel run image
 
 push:
-	docker push andrewdelph/omegle:latest
+	dbazel run image_push
 
 test:
 	make image
-	docker run -it -v ./screenshots:/app/screenshots/ --cap-add=NET_ADMIN andrewdelph/omegle:latest
+	docker run -it -v ./screenshots:/app/screenshots/ --cap-add=NET_ADMIN bazel/puppeteer:image
 
-	
 
 proxy:
 	make image
-	docker run -it -e PROXY=true -p 127.0.0.1:8080:8080 --cap-add=NET_ADMIN andrewdelph/omegle:latest
+	docker run -it -p 127.0.0.1:8080:8080 -e PROXY=true  --cap-add=NET_ADMIN bazel/puppeteer:image
 
 
 convert:
