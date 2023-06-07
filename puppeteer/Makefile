@@ -9,19 +9,19 @@ delete:
 	kubectl delete -f ./deployment.yaml --wait
 
 image:
-	bazel run image_flat
+	bazel run image
 
 push:
 	bazel run image_push
 
 test:
 	make image
-	docker run -it -v ./screenshots:/screenshots/ --cap-add=NET_ADMIN bazel/puppeteer:image_flat
+	docker run -it -v ./screenshots:/screenshots/ --cap-add=NET_ADMIN bazel/puppeteer:image
 
 
 proxy:
 	make image
-	docker run -it -p 127.0.0.1:8080:8080 -e PROXY=true  --cap-add=NET_ADMIN bazel/puppeteer:image_flat
+	docker run -it -p 127.0.0.1:8080:8080 -e PROXY=true  --cap-add=NET_ADMIN bazel/puppeteer:image
 
 
 convert:
@@ -36,4 +36,4 @@ size:
 	docker images --format "{{.Repository}}\t{{.Tag}}\t{{.Size}}" | grep pupp
 
 history:
-	docker history bazel/puppeteer:image_flat
+	docker history bazel/puppeteer:image
