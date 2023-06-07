@@ -29,7 +29,7 @@ js_binary(
 
 
 load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
-load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push", "container_flatten")
 load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
 
 js_image_layer(
@@ -120,9 +120,19 @@ container_image(
     },
 )
 
+container_flatten(
+    name = "image_flatten",
+    image = ":image",
+)
+
+container_image(
+  name = "image_flat",
+  tars = [":image_flatten.tar"],
+)
+
 container_push(
    name = "image_push",
-   image = ":image",
+   image = ":image_flat",
    format = "Docker",
    registry = "ghcr.io",
    repository = "andrew-delph/video-call-puppeteer",
