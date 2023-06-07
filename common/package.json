@@ -22,6 +22,7 @@
     "firebase-admin": "^11.4.1",
     "ioredis": "5.2.5",
     "moment": "^2.29.4",
+    "prom-client": "^14.2.0",
     "uuid": "^9.0.0",
     "winston": "^3.8.2"
   }

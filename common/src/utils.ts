@@ -4,6 +4,7 @@ import amqp from 'amqplib';
 import { getAuth } from 'firebase-admin/auth';
 import Client from 'ioredis';
 import moment from 'moment';
+import * as prom from 'prom-client';
 
 const logger = getLogger();
 
@@ -190,3 +191,38 @@ export const writeRedisUserPriority = async (
     expire,
   );
 };
+
+const defaultLabels = { pod: process.env.HOSTNAME };
+prom.register.setDefaultLabels(defaultLabels);
+
+const pushGateway = new prom.Pushgateway(
+  `http://loki-prometheus-pushgateway.monitoring:9091`,
+);
+
+class PromClient {
+  interval: NodeJS.Timer | undefined;
+  jobName: string;
+
+  constructor(jobName = `default`) {
+    this.jobName = jobName;
+  }
+
+  startPush(delay: number) {
+    this.interval = setInterval(async () => {
+      await pushGateway
+        .pushAdd({ jobName: this.jobName })
+        .then(({ resp, body }) => {
+          logger.debug(`pushGateway successful`);
+        })
+        .catch((err) => {
+          logger.error(`pushGateway error`);
+        });
+    }, delay);
+  }
+
+  stop() {
+    clearInterval(this.interval);
+  }
+}
+
+export const promClient = new PromClient();
