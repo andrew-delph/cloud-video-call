@@ -26,14 +26,10 @@ if (process.env.METRICS) {
   common.promClient.startPush();
 }
 
-// const counter = new prom.Counter({
-//   name: `demo_counter`,
-//   help: `demo_counter_help`,
-// });
-// setInterval(async () => {
-//   counter.inc();
-//   counter.inc(10);
-// }, 100);
+const user_viewed = new common.prom.Counter({
+  name: `user_viewed`,
+  help: `Every time the bot is viewed by a user`,
+});
 
 (async () => {
   const useFakeWebcam = true;
@@ -145,17 +141,18 @@ if (process.env.METRICS) {
   });
 
   await page.goto(url);
-  let count = 0;
 
   await page.exposeFunction(`onCustomEvent`, async (event: any) => {
     logger.info(`Event: ${event}`);
-    if (event.includes(`loadedmetadata`) && screenshot) {
-      const screenshot_id = Math.random();
-      logger.info(`screenshot`);
-      await page.screenshot({
-        path: `screenshots/screenshot-${new Date()}-${test_id}}.png`,
-      });
-      count = count + 1;
+    if (event.includes(`loadedmetadata`)) {
+      logger.info(`user_viewed`);
+      user_viewed.inc();
+      if (screenshot) {
+        logger.info(`screenshot`);
+        await page.screenshot({
+          path: `screenshots/screenshot-${new Date()}-${test_id}}.png`,
+        });
+      }
     }
   });
 

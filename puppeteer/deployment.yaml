@@ -10,7 +10,7 @@ metadata:
   namespace: bot
 spec:
   containers:
-    - name: vpn
+    - name: runner
       image: andrew-delph/video-call-puppeteer
       imagePullPolicy: Always
       securityContext:
