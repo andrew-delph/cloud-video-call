@@ -1,11 +1,9 @@
 
 apply:
-	make image
 	make push
 	make delete || echo "delete error"
 	kubectl apply -f ./deployment.yaml --wait
-	sleep 20
-	kubectl logs -f omegle-bot
+
 
 delete:
 	kubectl delete -f ./deployment.yaml
@@ -14,7 +12,7 @@ image:
 	bazel run image
 
 push:
-	dbazel run image_push
+	bazel run image_push
 
 test:
 	make image

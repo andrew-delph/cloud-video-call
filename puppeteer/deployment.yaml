@@ -11,7 +11,7 @@ metadata:
 spec:
   containers:
     - name: vpn
-      image: andrewdelph/omegle:latest
+      image: andrew-delph/video-call-puppeteer
       imagePullPolicy: Always
       securityContext:
         capabilities:
@@ -19,4 +19,4 @@ spec:
             - NET_ADMIN
       env:
         - name: METRICS
-          value: TRUE
+          value: 'TRUE'
