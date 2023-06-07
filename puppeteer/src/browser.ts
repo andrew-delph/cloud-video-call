@@ -4,6 +4,12 @@ import { Command } from 'commander';
 import * as common from 'common';
 
 const logger = common.getLogger();
+
+common.listenGlobalExceptions(async () => {
+  logger.debug(`clean up browser`);
+  common.promClient.stop();
+});
+
 function delay(time: number) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }

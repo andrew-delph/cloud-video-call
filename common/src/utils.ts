@@ -215,7 +215,7 @@ class PromClient {
           logger.debug(`pushGateway successful`);
         })
         .catch((err) => {
-          logger.error(`pushGateway error`);
+          logger.error(`pushGateway error: ${err}`);
         });
     }, delay);
   }
