@@ -207,7 +207,7 @@ class PromClient {
     this.jobName = jobName;
   }
 
-  startPush(delay: number) {
+  startPush(delay: number = 5000) {
     this.interval = setInterval(async () => {
       await pushGateway
         .pushAdd({ jobName: this.jobName })

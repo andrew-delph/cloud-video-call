@@ -1,7 +1,9 @@
 import axios from 'axios';
 import puppeteer, { Browser } from 'puppeteer';
 import { Command } from 'commander';
+import * as common from 'common';
 
+const logger = common.getLogger();
 function delay(time: number) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
@@ -17,7 +19,21 @@ program
 const options = program.opts();
 const webcamFile = options.webcamFile;
 
-console.log(`Webcam file:`, webcamFile);
+logger.info(`Webcam file:`, webcamFile);
+
+if (process.env.METRICS) {
+  logger.info(`PUSHING METRICS TO PROMETHEUS`);
+  common.promClient.startPush();
+}
+
+// const counter = new prom.Counter({
+//   name: `demo_counter`,
+//   help: `demo_counter_help`,
+// });
+// setInterval(async () => {
+//   counter.inc();
+//   counter.inc(10);
+// }, 100);
 
 (async () => {
   const useFakeWebcam = true;
@@ -46,7 +62,7 @@ console.log(`Webcam file:`, webcamFile);
   }
 
   if (useProxy) {
-    console.log(`USING PROXY`);
+    logger.info(`USING PROXY`);
     args.push(`--proxy-server=${proxy}`);
 
     args.push(`--proxy-bypass-list=*.*.*.*;*google*;*stun1*;*start*;*events*`); //*icecandidate*;
@@ -73,12 +89,12 @@ console.log(`Webcam file:`, webcamFile);
     proxyIp = myIP;
   }
 
-  console.log(`myIP is`, myIP);
-  console.log(`proxyIp is`, proxyIp);
+  logger.info(`myIP is`, myIP);
+  logger.info(`proxyIp is`, proxyIp);
 
   let browser: Browser;
   if (process.env.DOCKER) {
-    console.log(`creating docker browser: ` + process.env.DOCKER);
+    logger.info(`creating docker browser: ` + process.env.DOCKER);
     browser = await puppeteer.launch({
       headless: true,
       args: [`--no-sandbox`, `--disable-gpu`, ...args],
@@ -118,7 +134,7 @@ console.log(`Webcam file:`, webcamFile);
   page.on(`framenavigated`, async (frame) => {
     const url = frame.url(); // the new url
 
-    console.log(`changed url`, url);
+    logger.info(`changed url`, url);
     if (url.includes(`ban`)) {
       console.error(`BANNED`);
       process.exit();
@@ -132,10 +148,10 @@ console.log(`Webcam file:`, webcamFile);
   let count = 0;
 
   await page.exposeFunction(`onCustomEvent`, async (event: any) => {
-    console.log(`Event: ${event}`);
+    logger.info(`Event: ${event}`);
     if (event.includes(`loadedmetadata`) && screenshot) {
       const screenshot_id = Math.random();
-      console.log(`screenshot`);
+      logger.info(`screenshot`);
       await page.screenshot({
         path: `screenshots/screenshot-${new Date()}-${test_id}}.png`,
       });
@@ -158,11 +174,11 @@ console.log(`Webcam file:`, webcamFile);
   // Select all checkboxes
   const checkboxes = await page.$$(`input[type="checkbox"]`);
 
-  console.log(`checkboxes.length`, checkboxes.length);
+  logger.info(`checkboxes.length`, checkboxes.length);
 
   // Click on each checkbox
   for (const checkbox of checkboxes) {
-    console.log(`checkbox`, checkbox);
+    logger.info(`checkbox`, checkbox);
     try {
       await checkbox.click();
     } catch (e) {
@@ -180,12 +196,12 @@ console.log(`Webcam file:`, webcamFile);
     // Override the RTCPeerConnection class in the window object
     window.RTCPeerConnection = class extends RTCPeerConnection {
       constructor(configuration: RTCConfiguration | undefined) {
-        console.log(`Create`);
+        logger.info(`Create`);
         super(configuration);
 
         // Add event listener for connection state change
         this.addEventListener(`connectionstatechange`, () => {
-          console.log(`Connection State:`, this.connectionState);
+          logger.info(`Connection State:`, this.connectionState);
           const myWindow: any = window;
           myWindow.onCustomEvent(this.connectionState);
         });
@@ -200,7 +216,7 @@ console.log(`Webcam file:`, webcamFile);
       myWindow.onCustomEvent(`loadedmetadata`);
 
       if (video.src !== previousSource) {
-        console.log(`Video source has changed.`);
+        logger.info(`Video source has changed.`);
         myWindow.onCustomEvent(`Video source has changed.`);
         // Perform additional actions as needed
       }
@@ -224,5 +240,5 @@ console.log(`Webcam file:`, webcamFile);
   // await delay(1000 * 60 * 5);
 
   // await browser.close();
-  // console.log("closed...");
+  // logger.info("closed...");
 })();

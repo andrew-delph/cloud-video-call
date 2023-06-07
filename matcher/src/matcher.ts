@@ -27,12 +27,15 @@ import { createServer } from 'http';
 import Client from 'ioredis';
 import { Server } from 'socket.io';
 import { v4 as uuid } from 'uuid';
+const prom = common.prom;
+const logger = common.getLogger();
 
 common.listenGlobalExceptions(async () => {
   logger.debug(`clean up matcher`);
+  common.promClient.stop();
 });
 
-const logger = common.getLogger();
+common.promClient.startPush();
 
 dotenv.config();
 

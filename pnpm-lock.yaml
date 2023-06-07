@@ -439,6 +439,9 @@ importers:
       commander:
         specifier: ^10.0.1
         version: 10.0.1
+      common:
+        specifier: link:../common
+        version: link:../common
       puppeteer:
         specifier: ^20.5.0
         version: 20.5.0(typescript@5.1.3)
