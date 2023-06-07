@@ -94,6 +94,7 @@ const user_viewed = new common.prom.Counter({
     browser = await puppeteer.launch({
       headless: true,
       args: [`--no-sandbox`, `--disable-gpu`, ...args],
+      executablePath: `${process.env.PUPPETEER_EXECUTABLE_PATH}`,
     });
   } else {
     browser = await puppeteer.launch({

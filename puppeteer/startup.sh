@@ -37,7 +37,7 @@ openvpn --config $random_opvn &
 counter=0
 while true; do
     # Check if the maximum wait time of 20 seconds has been reached
-    if [ $counter -ge 4 ]; then
+    if [ $counter -ge 20 ]; then
         echo "VPN connection timed out after 20 seconds."
         break
     fi
@@ -47,8 +47,8 @@ while true; do
         echo "VPN is connected"
         break
     else
-        echo "VPN is not yet connected. Retrying in 5 seconds..."
-        sleep 5
+        echo "VPN is not yet connected. Retrying in 1 second."
+        sleep 1
         counter=$((counter + 1))
     fi
 done
@@ -65,7 +65,7 @@ echo "started proxy"
 counter=0
 while true; do
     # Check if the maximum wait time of 20 seconds has been reached
-    if [ $counter -ge 4 ]; then
+    if [ $counter -ge 20 ]; then
         echo "Proxy connection timed out after 20 seconds."
         break
     fi
@@ -73,8 +73,8 @@ while true; do
         echo "Proxy is ready"
         break
     else
-        echo "Proxy is not yet ready. Retrying in 5 seconds..."
-        sleep 5
+        echo "Proxy is not yet ready. Retrying in 5 second."
+        sleep 1
         counter=$((counter + 1))
     fi
 done
