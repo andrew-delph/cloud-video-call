@@ -22,11 +22,11 @@ test:
 	make image
 	docker run --rm -it -v ./screenshots:/screenshots/ --cap-add=NET_ADMIN bazel/puppeteer:image
 
-attach:
+logs:
 	make apply
 	kubectl wait --for condition=Initialized --timeout=60s -n bot pod/omegle-bot
 	sleep 5
-	kubectl attach -n bot omegle-bot
+	kubectl logs -n bot -f omegle-bot
 
 proxy:
 	make image
