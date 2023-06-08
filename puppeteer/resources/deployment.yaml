@@ -4,6 +4,7 @@ metadata:
   name: omegle-bot
   namespace: bot
 spec:
+  terminationGracePeriodSeconds: 5
   containers:
     - name: runner
       image: ghcr.io/andrew-delph/video-call-puppeteer:latest
