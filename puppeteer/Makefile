@@ -22,6 +22,10 @@ test:
 	make image
 	docker run --rm -it -v ./screenshots:/screenshots/ --cap-add=NET_ADMIN bazel/puppeteer:image
 
+bash:
+	make image
+	docker run --rm -it -v ./screenshots:/screenshots/ --cap-add=NET_ADMIN bazel/puppeteer:image bash
+
 logs:
 	make apply
 	kubectl wait --for condition=Initialized --timeout=60s -n bot pod/omegle-bot
