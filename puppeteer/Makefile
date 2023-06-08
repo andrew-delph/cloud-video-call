@@ -4,8 +4,6 @@ apply:
 	kubectl apply -f ./resources/. --wait
 	kubectl rollout restart deployment/puppeteer -n bot
 	kubectl rollout status deployment/puppeteer -n bot --watch=true --timeout=300s
-	kubectl wait --for condition=Ready --timeout=120s -n bot deployment/puppeteer
-
 
 pods:
 	kubectl get pods -n bot
