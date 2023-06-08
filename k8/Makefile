@@ -63,4 +63,4 @@ curl:
 	kubectl run -it --rm --image yauritux/busybox-curl sh
 
 debug:
-	kubectl run --rm -it --image "ubuntu:latest" bash
+	kubectl run --rm -it --image "osexp2000/ubuntu-with-utils" bash --
