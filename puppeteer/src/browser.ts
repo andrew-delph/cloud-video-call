@@ -164,6 +164,7 @@ const user_viewed = new common.prom.Counter({
     logger.debug(`Event: ${event}`);
     if (event.includes(`loadedmetadata`)) {
       logger.info(`user_viewed`);
+      logger.warn(`user_viewed`);
       user_viewed.inc();
       if (screenshot) {
         logger.debug(`screenshot`);
