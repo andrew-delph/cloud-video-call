@@ -36,7 +36,7 @@ program
 const options = program.opts();
 const webcamFile = options.webcamFile;
 
-logger.info(`Webcam file:`, webcamFile);
+logger.info(`Webcam file: ${webcamFile}`);
 
 if (process.env.METRICS) {
   logger.info(`PUSHING METRICS TO PROMETHEUS`);
