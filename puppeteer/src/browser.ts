@@ -241,7 +241,7 @@ const user_viewed = new common.prom.Counter({
     myWindow.onCustomEvent(`evalulate`);
   });
 
-  delay(1000 * 60 * 5).then(() => {
+  delay(1000 * 60 * 20).then(() => {
     logger.info(`timeout reached`);
     process.exit();
   });
