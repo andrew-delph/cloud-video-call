@@ -148,7 +148,7 @@ const user_viewed = new common.prom.Counter({
   page.on(`framenavigated`, async (frame) => {
     const url = frame.url(); // the new url
 
-    logger.info(`changed url: ${url}`);
+    logger.debug(`changed url: ${url}`);
     if (url.includes(`ban`)) {
       console.error(`BANNED`);
       process.exit();
