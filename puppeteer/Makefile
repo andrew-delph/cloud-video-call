@@ -9,6 +9,9 @@ apply:
 pods:
 	kubectl get pods -n bot
 
+top:
+	kubectl top pod -n bot --sum --sort-by="memory"
+
 
 delete:
 	kubectl delete -f ./resources/deployment.yaml --wait
