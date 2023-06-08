@@ -161,12 +161,12 @@ const user_viewed = new common.prom.Counter({
   await page.goto(url);
 
   await page.exposeFunction(`onCustomEvent`, async (event: any) => {
-    logger.info(`Event: ${event}`);
+    logger.debug(`Event: ${event}`);
     if (event.includes(`loadedmetadata`)) {
       logger.info(`user_viewed`);
       user_viewed.inc();
       if (screenshot) {
-        logger.info(`screenshot`);
+        logger.debug(`screenshot`);
         await page.screenshot({
           path: `screenshots/screenshot-${new Date()}-${test_id}}.png`,
         });
@@ -189,11 +189,11 @@ const user_viewed = new common.prom.Counter({
   // Select all checkboxes
   const checkboxes = await page.$$(`input[type="checkbox"]`);
 
-  logger.info(`checkboxes.length: ${checkboxes.length}`);
+  logger.debug(`checkboxes.length: ${checkboxes.length}`);
 
   // Click on each checkbox
   for (const checkbox of checkboxes) {
-    logger.info(`checkbox: ${checkbox}`);
+    logger.debug(`checkbox: ${checkbox}`);
     try {
       await checkbox.click();
     } catch (e) {
