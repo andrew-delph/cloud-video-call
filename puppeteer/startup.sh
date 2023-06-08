@@ -19,25 +19,14 @@ function test_commands() {
 
 test_commands
 
-
-# echo "dns before"
-# cat /etc/resolv.conf
-# # resolv_conf=$(cat /etc/resolv.conf)
-# # echo "nameserver 8.8.8.8" >> /etc/resolv.conf
-# # echo "$resolv_conf" >> /etc/resolv.conf
-# echo "" > /etc/resolv.conf
-# # echo "nameserver 8.8.8.8"" >> /etc/resolv.conf
-# echo "nameserver 10.96.0.10" >> /etc/resolv.conf
-# echo "search bot.svc.cluster.local svc.cluster.local cluster.local home" >> /etc/resolv.conf
-# echo "options ndots:5" >> /etc/resolv.conf
-# echo
-# echo "dns after"
-# cat /etc/resolv.conf
-
 echo "dns before"
 cat /etc/resolv.conf
 resolv_conf=$(cat /etc/resolv.conf)
-echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+if [ -v PROXY ]; then
+    echo "nameserver 8.8.8.8" > /etc/resolv.conf
+else
+    echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+fi
 # echo "$resolv_conf" >> /etc/resolv.conf
 echo "dns after"
 cat /etc/resolv.conf
