@@ -17,6 +17,12 @@ spec:
       env:
         - name: METRICS
           value: 'TRUE'
+      readinessProbe:
+        httpGet:
+          path: /health
+          port: 80
+        failureThreshold: 6
+        periodSeconds: 10
       livenessProbe:
         httpGet:
           path: /health
