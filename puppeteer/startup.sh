@@ -6,24 +6,14 @@ function test_commands() {
     echo
     echo "--- test_commands ---"
     echo
-    # echo .......
     # dig options.default
 
     nslookup options.default | grep 'Server:'
 
-    echo "--curl--"
+    echo "ip:"
     curl -sS https://2ip.io
-    curl -sS http://options.default/health
-    
-    # cat /etc/resolv.conf
-    # # echo
-    # ip addr
-    # ping -c 4 10.244.2.111
-    # ip link show eth0
-    # curl --interface eth0 --max-time 10 -H "Host: options.default" http://10.107.5.46/health
+    # curl -sS http://options.default/health
 
-    echo
-    echo
 }
 
 
@@ -44,13 +34,13 @@ test_commands
 # echo "dns after"
 # cat /etc/resolv.conf
 
-# echo "dns before"
-# cat /etc/resolv.conf
-# resolv_conf=$(cat /etc/resolv.conf)
-# echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "dns before"
+cat /etc/resolv.conf
+resolv_conf=$(cat /etc/resolv.conf)
+echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 # echo "$resolv_conf" >> /etc/resolv.conf
-# echo "dns after"
-# cat /etc/resolv.conf
+echo "dns after"
+cat /etc/resolv.conf
 
 
 mkdir -p /dev/net 
