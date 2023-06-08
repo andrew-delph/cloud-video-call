@@ -29,6 +29,7 @@ bash:
 logs:
 	make apply
 	kubectl wait --for condition=Initialized --timeout=60s -n bot pod/omegle-bot
+	kubectl wait --for condition=Ready --timeout=60s -n bot pod/omegle-bot
 	sleep 5
 	@echo -e "\n\n\n---LOGS---\n\n"
 	kubectl logs -n bot -f omegle-bot
