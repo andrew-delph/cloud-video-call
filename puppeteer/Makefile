@@ -4,6 +4,7 @@ apply:
 	kubectl apply -f ./resources/. --wait
 	kubectl rollout restart deployment/puppeteer -n bot
 	kubectl rollout status deployment/puppeteer -n bot --watch=true --timeout=300s
+	kubectl wait --for condition=Ready --timeout=60s -n bot deployment/puppeteer
 
 
 pods:
@@ -32,9 +33,8 @@ bash:
 
 logs:
 	make apply
-	kubectl wait --for condition=Ready --timeout=60s -n bot pod/omegle-bot
 	@echo -e "\n\n\n---------LOGS---------\n\n"
-	kubectl logs -n bot -f omegle-bot
+	kubectl logs -n bot -f deployment/puppeteer
 
 proxy:
 	make image
