@@ -242,6 +242,7 @@ const user_viewed = new common.prom.Counter({
   });
 
   delay(1000 * 60 * 5).then(() => {
+    logger.info(`timeout reached`);
     process.exit();
   });
 
