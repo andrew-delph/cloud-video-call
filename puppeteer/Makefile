@@ -20,8 +20,13 @@ push:
 
 test:
 	make image
-	docker run -it -v ./screenshots:/screenshots/ --cap-add=NET_ADMIN bazel/puppeteer:image
+	docker run --rm -it -v ./screenshots:/screenshots/ --cap-add=NET_ADMIN bazel/puppeteer:image
 
+attach:
+	make apply
+	kubectl wait --for condition=Initialized --timeout=60s -n bot pod/omegle-bot
+	sleep 5
+	kubectl attach -n bot omegle-bot
 
 proxy:
 	make image
