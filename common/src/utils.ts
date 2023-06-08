@@ -209,19 +209,24 @@ class PromClient {
 
   startPush(delay: number = 5000) {
     this.interval = setInterval(async () => {
-      await pushGateway
-        .pushAdd({ jobName: this.jobName })
-        .then(({ resp, body }) => {
-          logger.debug(`pushGateway successful`);
-        })
-        .catch((err) => {
-          logger.error(`pushGateway error: ${err}`);
-        });
+      await this.manualPush();
     }, delay);
   }
 
-  stop() {
+  async manualPush() {
+    await pushGateway
+      .pushAdd({ jobName: this.jobName })
+      .then(({ resp, body }) => {
+        logger.debug(`pushGateway successful`);
+      })
+      .catch((err) => {
+        logger.error(`pushGateway error: ${err}`);
+      });
+  }
+
+  async stop() {
     clearInterval(this.interval);
+    await this.manualPush();
   }
 }
 
