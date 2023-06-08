@@ -8,7 +8,7 @@ const logger = common.getLogger();
 
 common.listenGlobalExceptions(async () => {
   logger.debug(`clean up browser`);
-  common.promClient.stop();
+  await common.promClient.stop();
 });
 
 const port = 80;
