@@ -30,8 +30,8 @@ bash:
 	docker run --rm -it -v ./screenshots:/screenshots/ --cap-add=NET_ADMIN bazel/puppeteer:image bash
 
 logs:
-	make apply
-	@echo -e "\n\n\n---------LOGS---------\n\n"
+	# make apply
+	# @echo -e "\n\n\n---------LOGS---------\n\n"
 	kubectl logs -n bot -f deployment/puppeteer
 
 proxy:
