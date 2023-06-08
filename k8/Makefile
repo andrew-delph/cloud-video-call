@@ -61,3 +61,6 @@ ehosts:
 
 curl:
 	kubectl run -it --rm --image yauritux/busybox-curl sh
+
+debug:
+	kubectl run --rm -it --image "ubuntu:latest" bash

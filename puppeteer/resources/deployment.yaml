@@ -8,6 +8,8 @@ spec:
     - name: runner
       image: ghcr.io/andrew-delph/video-call-puppeteer:latest
       imagePullPolicy: Always
+      ports:
+        - containerPort: 80
       securityContext:
         capabilities:
           add:
@@ -15,3 +17,9 @@ spec:
       env:
         - name: METRICS
           value: 'TRUE'
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: 80
+        initialDelaySeconds: 60
+        periodSeconds: 10

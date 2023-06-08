@@ -2,12 +2,23 @@ import axios from 'axios';
 import puppeteer, { Browser } from 'puppeteer-core';
 import { Command } from 'commander';
 import * as common from 'common';
+import express from 'express';
 
 const logger = common.getLogger();
 
 common.listenGlobalExceptions(async () => {
   logger.debug(`clean up browser`);
   common.promClient.stop();
+});
+
+const port = 80;
+const app = express();
+app.get(`/health`, (req, res) => {
+  logger.debug(`got health check`);
+  res.send(`Health is good.`);
+});
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
 
 function delay(time: number) {
@@ -91,8 +102,8 @@ const user_viewed = new common.prom.Counter({
     proxyIp = myIP;
   }
 
-  logger.info(`myIP is`, myIP);
-  logger.info(`proxyIp is`, proxyIp);
+  logger.info(`myIP is ${myIP}`);
+  logger.info(`proxyIp is ${proxyIp}`);
 
   let browser: Browser;
   if (process.env.DOCKER) {
@@ -137,7 +148,7 @@ const user_viewed = new common.prom.Counter({
   page.on(`framenavigated`, async (frame) => {
     const url = frame.url(); // the new url
 
-    logger.info(`changed url`, url);
+    logger.info(`changed url: ${url}`);
     if (url.includes(`ban`)) {
       console.error(`BANNED`);
       process.exit();
@@ -178,11 +189,11 @@ const user_viewed = new common.prom.Counter({
   // Select all checkboxes
   const checkboxes = await page.$$(`input[type="checkbox"]`);
 
-  logger.info(`checkboxes.length`, checkboxes.length);
+  logger.info(`checkboxes.length: ${checkboxes.length}`);
 
   // Click on each checkbox
   for (const checkbox of checkboxes) {
-    logger.info(`checkbox`, checkbox);
+    logger.info(`checkbox: ${checkbox}`);
     try {
       await checkbox.click();
     } catch (e) {
@@ -205,7 +216,7 @@ const user_viewed = new common.prom.Counter({
 
         // Add event listener for connection state change
         this.addEventListener(`connectionstatechange`, () => {
-          logger.info(`Connection State:`, this.connectionState);
+          logger.info(`Connection State: ${this.connectionState}`);
           const myWindow: any = window;
           myWindow.onCustomEvent(this.connectionState);
         });
