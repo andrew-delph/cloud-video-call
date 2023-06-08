@@ -1,8 +1,9 @@
 
 apply:
 	make push
-	make delete || echo "delete error"
 	kubectl apply -f ./resources/. --wait
+	kubectl rollout restart deployment/puppeteer -n bot
+	kubectl rollout status deployment/puppeteer -n bot --watch=true --timeout=300s
 
 
 pods:

@@ -1,32 +1,45 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: omegle-bot
+  name: puppeteer
   namespace: bot
 spec:
-  terminationGracePeriodSeconds: 5
-  containers:
-    - name: runner
-      image: ghcr.io/andrew-delph/video-call-puppeteer:latest
-      imagePullPolicy: Always
-      ports:
-        - containerPort: 80
-      securityContext:
-        capabilities:
-          add:
-            - NET_ADMIN
-      env:
-        - name: METRICS
-          value: 'TRUE'
-      # readinessProbe:
-      #   httpGet:
-      #     path: /health
-      #     port: 80
-      #   failureThreshold: 6
-      #   periodSeconds: 10
-      livenessProbe:
-        httpGet:
-          path: /health
-          port: 80
-        initialDelaySeconds: 60
-        periodSeconds: 10
+  replicas: 1
+  selector:
+    matchLabels:
+      app: puppeteer
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: puppeteer
+    spec:
+      priorityClassName: 'low-priority'
+      containers:
+        - name: runner
+          image: ghcr.io/andrew-delph/video-call-puppeteer:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          env:
+            - name: METRICS
+              value: 'TRUE'
+          # readinessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 80
+          #   failureThreshold: 6
+          #   periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 10
+      restartPolicy: Always
+status: {}
