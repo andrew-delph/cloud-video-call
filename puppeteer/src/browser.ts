@@ -213,12 +213,10 @@ const user_viewed = new common.prom.Counter({
     // Override the RTCPeerConnection class in the window object
     window.RTCPeerConnection = class extends RTCPeerConnection {
       constructor(configuration: RTCConfiguration | undefined) {
-        logger.info(`Create`);
         super(configuration);
 
         // Add event listener for connection state change
         this.addEventListener(`connectionstatechange`, () => {
-          logger.info(`Connection State: ${this.connectionState}`);
           const myWindow: any = window;
           myWindow.onCustomEvent(this.connectionState);
         });
