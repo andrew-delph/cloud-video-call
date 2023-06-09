@@ -17,9 +17,6 @@ app.get(`/health`, (req, res) => {
   logger.debug(`got health check`);
   res.send(`Health is good.`);
 });
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
 
 function delay(time: number) {
   return new Promise((resolve) => setTimeout(resolve, time));
@@ -53,7 +50,7 @@ const user_viewed = new common.prom.Counter({
   const useProxy = true;
   let useAuth = true;
   const headless = false;
-  const screenshot = true;
+  const screenshot = false;
 
   let url = `https://www.omegle.com/`;
 
@@ -113,6 +110,9 @@ const user_viewed = new common.prom.Counter({
       args: [`--no-sandbox`, `--disable-gpu`, ...args],
       executablePath: `${process.env.PUPPETEER_EXECUTABLE_PATH}`,
     });
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
   } else {
     browser = await puppeteer.launch({
       ignoreHTTPSErrors: true,
@@ -120,6 +120,7 @@ const user_viewed = new common.prom.Counter({
       args: args,
       defaultViewport: null,
       devtools: false,
+      executablePath: `/usr/bin/google-chrome`,
     });
   }
 
@@ -198,7 +199,7 @@ const user_viewed = new common.prom.Counter({
     try {
       await checkbox.click();
     } catch (e) {
-      console.error(e);
+      console.error(`checkbox: ${e}`);
     }
   }
 

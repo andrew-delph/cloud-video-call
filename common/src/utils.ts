@@ -225,8 +225,10 @@ class PromClient {
   }
 
   async stop() {
-    clearInterval(this.interval);
-    await this.manualPush();
+    if (this.interval) {
+      clearInterval(this.interval);
+      await this.manualPush();
+    }
   }
 }
 
