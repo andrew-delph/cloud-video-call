@@ -37,7 +37,7 @@ const webcamFile = options.webcamFile;
 logger.info(`Webcam file: ${webcamFile}`);
 
 if (process.env.METRICS) {
-  logger.info(`PUSHING METRICS TO PROMETHEUS`);
+  logger.info(`PUSHING METRICS TO PROMETHEUS ENABLED`);
   promClient.startPush();
 }
 
