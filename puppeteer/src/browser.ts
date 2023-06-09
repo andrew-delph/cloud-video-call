@@ -152,7 +152,7 @@ if (process.env.METRICS) {
     logger.debug(`changed url: ${url}`);
     if (url.includes(`ban`)) {
       console.error(`BANNED`);
-      throw Error(`BANNED`);
+      common.killSigint();
     }
 
     // do something here...
