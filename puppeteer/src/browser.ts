@@ -152,7 +152,7 @@ if (process.env.METRICS) {
     logger.debug(`changed url: ${url}`);
     if (url.includes(`ban`)) {
       console.error(`BANNED`);
-      throw `BANNED`;
+      throw Error(`BANNED`);
     }
 
     // do something here...

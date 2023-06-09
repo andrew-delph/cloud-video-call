@@ -4,17 +4,20 @@ metadata:
   name: puppeteer
   namespace: bot
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: puppeteer
   strategy: {}
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: puppeteer
     spec:
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: puppeteer-storage
       terminationGracePeriodSeconds: 5
       priorityClassName: 'low-priority'
       containers:
@@ -30,6 +33,11 @@ spec:
           env:
             - name: METRICS
               value: 'TRUE'
+            - name: SCREENSHOT_PATH
+              value: '/data/screenshots'
+          volumeMounts:
+            - name: storage
+              mountPath: /data
           # readinessProbe:
           #   httpGet:
           #     path: /health
@@ -42,5 +50,9 @@ spec:
               port: 80
             initialDelaySeconds: 60
             periodSeconds: 10
+          resources:
+            limits:
+              cpu: '500m'
+              memory: '512Mi'
       restartPolicy: Always
 status: {}
