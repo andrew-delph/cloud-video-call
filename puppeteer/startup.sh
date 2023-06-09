@@ -105,6 +105,10 @@ while true; do
     fi
 done
 
+if [ -v SCREENSHOT_PATH ]; then
+    mkdir -p $SCREENSHOT_PATH
+fi
+
 if [ ! -v RUN_COMMAND ] || [ -v PROXY ]; then
     echo "RUN_COMMAND=$RUN_COMMAND PROXY=$PROXY";
     while true; do sleep 10; done

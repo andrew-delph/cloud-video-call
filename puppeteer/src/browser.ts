@@ -152,7 +152,7 @@ if (process.env.METRICS) {
     logger.debug(`changed url: ${url}`);
     if (url.includes(`ban`)) {
       console.error(`BANNED`);
-      common.killSigint();
+      throw `BANNED`;
     }
 
     // do something here...
@@ -166,9 +166,10 @@ if (process.env.METRICS) {
       logger.info(`user_viewed`);
       user_viewed.inc();
       if (screenshotPath) {
-        logger.debug(`screenshot`);
+        const screenshotFile = `${screenshotPath}/screenshot-${new Date()}-${test_id}}.png`;
+        logger.debug(`screenshot: ${screenshotFile}`);
         await page.screenshot({
-          path: `${screenshotPath}/screenshot-${new Date()}-${test_id}}.png`,
+          path: screenshotFile,
         });
       }
     }
@@ -246,7 +247,11 @@ if (process.env.METRICS) {
 
   while (true) {
     if (screenshotPath) {
-      await page.screenshot({ path: `${screenshotPath}/screenshot.png` });
+      const screenshotFile = `${screenshotPath}/screenshot.png`;
+      logger.debug(`screenshot: ${screenshotFile}`);
+      await page.screenshot({
+        path: screenshotFile,
+      });
     }
 
     await delay(1000 * 5 + 1000 * 10 * Math.random());
