@@ -24,9 +24,9 @@ apply:
 	bash ./create_dashboards.sh
 
 delete:
-	helm uninstall loki --namespace=monitoring
-	helm uninstall prometheus-rabbitmq-exporter
-	helm uninstall prometheus-adapter --namespace=monitoring
+	helm uninstall loki --namespace=monitoring --wait
+	helm uninstall prometheus-rabbitmq-exporter --wait
+	helm uninstall prometheus-adapter --namespace=monitoring --wait
 
 watch:
 	watch kubectl get pods -n monitoring
