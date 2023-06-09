@@ -5,6 +5,8 @@ import * as common from 'common';
 import express from 'express';
 import { user_viewed } from './metrics';
 
+const test_id = process.env.HOSTNAME;
+
 const logger = common.getLogger();
 const promClient = new common.PromClient(`omegle`);
 common.listenGlobalExceptions(async () => {
@@ -22,8 +24,6 @@ app.get(`/health`, (req, res) => {
 function delay(time: number) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
-
-const test_id = Math.random().toString(36).substring(2, 15);
 
 const program = new Command();
 
@@ -247,7 +247,7 @@ if (process.env.METRICS) {
 
   while (true) {
     if (screenshotPath) {
-      const screenshotFile = `${screenshotPath}/screenshot.png`;
+      const screenshotFile = `${screenshotPath}/${test_id}-screenshot.png`;
       logger.debug(`screenshot: ${screenshotFile}`);
       await page.screenshot({
         path: screenshotFile,
