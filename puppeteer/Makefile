@@ -23,11 +23,11 @@ push:
 
 test:
 	make image
-	docker run --rm -it -v ./screenshots:/screenshots/ --cap-add=NET_ADMIN bazel/puppeteer:image
+	docker run --rm -it -e SCREENSHOT_PATH=/screenshots -v ./screenshots:/screenshots/ --cap-add=NET_ADMIN bazel/puppeteer:image
 
 bash:
 	make image
-	docker run --rm -it -v ./screenshots:/screenshots/ --cap-add=NET_ADMIN bazel/puppeteer:image bash
+	docker run --rm -it --cap-add=NET_ADMIN bazel/puppeteer:image bash
 
 logs:
 	# make apply
@@ -45,6 +45,7 @@ convert:
 
 
 clean:
+	sudo chmod -R 777 screenshots
 	sudo rm -rf screenshots/*
 
 size:

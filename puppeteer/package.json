@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "ts-node src/browser.ts",
+    "test": "SCREENSHOT_PATH=$PWD/screenshots bazel run puppeteer",
     "run": " while true; do npm run test; done",
     "test-webcam": "ts-node src/test-webcam.ts",
     "curl": "./curl.sh #> output.txt 2>&1",

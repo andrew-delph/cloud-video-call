@@ -50,7 +50,11 @@ const user_viewed = new common.prom.Counter({
   const useProxy = true;
   let useAuth = true;
   const headless = false;
-  const screenshot = false;
+  const screenshotPath = process.env.SCREENSHOT_PATH;
+
+  if (screenshotPath) {
+    logger.info(`screenshotPath: ${screenshotPath}`);
+  }
 
   let url = `https://www.omegle.com/`;
 
@@ -166,10 +170,10 @@ const user_viewed = new common.prom.Counter({
     if (event.includes(`loadedmetadata`)) {
       logger.info(`user_viewed`);
       user_viewed.inc();
-      if (screenshot) {
+      if (screenshotPath) {
         logger.debug(`screenshot`);
         await page.screenshot({
-          path: `screenshots/screenshot-${new Date()}-${test_id}}.png`,
+          path: `${screenshotPath}/screenshot-${new Date()}-${test_id}}.png`,
         });
       }
     }
@@ -246,8 +250,8 @@ const user_viewed = new common.prom.Counter({
   });
 
   while (true) {
-    if (screenshot) {
-      await page.screenshot({ path: `screenshots/screenshot.png` });
+    if (screenshotPath) {
+      await page.screenshot({ path: `${screenshotPath}/screenshot.png` });
     }
 
     await delay(1000 * 5 + 1000 * 10 * Math.random());
