@@ -5,10 +5,10 @@ import * as common from 'common';
 import express from 'express';
 
 const logger = common.getLogger();
-
+const promClient = new common.PromClient(`omegle`);
 common.listenGlobalExceptions(async () => {
   logger.debug(`clean up browser`);
-  await common.promClient.stop();
+  await promClient.stop();
 });
 
 const port = 80;
@@ -37,7 +37,7 @@ logger.info(`Webcam file: ${webcamFile}`);
 
 if (process.env.METRICS) {
   logger.info(`PUSHING METRICS TO PROMETHEUS`);
-  common.promClient.startPush();
+  promClient.startPush();
 }
 
 const user_viewed = new common.prom.Counter({

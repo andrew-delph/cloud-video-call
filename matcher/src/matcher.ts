@@ -30,12 +30,14 @@ import { v4 as uuid } from 'uuid';
 const prom = common.prom;
 const logger = common.getLogger();
 
+const promClient = new common.PromClient(`matcher`);
+
 common.listenGlobalExceptions(async () => {
   logger.debug(`clean up matcher`);
-  common.promClient.stop();
+  promClient.stop();
 });
 
-common.promClient.startPush();
+promClient.startPush();
 
 dotenv.config();
 

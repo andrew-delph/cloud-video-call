@@ -199,11 +199,11 @@ const pushGateway = new prom.Pushgateway(
   `http://loki-prometheus-pushgateway.monitoring:9091`,
 );
 
-class PromClient {
+export class PromClient {
   interval: NodeJS.Timer | undefined;
   jobName: string;
 
-  constructor(jobName = `default`) {
+  constructor(jobName: string) {
     this.jobName = jobName;
   }
 
@@ -231,5 +231,3 @@ class PromClient {
     }
   }
 }
-
-export const promClient = new PromClient();
