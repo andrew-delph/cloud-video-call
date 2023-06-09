@@ -231,3 +231,7 @@ export class PromClient {
     }
   }
 }
+
+export function killSigint() {
+  process.kill(process.pid, `SIGINT`);
+}

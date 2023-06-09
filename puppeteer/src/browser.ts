@@ -152,8 +152,7 @@ if (process.env.METRICS) {
     logger.debug(`changed url: ${url}`);
     if (url.includes(`ban`)) {
       console.error(`BANNED`);
-      process.exit();
-      await browser.close();
+      common.killSigint();
     }
 
     // do something here...
@@ -242,7 +241,7 @@ if (process.env.METRICS) {
 
   delay(1000 * 60 * 20).then(() => {
     logger.info(`timeout reached`);
-    process.exit();
+    common.killSigint();
   });
 
   while (true) {
