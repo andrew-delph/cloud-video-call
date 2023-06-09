@@ -3,6 +3,7 @@ import puppeteer, { Browser } from 'puppeteer-core';
 import { Command } from 'commander';
 import * as common from 'common';
 import express from 'express';
+import { user_viewed } from './metrics';
 
 const logger = common.getLogger();
 const promClient = new common.PromClient(`omegle`);
@@ -39,11 +40,6 @@ if (process.env.METRICS) {
   logger.info(`PUSHING METRICS TO PROMETHEUS`);
   promClient.startPush();
 }
-
-const user_viewed = new common.prom.Counter({
-  name: `user_viewed`,
-  help: `Every time the bot is viewed by a user`,
-});
 
 (async () => {
   const useFakeWebcam = true;
