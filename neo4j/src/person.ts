@@ -213,6 +213,11 @@ export let userFunctions: any[] = [];
 //   userFunctions.push(createGroupB);
 // }
 
+userFunctions.push(createFemale);
+userFunctions.push(createMale);
+userFunctions.push(createGroupA);
+userFunctions.push(createGroupB);
+
 // userFunctions.push(createPositive);
 // userFunctions.push(createNegative);
 // userFunctions.push(createRandom);

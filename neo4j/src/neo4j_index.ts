@@ -64,126 +64,28 @@ export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
 
-    await nodembeddings_flow.main();
-
-    return;
-
-    // SIMILAR1 mutate
-    results = await funcs.run(
-      `
-      CALL gds.nodeSimilarity.mutate('myGraph', {
-        nodeLabels: ['Person'],
-        relationshipTypes: ['FRIENDS'],
-        mutateRelationshipType: 'SIMILAR1',
-        mutateProperty: 'score'
-      })
-      YIELD nodesCompared, relationshipsWritten
-    `,
-    );
-
-    // SIMILAR2 mutate
-    results = await funcs.run(
-      `
-      CALL gds.nodeSimilarity.mutate('myGraph', {
-        nodeLabels: ['Person'],
-        relationshipTypes: ['FRIENDS', 'SIMILAR1'],
-        mutateRelationshipType: 'SIMILAR2',
-        mutateProperty: 'score'
-      })
-      YIELD nodesCompared, relationshipsWritten
-    `,
-    );
-
-    // SIMILAR3 mutate
-    results = await funcs.run(
-      `
-          CALL gds.nodeSimilarity.mutate('myGraph', {
-            nodeLabels: ['Person'],
-            relationshipTypes: ['NEGATIVE'],
-            mutateRelationshipType: 'SIMILAR3',
-            mutateProperty: 'score'
-          })
-          YIELD nodesCompared, relationshipsWritten
-        `,
-    );
-
-    // SIMILAR4 mutate
-    results = await funcs.run(
-      `
-          CALL gds.nodeSimilarity.mutate('myGraph', {
-            nodeLabels: ['Person'],
-            relationshipTypes: ['NEGATIVE', 'SIMILAR3'],
-            mutateRelationshipType: 'SIMILAR4',
-            mutateProperty: 'score'
-          })
-          YIELD nodesCompared, relationshipsWritten
-        `,
-    );
-
-    results = await funcs.run(
-      `
-      CALL gds.graph.relationshipProperty.stream(
-        'myGraph',                  
-        'score',
-        ['SIMILAR2','SIMILAR4']                              
-      )
-      YIELD
-        sourceNodeId, targetNodeId, relationshipType, propertyValue
-      RETURN
-        gds.util.asNode(sourceNodeId).userId as source, gds.util.asNode(targetNodeId).userId as target, relationshipType, propertyValue
-      ORDER BY source ASC, target ASC
-    `,
-    );
-
-    const getKey = (user1: string, user2: string) => {
-      return `key-${user1}-${user2}`;
-    };
-
-    const convertScore = (relationshipType: string, score: number): number => {
-      if (relationshipType == `SIMILAR2`) {
-        return score;
-      } else if ((relationshipType = `SIMILAR4`)) {
-        return -score;
-      } else {
-        throw `relationshipType ${relationshipType} does not exist`;
-      }
-    };
-
-    const data: Map<String, number> = new Map();
-
-    for (let record of results.records) {
-      const user1 = record.get(`source`);
-      const user2 = record.get(`target`);
-      const relationshipType = record.get(`relationshipType`);
-      const propertyValue = record.get(`propertyValue`);
-
-      const score = convertScore(relationshipType, propertyValue);
-      const key = getKey(user1, user2);
-
-      data.set(key, (data.get(key) || 0) + score);
-    }
-
-    let entries = [...data.entries()];
-
-    entries.sort((a, b) => {
-      return b[1] - a[1];
-    });
-
-    for (const entry of entries.slice(0, 50)) {
-      console.log(entry[0] + ` : ` + entry[1]);
-    }
-
-    return;
-
-    await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 50 });
-
-    // await funcs.createAttributeFloat();
-
-    const node_attributes: string[] = await funcs.getAttributeKeys();
-
+    await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 4 });
     results = await funcs.createFriends();
 
-    results = await funcs.createGraph(`myGraph`, node_attributes);
+    results = await funcs.run(`MATCH (p:Person) RETURN p.userId as userId`);
+
+    const userIds = results.records.map((record) => record.get(`userId`));
+
+    console.log(userIds.length);
+
+    console.log(userIds.slice(0, userIds.length / 2).length);
+
+    results = await funcs.createGraph(
+      `myGraph`,
+      [],
+      userIds.slice(0, userIds.length / 2),
+    );
+
+    printResults(results);
+
+    return;
+
+    const node_attributes: string[] = await funcs.getAttributeKeys();
 
     results = await funcs.callPriority();
     results = await funcs.callCommunities();

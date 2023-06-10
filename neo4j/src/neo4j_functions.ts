@@ -564,42 +564,45 @@ export async function createGraph(
     console.log(`whereString  for ${userList.length}`);
   }
 
-  result = await session.run(
-    `MATCH (source:Person)-[r:FRIENDS|FEEDBACK|NEGATIVE]->(target:Person),
-    (source)-[:USER_ATTRIBUTES_CONSTANT]->(source_md:MetaData),
-    (target)-[:USER_ATTRIBUTES_CONSTANT]->(target_md:MetaData)
-    ${whereString}
-    WITH source, target, r,
-    ${createValues(`source`)} AS source_values,
-    ${createValues(`target`)} AS target_values
-      WITH gds.alpha.graph.project(
-      '${graphName}',
-      source,
-      target,
-      {
-        sourceNodeLabels: 'Person',
-        targetNodeLabels: 'Person',
-        sourceNodeProperties: source {
-            // priority: coalesce(source.priority, 0),
-            // community: coalesce(source.community, 0),
-            values: source_values 
-            ${getExtraNodeProperties(`source`)}
-          },
-        targetNodeProperties: target {
-            // priority: coalesce(target.priority, 0),
-            // community: coalesce(target.community, 0),
-            values: target_values 
-            ${getExtraNodeProperties(`target`)}
-          }
-      },
-      {
-        relationshipType: type(r),
-        properties: r { .score }
-      },
-      {undirectedRelationshipTypes: ['FRIENDS','NEGATIVE']}
-    ) as g
-    RETURN g.graphName AS graph, g.nodeCount AS nodes, g.relationshipCount AS rels`,
-  );
+  const q = `MATCH (source:Person),
+  (source)-[:USER_ATTRIBUTES_CONSTANT]->(source_md:MetaData),
+  (target)-[:USER_ATTRIBUTES_CONSTANT]->(target_md:MetaData),
+  (source:Person)-[r:FRIENDS|FEEDBACK|NEGATIVE]->(target:Person)
+  ${whereString}
+  WITH source, target, r,
+  ${createValues(`source`)} AS source_values,
+  ${createValues(`target`)} AS target_values
+    WITH gds.alpha.graph.project(
+    '${graphName}',
+    source,
+    target,
+    {
+      sourceNodeLabels: 'Person',
+      targetNodeLabels: 'Person',
+      sourceNodeProperties: source {
+          // priority: coalesce(source.priority, 0),
+          // community: coalesce(source.community, 0),
+          values: source_values 
+          ${getExtraNodeProperties(`source`)}
+        },
+      targetNodeProperties: target {
+          // priority: coalesce(target.priority, 0),
+          // community: coalesce(target.community, 0),
+          values: target_values 
+          ${getExtraNodeProperties(`target`)}
+        }
+    },
+    {
+      relationshipType: type(r),
+      properties: r { .score }
+    },
+    {undirectedRelationshipTypes: ['FRIENDS','NEGATIVE']}
+  ) as g
+  RETURN g.graphName AS graph, g.nodeCount AS nodes, g.relationshipCount AS rels`;
+
+  // console.log(q);
+
+  result = await session.run(q);
 
   const end_time = performance.now();
   console.log(`createGraph`, end_time - start_time);
