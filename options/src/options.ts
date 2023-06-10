@@ -276,7 +276,7 @@ app.post(`/nukedata`, async (req, res) => {
     CALL {
       WITH n
       DETACH DELETE n
-    } IN TRANSACTIONS
+    } IN TRANSACTIONS OF 10 ROWS
     `);
 
   await session.close();
