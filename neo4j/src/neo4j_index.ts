@@ -64,7 +64,7 @@ export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
 
-    await funcs.createData({ deleteData: true, nodesNum: 100, edgesNum: 4 });
+    await funcs.createData({ deleteData: true, nodesNum: 3000, edgesNum: 4 });
     results = await funcs.createFriends();
 
     results = await funcs.run(`MATCH (p:Person) RETURN p.userId as userId`);
