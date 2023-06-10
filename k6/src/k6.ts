@@ -9,7 +9,7 @@ import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
 const vus = 30;
-const authKeysNum = 100; // number of users created for each parallel instance running
+const authKeysNum = 3000; // number of users created for each parallel instance running
 const iterations = 999999;//authKeysNum * 1000;
 
 const nukeData = true; // this doesnt work with multile running instances
