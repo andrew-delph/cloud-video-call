@@ -49,6 +49,13 @@ logger.info(`Value of JOB: ${job}`);
         activeUsers,
       );
 
+      if (
+        results.records.length < 1 ||
+        results.records[0].get(`graph`) == null
+      ) {
+        throw Error(`graph not created`);
+      }
+
       logger.debug(`graph: ${JSON.stringify(results.records[0])}`);
 
       results = await funcs.run(
@@ -130,7 +137,11 @@ logger.info(`Value of JOB: ${job}`);
         `,
       );
 
-      for (let record of results.records) {
+      const priorityRecords = results.records.sort(
+        (a, b) => a.get(`priority`) - b.get(`priority`),
+      );
+
+      for (let record of priorityRecords) {
         const userId: string = record.get(`userId`);
         const priority = record.get(`priority`);
         await common.writeRedisUserPriority(redisClient, userId, priority);
