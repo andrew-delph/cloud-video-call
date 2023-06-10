@@ -17,6 +17,7 @@ export function printResults(
   result: neo4j.QueryResult,
   topLimit: number = 10,
   bottomLimit: number = 0,
+  shortUserId = true,
 ) {
   console.log(``);
   //   console.log("Results:");
@@ -32,6 +33,7 @@ export function printResults(
     let line = `#: ${index} `;
     record.keys.forEach((key) => {
       try {
+        if (!shortUserId) throw `not shortUserId`;
         line =
           line +
           ` ` +
@@ -83,14 +85,19 @@ export const run = async () => {
     console.log(userIds);
 
     console.log(userIds.length);
-    const sliceNum = 20;
+    const sliceNum = 100;
 
     console.log(userIds.slice(0, sliceNum).length);
 
     const node_attributes: string[] = await funcs.getAttributeKeys();
 
-    results = await funcs.createGraph(`myGraph`, node_attributes, userIds);
-    printResults(results);
+    results = await funcs.createGraph(
+      `myGraph`,
+      node_attributes,
+      userIds.slice(0, sliceNum),
+      false,
+    );
+    printResults(results, 10, 0, false);
 
     return;
 

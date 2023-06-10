@@ -516,6 +516,7 @@ export async function createGraph(
   graphName: string = `myGraph`,
   node_attributes: string[] = [],
   userList: string[] = [],
+  strictWhere = false,
 ): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(
@@ -559,8 +560,9 @@ export async function createGraph(
   let whereString = ``;
   if (userList.length > 0) {
     whereString = `WHERE source.userId IN 
-    ${JSON.stringify(userList)} AND 
-    target.userId IN ${JSON.stringify(userList)}`;
+      ${JSON.stringify(userList)} ${strictWhere ? `AND` : `OR`}
+      target.userId IN ${JSON.stringify(userList)}
+    `;
 
     console.log(`whereString  for ${userList.length}`);
   }
@@ -569,10 +571,10 @@ export async function createGraph(
       (source:Person)-[r:FRIENDS|FEEDBACK|NEGATIVE]->(target:Person)
     OPTIONAL MATCH (source)-[:USER_ATTRIBUTES_CONSTANT]->(source_md:MetaData),
       (target)-[:USER_ATTRIBUTES_CONSTANT]->(target_md:MetaData)
-    ${whereString}
     WITH source, target, r,
       ${createValues(`source`)} AS source_values,
       ${createValues(`target`)} AS target_values
+    ${whereString}
   `;
 
   const q_graph = `
@@ -609,7 +611,11 @@ export async function createGraph(
 
   result = await session.run(q_graph);
 
-  // result = await run(`${q_select} return *`, {}, 9999);
+  // result = await run(
+  //   `${q_select} return source.userId, target.userId`,
+  //   {},
+  //   9999,
+  // );
 
   const end_time = performance.now();
   console.log(`createGraph`, end_time - start_time);
