@@ -71,7 +71,8 @@ const maxReadyDelaySeconds = 5;
 const maxPriorityDelay = 2;
 const maxCooldownAttemps = maxCooldownDelay ** (1 / cooldownScalerValue);
 
-const lastMatchedCooldownMinutes = 10; // filter of last matches
+const lastMatchedCooldownMinutes = 0; // filter of last matches
+const recentMatchesLowerScore = false;
 
 const relationShipScoresSortFunc = (
   a: [string, RelationshipScoreType],
@@ -86,6 +87,7 @@ const relationShipScoresSortFunc = (
       : b_score.score - a_score.score;
 
   if (
+    recentMatchesLowerScore &&
     Math.abs(score) <= 0.1 &&
     (a_score.latest_match != undefined || b_score.latest_match != undefined)
   ) {
