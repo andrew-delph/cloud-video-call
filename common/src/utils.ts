@@ -122,7 +122,7 @@ export const getRecentlyActiveUsers = async (
   minutes: number,
   includeActive: boolean = true,
 ) => {
-  const fiveMinutesAgo = moment().subtract(minutes, `minutes`).valueOf();
+  const deltaTime = moment().subtract(minutes, `minutes`).valueOf();
   const recentlyActiveList = [];
 
   if (includeActive) {
@@ -132,7 +132,7 @@ export const getRecentlyActiveUsers = async (
   recentlyActiveList.push(
     ...(await redisClient.zrangebyscore(
       recentlyActiveUserSet,
-      fiveMinutesAgo,
+      deltaTime,
       `+inf`,
     )),
   );
