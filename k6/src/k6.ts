@@ -20,7 +20,7 @@ const updatePreferences = false; // update attributes/filters in neo4j
 const validMatchChatTime =0; //60 * 5; // number of seconds to delay if valid match
 const invalidMatchChatTime = 0; //60 * 5;
 
-const matches = 5//Infinity; // number of matches per vus. -1 is inf
+const matches = 1//Infinity; // number of matches per vus. -1 is inf
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
