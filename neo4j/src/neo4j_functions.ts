@@ -46,10 +46,11 @@ export function retryFunction(func: any, retries: number, delay: number) {
 export async function run(
   query: string,
   params: any = {},
+  slice = 60,
 ): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- run`);
-  console.log(`"""${query.slice(0, 60).replace(/\s+/g, ` `).trim()}"""`);
+  console.log(`"""${query.slice(0, slice).replace(/\s+/g, ` `).trim()}"""`);
 
   const start_time = performance.now();
 
@@ -502,7 +503,7 @@ export async function getFriends(): Promise<neo4j.QueryResult> {
   result = await session.run(
     `
       MATCH (a:Person)-[r:FRIENDS]->(b:Person)
-      return a.type, b.type
+      return a.userId, b.userId
   `,
   );
 
@@ -563,15 +564,19 @@ export async function createGraph(
 
     console.log(`whereString  for ${userList.length}`);
   }
+  const q_select = `
+    MATCH (source:Person),
+      (source:Person)-[r:FRIENDS|FEEDBACK|NEGATIVE]->(target:Person)
+    OPTIONAL MATCH (source)-[:USER_ATTRIBUTES_CONSTANT]->(source_md:MetaData),
+      (target)-[:USER_ATTRIBUTES_CONSTANT]->(target_md:MetaData)
+    ${whereString}
+    WITH source, target, r,
+      ${createValues(`source`)} AS source_values,
+      ${createValues(`target`)} AS target_values
+  `;
 
-  const q = `MATCH (source:Person),
-  (source)-[:USER_ATTRIBUTES_CONSTANT]->(source_md:MetaData),
-  (target)-[:USER_ATTRIBUTES_CONSTANT]->(target_md:MetaData),
-  (source:Person)-[r:FRIENDS|FEEDBACK|NEGATIVE]->(target:Person)
-  ${whereString}
-  WITH source, target, r,
-  ${createValues(`source`)} AS source_values,
-  ${createValues(`target`)} AS target_values
+  const q_graph = `
+    ${q_select}
     WITH gds.alpha.graph.project(
     '${graphName}',
     source,
@@ -602,7 +607,9 @@ export async function createGraph(
 
   // console.log(q);
 
-  result = await session.run(q);
+  result = await session.run(q_graph);
+
+  // result = await run(`${q_select} return *`, {}, 9999);
 
   const end_time = performance.now();
   console.log(`createGraph`, end_time - start_time);

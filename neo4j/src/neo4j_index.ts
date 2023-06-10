@@ -31,11 +31,15 @@ export function printResults(
   records.slice(0, topLimit).forEach((record, index) => {
     let line = `#: ${index} `;
     record.keys.forEach((key) => {
-      line =
-        line +
-        ` ` +
-        `${key.toString()}: ${record.get(key).toString().split(`_`).pop()}` +
-        `\t`;
+      try {
+        line =
+          line +
+          ` ` +
+          `${key.toString()}: ${record.get(key).toString().split(`_`).pop()}` +
+          `\t`;
+      } catch {
+        line = line + ` ` + `${key.toString()}: ${record.get(key)}` + `\t`;
+      }
     });
     console.log(line);
   });
@@ -64,28 +68,31 @@ export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
 
-    await funcs.createData({ deleteData: true, nodesNum: 3000, edgesNum: 4 });
-    results = await funcs.createFriends();
+    // await funcs.createData({ deleteData: false, nodesNum: 10, edgesNum: 4 });
+    // results = await funcs.createFriends();
+
+    // results = await funcs.getFriends();
+    // printResults(results);
+
+    // return;
 
     results = await funcs.run(`MATCH (p:Person) RETURN p.userId as userId`);
 
     const userIds = results.records.map((record) => record.get(`userId`));
 
+    console.log(userIds);
+
     console.log(userIds.length);
+    const sliceNum = 20;
 
-    console.log(userIds.slice(0, userIds.length / 2).length);
+    console.log(userIds.slice(0, sliceNum).length);
 
-    results = await funcs.createGraph(
-      `myGraph`,
-      [],
-      userIds.slice(0, userIds.length / 2),
-    );
+    const node_attributes: string[] = await funcs.getAttributeKeys();
 
+    results = await funcs.createGraph(`myGraph`, node_attributes, userIds);
     printResults(results);
 
     return;
-
-    const node_attributes: string[] = await funcs.getAttributeKeys();
 
     results = await funcs.callPriority();
     results = await funcs.callCommunities();

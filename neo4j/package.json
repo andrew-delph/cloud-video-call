@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsc-watch --onCompilationStarted \"echo 'watching neo4j'\"",
     "build": "tsc",
-    "run": "tsc && node --max-old-space-size=8000 dist/index.js",
+    "node": "tsc && node --max-old-space-size=8000 dist/index.js",
     "binary": "bazel run binary",
     "watch": "nodemon -e ts -w src --exec 'clear && echo building... && time -p tsc && echo running... && npm run run'"
   },
