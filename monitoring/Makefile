@@ -19,13 +19,13 @@ apply:
 	kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
 	# helm upgrade --install prometheus-operator-crds --namespace=monitoring prometheus-community/prometheus-operator-crds
 	helm upgrade --install loki --namespace=monitoring grafana/loki-stack -f loki-stack.values.yaml
-	helm upgrade --install prometheus-rabbitmq-exporter prometheus-community/prometheus-rabbitmq-exporter -f prometheus-rabbitmq-exporter.values.yaml
+	# helm upgrade --install prometheus-rabbitmq-exporter prometheus-community/prometheus-rabbitmq-exporter -f prometheus-rabbitmq-exporter.values.yaml
 	helm upgrade --install prometheus-adapter --namespace=monitoring prometheus-community/prometheus-adapter -f prometheus-adapter.values.yaml
 	bash ./create_dashboards.sh
 
 delete:
 	helm uninstall loki --namespace=monitoring --wait
-	helm uninstall prometheus-rabbitmq-exporter --wait
+	# helm uninstall prometheus-rabbitmq-exporter --wait
 	helm uninstall prometheus-adapter --namespace=monitoring --wait
 
 watch:

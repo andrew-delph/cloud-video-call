@@ -26,6 +26,7 @@ spec:
           ports:
             - containerPort: 5672
             - containerPort: 15672
+            - containerPort: 15692
           resources:
             requests:
               cpu: '25m'
@@ -51,6 +52,9 @@ spec:
     - name: '15672'
       port: 15672
       targetPort: 15672
+    - name: '15692'
+      port: 15692
+      targetPort: 15692
   selector:
     app: rabbitmq
 status:
