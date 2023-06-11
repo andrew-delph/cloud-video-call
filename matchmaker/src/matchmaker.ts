@@ -69,7 +69,9 @@ const maxCooldownDelay = 20; // still can be longer because of priority delay
 const cooldownScalerValue = 1.1;
 const maxReadyDelaySeconds = 5;
 const maxPriorityDelay = 2;
-const maxCooldownAttemps = maxCooldownDelay ** (1 / cooldownScalerValue);
+const maxCooldownAttemps = Math.floor(
+  maxCooldownDelay ** (1 / cooldownScalerValue),
+);
 
 const lastMatchedCooldownMinutes = 0; // filter of last matches
 const recentMatchesLowerScore = false;
@@ -477,8 +479,8 @@ async function matchmakerFlow(
   if (highestScore.prob <= 0 && highestScore.score <= scorePercentile) {
     //scoreThreshold
     if (
-      readyMessage.getPriority() >= 0 &&
-      readyMessage.getCooldownAttempts() <= maxCooldownAttemps
+      // readyMessage.getPriority() >= 0 &&
+      readyMessage.getCooldownAttempts() < maxCooldownAttemps
     ) {
       throw new CooldownRetryError(
         `userID=${readyMessage.getUserId()} ${cooldownString} ${scoreThreasholdString}`,
@@ -496,7 +498,11 @@ async function matchmakerFlow(
       otherId,
     )}]`,
     `scores=${relationShipScores.length}`,
-    `attempts=${readyMessage.getCooldownAttempts()}`,
+    `attempts=${
+      readyMessage.getCooldownAttempts() >= maxCooldownAttemps
+        ? `${readyMessage.getCooldownAttempts()}(max)`
+        : readyMessage.getCooldownAttempts()
+    }`,
   ];
 
   logger.info(matchedMsg.join(` `));
