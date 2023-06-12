@@ -27,7 +27,7 @@ logger.info(`Value of JOB: ${job}`);
       */
 
       const activeUsers = Array.from(
-        await common.getRecentlyActiveUsers(redisClient, 60),
+        await common.getRecentlyActiveUsers(redisClient, 60 * 6),
       );
 
       if (activeUsers.length < 5) {
@@ -64,8 +64,9 @@ logger.info(`Value of JOB: ${job}`);
             {  
               scaler: "MinMax",
               nodeLabels: ['Person'],
-              relationshipTypes: ['FEEDBACK'],
-              relationshipWeightProperty: 'score',
+              // relationshipTypes: ['FEEDBACK'],
+              // relationshipWeightProperty: 'score',
+              relationshipTypes: ['FRIENDS'],
               mutateProperty: 'priority' 
             }
           )
