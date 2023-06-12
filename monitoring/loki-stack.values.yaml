@@ -61,6 +61,8 @@ prometheus:
       - enable-feature=remote-write-receiver
       # - web.enable-remote-write-receiver
       # - log.level=debug
+    # global:
+    #   query_log_file: /prometheus/query.log
     persistentVolume:
       enabled: true
       size: 40Gi
