@@ -8,7 +8,7 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus = 200;
+const vus = 30;
 const authKeysNum = vus+10; // number of users created for each parallel instance running
 const iterations = 999999;//authKeysNum * 1000;
 
@@ -17,10 +17,13 @@ const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
 
-const validMatchChatTime =60 * 5; // number of seconds to delay if valid match
-const invalidMatchChatTime = 60 * 1;
+let validMatchChatTime = 60 * 5; // number of seconds to delay if valid match
+let invalidMatchChatTime = 30;
 
-const matches = Infinity; // number of matches per vus. -1 is inf
+validMatchChatTime= 0
+invalidMatchChatTime=0
+
+const matches = 5 //Infinity; // number of matches per vus. -1 is inf
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
@@ -28,13 +31,14 @@ let uniqueAuthKey = ``;
 let authKeysName = `authKeysName`;
 let authPrefix = `k6_auth_`;
 
-userFunctions.push(usersLib.createFemale);
-userFunctions.push(usersLib.createMale);
-userFunctions.push(usersLib.createGroupA);
-userFunctions.push(usersLib.createGroupB);
-// for (let i = 0; i < usersLib.hotRange / 3; i++) {
-//   userFunctions.push(usersLib.createHot);
-// }
+// userFunctions.push(usersLib.createFemale);
+// userFunctions.push(usersLib.createMale);
+// userFunctions.push(usersLib.createGroupA);
+// userFunctions.push(usersLib.createGroupB);
+usersLib.setHotRange(10)
+for (let i = 0; i < usersLib.hotRange / 3; i++) {
+  userFunctions.push(usersLib.createHot);
+}
 
 const updateAuthVars = () => {
   if (uniqueAuthIds) {
@@ -59,7 +63,7 @@ export const options = {
       executor: `ramping-vus`,
       startVUs: 0,
       stages: [
-        { duration: `10m`, target: vus },
+        { duration: `5m`, target: vus },
         { duration: `5h`, target: vus },
         // { duration: `3m`, target: vus * 1 },
       ],
