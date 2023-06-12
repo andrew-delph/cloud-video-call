@@ -8,7 +8,7 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus = 100;
+const vus = 200;
 const authKeysNum = vus+10; // number of users created for each parallel instance running
 const iterations = 999999;//authKeysNum * 1000;
 
@@ -21,8 +21,8 @@ const maxAuthSkip = 0 // max number of times a auth can be skipped
 let validMatchChatTime = 60 * 5; // number of seconds to delay if valid match
 let invalidMatchChatTime = 30;
 
-validMatchChatTime= 50
-invalidMatchChatTime= 5
+// validMatchChatTime= 50
+// invalidMatchChatTime= 15
 
 const matches = 5 //Infinity; // number of matches per vus. -1 is inf
 
