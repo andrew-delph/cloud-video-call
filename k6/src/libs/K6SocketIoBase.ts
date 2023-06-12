@@ -105,8 +105,8 @@ export abstract class K6SocketIoBase {
       if (this.onClose != null) await this.onClose();
       clearTimeout(max_time_timeout);
       this.closeWaitingEvents();
-      check(this.connected, { connected: (r) => r });
-      check(this.hasError, { hasError: (r) => !r });
+      check(this.connected, { 'connection made': (r) => r });
+      check(this.hasError, { "no error": (r) => !r });
     });
   }
 

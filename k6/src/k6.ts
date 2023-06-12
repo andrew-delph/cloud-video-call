@@ -8,19 +8,19 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus = 30;
-const authKeysNum = 100; // number of users created for each parallel instance running
+const vus = 200;
+const authKeysNum = vus+10; // number of users created for each parallel instance running
 const iterations = 999999;//authKeysNum * 1000;
 
 const nukeData = false; // this doesnt work with multile running instances
-const uniqueAuthIds = false; //for every test new auth will be created
+const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
 
-const validMatchChatTime =0; //60 * 5; // number of seconds to delay if valid match
-const invalidMatchChatTime = 0; //60 * 5;
+const validMatchChatTime =60 * 5; // number of seconds to delay if valid match
+const invalidMatchChatTime = 60 * 1;
 
-const matches = 1//Infinity; // number of matches per vus. -1 is inf
+const matches = Infinity; // number of matches per vus. -1 is inf
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
@@ -49,21 +49,21 @@ const updateAuthVars = () => {
 export const options = {
   setupTimeout: `20m`,
   scenarios: {
-    matchTest: {
-      executor: `shared-iterations`,
-      vus: vus,
-      iterations: iterations,
-      maxDuration: `10h`,
-    },
-    // matchTest: {
-    //   executor: `ramping-vus`,
-    //   startVUs: 0,
-    //   stages: [
-    //     { duration: `30m`, target: vus },
-    //     { duration: `5h`, target: vus },
-    //     // { duration: `3m`, target: vus * 1 },
-    //   ],
+    // shared: {
+    //   executor: `shared-iterations`,
+    //   vus: vus,
+    //   iterations: iterations,
+    //   maxDuration: `10h`,
     // },
+    ramping: {
+      executor: `ramping-vus`,
+      startVUs: 0,
+      stages: [
+        { duration: `10m`, target: vus },
+        { duration: `5h`, target: vus },
+        // { duration: `3m`, target: vus * 1 },
+      ],
+    },
     // longConnection: { // TODO fix this....
     //   executor: `ramping-vus`,
     //   exec: `longWait`,
