@@ -169,11 +169,13 @@ export async function matchConsumer() {
         if (!userId || !eventName || !jsonData) {
           const msg = `!userId ${userId} || !eventName ${eventName}|| !jsonData ${jsonData}`;
           logger.error(msg);
-          throw `!userId ${userId} || !eventName ${eventName}|| !jsonData ${jsonData}`;
+          throw Error(
+            `!userId ${userId} || !eventName ${eventName}|| !jsonData ${jsonData}`,
+          );
         }
 
         if (!socket) {
-          throw `userId ${userId} socket is null`;
+          throw Error(`userId ${userId} socket is null`);
         }
 
         logger.debug(
@@ -264,7 +266,7 @@ export const match = async (msgContent: MatchMessage) => {
       },
     ).catch((error) => {
       logger.error(`createMatch: ${error}`);
-      throw error;
+      throw Error(error);
     });
 
     const hostCallback = (resolve: any, reject: any) => {
@@ -326,7 +328,7 @@ export const match = async (msgContent: MatchMessage) => {
       logger.debug(errorMsg);
       io.in(socket1).emit(`match`, { success: false, error_msg: errorMsg });
       io.in(socket2).emit(`match`, { success: false, error_msg: errorMsg });
-      throw errorMsg;
+      throw Error(errorMsg);
     });
 };
 
