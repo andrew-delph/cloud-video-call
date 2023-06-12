@@ -41,11 +41,23 @@ export async function calcScoreZset(userId: string) {
     const scoreObj = relationshipScore[1];
     if (scoreObj.score <= -1) continue; // threshhold scores were way to low
 
+    await addZsetScore(userId, otherId, scoreObj.score);
+  }
+}
+
+export async function addZsetScore(
+  userId: string,
+  otherId: string,
+  score: number,
+) {
+  try {
     await mainRedisClient.zadd(
       getUserScoreZsetCacheKey(userId),
-      scoreObj.score,
+      score + 0.0,
       otherId,
     );
+  } catch (e) {
+    logger.error(`addZsetScore: score=${score} ${e}`);
   }
 }
 
@@ -173,6 +185,8 @@ export async function getRelationshipScores(
       `EX`,
       realtionshipScoreCacheEx,
     );
+
+    await addZsetScore(userId, otherId, score_obj.score);
 
     relationshipScoresMap.set(otherId, score_obj);
   }
