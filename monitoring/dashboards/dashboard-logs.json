@@ -156,8 +156,8 @@
             "type": "loki",
             "uid": "Loki"
           },
-          "editorMode": "code",
-          "expr": "{app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"} | line_format `{{.app}} [{{ .level | default \"unknown\" | upper }}] {{ $json := fromJson __line__ }} {{ $json.message | default __line__ }}`",
+          "editorMode": "builder",
+          "expr": "{app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"} | line_format `{{.app}} [{{ .level | default \"unknown\" | upper }}] {{ $json := fromJson __line__ }} {{ $json.message | default __line__ }}` |~ `.*$search.*`",
           "key": "Q-3e372365-9fa7-4447-8019-d543a1f51e4e-0",
           "queryType": "range",
           "refId": "A"
@@ -276,6 +276,26 @@
         "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "",
+          "value": ""
+        },
+        "hide": 0,
+        "label": "regex",
+        "name": "search",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "skipUrlSync": false,
+        "type": "textbox"
       }
     ]
   },
