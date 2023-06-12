@@ -21,8 +21,8 @@ const maxAuthSkip = 0 // max number of times a auth can be skipped
 let validMatchChatTime = 60 * 5; // number of seconds to delay if valid match
 let invalidMatchChatTime = 30;
 
-// validMatchChatTime= 0
-// invalidMatchChatTime=0
+validMatchChatTime= 50
+invalidMatchChatTime= 5
 
 const matches = 5 //Infinity; // number of matches per vus. -1 is inf
 
@@ -34,12 +34,12 @@ let authPrefix = `k6_auth_`;
 
 userFunctions.push(usersLib.createFemale);
 userFunctions.push(usersLib.createMale);
-userFunctions.push(usersLib.createGroupA);
-userFunctions.push(usersLib.createGroupB);
-usersLib.setHotRange(10)
-for (let i = 0; i < usersLib.hotRange / 3; i++) {
-  userFunctions.push(usersLib.createHot);
-}
+// userFunctions.push(usersLib.createGroupA);
+// userFunctions.push(usersLib.createGroupB);
+// usersLib.setHotRange(10)
+// for (let i = 0; i < usersLib.hotRange / 3; i++) {
+//   userFunctions.push(usersLib.createHot);
+// }
 
 const updateAuthVars = () => {
   if (uniqueAuthIds) {
