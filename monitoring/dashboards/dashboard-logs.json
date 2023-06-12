@@ -206,9 +206,9 @@
       },
       {
         "current": {
-          "selected": true,
-          "text": ["All"],
-          "value": ["$__all"]
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": {
           "type": "loki",
@@ -270,16 +270,26 @@
             "selected": false,
             "text": "error",
             "value": "error"
+          },
+          {
+            "selected": false,
+            "text": "stderr",
+            "value": "stderr"
+          },
+          {
+            "selected": false,
+            "text": "stdout",
+            "value": "stdout"
           }
         ],
-        "query": "info, debug, warn, error",
+        "query": "info, debug, warn, error, stderr, stdout",
         "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "",
           "value": ""
         },

@@ -135,6 +135,8 @@ promtail:
             expressions:
               level: level
         - labels:
+            level: stream
+        - labels:
             level:
         - output:
             source: msg
