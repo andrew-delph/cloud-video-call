@@ -73,7 +73,7 @@ const maxCooldownAttemps = Math.floor(
   maxCooldownDelay ** (1 / cooldownScalerValue),
 );
 
-const lastMatchedCooldownMinutes = 0; // filter of last matches
+const lastMatchedCooldownMinutes = 1; // filter of last matches
 const recentMatchesLowerScore = false;
 
 const relationShipScoresSortFunc = (
