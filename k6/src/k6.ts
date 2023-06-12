@@ -21,8 +21,8 @@ const maxAuthSkip = 0 // max number of times a auth can be skipped
 let validMatchChatTime = 60 * 5; // number of seconds to delay if valid match
 let invalidMatchChatTime = 30;
 
-validMatchChatTime= 0
-invalidMatchChatTime=0
+// validMatchChatTime= 0
+// invalidMatchChatTime=0
 
 const matches = 5 //Infinity; // number of matches per vus. -1 is inf
 

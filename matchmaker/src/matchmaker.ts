@@ -61,7 +61,7 @@ let lockRedisClient: Client;
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
 
-const prefetch = 5;
+const prefetch = 40;
 
 export const realtionshipScoreCacheEx = 60;
 
