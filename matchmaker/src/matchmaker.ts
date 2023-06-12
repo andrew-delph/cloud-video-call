@@ -61,7 +61,7 @@ let lockRedisClient: Client;
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
 
-const prefetch = 40;
+const prefetch = 5;
 
 export const realtionshipScoreCacheEx = 60;
 
@@ -484,7 +484,7 @@ async function matchmakerFlow(
         readyMessage,
       );
     } else {
-      logger.warn(`no cooldown: ${cooldownString} ${matchedString}`);
+      logger.debug(`no cooldown: ${cooldownString} ${matchedString}`);
     }
   }
 
