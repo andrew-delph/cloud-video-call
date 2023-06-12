@@ -71,16 +71,16 @@ prometheus:
       mountPath: /prometheus
   alertmanager:
     enabled: false
-  extraScrapeConfigs: |
-    - job_name: rabbitmq
-      scrape_interval: 60s
-      scrape_timeout: 1m
-      basic_auth:
-        username: guest
-        password: guest
-      static_configs:
-        - targets:
-            - rabbitmq.default.svc.cluster.local:15692
+  # extraScrapeConfigs: |
+  #   - job_name: rabbitmq
+  #     scrape_interval: 60s
+  #     scrape_timeout: 1m
+  #     basic_auth:
+  #       username: guest
+  #       password: guest
+  #     static_configs:
+  #       - targets:
+  #           - rabbitmq.default.svc.cluster.local:15692
 
 loki:
   enabled: true
