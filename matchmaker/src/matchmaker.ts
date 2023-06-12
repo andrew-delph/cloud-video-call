@@ -68,7 +68,7 @@ export const realtionshipScoreCacheEx = 60;
 const maxCooldownDelay = 20; // still can be longer because of priority delay
 const cooldownScalerValue = 1.1;
 const maxReadyDelaySeconds = 5;
-const maxPriorityDelay = 2;
+const maxPriorityDelay = 0;
 const maxCooldownAttemps = Math.floor(
   maxCooldownDelay ** (1 / cooldownScalerValue),
 );
@@ -198,10 +198,7 @@ export async function startReadyConsumer() {
 
       const userRepsonse = await neo4jGetUser(userId);
 
-      const priority =
-        userRepsonse.getPriority() ||
-        (await common.getRedisUserPriority(mainRedisClient, userId)) ||
-        -1;
+      const priority = userRepsonse.getPriority();
 
       const priorityDelay =
         maxPriorityDelay - maxPriorityDelay * Math.min(priority, 0);

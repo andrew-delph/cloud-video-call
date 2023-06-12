@@ -505,7 +505,11 @@ const getUserPerferences = async (
     Object.entries(user1Data.f_custom || {}).forEach(([key, value]) => {
       reply.getFiltersCustomMap().set(String(key), String(value));
     });
-    reply.setPriority(user1Data.priority || 0);
+    reply.setPriority(
+      user1Data.priority ||
+        (await common.getRedisUserPriority(redisClient, uid)) ||
+        -1,
+    );
   } catch (e) {
     logger.error(`getUserPerferences`, e);
     callback({ code: grpc.status.INTERNAL, message: String(e) }, null);
