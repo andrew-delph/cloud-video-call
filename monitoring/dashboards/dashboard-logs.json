@@ -176,7 +176,7 @@
     "list": [
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "default",
           "value": "default"
         },
@@ -273,16 +273,11 @@
           },
           {
             "selected": false,
-            "text": "stderr",
-            "value": "stderr"
-          },
-          {
-            "selected": false,
-            "text": "stdout",
-            "value": "stdout"
+            "text": "unknown",
+            "value": "unknown"
           }
         ],
-        "query": "info, debug, warn, error, stderr, stdout",
+        "query": "info, debug, warn, error, unknown",
         "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"

@@ -134,8 +134,10 @@ promtail:
         - json:
             expressions:
               level: level
-        - labels:
-            level: stream
+        - static_labels:
+            level: unknown
+        # - labels:
+        #     level: stream
         - labels:
             level:
         - output:
