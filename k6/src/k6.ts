@@ -8,8 +8,8 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus =40;
-const authKeysNum = 1000; // number of users created for each parallel instance running
+const vus =10;
+const authKeysNum = 20; // number of users created for each parallel instance running
 const iterations = 999999;//authKeysNum * 1000;
 
 const nukeData = false; // this doesnt work with multile running instances
@@ -21,8 +21,9 @@ const maxAuthSkip = 10 // max number of times a auth can be skipped
 let validMatchChatTime = 60 * 3; // number of seconds to delay if valid match
 let invalidMatchChatTime = 20;
 
-validMatchChatTime= 0
-invalidMatchChatTime= 0
+// validMatchChatTime= 0
+// invalidMatchChatTime= 0
+
 
 const matches = 1 //Infinity; // number of matches per vus. -1 is inf
 
@@ -37,9 +38,9 @@ userFunctions.push(usersLib.createMale);
 userFunctions.push(usersLib.createGroupA);
 userFunctions.push(usersLib.createGroupB);
 // usersLib.setHotRange(10)
-for (let i = 0; i < usersLib.hotRange / 3; i++) {
-  userFunctions.push(usersLib.createHot);
-}
+// for (let i = 0; i < usersLib.hotRange / 3; i++) {
+//   userFunctions.push(usersLib.createHot);
+// }
 
 const updateAuthVars = () => {
   if (uniqueAuthIds) {
