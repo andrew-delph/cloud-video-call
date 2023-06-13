@@ -11,7 +11,7 @@ npm_link_all_packages(
 ts_project(
     name = "ts",
     srcs = glob(["src/**/*.ts"]),
-    declaration = True,
+    source_map = True,
     out_dir = ".",
     visibility = ["//visibility:public"],
     deps = [
