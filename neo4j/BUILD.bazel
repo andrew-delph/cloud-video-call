@@ -11,8 +11,9 @@ npm_link_all_packages(
 ts_project(
     name = "ts",
     srcs = glob(["src/**/*.ts"]),
-    source_map = True,
+    declaration = True,
     out_dir = ".",
+    source_map = True,
     visibility = ["//visibility:public"],
     deps = [
         ":node_modules",
@@ -32,7 +33,6 @@ js_library(
         ":ts",
     ],
 )
-
 
 npm_package(
     name = "neo4j",
