@@ -9,14 +9,14 @@ import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
 const vus =40;
-const authKeysNum = vus+vus; // number of users created for each parallel instance running
+const authKeysNum = 1000; // number of users created for each parallel instance running
 const iterations = 999999;//authKeysNum * 1000;
 
 const nukeData = false; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
-const maxAuthSkip = 0 // max number of times a auth can be skipped
+const maxAuthSkip = 10 // max number of times a auth can be skipped
 
 let validMatchChatTime = 60 * 3; // number of seconds to delay if valid match
 let invalidMatchChatTime = 20;
