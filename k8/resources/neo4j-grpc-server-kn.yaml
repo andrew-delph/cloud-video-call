@@ -13,6 +13,8 @@ spec:
         autoscaling.knative.dev/metric: 'concurrency'
         autoscaling.knative.dev/target: '10'
     spec:
+      imagePullSecrets:
+        - name: docker-secret
       priorityClassName: 'mid-priority'
       containers:
         - image: ghcr.io/andrew-delph/video-call-neo4j-grpc-server:latest

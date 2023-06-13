@@ -117,3 +117,14 @@ container_pull(
   repository = "ubuntu",
   tag = "latest"
 )
+
+http_archive(
+    name = "aspect_rules_jest",
+    sha256 = "175f92448bd11b398ee94c6bb09cabf76df75a77d21c9555723798c58a2e73c8",
+    strip_prefix = "rules_jest-0.19.2",
+    url = "https://github.com/aspect-build/rules_jest/releases/download/v0.19.2/rules_jest-v0.19.2.tar.gz",
+)
+
+load("@aspect_rules_jest//jest:dependencies.bzl", "rules_jest_dependencies")
+
+rules_jest_dependencies()

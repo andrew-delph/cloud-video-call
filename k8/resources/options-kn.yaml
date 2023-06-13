@@ -11,6 +11,8 @@ spec:
         autoscaling.knative.dev/initial-scale: '1'
         autoscaling.knative.dev/class: 'kpa.autoscaling.knative.dev'
     spec:
+      imagePullSecrets:
+        - name: docker-secret
       priorityClassName: 'mid-priority'
       containers:
         - image: ghcr.io/andrew-delph/video-call-options:latest

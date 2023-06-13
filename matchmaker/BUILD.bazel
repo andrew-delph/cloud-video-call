@@ -77,3 +77,19 @@ container_push(
    repository = "andrew-delph/video-call-matchmaker",
    tag = "latest",
 )
+
+load("@aspect_rules_jest//jest:defs.bzl", "jest_test")
+
+ts_project(
+    name = "test_ts",
+    srcs = [":ts"] + glob(["test/**/*.ts",]),
+    declaration = True,
+    out_dir = ".",
+)
+
+jest_test(
+    name = "test",
+    data = [":test_ts"],
+    colors= False,
+    node_modules = "//:node_modules",
+)

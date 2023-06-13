@@ -4,7 +4,7 @@ import {
   expireScoreZset,
   getRelationshipScores,
 } from './relationship_calculations';
-import { FilteredUserType, RelationshipScoreType } from './types';
+import { FilteredUserType, RelationshipScoreWrapper } from './types';
 import { connect, ConsumeMessage } from 'amqplib';
 import amqp from 'amqplib';
 import * as common from 'common';
@@ -73,12 +73,12 @@ const maxCooldownAttemps = Math.floor(
   maxCooldownDelay ** (1 / cooldownScalerValue),
 );
 
-const lastMatchedCooldownMinutes = 5; // filter of last matches
+const lastMatchedCooldownMinutes = 0; // filter of last matches
 const recentMatchesLowerScore = false;
 
 const relationShipScoresSortFunc = (
-  a: [string, RelationshipScoreType],
-  b: [string, RelationshipScoreType],
+  a: [string, RelationshipScoreWrapper],
+  b: [string, RelationshipScoreWrapper],
 ) => {
   const a_score = a[1];
   const b_score = b[1];
@@ -434,7 +434,7 @@ async function matchmakerFlow(
   relationShipScores.sort(relationShipScoresSortFunc);
 
   const otherId: string = relationShipScores[0][0];
-  const highestScore: RelationshipScoreType = relationShipScores[0][1];
+  const highestScore: RelationshipScoreWrapper = relationShipScores[0][1];
 
   const scorePercentile = calcScorePercentile(
     readyMessage.getCooldownAttempts(),

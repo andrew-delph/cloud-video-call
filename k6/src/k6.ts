@@ -8,8 +8,8 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus = 200;
-const authKeysNum = vus+10; // number of users created for each parallel instance running
+const vus =40;
+const authKeysNum = vus+vus; // number of users created for each parallel instance running
 const iterations = 999999;//authKeysNum * 1000;
 
 const nukeData = false; // this doesnt work with multile running instances
@@ -18,13 +18,13 @@ const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
 const maxAuthSkip = 0 // max number of times a auth can be skipped
 
-let validMatchChatTime = 60 * 5; // number of seconds to delay if valid match
-let invalidMatchChatTime = 30;
+let validMatchChatTime = 60 * 3; // number of seconds to delay if valid match
+let invalidMatchChatTime = 20;
 
-// validMatchChatTime= 50
-// invalidMatchChatTime= 15
+validMatchChatTime= 0
+invalidMatchChatTime= 0
 
-const matches = 5 //Infinity; // number of matches per vus. -1 is inf
+const matches = 1 //Infinity; // number of matches per vus. -1 is inf
 
 let runnerId = ``;
 let uniqueAuthKey = ``;

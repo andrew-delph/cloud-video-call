@@ -100,7 +100,7 @@ logger.info(`Value of JOB: ${job}`);
             // relationshipTypes: ['FEEDBACK'],
             // relationshipWeightProperty: 'score',
             relationshipTypes: ['FRIENDS'],
-            featureProperties: ['values','priority','community'],
+            // featureProperties: ['values','priority','community'],
             propertyRatio: 0.0,
             nodeSelfInfluence: 0.5,
             embeddingDimension: 128,

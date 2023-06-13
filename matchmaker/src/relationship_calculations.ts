@@ -6,7 +6,7 @@ import {
   stripUserId,
   createFilterSet,
 } from './matchmaker';
-import { FilteredUserType, RelationshipScoreType } from './types';
+import { FilteredUserType, RelationshipScoreWrapper } from './types';
 import * as common from 'common';
 import {
   GetRelationshipScoresRequest,
@@ -98,18 +98,21 @@ export async function getRelationshipScores(
   filteredSet: Set<FilteredUserType>,
 ) {
   const filterList = Array.from(filteredSet);
-  const relationshipScoresMap = new Map<string, RelationshipScoreType>();
+  const relationshipScoresMap = new Map<string, RelationshipScoreWrapper>();
 
   // get values that are in cache
   // pop from the readySet if in cache
 
   for (const filter of filterList) {
-    const relationshipScore: RelationshipScoreType = JSON.parse(
+    const relationshipScoreParsed: RelationshipScoreWrapper = JSON.parse(
       (await mainRedisClient.get(
         getRealtionshipScoreCacheKey(userId, filter.otherId),
       )) || `null`,
     );
-    if (relationshipScore == null) continue;
+    if (relationshipScoreParsed == null) continue;
+    const relationshipScore = new RelationshipScoreWrapper(
+      relationshipScoreParsed,
+    );
     relationshipScore.latest_match = filter.latest_match;
     relationshipScoresMap.set(filter.otherId, relationshipScore);
   }
@@ -172,12 +175,12 @@ export async function getRelationshipScores(
     const score = relationshipScore.getScore();
     const otherId = filter.otherId;
     const latest_match = filter.latest_match;
-    const score_obj: RelationshipScoreType = {
+    const score_obj: RelationshipScoreWrapper = new RelationshipScoreWrapper({
       prob,
       score,
       otherId,
       latest_match,
-    };
+    });
 
     await mainRedisClient.set(
       getRealtionshipScoreCacheKey(userId, otherId),
