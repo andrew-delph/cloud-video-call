@@ -27,6 +27,7 @@ import { createServer } from 'http';
 import Client from 'ioredis';
 import { Server } from 'socket.io';
 import { v4 as uuid } from 'uuid';
+import { loadIceServers } from './iceservers';
 const prom = common.prom;
 const logger = common.getLogger();
 
@@ -62,23 +63,6 @@ const io = new Server(httpServer, {});
 
 let rabbitConnection: Connection;
 let rabbitChannel: Channel;
-
-const iceServers: any[] = [
-  {
-    urls: [`stun:stun1.l.google.com:19302`, `stun:stun2.l.google.com:19302`],
-  },
-];
-async function loadIceServers() {
-  return;
-  const METERED_API_KEY = process.env.METERED_API_KEY;
-  const response = await axios.get(
-    `https://andrewdelph.metered.live/api/v1/turn/credentials?apiKey=${METERED_API_KEY}`,
-  );
-
-  iceServers.push(...((await response.data) as []));
-
-  logger.info(`iceServers loaded.`);
-}
 
 export async function matchConsumer() {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
