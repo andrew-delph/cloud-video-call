@@ -27,7 +27,7 @@ import { createServer } from 'http';
 import Client from 'ioredis';
 import { Server } from 'socket.io';
 import { v4 as uuid } from 'uuid';
-import { loadIceServers } from './iceservers';
+import { iceServers, loadIceServers } from './iceservers';
 const prom = common.prom;
 const logger = common.getLogger();
 

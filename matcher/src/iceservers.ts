@@ -1,7 +1,7 @@
 import axios from 'axios';
 import * as common from 'common';
 const logger = common.getLogger();
-const iceServers: any[] = [
+export const iceServers: any[] = [
   //   {
   //     urls: [`stun:stun1.l.google.com:19302`, `stun:stun2.l.google.com:19302`],
   //   },
