@@ -408,6 +408,14 @@ async function matchmakerFlow(
   );
 
   const activeSize = await mainRedisClient.scard(common.activeSetName);
+  const scorePercentile = calcScorePercentile(
+    readyMessage.getCooldownAttempts(),
+  );
+
+  const scoreThreshold = await calcScoreThreshold(
+    readyMessage.getUserId(),
+    scorePercentile,
+  );
 
   // send data here...
   await message_helper.sendUserNotification(
@@ -418,6 +426,8 @@ async function matchmakerFlow(
       readySize: readySet.size,
       filterSize: filterSet.size,
       activeSize: activeSize,
+      scorePercentile,
+      scoreThreshold,
     },
   );
 
@@ -435,15 +445,6 @@ async function matchmakerFlow(
 
   const otherId: string = relationShipScores[0][0];
   const highestScore: RelationshipScoreWrapper = relationShipScores[0][1];
-
-  const scorePercentile = calcScorePercentile(
-    readyMessage.getCooldownAttempts(),
-  );
-
-  const scoreThreshold = await calcScoreThreshold(
-    readyMessage.getUserId(),
-    scorePercentile,
-  );
 
   const cooldownString = `priority=${readyMessage
     .getPriority()

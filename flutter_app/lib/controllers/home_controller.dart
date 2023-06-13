@@ -188,7 +188,6 @@ class HomeController extends GetxController with StateMixin {
     });
 
     mySocket.on('matchmakerProgess', (data) async {
-      print("matchmakerProgess: $data");
       matchmakerProgess(data);
     });
 
@@ -252,6 +251,7 @@ class HomeController extends GetxController with StateMixin {
   Future<void> queueReady() async {
     await resetRemote();
     await initLocalStream();
+    matchmakerProgess({});
     socket()!.off("client_host");
     socket()!.off("client_guest");
     socket()!.off("match");
