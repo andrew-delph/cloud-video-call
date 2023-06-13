@@ -16,6 +16,7 @@ import 'package:flutter_app/widgets/preferences_widget.dart';
 import '../controllers/home_controller.dart';
 import '../widgets/feedback_swipe_detector.dart';
 import '../widgets/left_nav_widget.dart';
+import '../widgets/matchmaker_progress.dart';
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
@@ -120,6 +121,24 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
         remoteCamera(),
         if (localPreferences.fullscreen.isTrue) Expanded(child: localCamera())
       ];
+
+      if (!controller.isInChat()) {
+        return Stack(
+          children: [
+            MatchmakerProgress(),
+            Positioned(
+              top: 20, // get the size of the row buttons..?
+              right: 0,
+              child: Container(
+                alignment: Alignment.bottomRight,
+                width: width,
+                height: width * controller.localVideoRendererRatioHw(),
+                child: localCamera(),
+              ),
+            )
+          ],
+        );
+      }
 
       return Stack(
         children: [

@@ -46,6 +46,8 @@ class HomeController extends GetxController with StateMixin {
   RxBool isMicMute = false.obs;
   RxBool isCamHide = false.obs;
 
+  RxMap<dynamic, dynamic> matchmakerProgess = {}.obs;
+
   @override
   onInit() async {
     super.onInit();
@@ -183,6 +185,11 @@ class HomeController extends GetxController with StateMixin {
 
     mySocket.on('established', (data) async {
       change(null, status: RxStatus.success());
+    });
+
+    mySocket.on('matchmakerProgess', (data) async {
+      print("matchmakerProgess: $data");
+      matchmakerProgess(data);
     });
 
     mySocket.onConnect((_) {

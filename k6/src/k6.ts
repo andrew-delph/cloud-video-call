@@ -34,12 +34,12 @@ let authPrefix = `k6_auth_`;
 
 userFunctions.push(usersLib.createFemale);
 userFunctions.push(usersLib.createMale);
-// userFunctions.push(usersLib.createGroupA);
-// userFunctions.push(usersLib.createGroupB);
+userFunctions.push(usersLib.createGroupA);
+userFunctions.push(usersLib.createGroupB);
 // usersLib.setHotRange(10)
-// for (let i = 0; i < usersLib.hotRange / 3; i++) {
-//   userFunctions.push(usersLib.createHot);
-// }
+for (let i = 0; i < usersLib.hotRange / 3; i++) {
+  userFunctions.push(usersLib.createHot);
+}
 
 const updateAuthVars = () => {
   if (uniqueAuthIds) {
