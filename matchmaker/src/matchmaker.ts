@@ -492,6 +492,7 @@ async function matchmakerFlow(
   const matchedMsg = [
     `percentile=${scorePercentile.toFixed(2)}`,
     `score=${highestScore.score.toFixed(2)}`,
+    `threshhold=${scoreThreshold.toFixed(2)}`,
     `matched=[${stripUserId(readyMessage.getUserId())},${stripUserId(
       otherId,
     )}]`,
