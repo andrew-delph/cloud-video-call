@@ -1,4 +1,7 @@
 name: Deploy updates to k8
+concurrency:
+  group: deploy_k8
+  cancel-in-progress: true
 on:
   workflow_dispatch:
   push:
