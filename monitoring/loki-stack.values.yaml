@@ -67,7 +67,7 @@ prometheus:
       enabled: true
       size: 40Gi
       accessModes:
-        - ReadWriteMany
+        - ReadWriteOnce
       mountPath: /prometheus
   alertmanager:
     enabled: false
