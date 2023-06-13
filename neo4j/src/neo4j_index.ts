@@ -29,9 +29,10 @@ export function printResults(
     `print records. topLimit: ${topLimit}  bottomLimit: ${bottomLimit}`,
   );
   console.log(`>>`);
-  records.slice(0, topLimit).forEach((record, index) => {
+
+  const printRecord = (record: any, index: any) => {
     let line = `#: ${index} `;
-    record.keys.forEach((key) => {
+    record.keys.forEach((key: any) => {
       try {
         if (!shortUserId) throw `not shortUserId`;
         line =
@@ -44,20 +45,11 @@ export function printResults(
       }
     });
     console.log(line);
-  });
+  };
+  records.slice(0, topLimit).forEach(printRecord);
   if (bottomLimit > 0) {
     console.log(`---`);
-    records.slice(-bottomLimit).forEach((record, index) => {
-      let line = `#: ${records.length - index} `;
-      record.keys.forEach((key) => {
-        line =
-          line +
-          ` ` +
-          `${key.toString()}: ${JSON.stringify(record.get(key))}` +
-          `\t`;
-      });
-      console.log(line);
-    });
+    records.slice(-bottomLimit).forEach(printRecord);
   }
 
   console.log(`<<`);
@@ -70,56 +62,35 @@ export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
 
-    // await funcs.createData({ deleteData: false, nodesNum: 10, edgesNum: 4 });
-    // results = await funcs.createFriends();
-
-    // results = await funcs.getFriends();
-    // printResults(results);
-
-    // return;
+    const node_attributes: string[] = await funcs.getAttributeKeys();
 
     results = await funcs.run(`MATCH (p:Person) RETURN p.userId as userId`);
 
     const userIds = results.records.map((record) => record.get(`userId`));
 
-    console.log(userIds);
-
-    console.log(userIds.length);
     const sliceNum = 100;
 
-    console.log(userIds.slice(0, sliceNum).length);
-
-    const node_attributes: string[] = await funcs.getAttributeKeys();
-
     results = await funcs.createGraph(
-      `myGraph`,
+      `testGraph`,
       node_attributes,
-      userIds.slice(0, sliceNum),
-      false,
+      // userIds.slice(0, 100),
+      // true,
     );
-    printResults(results, 10, 0, false);
 
-    return;
-
-    results = await funcs.callPriority();
-    results = await funcs.callCommunities();
-    results = await funcs.callWriteSimilar();
+    // results = await funcs.callPriority();
+    // results = await funcs.callCommunities();
+    // results = await funcs.callWriteSimilar();
     // results = await funcs.callNodeEmbeddings();
-    results = await funcs.getUsers();
-    // printResults(results, 50);
-
-    results = await funcs.readGraph(`myGraph`, `values`);
     // printResults(results, 50);
 
     results = await lp.createPipeline();
-    results = await funcs.createGraph(`myGraph`, node_attributes);
+    const train_results = await lp.train(`testGraph`);
 
-    const train_results = await lp.train(`myGraph`);
-    results = await lp.predict(true, `myGraph`);
-    printResults(results, 200);
+    results = await lp.predict(false, `testGraph`);
+    printResults(results, 10, 10);
 
-    results = await funcs.compareTypes();
-    printResults(results, 200);
+    // results = await funcs.compareTypes();
+    // printResults(results, 200);
 
     console.log(`graph_attributes`, node_attributes);
   } finally {

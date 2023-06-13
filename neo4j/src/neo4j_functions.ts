@@ -611,6 +611,10 @@ export async function createGraph(
 
   result = await session.run(q_graph);
 
+  if (result.records.length < 1 || result.records[0].get(`graph`) == null) {
+    throw Error(`graph not created`);
+  }
+
   // result = await run(
   //   `${q_select} return source.userId, target.userId`,
   //   {},

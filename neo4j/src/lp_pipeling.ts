@@ -32,7 +32,7 @@ export async function createPipeline(): Promise<neo4j.QueryResult> {
           embeddingDimension: 256,
           randomSeed: 42,
           contextNodeLabels: ['Person'],
-          contextRelationshipTypes: ['FRIENDS', 'NEGATIVE']
+          contextRelationshipTypes: ['FRIENDS']
         }
       )
     `,
@@ -40,7 +40,7 @@ export async function createPipeline(): Promise<neo4j.QueryResult> {
   result = await session.run(
     `
       CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'COSINE', {
-        nodeProperties: [ 'embedding1', 'values', 'priority']
+        nodeProperties: [ 'embedding1']
       }) YIELD featureSteps
     `,
   );
@@ -120,6 +120,8 @@ export async function train(
 export async function predict(
   merge: boolean = false,
   graphName: string = `myGraph`,
+  topN = 100,
+  createImage = false,
 ): Promise<neo4j.QueryResult> {
   console.log(``);
   console.log(`--- predict`);
@@ -129,7 +131,7 @@ export async function predict(
     `
       CALL gds.beta.pipeline.linkPrediction.predict.stream('${graphName}', {
         modelName: 'lp-pipeline-model',
-        topN: 30000,
+        topN: ${topN},
         threshold: 0.1
       })
         YIELD node1, node2, probability
@@ -146,12 +148,13 @@ export async function predict(
         OPTIONAL MATCH (person1:Person)-[]->(g1:MetaDataGraph), 
           (person2:Person)-[]->(g2:MetaDataGraph) 
         OPTIONAL MATCH (person1)-[f:FRIENDS]-(person2)
-        RETURN (person1.userId+"-"+person2.userId) as nodes, probability,
-        person1.type, person2.type,
+        RETURN probability,
         person1.userId, person2.userId
         ORDER BY probability DESC
       `,
   );
+
+  if (!createImage) return result;
 
   console.log(`predicitons made: `, result.records.length);
   const end_time = performance.now();

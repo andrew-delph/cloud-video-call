@@ -49,13 +49,6 @@ logger.info(`Value of JOB: ${job}`);
         activeUsers,
       );
 
-      if (
-        results.records.length < 1 ||
-        results.records[0].get(`graph`) == null
-      ) {
-        throw Error(`graph not created`);
-      }
-
       logger.debug(`graph: ${JSON.stringify(results.records[0])}`);
 
       results = await funcs.run(
