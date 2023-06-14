@@ -8,8 +8,8 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus =10;
-const authKeysNum = 20; // number of users created for each parallel instance running
+const vus =200;
+const authKeysNum = vus+10; // number of users created for each parallel instance running
 const iterations = 999999;//authKeysNum * 1000;
 
 const nukeData = false; // this doesnt work with multile running instances
@@ -37,10 +37,10 @@ userFunctions.push(usersLib.createFemale);
 userFunctions.push(usersLib.createMale);
 userFunctions.push(usersLib.createGroupA);
 userFunctions.push(usersLib.createGroupB);
-// usersLib.setHotRange(10)
-// for (let i = 0; i < usersLib.hotRange / 3; i++) {
-//   userFunctions.push(usersLib.createHot);
-// }
+usersLib.setHotRange(10)
+for (let i = 0; i < usersLib.hotRange / 3; i++) {
+  userFunctions.push(usersLib.createHot);
+}
 
 const updateAuthVars = () => {
   if (uniqueAuthIds) {
@@ -65,8 +65,8 @@ export const options = {
       executor: `ramping-vus`,
       startVUs: 0,
       stages: [
-        { duration: `5m`, target: vus },
-        { duration: `5h`, target: vus },
+        { duration: `30m`, target: vus },
+        { duration: `13h`, target: vus },
         // { duration: `3m`, target: vus * 1 },
       ],
     },
