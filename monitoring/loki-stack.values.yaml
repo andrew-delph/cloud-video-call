@@ -71,7 +71,7 @@ prometheus:
         - ReadWriteOnce
       mountPath: /prometheus
   alertmanager:
-    enabled: false
+    enabled: true
   extraScrapeConfigs: |
     - job_name: rabbitmq
       scrape_interval: 60s
