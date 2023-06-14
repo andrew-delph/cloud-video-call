@@ -36,10 +36,10 @@ watch:
 	watch -n 15 'kubectl get pods -n default && kubectl get hpa'
 
 top:
-	kubectl top node && kubectl resource-capacity && kubectl top pod --sum --sort-by="cpu"
+	kubectl top node && kubectl resource-capacity && kubectl top pod --sum --sort-by="memory"
 
 topa:
-	kubectl top node && kubectl resource-capacity && kubectl top pod -A --sum --sort-by="cpu"
+	kubectl top node && kubectl resource-capacity && kubectl top pod -A --sum --sort-by="memory"
 
 services:
 	kubectl get services
