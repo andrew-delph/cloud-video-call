@@ -6,7 +6,7 @@ import { LRUCache } from 'typescript-lru-cache';
 const logger = common.getLogger();
 
 // Create a cache. Optional options object can be passed in.
-const cache = new LRUCache<string, string>({ maxSize: 750000 });
+const cache = new LRUCache<string, string>({ maxSize: 5000 });
 
 function getMapSizeInMB(map: any) {
   const jsonStr = JSON.stringify([...map]);
