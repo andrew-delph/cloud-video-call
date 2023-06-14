@@ -100,7 +100,7 @@ loki:
     jsonData: '{}'
     uid: ''
   persistence:
-    enabled: false
+    enabled: true
     size: 40Gi
 
 promtail:
