@@ -28,7 +28,7 @@ logger.info(`Value of JOB: ${job}`);
 
       const activeUsersMinutesSince = 60 * 6;
 
-      logger.info(`activeUsersMinutesSince=${activeUsersMinutesSince}`);
+      logger.info(`activeUsersMinutesSince=${activeUsersMinutesSince}mins`);
 
       const activeUsers = Array.from(
         await common.getRecentlyActiveUsers(
