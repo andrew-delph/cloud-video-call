@@ -74,6 +74,22 @@ prometheus:
     enabled: true
     persistentVolume:
       enabled: false
+    configFromSecret: 'loki-prometheus-alertmanager'
+  # alertmanagerFiles:
+  #   alertmanager.yml:
+  #     global: {}
+  #     route:
+  #       receiver: 'gmail-notifications'
+  #     receivers:
+  #       - name: 'gmail-notifications'
+  #         email_configs:
+  #           - to: example@gmail.ca
+  #             from: example@gmail.com
+  #             smarthost: smtp.gmail.com:587
+  #             auth_username: example@gmail.com
+  #             auth_identity: example@gmail.com
+  #             auth_password: example
+  #             send_resolved: true
   serverFiles:
     alerting_rules.yml:
       groups:

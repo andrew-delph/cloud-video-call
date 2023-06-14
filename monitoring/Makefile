@@ -22,6 +22,7 @@ apply:
 	helm upgrade --install prometheus-rabbitmq-exporter prometheus-community/prometheus-rabbitmq-exporter -f prometheus-rabbitmq-exporter.values.yaml
 	helm upgrade --install prometheus-adapter --namespace=monitoring prometheus-community/prometheus-adapter -f prometheus-adapter.values.yaml
 	bash ./create_dashboards.sh
+	kubectl apply -f secrets.yaml || echo "secrets file doesnt exist"
 
 delete:
 	helm uninstall loki --namespace=monitoring --wait
