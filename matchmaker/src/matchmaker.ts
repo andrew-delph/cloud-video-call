@@ -428,6 +428,7 @@ async function matchmakerFlow(
       activeSize: activeSize,
       scorePercentile,
       scoreThreshold,
+      cooldownAttempt: readyMessage.getCooldownAttempts(),
     },
   );
 
