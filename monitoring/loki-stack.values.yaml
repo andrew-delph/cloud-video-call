@@ -54,6 +54,7 @@ prometheus:
   server:
     image:
       tag: v2.42.0
+    priorityClassName: high-priority
     # extraArgs:
     #   log.level: debug
     extraFlags:
@@ -105,6 +106,7 @@ loki:
 
 promtail:
   enabled: true
+  priorityClassName: high-priority
   config:
     serverPort: 3101
     clients:
