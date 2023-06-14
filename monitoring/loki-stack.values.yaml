@@ -72,6 +72,8 @@ prometheus:
       mountPath: /prometheus
   alertmanager:
     enabled: true
+    persistentVolume:
+      enabled: false
   extraScrapeConfigs: |
     - job_name: rabbitmq
       scrape_interval: 60s
