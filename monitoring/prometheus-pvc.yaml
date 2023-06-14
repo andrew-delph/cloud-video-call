@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prometheus-pvc
+  namespace: monitoring
+status:
+  phase: Bound
+spec:
+  resources:
+    requests:
+      storage: 40Gi
+  accessModes:
+    - ReadWriteOnce

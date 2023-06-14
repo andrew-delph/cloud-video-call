@@ -82,6 +82,7 @@ export const options = {
 const established_elapsed = new Trend(`established_elapsed`, true);
 const match_elapsed = new Trend(`match_elapsed`, true);
 const ready_elapsed = new Trend(`ready_elapsed`, true);
+const auth_keys_name_size_trend = new Trend(`auth_keys_name_size`);
 
 const get_auth_trend = new Trend(`get_auth_trend`, true);
 
@@ -175,6 +176,8 @@ const getAuth = async () => {
     });
     throw e;
   }
+
+  auth_keys_name_size_trend.add(await redisClient.llen(authKeysName))
 
   return auth;
 };

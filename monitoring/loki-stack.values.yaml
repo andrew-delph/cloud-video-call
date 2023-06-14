@@ -66,10 +66,7 @@ prometheus:
     #   query_log_file: /prometheus/query.log
     persistentVolume:
       enabled: true
-      size: 40Gi
-      accessModes:
-        - ReadWriteOnce
-      mountPath: /prometheus
+      existingClaim: 'prometheus-pvc'
   alertmanager:
     enabled: true
     priorityClassName: high-priority

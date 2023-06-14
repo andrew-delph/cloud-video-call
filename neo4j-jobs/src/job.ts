@@ -26,8 +26,15 @@ logger.info(`Value of JOB: ${job}`);
         graph name shortPredictGraph
       */
 
+      const activeUsersMinutesSince = 60 * 6;
+
+      logger.info(`activeUsersMinutesSince=${activeUsersMinutesSince}`);
+
       const activeUsers = Array.from(
-        await common.getRecentlyActiveUsers(redisClient, 60 * 6),
+        await common.getRecentlyActiveUsers(
+          redisClient,
+          activeUsersMinutesSince,
+        ),
       );
 
       if (activeUsers.length < 5) {

@@ -17,6 +17,7 @@ apply:
 	helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 	helm repo add grafana https://grafana.github.io/helm-charts
 	kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+	kubectl apply -f ./prometheus-pvc.yaml
 	# helm upgrade --install prometheus-operator-crds --namespace=monitoring prometheus-community/prometheus-operator-crds
 	helm upgrade --install loki --namespace=monitoring grafana/loki-stack -f loki-stack.values.yaml
 	helm upgrade --install prometheus-rabbitmq-exporter prometheus-community/prometheus-rabbitmq-exporter -f prometheus-rabbitmq-exporter.values.yaml
