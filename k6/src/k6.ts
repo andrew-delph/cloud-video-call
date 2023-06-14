@@ -25,7 +25,7 @@ let invalidMatchChatTime = 20;
 // invalidMatchChatTime= 0
 
 
-const matches = 40 //Infinity; // number of matches per vus. -1 is inf
+const matches = 5 //Infinity; // number of matches per vus. -1 is inf
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
