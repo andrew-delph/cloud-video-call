@@ -52,6 +52,7 @@ spec:
   suspend: false
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 3600 # TTL set to 1 hour (3600 seconds)
       template:
         spec:
           terminationGracePeriodSeconds: 300
