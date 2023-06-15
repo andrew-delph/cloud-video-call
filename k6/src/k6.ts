@@ -8,8 +8,8 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus =100;
-const authKeysNum = 4000; // number of users created for each parallel instance running
+const vus =30;
+const authKeysNum = 200; // number of users created for each parallel instance running
 const iterations = 999999;//authKeysNum * 1000;
 
 const nukeData = false; // this doesnt work with multile running instances
@@ -25,7 +25,7 @@ let invalidMatchChatTime = 40;
 // invalidMatchChatTime= 0
 
 
-const matches = 5 //Infinity; // number of matches per vus. -1 is inf
+const matches = 40 //Infinity; // number of matches per vus. -1 is inf
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
