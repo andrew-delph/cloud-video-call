@@ -78,7 +78,8 @@ function* hotnessGeneratorFunction() {
 const hotnessGenerator = hotnessGeneratorFunction();
 export const createHot = (auth: string): User => {
   const attributes = {
-    constant: { hot: `Hot${hotnessGenerator.next().value}` },
+    // constant: { hot: `Hot${hotnessGenerator.next().value}` },
+    constant: { hot: `Hot` },
   };
   const filters = {};
 

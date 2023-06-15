@@ -8,7 +8,7 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus =50;
+const vus =100;
 const authKeysNum = 4000; // number of users created for each parallel instance running
 const iterations = 999999;//authKeysNum * 1000;
 
@@ -65,7 +65,7 @@ export const options = {
       executor: `ramping-vus`,
       startVUs: 0,
       stages: [
-        { duration: `30m`, target: vus },
+        { duration: `10m`, target: vus },
         { duration: `2d`, target: vus },
         // { duration: `3m`, target: vus * 1 },
       ],
@@ -197,10 +197,15 @@ export default async function () {
 
   const myUser = await usersLib.fromRedis(auth);
 
+  const extraLabels = ()=>{
+    // return { type: myUser.getTypeString() }
+    return {}
+  }
+
   const socket = new K6SocketIoExp(ws_url, { auth: auth }, {});
 
   socket.setEventMessageHandle(`matchmakerProgess`, (data: any, callback: any) => {
-    matchmakerProgess.add(1, { type: myUser.getTypeString() });
+    matchmakerProgess.add(1, extraLabels());
     check(data, {
       'valid matchmakerProgess': (data: any) =>
         data && data.readySize != null && data.filterSize != null
@@ -215,19 +220,19 @@ export default async function () {
     let expectMatch: any;
 
     socket.on(`error`, () => {
-      error_counter.add(1, { type: myUser.getTypeString() });
+      error_counter.add(1, extraLabels());
     });
 
     socket
       .expectMessage(`established`).take(1)
       .catch((error) => {
         console.info(`failed established`);
-        established_success.add(false, { type: myUser.getTypeString() });
+        established_success.add(false, extraLabels());
         return Promise.reject(error);
       })
       .then(async (data: any) => {
-        established_success.add(true, { type: myUser.getTypeString() });
-        established_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
+        established_success.add(true, extraLabels());
+        established_elapsed.add(data.elapsed, extraLabels());
 
         // start the match sequence
         for (let i = 0; i < matches; i++) {
@@ -238,13 +243,13 @@ export default async function () {
           })()
             .catch((error) => {
               console.info(`failed ready`);
-              ready_success.add(false, { type: myUser.getTypeString() });
+              ready_success.add(false, extraLabels());
               return Promise.reject(error);
             })
             .then((data: any) => {
               console.log(`ready..`);
-              ready_success.add(true, { type: myUser.getTypeString() });
-              ready_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
+              ready_success.add(true, extraLabels());
+              ready_elapsed.add(data.elapsed, extraLabels());
               return expectMatch.take(1);;
             })
             .then(async (data: any) => {
@@ -252,12 +257,12 @@ export default async function () {
               if (typeof data.callback === `function`) {
                 data.callback(`ok`);
               }
-              match_success.add(true, { type: myUser.getTypeString() });
-              match_elapsed.add(data.elapsed, { type: myUser.getTypeString() });
+              match_success.add(true, extraLabels());
+              match_elapsed.add(data.elapsed, extraLabels());
               match_elapsed_gauge.add(data.elapsed / 1000, {
                 type: myUser.getTypeString(),
               });
-              success_counter.add(1, { type: myUser.getTypeString() });
+              success_counter.add(1, extraLabels());
               check(data, {
                 'match has feedback id': (data: any) =>
                   data && data.data && data.data.feedback_id,
@@ -284,7 +289,7 @@ export default async function () {
               return data.data;
             }).catch((error) => {
               console.info(`failed match`);
-              match_success.add(false, { type: myUser.getTypeString() });
+              match_success.add(false, extraLabels());
               return Promise.reject(error);
             })
             .then(async (data: any) => {
@@ -295,13 +300,13 @@ export default async function () {
               const score = validMatch ? 5 : -5;
 
               if (validMatch) {
-                valid_score.add(1, { type: myUser.getTypeString() });
+                valid_score.add(1, extraLabels());
               } else {
-                invalid_score.add(1, { type: myUser.getTypeString() });
+                invalid_score.add(1, extraLabels());
               }
 
-              score_trend.add(score, { type: myUser.getTypeString() });
-              score_gauge.add(score, { type: myUser.getTypeString() });
+              score_trend.add(score, extraLabels());
+              score_gauge.add(score, extraLabels());
 
               const r = http.post(
                 `${options_url}/providefeedback`,
@@ -332,7 +337,7 @@ export default async function () {
         }
       })
       .catch((error) => {
-        error_counter.add(1, { type: myUser.getTypeString() });
+        error_counter.add(1, extraLabels());
         console.error(error);
       })
       .finally(async () => {
