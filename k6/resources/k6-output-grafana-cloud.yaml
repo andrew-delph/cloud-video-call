@@ -23,8 +23,8 @@ spec:
     # TODO Change the image to your published image!
     image: andrewdelph/k6-tests:latest
         resources:
-      requests:
-        memory: 200Mi
+    requests:
+      memory: 200Mi
     env:
       - name: K6_OUT
         value: xk6-prometheus-rw
