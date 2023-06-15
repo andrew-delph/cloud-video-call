@@ -53,3 +53,4 @@ monitoring/release.yaml
 
 monitoring/secrets.yaml
 monitoring/alertmanager.yml
+monitoring/loki-stack.values.modified.yaml

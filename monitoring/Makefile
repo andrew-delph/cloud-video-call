@@ -19,11 +19,17 @@ apply:
 	kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
 	kubectl apply -f ./prometheus-pvc.yaml
 	# helm upgrade --install prometheus-operator-crds --namespace=monitoring prometheus-community/prometheus-operator-crds
-	helm upgrade --install loki --namespace=monitoring grafana/loki-stack -f loki-stack.values.yaml
+	make loki
 	helm upgrade --install prometheus-rabbitmq-exporter prometheus-community/prometheus-rabbitmq-exporter -f prometheus-rabbitmq-exporter.values.yaml
 	helm upgrade --install prometheus-adapter --namespace=monitoring prometheus-community/prometheus-adapter -f prometheus-adapter.values.yaml
 	bash ./create_dashboards.sh
 	kubectl apply -f secrets.yaml || echo "secrets file doesnt exist"
+
+loki:
+	K8_ALERTS=$$(wget -qO- https://raw.githubusercontent.com/samber/awesome-prometheus-alerts/master/dist/rules/kubernetes/kubestate-exporter.yml | yq eval '.groups' -) \
+	RABBITMQ_ALERTS=$$(wget -qO- https://raw.githubusercontent.com/samber/awesome-prometheus-alerts/master/dist/rules/rabbitmq/rabbitmq-exporter.yml | yq eval '.groups' -) \
+		yq eval '.prometheus.serverFiles."alerting_rules.yml".groups = env(K8_ALERTS) + env(RABBITMQ_ALERTS)' loki-stack.values.yaml > loki-stack.values.modified.yaml
+	helm upgrade --install loki --namespace=monitoring grafana/loki-stack -f loki-stack.values.modified.yaml
 
 delete:
 	helm uninstall loki --namespace=monitoring --wait
