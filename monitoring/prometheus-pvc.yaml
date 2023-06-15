@@ -3,8 +3,6 @@ kind: PersistentVolumeClaim
 metadata:
   name: prometheus-pvc
   namespace: monitoring
-status:
-  phase: Bound
 spec:
   resources:
     requests:
