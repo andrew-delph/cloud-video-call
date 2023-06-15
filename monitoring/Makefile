@@ -51,3 +51,9 @@ query:
 	@#echo 5; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/monitoring/metrics/matchQueue" | jq | grep value ; echo 
 	@#kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/namespaces/monitorin/services/prometheus-rabbitmq-exporter/matcher | jq  | grep value ; echo "matchQueue"
 	@#kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/namespaces/default/services/prometheus-rabbitmq-exporter/matchmaker | jq | grep value ; echo "readyQueue" 
+
+prom_profile:
+	go tool pprof -symbolize=remote -inuse_space http://node.andrewdelph.com:30002/debug/pprof/heap
+
+prom_exec:
+	kubectl exec -it -n monitoring -c prometheus-server deployments/loki-prometheus-server /bin/sh
