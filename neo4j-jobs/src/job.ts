@@ -102,7 +102,7 @@ logger.info(`Value of JOB: ${job}`);
             relationshipTypes: ['FRIENDS'],
             // featureProperties: ['values','priority','community'],
             propertyRatio: 0.0,
-            nodeSelfInfluence: 0.5,
+            nodeSelfInfluence: 0,
             embeddingDimension: 128,
             // normalizationStrength: -1.0,
             randomSeed: 42,
