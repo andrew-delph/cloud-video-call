@@ -18,7 +18,7 @@ const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
 const maxAuthSkip = 10 // max number of times a auth can be skipped
 
-let validMatchChatTime = 60 * 3; // number of seconds to delay if valid match
+let validMatchChatTime = 60 * 2; // number of seconds to delay if valid match
 let invalidMatchChatTime = 40;
 
 // validMatchChatTime= 0
