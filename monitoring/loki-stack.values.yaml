@@ -63,8 +63,9 @@ prometheus:
     extraFlags:
       - web.enable-lifecycle
       - enable-feature=remote-write-receiver
-      - storage.tsdb.max-block-duration=1h
-      - storage.tsdb.min-block-duration=30m
+      # - storage.tsdb.max-block-duration=20m
+      # - storage.tsdb.min-block-duration=20m
+      # - storage.tsdb.retention.size=300MB
       # - web.enable-remote-write-receiver
       # - log.level=debug
     # global:
