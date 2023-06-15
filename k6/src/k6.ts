@@ -198,8 +198,8 @@ export default async function () {
   const myUser = await usersLib.fromRedis(auth);
 
   const extraLabels = ()=>{
-    // return { type: myUser.getTypeString() }
-    return {}
+    return { type: myUser.getTypeString() }
+    // return {}
   }
 
   const socket = new K6SocketIoExp(ws_url, { auth: auth }, {});
