@@ -48,6 +48,7 @@ metadata:
   name: neo4j-jobs-short-predict
 spec:
   concurrencyPolicy: Forbid
+  activeDeadlineSeconds: 100
   schedule: '* * * * *'
   suspend: false
   jobTemplate:

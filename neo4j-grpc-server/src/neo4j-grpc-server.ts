@@ -39,7 +39,7 @@ common.listenGlobalExceptions(async () => {
 });
 
 export const userPreferencesCacheEx = 60 * 60 * 2;
-export const compareUserFiltersCacheEx = 60 * 60 * 2;
+export const compareUserFiltersCacheEx = 10;
 
 var server = new grpc.Server();
 
@@ -436,14 +436,16 @@ const checkUserFilters = async (
 
   for (let requestFilter of call.request.getFiltersList()) {
     const responseFilter = new FilterObject();
-    responseFilter.setPassed(
-      await compareUserFilters(
-        requestFilter.getUserId1(),
-        requestFilter.getUserId2(),
-      ),
+
+    const passed = await compareUserFilters(
+      requestFilter.getUserId1(),
+      requestFilter.getUserId2(),
     );
+    responseFilter.setPassed(passed);
     responseFilter.setUserId1(requestFilter.getUserId1());
     responseFilter.setUserId2(requestFilter.getUserId2());
+
+    if (!passed) continue;
 
     const results = await session.run(
       `

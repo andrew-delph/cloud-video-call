@@ -191,10 +191,10 @@ export async function startReadyConsumer() {
 
       const cooldownAttempts = matchmakerMessage.getCooldownAttempts();
 
-      if (cooldownAttempts == 0) {
-        await calcScoreZset(userId);
-      }
-      await expireScoreZset(userId, 60 * 5);
+      // if (cooldownAttempts == 0) {
+      //   await calcScoreZset(userId);
+      // }
+      // await expireScoreZset(userId, 60 * 5);
 
       const userRepsonse = await neo4jGetUser(userId);
 
@@ -401,13 +401,17 @@ async function matchmakerFlow(
   await notifyListeners(readyMessage.getUserId());
 
   const readySet = new Set(await mainRedisClient.smembers(common.readySetName));
+  const activeSize = await mainRedisClient.scard(common.activeSetName);
 
   const filterSet: Set<FilteredUserType> = await createFilterSet(
     readyMessage.getUserId(),
     readySet,
   );
 
-  const activeSize = await mainRedisClient.scard(common.activeSetName);
+  logger.debug(
+    `filterSet.size=${filterSet.size} readySet.size=${readySet.size}`,
+  );
+
   const scorePercentile = calcScorePercentile(
     readyMessage.getCooldownAttempts(),
   );

@@ -56,6 +56,7 @@ export async function addZsetScore(
       score + 0.0,
       otherId,
     );
+    await expireScoreZset(userId, 60 * 5);
   } catch (e) {
     logger.error(`addZsetScore: score=${score} ${e}`);
   }

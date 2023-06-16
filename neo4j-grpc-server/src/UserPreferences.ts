@@ -40,7 +40,7 @@ const getCompareUserFiltersCacheKey = (
   userId1: string,
   userId2: string,
 ): string => {
-  if (userId1 > userId2) return getCompareUserFiltersCacheKey(userId2, userId1);
+  // if (userId1 > userId2) return getCompareUserFiltersCacheKey(userId2, userId1);
   return `${CompareUserFiltersPrefix}${userId1}-${userId2}`;
 };
 
@@ -239,6 +239,24 @@ export const compareUserFilters = async (
 
   valid = valid && filterConstants(user1Data, user2Data);
   valid = valid && filterConstants(user2Data, user1Data);
+
+  const user1Priority =
+    user1Data.priority ||
+    (await common.getRedisUserPriority(redisClient, userId1)) ||
+    -1;
+
+  const user2Priority =
+    user2Data.priority ||
+    (await common.getRedisUserPriority(redisClient, userId2)) ||
+    -1;
+
+  logger.debug(
+    `user1Priority=${user1Priority} user2Priority=${user2Priority} => ${
+      user1Priority >= user2Priority
+    }`,
+  );
+
+  valid = valid && user1Priority >= user2Priority;
 
   const filterDistance = (
     userDataA: UserPreferences,
