@@ -145,7 +145,7 @@ logger.info(`Value of JOB: ${job}`);
       );
 
       const priorityRecords = results.records.sort(
-        (a, b) => a.get(`priority`) - b.get(`priority`),
+        (a: any, b: any) => a.get(`priority`) - b.get(`priority`),
       );
 
       for (let record of priorityRecords) {
