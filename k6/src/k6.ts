@@ -277,7 +277,7 @@ export default async function () {
               const matchSuccess = await expectMatch.take(2)
 
               if (!matchSuccess|| !matchSuccess.data || !matchSuccess.data.success) {
-                console.log(`matchSuccess.success is incorrect: ${JSON.stringify(matchSuccess)}`)
+                console.error(`matchSuccess.success is incorrect: ${JSON.stringify(matchSuccess)}`)
                 throw `matchSuccess.success is incorrect: ${matchSuccess.data.success}`
               }
               else {
