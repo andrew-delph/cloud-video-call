@@ -194,7 +194,7 @@ export async function startReadyConsumer() {
       if (cooldownAttempts == 0) {
         await calcScoreZset(userId);
       }
-      await expireScoreZset(userId, maxCooldownDelay);
+      await expireScoreZset(userId, 60 * 5);
 
       const userRepsonse = await neo4jGetUser(userId);
 
