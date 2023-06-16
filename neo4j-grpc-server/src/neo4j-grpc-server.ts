@@ -231,6 +231,7 @@ function defaultScore() {
   const score = new Score();
   score.setProb(-1);
   score.setScore(-1);
+  score.setNscore(0);
   return score;
 }
 
@@ -301,7 +302,8 @@ const getRelationshipScores = async (
       coalesce(prel.probability, -1) as prob, 
       round(n2.priority,3) as p2,
       n1.userId as targetId,
-      n2.userId as otherId
+      n2.userId as otherId,
+      gds.alpha.linkprediction.adamicAdar(n1, n2, {relationshipQuery: 'NEGATIVE'}) as nscore
       ORDER BY prob DESC, p2 DESC
       `,
     { target: userId, otherUsers: otherUsers },
@@ -315,12 +317,13 @@ const getRelationshipScores = async (
 
   const length = result.records.length;
   for (const [i, record] of result.records.entries()) {
-    const prob = record.get(`prob`);
     const otherId = record.get(`otherId`);
+    const prob = record.get(`prob`);
+    const nscore = record.get(`nscore`);
     const index = length - i;
     if (i == 0) {
       logger.debug(
-        `prob:${prob} length:${length} index:${index}  userId:${userId}  otherId:${otherId}  otherUsers:${otherUsers}`,
+        `prob:${prob} nscore:${nscore} length:${length} index:${index}  userId:${userId}  otherId:${otherId}  otherUsers:${otherUsers}`,
       );
     }
 
@@ -328,6 +331,7 @@ const getRelationshipScores = async (
       reply.getRelationshipScoresMap().get(otherId) ?? defaultScore();
 
     score.setProb(prob);
+    score.setNscore(nscore);
 
     reply.getRelationshipScoresMap().set(otherId, score);
   }

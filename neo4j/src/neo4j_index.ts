@@ -62,7 +62,7 @@ export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
 
-    results = await funcs.compareTypes();
+    results = await funcs.compareTypes(`Male`);
     // results = await funcs.getFriends();
 
     printResults(results, 10, 10);

@@ -66,9 +66,9 @@ const prefetch = 4;
 export const realtionshipScoreCacheEx = 60 * 5;
 
 const maxCooldownDelay = 20; // still can be longer because of priority delay
-const cooldownScalerValue = 1.1;
+const cooldownScalerValue = 1.3;
 const maxReadyDelaySeconds = 5;
-const maxPriorityDelay = 0;
+const maxPriorityDelay = 3;
 const maxCooldownAttemps = Math.floor(
   maxCooldownDelay ** (1 / cooldownScalerValue),
 );
@@ -83,10 +83,23 @@ const relationShipScoresSortFunc = (
   const a_score = a[1];
   const b_score = b[1];
 
-  const score =
-    a_score.prob != b_score.prob
-      ? b_score.prob - a_score.prob
-      : b_score.score - a_score.score;
+  // const score =
+  //   a_score.prob != b_score.prob
+  //     ? b_score.prob - a_score.prob
+  //     : b_score.score - a_score.score;
+
+  const calcScore = () => {
+    if (a_score.prob != b_score.prob) {
+      return b_score.prob - a_score.prob;
+    } else if (b_score.score != a_score.score) {
+      return b_score.score - a_score.score;
+    } else {
+      // this is reversed to that higher nscore is lower
+      return a_score.nscore - b_score.nscore;
+    }
+  };
+
+  const score = calcScore();
 
   if (
     recentMatchesLowerScore &&
@@ -470,7 +483,7 @@ async function matchmakerFlow(
   //   `minutes`,
   // )}`;
 
-  // const lowestScore = relationShipScores[relationShipScores.length - 1][1];
+  const lowestScore = relationShipScores[relationShipScores.length - 1][1];
   // const lowestScoreString = `lowestScore={prob=${lowestScore.prob.toFixed(
   //   2,
   // )}, score=${lowestScore.score.toFixed(2)}}`;
@@ -497,6 +510,9 @@ async function matchmakerFlow(
   const matchedMsg = [
     `percentile=${scorePercentile.toFixed(2)}`,
     `score=${highestScore.score.toFixed(2)}`,
+    `nscores=(${highestScore.nscore.toFixed(1)}<${lowestScore.nscore.toFixed(
+      1,
+    )})`,
     `threshhold=${scoreThreshold.toFixed(2)}`,
     `priority=${readyMessage.getPriority()}`,
     `matched=[${stripUserId(readyMessage.getUserId())},${stripUserId(

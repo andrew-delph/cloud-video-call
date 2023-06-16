@@ -203,22 +203,16 @@ export async function getUsers(): Promise<neo4j.QueryResult> {
 }
 
 export async function compareTypes(
-  type1: string = ``,
-  type2: string = ``,
+  contains1: string = ``,
+  contains2: string = ``,
   md1: string = ``,
   md2: string = ``,
 ): Promise<neo4j.QueryResult> {
   const limit = 1000;
   console.log();
-  console.log(`Running compareTypes type1="${type1}" type2="${type2}"`);
-
-  if (type1) {
-    type1 = `{type:'${type1}'}`;
-  }
-
-  if (type2) {
-    type2 = `{type:'${type2}'}`;
-  }
+  console.log(
+    `Running compareTypes contains1="${contains1}" contains2="${contains2}"`,
+  );
 
   const start_time = performance.now();
 
@@ -226,16 +220,21 @@ export async function compareTypes(
 
   result = await session.run(
     `
-    MATCH (n1:Person${type1})
-    MATCH (n2:Person${type2})
-    WITH n1, n2
-    where n1 <> n2 
+    MATCH (n1:Person)
+    MATCH (n2:Person)
+    where n1 <> n2
+    AND n1.userId =~ '.*${contains1}.*'
+    AND n2.userId =~ '.*${contains2}.*'
+    WITH n1, n2,     
+    gds.alpha.linkprediction.adamicAdar(n1, n2, {relationshipQuery: 'FRIENDS'}) as fscore,
+    gds.alpha.linkprediction.adamicAdar(n1, n2, {relationshipQuery: 'NEGATIVE'}) as nscore
     return 
     n1.userId as user1,
     n2.userId as user2,
-    gds.alpha.linkprediction.adamicAdar(n1, n2, {relationshipQuery: 'FRIENDS'}) as fscore,
-    gds.alpha.linkprediction.adamicAdar(n1, n2, {relationshipQuery: 'NEGATIVE'}) as nscore
-    ORDER by fscore DESC, nscore ASC
+    nscore-fscore as score,
+    fscore,
+    nscore
+    ORDER by score DESC
   `,
   );
 

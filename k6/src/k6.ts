@@ -9,7 +9,7 @@ import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
 const vus = 30;
-const authKeysNum = vus + 100; // number of users created for each parallel instance running
+const authKeysNum = vus + 5; // number of users created for each parallel instance running
 const iterations = 999999;//authKeysNum * 1000;
 
 const nukeData = false; // this doesnt work with multile running instances
@@ -21,8 +21,8 @@ const maxAuthSkip = 10 // max number of times a auth can be skipped
 let validMatchChatTime = 20; // number of seconds to delay if valid match
 let invalidMatchChatTime = 10;
 
-// validMatchChatTime= 0
-// invalidMatchChatTime= 0
+validMatchChatTime= 0
+invalidMatchChatTime= 0
 
 
 const matches = 1 //Infinity; // number of matches per vus. -1 is inf

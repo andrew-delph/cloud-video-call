@@ -11,6 +11,7 @@ import * as common from 'common';
 import {
   GetRelationshipScoresRequest,
   GetRelationshipScoresResponse,
+  Score,
 } from 'common-messaging';
 
 const logger = common.getLogger();
@@ -169,11 +170,14 @@ export async function getRelationshipScores(
   // store them in map
 
   for (const filter of filtersToRequest) {
-    const relationshipScore = getRelationshipScoresMap.get(filter.otherId);
+    const relationshipScore: Score = getRelationshipScoresMap.get(
+      filter.otherId,
+    );
     if (!relationshipScore) continue;
 
     const prob = relationshipScore.getProb();
     const score = relationshipScore.getScore();
+    const nscore = relationshipScore.getNscore();
     const otherId = filter.otherId;
     const latest_match = filter.latest_match;
     const score_obj: RelationshipScoreWrapper = new RelationshipScoreWrapper({
@@ -181,6 +185,7 @@ export async function getRelationshipScores(
       score,
       otherId,
       latest_match,
+      nscore,
     });
 
     await mainRedisClient.set(
