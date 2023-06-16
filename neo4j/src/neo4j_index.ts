@@ -62,9 +62,13 @@ export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
 
-    const node_attributes: string[] = await funcs.getAttributeKeys();
+    results = await funcs.compareTypes();
+    // results = await funcs.getFriends();
 
-    results = await funcs.run(`MATCH (p:Person) RETURN p.userId as userId`);
+    printResults(results, 10, 10);
+
+    return;
+    const node_attributes: string[] = await funcs.getAttributeKeys();
 
     const userIds = results.records.map((record) => record.get(`userId`));
 

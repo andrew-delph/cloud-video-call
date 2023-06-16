@@ -12,14 +12,14 @@ const vus =30;
 const authKeysNum = 200; // number of users created for each parallel instance running
 const iterations = 999999;//authKeysNum * 1000;
 
-const nukeData = false; // this doesnt work with multile running instances
+const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
 const maxAuthSkip = 10 // max number of times a auth can be skipped
 
-let validMatchChatTime = 60 * 2; // number of seconds to delay if valid match
-let invalidMatchChatTime = 40;
+let validMatchChatTime = 20; // number of seconds to delay if valid match
+let invalidMatchChatTime = 10;
 
 // validMatchChatTime= 0
 // invalidMatchChatTime= 0
@@ -33,11 +33,11 @@ let uniqueAuthKey = ``;
 let authKeysName = `authKeysName`;
 let authPrefix = `k6_auth_`;
 
-userFunctions.push(usersLib.createFemale);
-userFunctions.push(usersLib.createMale);
-userFunctions.push(usersLib.createGroupA);
-userFunctions.push(usersLib.createGroupB);
-usersLib.setHotRange(10)
+// userFunctions.push(usersLib.createFemale);
+// userFunctions.push(usersLib.createMale);
+// userFunctions.push(usersLib.createGroupA);
+// userFunctions.push(usersLib.createGroupB);
+// usersLib.setHotRange(10)
 for (let i = 0; i < usersLib.hotRange / 3; i++) {
   userFunctions.push(usersLib.createHot);
 }

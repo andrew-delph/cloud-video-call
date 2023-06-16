@@ -208,7 +208,7 @@ export async function compareTypes(
   md1: string = ``,
   md2: string = ``,
 ): Promise<neo4j.QueryResult> {
-  const limit = 50;
+  const limit = 1000;
   console.log();
   console.log(`Running compareTypes type1="${type1}" type2="${type2}"`);
 
@@ -226,26 +226,20 @@ export async function compareTypes(
 
   result = await session.run(
     `
-    MATCH (n1:Person${type1})-[:USER_ATTRIBUTES_CONSTANT]->(md1:MetaData${md1})
-    MATCH (n2:Person${type2})-[:USER_ATTRIBUTES_CONSTANT]->(md2:MetaData${md2})
-    OPTIONAL MATCH (n1)-[prel:PREDICTION]->(n2)
-    OPTIONAL MATCH (n1)-[srel:SIMILAR]->(n2)
-    OPTIONAL MATCH (n1)-[drel:DISTANCE]->(n2)
-    OPTIONAL MATCH (n1)-[:FRIENDS]-()-[:FRIENDS]-()-[:FRIENDS]-(n2)
-    WITH n1, n2, prel, srel, drel,md1,md2, count(*) as num_friends
-    where n1 <> n2 //coalesce(prel.probability,0) > 0.4
+    MATCH (n1:Person${type1})
+    MATCH (n2:Person${type2})
+    WITH n1, n2
+    where n1 <> n2 
     return 
-    num_friends,
-    coalesce(md1.gender, n1.type) as t1, 
-    coalesce(md2.gender, n2.type) as t2,
-    coalesce(prel.probability,0) as prob, 
-    EXISTS((n1)-[:FRIENDS]->(n2)) as friends, 
-    round(coalesce(srel.score,0),3) as sim, 
-    round(n2.priority,3) as p2
-    ORDER BY num_friends DESC, prob DESC, p2 DESC
-    LIMIT ${limit}
+    n1.userId as user1,
+    n2.userId as user2,
+    gds.alpha.linkprediction.adamicAdar(n1, n2, {relationshipQuery: 'FRIENDS'}) as fscore,
+    gds.alpha.linkprediction.adamicAdar(n1, n2, {relationshipQuery: 'NEGATIVE'}) as nscore
+    ORDER by fscore DESC, nscore ASC
   `,
   );
+
+  return result;
 
   const end_time = performance.now();
 
@@ -260,7 +254,7 @@ export async function compareTypes(
 
   const length = result.records.length;
 
-  result.records.slice(0, -1).forEach((record, index) => {
+  result.records.slice(0, -1).forEach((record: any, index: any) => {
     const value = length - index;
     const type1 = record.get(`t1`);
     const type2 = record.get(`t2`);
