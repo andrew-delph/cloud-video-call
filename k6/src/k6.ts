@@ -8,7 +8,7 @@ import { nuke, shuffleArray } from './libs/utils';
 import exec from 'k6/execution';
 import { User, userFunctions } from './User';
 
-const vus = 30;
+const vus = 150;
 const authKeysNum = vus + 5; // number of users created for each parallel instance running
 const iterations = 999999;//authKeysNum * 1000;
 
@@ -18,14 +18,13 @@ const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
 const maxAuthSkip = 10 // max number of times a auth can be skipped
 
-let validMatchChatTime = 20; // number of seconds to delay if valid match
-let invalidMatchChatTime = 10;
+let validMatchChatTime = 60 * 3; // number of seconds to delay if valid match
+let invalidMatchChatTime = 15;
 
-validMatchChatTime= 0
-invalidMatchChatTime= 0
+// validMatchChatTime= 0
+// invalidMatchChatTime= 0
 
-
-const matches = 1 //Infinity; // number of matches per vus. -1 is inf
+const matches = 20 //Infinity; // number of matches per vus. -1 is inf
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
@@ -55,21 +54,21 @@ const updateAuthVars = () => {
 export const options = {
   setupTimeout: `20m`,
   scenarios: {
-    shared: {
-      executor: `shared-iterations`,
-      vus: vus,
-      iterations: iterations,
-      maxDuration: `10h`,
-    },
-    // ramping: {
-    //   executor: `ramping-vus`,
-    //   startVUs: 0,
-    //   stages: [
-    //     { duration: `20m`, target: vus },
-    //     { duration: `2d`, target: vus },
-    //     // { duration: `3m`, target: vus * 1 },
-    //   ],
+    // shared: {
+    //   executor: `shared-iterations`,
+    //   vus: vus,
+    //   iterations: iterations,
+    //   maxDuration: `10h`,
     // },
+    ramping: {
+      executor: `ramping-vus`,
+      startVUs: 0,
+      stages: [
+        { duration: `20m`, target: vus },
+        { duration: `2d`, target: vus },
+        // { duration: `3m`, target: vus * 1 },
+      ],
+    },
     // longConnection: { // TODO fix this....
     //   executor: `ramping-vus`,
     //   exec: `longWait`,
