@@ -12,7 +12,7 @@ const vus = 150;
 const authKeysNum = vus + 5; // number of users created for each parallel instance running
 const iterations = 999999;//authKeysNum * 1000;
 
-const nukeData = false; // this doesnt work with multile running instances
+const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
@@ -188,7 +188,7 @@ export default async function () {
     const auth_end_time = Date.now();
     get_auth_trend.add(auth_end_time - auth_start_time);
   } catch (e) {
-    console.error(e);
+    console.error(`getAuth: `,e);
     return;
   }
 
@@ -335,7 +335,7 @@ export default async function () {
       })
       .catch((error) => {
         error_counter.add(1, extraLabels());
-        console.error(error);
+        console.error(`end run:`,error);
       })
       .finally(async () => {
         socket.close();
