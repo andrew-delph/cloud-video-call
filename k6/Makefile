@@ -33,7 +33,7 @@ run:
 	make setup
 	./run-kube.sh resources/k6-output-grafana-cloud.yaml
 
-run_prod:
+prod:
 	make setup
 	./run-kube.sh resources/k6-output-grafana-cloud.yaml --external
 

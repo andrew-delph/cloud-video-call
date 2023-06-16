@@ -196,8 +196,8 @@ export class User {
   }
 
   getTypeString() {
-    // return `${this.type.valueOf()}`;
-    return `${this.attributes?.constant?.hot ?? this.type.valueOf()}`;
+    return `${this.type.valueOf()}`;
+    // return `${this.attributes?.constant?.hot ?? this.type.valueOf()}`;
   }
 
   async init(updatePreferences: boolean): Promise<void> {
