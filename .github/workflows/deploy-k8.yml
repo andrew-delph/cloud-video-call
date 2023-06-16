@@ -37,5 +37,12 @@ jobs:
         run: |
           cd monitoring
           make apply
+
+      - name: Mount bazel cache
+        uses: actions/cache@v3
+        with:
+          path: '/home/runner/.cache/bazel'
+          key: bazel
+
       - name: Run deploy.sh
         run: ./deploy.sh
