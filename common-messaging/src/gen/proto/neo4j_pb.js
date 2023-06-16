@@ -1998,7 +1998,8 @@ proto.neo4j.Score.prototype.toObject = function(opt_includeInstance) {
 proto.neo4j.Score.toObject = function(includeInstance, msg) {
   var f, obj = {
     prob: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
-    score: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0)
+    score: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    nscore: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0)
   };
 
   if (includeInstance) {
@@ -2043,6 +2044,10 @@ proto.neo4j.Score.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readDouble());
       msg.setScore(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setNscore(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -2086,6 +2091,13 @@ proto.neo4j.Score.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getNscore();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -2122,6 +2134,24 @@ proto.neo4j.Score.prototype.getScore = function() {
  */
 proto.neo4j.Score.prototype.setScore = function(value) {
   return jspb.Message.setProto3FloatField(this, 2, value);
+};
+
+
+/**
+ * optional double nscore = 3;
+ * @return {number}
+ */
+proto.neo4j.Score.prototype.getNscore = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.neo4j.Score} returns this
+ */
+proto.neo4j.Score.prototype.setNscore = function(value) {
+  return jspb.Message.setProto3FloatField(this, 3, value);
 };
 
 

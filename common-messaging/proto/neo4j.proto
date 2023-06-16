@@ -80,6 +80,7 @@ message GetRelationshipScoresResponse {
 message Score {
   double prob = 1;
   double score = 2;
+  double nscore = 3;
 }
 
 message FilterObject {
