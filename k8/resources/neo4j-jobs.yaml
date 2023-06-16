@@ -48,12 +48,12 @@ metadata:
   name: neo4j-jobs-short-predict
 spec:
   concurrencyPolicy: Forbid
-  activeDeadlineSeconds: 100
   schedule: '* * * * *'
   suspend: false
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: 3600 # TTL set to 1 hour (3600 seconds)
+      activeDeadlineSeconds: 100
       template:
         spec:
           terminationGracePeriodSeconds: 300
