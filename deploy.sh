@@ -8,9 +8,14 @@ targets=$(bazel query //... | grep image_push)
 
 # Run each image_push target
 while read -r target; do
+  if [[ "$target" == *"puppeteer"* ]]; then
+    echo "Skipping ${target}..."
+    continue
+  fi
   echo "Running ${target}..."
   bazel run "${target}"
 done <<< "${targets}"
+
 
 echo "All image_push targets executed successfully."
 
