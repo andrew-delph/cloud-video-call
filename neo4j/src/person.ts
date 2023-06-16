@@ -55,7 +55,7 @@ for (let i = 0; i < 6; i++) {
 }
 
 export const validFriends = (ntype: string, mtype: string): boolean => {
-  const testList = [ntype, mtype];
+  const testList = [userdIdToType(ntype), userdIdToType(mtype)];
 
   for (let check of validLists) {
     if (areListsEqual(testList, check)) {
@@ -246,7 +246,7 @@ export class Person {
 
   constructor(type: PersonType, userId: string, attributes: any) {
     this.type = type;
-    this.userId = type.valueOf() + `:` + userId;
+    this.userId = userId + `_` + type.valueOf();
     this.attributes = attributes;
   }
 

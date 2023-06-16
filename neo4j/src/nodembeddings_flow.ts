@@ -139,7 +139,7 @@ export const nodeembeddings = async (
   userFunctions.push(createMale);
   userFunctions.push(createGroupA);
   userFunctions.push(createGroupB);
-  userFunctions.push(createRandom);
+  // userFunctions.push(createRandom);
 
   if (createData) {
     await funcs.createData({
@@ -154,9 +154,10 @@ export const nodeembeddings = async (
   results = await funcs.createGraph(`myGraph`, test_attributes);
 
   if (permutations == false) {
-    permutations = generatePermutations([0, 1, 0.5], 2);
+    permutations = generatePermutations([0, 1, 0.5], 3);
   }
   console.log(`permutations: ${JSON.stringify(permutations)}`);
+  // if (1 == 1) process.exit(1);
 
   results = await funcs.run(
     `
@@ -164,8 +165,9 @@ export const nodeembeddings = async (
       {  
         scaler: "MinMax",
         nodeLabels: ['Person'],
-        relationshipTypes: ['FEEDBACK'],
-        relationshipWeightProperty: 'score',
+        relationshipTypes: ['FRIENDS'],
+        // relationshipTypes: ['FEEDBACK'],
+        // relationshipWeightProperty: 'score',
         mutateProperty: 'priority' 
       }
     )
@@ -178,9 +180,9 @@ export const nodeembeddings = async (
     CALL gds.louvain.mutate('myGraph', 
     {  
       nodeLabels: ['Person'],
-      // relationshipTypes: ['FRIENDS'],
-      relationshipTypes: ['FEEDBACK'],
-      relationshipWeightProperty: 'score',
+      relationshipTypes: ['FRIENDS'],
+      // relationshipTypes: ['FEEDBACK'],
+      // relationshipWeightProperty: 'score',
       mutateProperty: 'community' 
     }
     )
@@ -192,7 +194,7 @@ export const nodeembeddings = async (
   // [0, 1, 0.5]
   for (let propertyRatio of [0]) {
     for (let nodeSelfInfluence of [1]) {
-      for (let perm of permutations.slice(5)) {
+      for (let perm of permutations) {
         resultList.push(
           await generateEmbedding(perm, propertyRatio, nodeSelfInfluence),
         );
@@ -256,8 +258,8 @@ const generateEmbedding = async (
       CALL gds.fastRP.write('myGraph',
       {
         nodeLabels: ['Person'],
-        relationshipTypes: ['FEEDBACK'],
-        relationshipWeightProperty: 'score',
+        relationshipTypes: ['FRIENDS'],
+        // relationshipWeightProperty: 'score',
         featureProperties: ['values','priority','community'],
         propertyRatio: ${propertyRatio},
         nodeSelfInfluence: ${nodeSelfInfluence},
@@ -300,9 +302,9 @@ const generateEmbedding = async (
 };
 
 export const main = async () => {
-  let perms: any = [[1, 0.5]];
-  perms = false;
-  const resultsList = await nodeembeddings(perms, false);
+  let perms: any = [[1, 0.5, 0]];
+  // perms = false;
+  const resultsList = await nodeembeddings(perms, true);
 
   // const resultsListOther = await nodeembeddings(
   //   !gender,

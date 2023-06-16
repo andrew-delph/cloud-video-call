@@ -62,10 +62,12 @@ export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
 
-    results = await funcs.compareTypes(`Male`);
-    // results = await funcs.getFriends();
+    await nodembeddings_flow.main();
 
-    printResults(results, 10, 10);
+    // results = await funcs.compareTypes(`Male`);
+    // // results = await funcs.getFriends();
+
+    // printResults(results, 10, 10);
 
     return;
     const node_attributes: string[] = await funcs.getAttributeKeys();
