@@ -220,6 +220,7 @@ export default async function () {
 
     socket.on(`error`, () => {
       error_counter.add(1, extraLabels());
+      console.error(`socket.on.error`)
     });
 
     socket
