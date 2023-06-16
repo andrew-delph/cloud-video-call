@@ -16,7 +16,7 @@ const print_num = 5;
 
 const redisClient = common.createRedisClient();
 
-let results;
+let results: any = {};
 const start_time = performance.now();
 logger.info(`Value of JOB: ${job}`);
 (async () => {
@@ -50,11 +50,16 @@ logger.info(`Value of JOB: ${job}`);
 
       logger.info(`test_attributes: ${JSON.stringify(test_attributes)}`);
 
-      results = await funcs.createGraph(
-        `shortPredictGraph`,
-        test_attributes,
-        activeUsers,
-      );
+      try {
+        results = await funcs.createGraph(
+          `shortPredictGraph`,
+          test_attributes,
+          activeUsers,
+        );
+      } catch (err) {
+        logger.error(`Ending early because not graph created.`);
+        return;
+      }
 
       logger.debug(`graph: ${JSON.stringify(results.records[0])}`);
 
