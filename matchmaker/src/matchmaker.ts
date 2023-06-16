@@ -482,7 +482,7 @@ async function matchmakerFlow(
   if (highestScore.prob <= 0 && highestScore.score <= scorePercentile) {
     //scoreThreshold
     if (
-      // readyMessage.getPriority() >= 0 &&
+      readyMessage.getPriority() >= 0 &&
       readyMessage.getCooldownAttempts() < maxCooldownAttemps
     ) {
       throw new CooldownRetryError(
