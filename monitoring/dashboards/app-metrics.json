@@ -81,7 +81,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum (rate (container_cpu_usage_seconds_total{id=\"/\"}[1m])) / sum (machine_cpu_cores) * 100",
+          "expr": "sum(node_cpu_seconds_total{mode!=\"idle\"})/sum(node_cpu_seconds_total) * 100",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -144,7 +144,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "(sum(container_memory_usage_bytes{pod!=\"\"}) / sum(machine_memory_bytes)) *100",
+          "expr": "((sum(node_memory_MemTotal_bytes) - sum(node_memory_MemFree_bytes)) / sum(node_memory_MemTotal_bytes)) * 100",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -446,7 +446,7 @@
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "default",
           "value": "default"
         },
