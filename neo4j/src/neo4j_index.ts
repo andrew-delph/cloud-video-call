@@ -62,6 +62,9 @@ export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
 
+    // results = await funcs.getFriends();
+    // printResults(results, 10, 10);
+
     await nodembeddings_flow.main();
 
     // results = await funcs.compareTypes(`Male`);

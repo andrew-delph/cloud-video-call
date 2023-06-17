@@ -142,14 +142,14 @@ export const createFemale = (auth: string): Person => {
   let attributes: any = {
     gender: `female`,
   };
-  // attributes = {};
+  attributes = {};
 
   return new Person(PersonType.Female, auth, attributes);
 };
 
 export const createMale = (auth: string): Person => {
   let attributes: any = { gender: `male` };
-  // attributes = {};
+  attributes = {};
 
   return new Person(PersonType.Male, auth, attributes);
 };
@@ -176,14 +176,14 @@ export const createNegative = (auth: string): Person => {
 
 export const createGroupA = (auth: string): Person => {
   let attributes = {};
-  attributes = { group: `A` };
+  // attributes = { group: `A` };
 
   return new Person(PersonType.GroupA, auth, attributes);
 };
 
 export const createGroupB = (auth: string): Person => {
   let attributes = {};
-  attributes = { group: `B` };
+  // attributes = { group: `B` };
 
   return new Person(PersonType.GroupB, auth, attributes);
 };

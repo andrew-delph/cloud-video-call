@@ -101,7 +101,7 @@ const calcAvg = async (
   console.log(`--- calcAvg`);
   console.log(`run`, performance.now() - start_time);
 
-  return total / length;
+  return { avg: total / length, length, valid: total };
 };
 
 function cleanPerm(perm: number[]): number[] {
@@ -110,13 +110,19 @@ function cleanPerm(perm: number[]): number[] {
   }
   return perm;
 }
-function generatePermutations(values: number[], length: number): number[][] {
+function generatePermutations(
+  values: number[],
+  min: number,
+  max: number,
+): number[][] {
   const permutationsSet = new Set<string>();
 
   function generateHelper(current: number[]) {
-    if (current.length === length) {
+    if (current.length === max) {
       permutationsSet.add(JSON.stringify(cleanPerm(current)));
       return;
+    } else if (current.length >= min) {
+      permutationsSet.add(JSON.stringify(cleanPerm(current)));
     }
 
     for (let i = 0; i < values.length; i++) {
@@ -144,17 +150,17 @@ export const nodeembeddings = async (
   if (createData) {
     await funcs.createData({
       deleteData: true,
-      nodesNum: 200,
+      nodesNum: 400,
       edgesNum: 20,
     });
     results = await funcs.createFriends();
   }
 
   const test_attributes: string[] = await funcs.getAttributeKeys();
-  results = await funcs.createGraph(`myGraph`, test_attributes);
+  results = await funcs.createGraph(`myGraph`);
 
   if (permutations == false) {
-    permutations = generatePermutations([0, 1, 0.5], 3);
+    permutations = generatePermutations([0, 1, 0.5], 3, 5);
   }
   console.log(`permutations: ${JSON.stringify(permutations)}`);
   // if (1 == 1) process.exit(1);
@@ -192,8 +198,8 @@ export const nodeembeddings = async (
   let resultList: any[] = [];
 
   // [0, 1, 0.5]
-  for (let propertyRatio of [0]) {
-    for (let nodeSelfInfluence of [1]) {
+  for (let propertyRatio of [0, 0.5, 1]) {
+    for (let nodeSelfInfluence of [0, 0.5, 1]) {
       for (let perm of permutations) {
         resultList.push(
           await generateEmbedding(perm, propertyRatio, nodeSelfInfluence),
@@ -263,7 +269,7 @@ const generateEmbedding = async (
         featureProperties: ['values','priority','community'],
         propertyRatio: ${propertyRatio},
         nodeSelfInfluence: ${nodeSelfInfluence},
-        embeddingDimension: 15,
+        embeddingDimension: 150,
         randomSeed: 42,
         iterationWeights: ${JSON.stringify(perm)},
         writeProperty: 'embedding'
@@ -285,25 +291,27 @@ const generateEmbedding = async (
 
   // printResults(results, 50, 0);
 
-  const avg: number = (await calcAvg(results, 0)) as number;
+  const avgObj = await calcAvg(results, 0.5);
 
   console.log();
-  console.log(`the avg is:`, avg);
+  console.log(`the avg is:`, avgObj.avg);
   console.log();
 
   return {
-    avg,
-    perm,
-    length: results.records.length,
+    avg: avgObj.avg.toFixed(3),
+    valid: avgObj.valid,
+    length: avgObj.length,
+    perm: JSON.stringify(perm),
     propertyRatio,
     nodeSelfInfluence,
-    score: avg * results.records.length,
+    embeddings: results.records.length,
+    score: avgObj.avg * results.records.length,
   };
 };
 
 export const main = async () => {
   let perms: any = [[1, 0.5, 0]];
-  // perms = false;
+  perms = false;
   const resultsList = await nodeembeddings(perms, true);
 
   // const resultsListOther = await nodeembeddings(
