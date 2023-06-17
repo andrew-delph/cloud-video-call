@@ -72,7 +72,6 @@ export const options = {
     longConnection: {
       executor: `ramping-vus`,
       exec: `longWait`,
-      startVUs: vus,
       stages: [
         { duration: `20m`, target: vus },
         { duration: `2d`, target: vus },
@@ -401,12 +400,10 @@ export async function longWait() {
       .then(async () => {
         await socket.sleep(200 * 1000);
       })
-      .then(() => {
+      .finally(async () => {
         check(socket.connected, {
           'socket is still connected': socket.connected,
         });
-      })
-      .finally(async () => {
         socket.close();
       });
   });
