@@ -117,7 +117,7 @@
             "uid": "Loki"
           },
           "editorMode": "code",
-          "expr": "sum by(level, app) (count_over_time({app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"} [$__interval] | line_format `{{.app}} [{{ .level | default \"unknown\" | upper }}] {{ $json := fromJson __line__ }} {{ $json.message | default __line__ }}` |~ `.*$search.*`))",
+          "expr": "sum by(level, app) (count_over_time({app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"} [$__interval]  |~ `.*$search.*`))",
           "key": "Q-9d84741e-216e-44cc-a49d-281b07e3ad48-0",
           "legendFormat": "{{app}} : {{level}}",
           "queryType": "range",
@@ -176,7 +176,7 @@
     "list": [
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "default",
           "value": "default"
         },
