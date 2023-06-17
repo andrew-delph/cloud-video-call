@@ -446,9 +446,9 @@
     "list": [
       {
         "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
+          "selected": true,
+          "text": "default",
+          "value": "default"
         },
         "datasource": {
           "type": "prometheus",
