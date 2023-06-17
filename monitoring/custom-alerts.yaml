@@ -1,0 +1,11 @@
+groups:
+  - name: App Metrics
+    rules:
+      - alert: UserCreatedIncreased
+        expr: sum(increase(user_created{test_user="false"}[1h])) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'User Created Metric Increase'
+          description: 'The sum of new user creations has increased in the last hour.'

@@ -28,7 +28,8 @@ apply:
 loki:
 	K8_ALERTS=$$(wget -qO- https://raw.githubusercontent.com/samber/awesome-prometheus-alerts/master/dist/rules/kubernetes/kubestate-exporter.yml | yq eval '.groups' -) \
 	RABBITMQ_ALERTS=$$(wget -qO- https://raw.githubusercontent.com/samber/awesome-prometheus-alerts/master/dist/rules/rabbitmq/rabbitmq-exporter.yml | yq eval '.groups' -) \
-		yq eval '.prometheus.serverFiles."alerting_rules.yml".groups = env(K8_ALERTS) + env(RABBITMQ_ALERTS)' loki-stack.values.yaml > loki-stack.values.modified.yaml
+	CUSTOM_ALERTS=$$(cat ./custom-alerts.yaml | yq eval '.groups' -) \
+		yq eval '.prometheus.serverFiles."alerting_rules.yml".groups = env(K8_ALERTS) + env(RABBITMQ_ALERTS) + env(CUSTOM_ALERTS)' loki-stack.values.yaml > loki-stack.values.modified.yaml
 	helm upgrade --install loki --namespace=monitoring grafana/loki-stack -f loki-stack.values.modified.yaml
 
 delete:
