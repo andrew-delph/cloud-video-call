@@ -31,7 +31,7 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "Loki"
+        "uid": "P8E80F9AEF21F6940"
       },
       "fieldConfig": {
         "defaults": {
@@ -116,8 +116,8 @@
             "type": "loki",
             "uid": "Loki"
           },
-          "editorMode": "builder",
-          "expr": "sum by(level, app) (count_over_time({app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"} [$__interval]))",
+          "editorMode": "code",
+          "expr": "sum by(level, app) (count_over_time({app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"} [$__interval] | line_format `{{.app}} [{{ .level | default \"unknown\" | upper }}] {{ $json := fromJson __line__ }} {{ $json.message | default __line__ }}` |~ `.*$search.*`))",
           "key": "Q-9d84741e-216e-44cc-a49d-281b07e3ad48-0",
           "legendFormat": "{{app}} : {{level}}",
           "queryType": "range",
@@ -176,7 +176,7 @@
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "default",
           "value": "default"
         },
@@ -206,9 +206,9 @@
       },
       {
         "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
+          "selected": true,
+          "text": ["All"],
+          "value": ["$__all"]
         },
         "datasource": {
           "type": "loki",
@@ -284,7 +284,7 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "",
           "value": ""
         },
