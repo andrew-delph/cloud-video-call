@@ -62,10 +62,22 @@ export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
 
-    // results = await funcs.getFriends();
+    let randomId = Math.random().toString(36).substring(2);
+    randomId = `andrew`;
+
+    console.table({ randomId });
+
+    results = await funcs.run(
+      `Merge (n:Person {userId: $userId}) return n.priority as priority;`,
+      {
+        userId: randomId,
+      },
+    );
+
+    console.log(results.summary);
     // printResults(results, 10, 10);
 
-    await nodembeddings_flow.main();
+    // await nodembeddings_flow.main();
 
     // results = await funcs.compareTypes(`Male`);
     // // results = await funcs.getFriends();

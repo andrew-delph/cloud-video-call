@@ -33,10 +33,16 @@ import {
 } from 'common-messaging';
 import * as neo4j from 'neo4j-driver';
 import { v4 } from 'uuid';
+import { user_created } from './metrics';
+
+const promClient = new common.PromClient(`neo4j-grpc-server`);
 
 common.listenGlobalExceptions(async () => {
+  await promClient.stop();
   await server.forceShutdown();
 });
+
+promClient.startPush();
 
 export const userPreferencesCacheEx = 60 * 60 * 2;
 export const compareUserFiltersCacheEx = 10;
@@ -118,6 +124,15 @@ const createUser = async (
     },
   );
   await session.close();
+
+  if (result.summary.counters.updates().nodesCreated > 0) {
+    if (!common.isTestUser(userId)) {
+      logger.info(`Created real user`);
+    } else {
+      logger.debug(`Created test user`);
+    }
+    user_created.inc({ test_user: `${common.isTestUser(userId)}` });
+  }
 
   if (result.records.length != 1) {
     logger.error(`createUser result.records.length != 1`);

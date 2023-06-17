@@ -8,12 +8,12 @@ import redis from 'k6/experimental/redis';
 import http from 'k6/http';
 import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 
-const vus = 150;
-const authKeysNum = vus + 5; // number of users created for each parallel instance running
+const vus = 10;
+const authKeysNum = vus + 600; // number of users created for each parallel instance running
 const iterations = 999999; //authKeysNum * 1000;
 
 const nukeData = true; // this doesnt work with multile running instances
-const uniqueAuthIds = true; //for every test new auth will be created
+const uniqueAuthIds = false; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
 const maxAuthSkip = 10; // max number of times a auth can be skipped
@@ -21,10 +21,10 @@ const maxAuthSkip = 10; // max number of times a auth can be skipped
 let validMatchChatTime = 60 * 3; // number of seconds to delay if valid match
 let invalidMatchChatTime = 15;
 
-// validMatchChatTime= 0
-// invalidMatchChatTime= 0
+validMatchChatTime= 10
+invalidMatchChatTime= 10
 
-const matches = 20; //Infinity; // number of matches per vus. -1 is inf
+const matches = 1; //Infinity; // number of matches per vus. -1 is inf
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
@@ -54,12 +54,12 @@ const updateAuthVars = () => {
 export const options = {
   setupTimeout: `20m`,
   scenarios: {
-    // shared: {
-    //   executor: `shared-iterations`,
-    //   vus: vus,
-    //   iterations: iterations,
-    //   maxDuration: `10h`,
-    // },
+    shared: {
+      executor: `shared-iterations`,
+      vus: vus,
+      iterations: iterations,
+      maxDuration: `10h`,
+    },
     // ramping: {
     //   executor: `ramping-vus`,
     //   startVUs: 0,
@@ -69,14 +69,14 @@ export const options = {
     //     // { duration: `3m`, target: vus * 1 },
     //   ],
     // },
-    longConnection: {
-      executor: `ramping-vus`,
-      exec: `longWait`,
-      stages: [
-        { duration: `20m`, target: vus },
-        { duration: `2d`, target: vus },
-      ],
-    },
+    // longConnection: {
+    //   executor: `ramping-vus`,
+    //   exec: `longWait`,
+    //   stages: [
+    //     { duration: `20m`, target: 1000 },
+    //     { duration: `2d`, target: 1000 },
+    //   ],
+    // },
   },
 };
 
@@ -193,7 +193,7 @@ export default async function () {
     console.error(`getAuth: `, e);
     return;
   }
-  console.log(`auth`, auth);
+  console.log(`default auth`, auth);
 
   const myUser = await usersLib.fromRedis(auth);
 
@@ -375,6 +375,8 @@ export async function longWait() {
     console.error(`getAuth: `, e);
     return;
   }
+
+  console.log(`longWait auth`, auth);
 
   const socket = new K6SocketIoExp(ws_url, { auth: auth }, {}, 0);
 

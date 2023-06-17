@@ -11,6 +11,9 @@ const logger = getLogger();
 export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+export function isTestUser(userId: string) {
+  return userId.startsWith(`k6`);
+}
 
 export async function getUid(auth: string) {
   if (auth.startsWith(`k6`)) {
