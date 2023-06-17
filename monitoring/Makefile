@@ -1,4 +1,8 @@
 
+SHELL := /bin/bash
+
+.PHONY: secrets
+
 pgrafana:
 	# kubectl port-forward deployment/grafana 8081:3000 -n monitoring
 	kubectl --namespace monitoring port-forward svc/loki-grafana 3000:80
@@ -23,7 +27,7 @@ apply:
 	helm upgrade --install prometheus-rabbitmq-exporter prometheus-community/prometheus-rabbitmq-exporter -f prometheus-rabbitmq-exporter.values.yaml
 	helm upgrade --install prometheus-adapter --namespace=monitoring prometheus-community/prometheus-adapter -f prometheus-adapter.values.yaml
 	bash ./create_dashboards.sh
-	kubectl apply -f secrets.yaml || echo "secrets file doesnt exist"
+	make secrets || echo "secrets file doesnt exist"
 
 loki:
 	K8_ALERTS=$$(wget -qO- https://raw.githubusercontent.com/samber/awesome-prometheus-alerts/master/dist/rules/kubernetes/kubestate-exporter.yml | yq eval '.groups' -) \
@@ -31,6 +35,9 @@ loki:
 	CUSTOM_ALERTS=$$(cat ./custom-alerts.yaml | yq eval '.groups' -) \
 		yq eval '.prometheus.serverFiles."alerting_rules.yml".groups = env(K8_ALERTS) + env(RABBITMQ_ALERTS) + env(CUSTOM_ALERTS)' loki-stack.values.yaml > loki-stack.values.modified.yaml
 	helm upgrade --install loki --namespace=monitoring grafana/loki-stack -f loki-stack.values.modified.yaml
+
+secrets:
+	./generate-secrets.sh
 
 delete:
 	helm uninstall loki --namespace=monitoring --wait
