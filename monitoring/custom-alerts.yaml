@@ -8,4 +8,4 @@ groups:
           severity: warning
         annotations:
           summary: 'User Created Metric Increase'
-          description: 'The sum of new user creations has increased in the last hour.'
+          description: 'The sum of new user creations has increased in the last hour.\n  VALUE = {{ $value }}'
