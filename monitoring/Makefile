@@ -21,13 +21,13 @@ apply:
 	helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 	helm repo add grafana https://grafana.github.io/helm-charts
 	kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+	make secrets || echo "secrets file doesnt exist"
 	kubectl apply -f ./prometheus-pvc.yaml
 	# helm upgrade --install prometheus-operator-crds --namespace=monitoring prometheus-community/prometheus-operator-crds
 	make loki
 	helm upgrade --install prometheus-rabbitmq-exporter prometheus-community/prometheus-rabbitmq-exporter -f prometheus-rabbitmq-exporter.values.yaml
 	helm upgrade --install prometheus-adapter --namespace=monitoring prometheus-community/prometheus-adapter -f prometheus-adapter.values.yaml
 	bash ./create_dashboards.sh
-	make secrets || echo "secrets file doesnt exist"
 
 loki:
 	K8_ALERTS=$$(wget -qO- https://raw.githubusercontent.com/samber/awesome-prometheus-alerts/master/dist/rules/kubernetes/kubestate-exporter.yml | yq eval '.groups' -) \

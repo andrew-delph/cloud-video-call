@@ -74,6 +74,8 @@ prometheus:
       enabled: true
       existingClaim: 'prometheus-pvc'
   alertmanager:
+    image:
+      tag: v0.25.0
     enabled: true
     service:
       type: NodePort
