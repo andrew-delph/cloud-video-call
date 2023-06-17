@@ -1,22 +1,22 @@
-import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
-import { K6SocketIoExp } from './libs/K6SocketIoExp';
-import redis from 'k6/experimental/redis';
-import { check, sleep } from 'k6';
-import http from 'k6/http';
 import * as usersLib from './User';
-import { nuke, shuffleArray } from './libs/utils';
-import exec from 'k6/execution';
 import { User, userFunctions } from './User';
+import { K6SocketIoExp } from './libs/K6SocketIoExp';
+import { nuke, shuffleArray } from './libs/utils';
+import { check, sleep } from 'k6';
+import exec from 'k6/execution';
+import redis from 'k6/experimental/redis';
+import http from 'k6/http';
+import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 
 const vus = 150;
 const authKeysNum = vus + 5; // number of users created for each parallel instance running
-const iterations = 999999;//authKeysNum * 1000;
+const iterations = 999999; //authKeysNum * 1000;
 
 const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
-const maxAuthSkip = 10 // max number of times a auth can be skipped
+const maxAuthSkip = 10; // max number of times a auth can be skipped
 
 let validMatchChatTime = 60 * 3; // number of seconds to delay if valid match
 let invalidMatchChatTime = 15;
@@ -24,7 +24,7 @@ let invalidMatchChatTime = 15;
 // validMatchChatTime= 0
 // invalidMatchChatTime= 0
 
-const matches = 20 //Infinity; // number of matches per vus. -1 is inf
+const matches = 20; //Infinity; // number of matches per vus. -1 is inf
 
 let runnerId = ``;
 let uniqueAuthKey = ``;
@@ -60,21 +60,24 @@ export const options = {
     //   iterations: iterations,
     //   maxDuration: `10h`,
     // },
-    ramping: {
+    // ramping: {
+    //   executor: `ramping-vus`,
+    //   startVUs: 0,
+    //   stages: [
+    //     { duration: `20m`, target: vus },
+    //     { duration: `2d`, target: vus },
+    //     // { duration: `3m`, target: vus * 1 },
+    //   ],
+    // },
+    longConnection: {
       executor: `ramping-vus`,
-      startVUs: 0,
+      exec: `longWait`,
+      startVUs: vus,
       stages: [
         { duration: `20m`, target: vus },
         { duration: `2d`, target: vus },
-        // { duration: `3m`, target: vus * 1 },
       ],
     },
-    // longConnection: { // TODO fix this....
-    //   executor: `ramping-vus`,
-    //   exec: `longWait`,
-    //   startVUs: 10,
-    //   stages: [{ duration: `10m`, target: 10 }],
-    // },
   },
 };
 
@@ -116,7 +119,7 @@ export const redisClient = new redis.Client({
   addrs: new Array(__ENV.REDIS || `192.168.49.2:30001`), // in the form of 'host:port', separated by commas
 });
 
-export function setup() {
+export async function setup() {
   updateAuthVars();
 
   if (nukeData) nuke();
@@ -124,7 +127,7 @@ export function setup() {
   for (let i = 0; i < authKeysNum; i++) {
     authKeys.push(`${authPrefix}${i}_`);
   }
-  (async () => {
+  await (async () => {
     // await redisClient.del(authKeysName);
     // Change this to watch and delete only if the first time
     return;
@@ -176,7 +179,7 @@ const getAuth = async () => {
     throw e;
   }
 
-  auth_keys_name_size_trend.add(await redisClient.llen(authKeysName))
+  auth_keys_name_size_trend.add(await redisClient.llen(authKeysName));
 
   return auth;
 };
@@ -188,28 +191,30 @@ export default async function () {
     const auth_end_time = Date.now();
     get_auth_trend.add(auth_end_time - auth_start_time);
   } catch (e) {
-    console.error(`getAuth: `,e);
+    console.error(`getAuth: `, e);
     return;
   }
-
   console.log(`auth`, auth);
 
   const myUser = await usersLib.fromRedis(auth);
 
-  const extraLabels = ()=>{
-    return { type: myUser.getTypeString() }
+  const extraLabels = () => {
+    return { type: myUser.getTypeString() };
     // return {}
-  }
+  };
 
   const socket = new K6SocketIoExp(ws_url, { auth: auth }, {});
 
-  socket.setEventMessageHandle(`matchmakerProgess`, (data: any, callback: any) => {
-    matchmakerProgess.add(1, extraLabels());
-    check(data, {
-      'valid matchmakerProgess': (data: any) =>
-        data && data.readySize != null && data.filterSize != null
-    })
-  })
+  socket.setEventMessageHandle(
+    `matchmakerProgess`,
+    (data: any, callback: any) => {
+      matchmakerProgess.add(1, extraLabels());
+      check(data, {
+        'valid matchmakerProgess': (data: any) =>
+          data && data.readySize != null && data.filterSize != null,
+      });
+    },
+  );
 
   socket.setOnClose(async () => {
     await redisClient.rpush(authKeysName, auth);
@@ -220,11 +225,12 @@ export default async function () {
 
     socket.on(`error`, () => {
       error_counter.add(1, extraLabels());
-      console.error(`socket.on.error`)
+      console.error(`socket.on.error`);
     });
 
     socket
-      .expectMessage(`established`).take(1)
+      .expectMessage(`established`)
+      .take(1)
       .catch((error) => {
         console.info(`failed established`);
         established_success.add(false, extraLabels());
@@ -250,7 +256,7 @@ export default async function () {
               console.log(`ready..`);
               ready_success.add(true, extraLabels());
               ready_elapsed.add(data.elapsed, extraLabels());
-              return expectMatch.take(1);;
+              return expectMatch.take(1);
             })
             .then(async (data: any) => {
               console.log(`match 1`);
@@ -271,21 +277,35 @@ export default async function () {
                 'match has score': (data: any) =>
                   data && data.data && data.data.score != null,
                 'match has iceservers': (data: any) =>
-                  data && data.data && data.data.iceServers != null && Array.isArray(data.data.iceServers) && data.data.iceServers.length > 0,
+                  data &&
+                  data.data &&
+                  data.data.iceServers != null &&
+                  Array.isArray(data.data.iceServers) &&
+                  data.data.iceServers.length > 0,
               });
 
-              const matchSuccess = await expectMatch.take(2)
+              const matchSuccess = await expectMatch.take(2);
 
-              if (!matchSuccess|| !matchSuccess.data || !matchSuccess.data.success) {
-                console.error(`matchSuccess.success is incorrect: ${JSON.stringify(matchSuccess)}`)
-                throw `matchSuccess.success is incorrect: ${matchSuccess.data.success}`
-              }
-              else {
-                console.log(`matchSuccess.success: ${matchSuccess.data.success}`)
+              if (
+                !matchSuccess ||
+                !matchSuccess.data ||
+                !matchSuccess.data.success
+              ) {
+                console.error(
+                  `matchSuccess.success is incorrect: ${JSON.stringify(
+                    matchSuccess,
+                  )}`,
+                );
+                throw `matchSuccess.success is incorrect: ${matchSuccess.data.success}`;
+              } else {
+                console.log(
+                  `matchSuccess.success: ${matchSuccess.data.success}`,
+                );
               }
 
               return data.data;
-            }).catch((error) => {
+            })
+            .catch((error) => {
               console.info(`failed match`);
               match_success.add(false, extraLabels());
               return Promise.reject(error);
@@ -336,7 +356,7 @@ export default async function () {
       })
       .catch((error) => {
         error_counter.add(1, extraLabels());
-        console.error(`end run:`,error);
+        console.error(`end run:`, error);
       })
       .finally(async () => {
         socket.close();
@@ -346,7 +366,16 @@ export default async function () {
 }
 
 export async function longWait() {
-  const auth = await getAuth();
+  let auth: string;
+  try {
+    const auth_start_time = Date.now();
+    auth = await getAuth();
+    const auth_end_time = Date.now();
+    get_auth_trend.add(auth_end_time - auth_start_time);
+  } catch (e) {
+    console.error(`getAuth: `, e);
+    return;
+  }
 
   const socket = new K6SocketIoExp(ws_url, { auth: auth }, {}, 0);
 
@@ -360,6 +389,7 @@ export async function longWait() {
     });
     socket
       .expectMessage(`established`)
+      .take(1)
       .catch((error) => {
         established_success.add(false);
         return Promise.reject(error);
