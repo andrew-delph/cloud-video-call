@@ -1,3 +1,4 @@
+import { iceServers, loadIceServers } from './iceservers';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
 import axios from 'axios';
@@ -27,7 +28,7 @@ import { createServer } from 'http';
 import Client from 'ioredis';
 import { Server } from 'socket.io';
 import { v4 as uuid } from 'uuid';
-import { iceServers, loadIceServers } from './iceservers';
+
 const prom = common.prom;
 const logger = common.getLogger();
 

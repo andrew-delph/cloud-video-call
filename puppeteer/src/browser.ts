@@ -1,9 +1,9 @@
+import { user_viewed } from './metrics';
 import axios from 'axios';
-import puppeteer, { Browser } from 'puppeteer-core';
 import { Command } from 'commander';
 import * as common from 'common';
 import express from 'express';
-import { user_viewed } from './metrics';
+import puppeteer, { Browser } from 'puppeteer-core';
 
 const test_id = process.env.HOSTNAME;
 

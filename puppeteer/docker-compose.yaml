@@ -7,5 +7,3 @@ services:
       - NET_ADMIN
     volumes:
       - ./screenshots:/app/screenshots/
-
-
