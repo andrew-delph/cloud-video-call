@@ -301,8 +301,8 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "editorMode": "builder",
-          "expr": "sum by(pod) (rate(container_cpu_usage_seconds_total{pod!=\"\", namespace=~\"$namespace\"}[5m]))",
+          "editorMode": "code",
+          "expr": "sum by (pod)(rate(container_cpu_usage_seconds_total{pod!=\"\", cpu=\"total\"}[5m]))  / scalar(sum(rate(node_cpu_seconds_total[5m])))",
           "format": "time_series",
           "legendFormat": "__auto",
           "range": true,
@@ -584,6 +584,6 @@
   "timezone": "",
   "title": "App Stats",
   "uid": "RvSgHNuVz",
-  "version": 2,
+  "version": 1,
   "weekStart": ""
 }
