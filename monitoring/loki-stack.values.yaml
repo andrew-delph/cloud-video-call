@@ -58,6 +58,9 @@ prometheus:
     service:
       type: NodePort
       nodePort: 30002
+
+    # global:
+    # scrape_interval: 3m
     # extraArgs:
     #   log.level: debug
     extraFlags:
@@ -102,7 +105,7 @@ prometheus:
 
   extraScrapeConfigs: |
     - job_name: rabbitmq
-      scrape_interval: 60s
+      scrape_interval: 3m
       scrape_timeout: 1m
       basic_auth:
         username: guest
