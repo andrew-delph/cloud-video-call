@@ -76,6 +76,8 @@ prometheus:
     persistentVolume:
       enabled: true
       existingClaim: 'prometheus-pvc'
+  kubeStateMetrics:
+    enabled: false
   alertmanager:
     image:
       tag: v0.25.0
@@ -103,16 +105,16 @@ prometheus:
   #             auth_password: example
   #             send_resolved: true
 
-  extraScrapeConfigs: |
-    - job_name: rabbitmq
-      scrape_interval: 3m
-      scrape_timeout: 1m
-      basic_auth:
-        username: guest
-        password: guest
-      static_configs:
-        - targets:
-            - rabbitmq.default.svc.cluster.local:15692
+  # extraScrapeConfigs: |
+  #   - job_name: rabbitmq
+  #     scrape_interval: 3m
+  #     scrape_timeout: 1m
+  #     basic_auth:
+  #       username: guest
+  #       password: guest
+  #     static_configs:
+  #       - targets:
+  #           - rabbitmq.default.svc.cluster.local:15692
 
 loki:
   enabled: true
