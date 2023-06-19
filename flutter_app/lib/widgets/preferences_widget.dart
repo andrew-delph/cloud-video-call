@@ -44,7 +44,6 @@ class Preferences extends GetView<PreferencesController> {
                           style: TextStyle(
                             fontSize: 24.0,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
                           ),
                         ),
                         DropDownPreference(
@@ -74,7 +73,6 @@ class Preferences extends GetView<PreferencesController> {
                           style: TextStyle(
                             fontSize: 24.0,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
                           ),
                         ),
                         DropDownPreference(
@@ -104,7 +102,6 @@ class Preferences extends GetView<PreferencesController> {
                           style: TextStyle(
                             fontSize: 24.0,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
                           ),
                         ),
                         LocationOptionsWidget(

@@ -23,13 +23,9 @@ class MatchmakerProgress extends GetView<HomeController> {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                const Text(
+                Text(
                   'Finding a match...',
-                  style: TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 Obx(() => Text(
                       "Progress: ${controller.matchmakerProgess().toString()}",

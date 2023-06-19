@@ -26,7 +26,6 @@ class HistoryScreen extends GetView<HistoryController> {
               Container(
                   alignment: Alignment.topCenter,
                   decoration: BoxDecoration(
-                    color: Colors.teal,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.all(20),
@@ -42,7 +41,6 @@ class HistoryScreen extends GetView<HistoryController> {
                         style: TextStyle(
                           fontSize: 35.0,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
                         ),
                       ),
                       const Divider(),

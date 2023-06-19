@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
+dynamic lightTheme = ThemeData.light().copyWith();
+dynamic darkTheme = ThemeData.dark().copyWith();
+
 class LocalPreferences extends GetxService {
   final autoQueue = true.obs;
   final feedbackPopup = false.obs;
@@ -43,10 +46,10 @@ class LocalPreferences extends GetxService {
     ever(fullscreen, (value) => box.write('fullscreen', value));
 
     isDarkMode.value = box.read('isDarkMode') ?? isDarkMode.value;
-    Get.changeTheme(isDarkMode() ? ThemeData.dark() : ThemeData.light());
+    Get.changeTheme(isDarkMode() ? darkTheme : lightTheme);
     ever(isDarkMode, (value) {
       box.write('isDarkMode', value);
-      Get.changeTheme(value ? ThemeData.dark() : ThemeData.light());
+      Get.changeTheme(value ? darkTheme : lightTheme);
     });
   }
 }

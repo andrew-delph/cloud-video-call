@@ -61,7 +61,6 @@ class OptionsScreen extends GetView<PreferencesController> {
                           style: TextStyle(
                             fontSize: 35.0,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
                           ),
                         ),
                         Divider(),
@@ -76,7 +75,6 @@ class OptionsScreen extends GetView<PreferencesController> {
                           style: TextStyle(
                             fontSize: 35.0,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
                           ),
                         ),
                         const Divider(),

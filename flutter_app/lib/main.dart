@@ -20,7 +20,6 @@ void main() async {
   runApp(GetMaterialApp(
     debugShowCheckedModeBanner: false,
     title: "Random Video Chat with AI",
-    theme: ThemeData(primarySwatch: Colors.green),
     initialRoute: Routes.HOME,
     getPages: AppPages.pages,
   ));

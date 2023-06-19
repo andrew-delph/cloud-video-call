@@ -92,7 +92,6 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
             icon: Icon(localPreferences.fullscreen()
                 ? Icons.fullscreen_exit
                 : Icons.fullscreen),
-            color: Colors.white,
             onPressed: () {
               localPreferences.fullscreen.toggle();
             },
@@ -103,7 +102,6 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
   Widget remoteCamera() {
     return Expanded(
       child: Container(
-        color: Colors.black,
         child: RTCVideoView(controller.remoteVideoRenderer()),
       ),
     );
