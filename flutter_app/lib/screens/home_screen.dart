@@ -200,7 +200,7 @@ class ButtonsOverlay extends GetView<HomeController> {
               if (controller.localMediaStream() != null)
                 IconButton(
                   tooltip: "Mute mic",
-                  color: controller.isMicMute() ? Colors.red : Colors.white,
+                  color: controller.isMicMute() ? Colors.red : null,
                   icon: controller.isMicMute()
                       ? const Icon(Icons.mic_off)
                       : const Icon(Icons.mic),
@@ -211,7 +211,7 @@ class ButtonsOverlay extends GetView<HomeController> {
               if (controller.localMediaStream() != null)
                 IconButton(
                   tooltip: "Camera off",
-                  color: controller.isCamHide() ? Colors.red : Colors.white,
+                  color: controller.isCamHide() ? Colors.red : null,
                   icon: controller.isCamHide()
                       ? const Icon(Icons.videocam_off)
                       : const Icon(Icons.videocam),
@@ -223,7 +223,6 @@ class ButtonsOverlay extends GetView<HomeController> {
               if (!controller.isInChat())
                 IconButton(
                   icon: const Icon(Icons.cancel),
-                  color: Colors.white,
                   tooltip: 'Cancel',
                   onPressed: () async {
                     controller.unReady();
@@ -242,8 +241,7 @@ class MediaDeviceButton extends GetResponsiveView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<MediaDeviceInfo>(
-      color: Colors.white,
-      icon: const Icon(Icons.settings, color: Colors.white),
+      icon: const Icon(Icons.settings),
       itemBuilder: (BuildContext context) {
         return controller.getDeviceEntries();
       },
