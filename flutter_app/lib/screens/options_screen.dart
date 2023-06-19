@@ -22,7 +22,7 @@ class OptionsScreen extends GetView<PreferencesController> {
   Widget build(BuildContext context) {
     LocalPreferences localPreferences = Get.find();
 
-    return WillPopScope(
+    return Obx(() => WillPopScope(
         onWillPop: () async {
           if (!controller.unsavedChanges()) return true;
 
@@ -94,7 +94,7 @@ class OptionsScreen extends GetView<PreferencesController> {
                           ),
                           Row(
                             children: [
-                              const Text("Swipe popup:"),
+                              const Text("Swipe-Popup:"),
                               Switch(
                                 value: localPreferences.feedbackPopup(),
                                 onChanged: (bool newValue) async {
@@ -105,11 +105,22 @@ class OptionsScreen extends GetView<PreferencesController> {
                           ),
                           Row(
                             children: [
-                              const Text("Auto queue:"),
+                              const Text("Auto Queue:"),
                               Switch(
                                 value: localPreferences.autoQueue(),
                                 onChanged: (bool newValue) async {
                                   localPreferences.autoQueue(newValue);
+                                },
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              const Text("Dark Mode:"),
+                              Switch(
+                                value: localPreferences.isDarkMode(),
+                                onChanged: (bool newValue) async {
+                                  localPreferences.isDarkMode.toggle();
                                 },
                               )
                             ],
@@ -119,7 +130,7 @@ class OptionsScreen extends GetView<PreferencesController> {
                     ),
                     const AppDetailsWidget()
                   ],
-                )))));
+                ))))));
 
     // child: LeftNav(title: 'Options', body: profile));
   }

@@ -1,4 +1,5 @@
 // Package imports:
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -9,6 +10,7 @@ class LocalPreferences extends GetxService {
   final videoDeviceLabel = 'Default'.obs;
   final audioDeviceLabel = 'Default'.obs;
   final fullscreen = false.obs;
+  final isDarkMode = Get.isDarkMode.obs;
 
   @override
   Future<void> onInit() async {
@@ -39,5 +41,12 @@ class LocalPreferences extends GetxService {
 
     fullscreen.value = box.read('fullscreen') ?? fullscreen.value;
     ever(fullscreen, (value) => box.write('fullscreen', value));
+
+    isDarkMode.value = box.read('isDarkMode') ?? isDarkMode.value;
+    Get.changeTheme(isDarkMode() ? ThemeData.dark() : ThemeData.light());
+    ever(isDarkMode, (value) {
+      box.write('isDarkMode', value);
+      Get.changeTheme(value ? ThemeData.dark() : ThemeData.light());
+    });
   }
 }
