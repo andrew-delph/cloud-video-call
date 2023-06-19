@@ -42,7 +42,7 @@ class OptionsScreen extends GetView<PreferencesController> {
           ));
           return confirm;
         },
-        child: NavigationDrawer(
+        child: CustomNavigationDrawer(
             title: 'Options',
             body: Container(
                 alignment: Alignment.topCenter,

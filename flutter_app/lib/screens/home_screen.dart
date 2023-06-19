@@ -39,7 +39,7 @@ class HomeScreen extends GetView<HomeController> {
       children: [videoRenderLayout, const ButtonsOverlay()],
     );
 
-    return NavigationDrawer(
+    return CustomNavigationDrawer(
         title: 'Home',
         body: controller.obx(
           (state) => Obx(

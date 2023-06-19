@@ -16,7 +16,7 @@ class HistoryScreen extends GetView<HistoryController> {
 
   @override
   Widget build(BuildContext context) {
-    return NavigationDrawer(
+    return CustomNavigationDrawer(
         title: 'History',
         body: controller.obx(
           (state) => SingleChildScrollView(
