@@ -9,14 +9,14 @@ import 'package:get/get.dart';
 // Project imports:
 import '../controllers/history_controller.dart';
 import '../widgets/history_widget.dart';
-import '../widgets/left_nav_widget.dart';
+import '../widgets/navigation_drawer_widget.dart';
 
 class HistoryScreen extends GetView<HistoryController> {
   const HistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return LeftNav(
+    return NavigationDrawer(
         title: 'History',
         body: controller.obx(
           (state) => SingleChildScrollView(

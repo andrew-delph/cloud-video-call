@@ -15,7 +15,7 @@ import 'package:flutter_app/services/local_preferences_service.dart';
 import 'package:flutter_app/widgets/preferences_widget.dart';
 import '../controllers/home_controller.dart';
 import '../widgets/feedback_swipe_detector.dart';
-import '../widgets/left_nav_widget.dart';
+import '../widgets/navigation_drawer_widget.dart';
 import '../widgets/matchmaker_progress.dart';
 
 class HomeScreen extends GetView<HomeController> {
@@ -39,7 +39,7 @@ class HomeScreen extends GetView<HomeController> {
       children: [videoRenderLayout, const ButtonsOverlay()],
     );
 
-    return LeftNav(
+    return NavigationDrawer(
         title: 'Home',
         body: controller.obx(
           (state) => Obx(
