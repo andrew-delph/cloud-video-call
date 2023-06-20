@@ -80,7 +80,7 @@ class OptionsScreen extends GetView<PreferencesController> {
                         Column(children: [
                           Row(
                             children: [
-                              const Text("Swipe:"),
+                              const Expanded(child: Text("Swipe:")),
                               Switch(
                                 value: localPreferences.swipeFeedback(),
                                 onChanged: (bool newValue) async {
@@ -91,7 +91,7 @@ class OptionsScreen extends GetView<PreferencesController> {
                           ),
                           Row(
                             children: [
-                              const Text("Swipe-Popup:"),
+                              const Expanded(child: Text("Swipe-Popup:")),
                               Switch(
                                 value: localPreferences.feedbackPopup(),
                                 onChanged: (bool newValue) async {
@@ -102,7 +102,7 @@ class OptionsScreen extends GetView<PreferencesController> {
                           ),
                           Row(
                             children: [
-                              const Text("Auto Queue:"),
+                              const Expanded(child: Text("Auto Queue:")),
                               Switch(
                                 value: localPreferences.autoQueue(),
                                 onChanged: (bool newValue) async {
@@ -113,7 +113,7 @@ class OptionsScreen extends GetView<PreferencesController> {
                           ),
                           Row(
                             children: [
-                              const Text("Dark Mode:"),
+                              const Expanded(child: Text("Dark Mode:")),
                               Switch(
                                 value: localPreferences.isDarkMode(),
                                 onChanged: (bool newValue) async {
