@@ -32,8 +32,7 @@ class DropDownPreference extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() => SizedBox(
-        width: 400,
-        child: Row(
+            child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text("$label:"),
@@ -42,11 +41,8 @@ class DropDownPreference extends StatelessWidget {
               value: preferenceMap[mapKey] ?? naValue,
               icon: const Icon(Icons.arrow_drop_down),
               elevation: 16,
-              style: const TextStyle(color: Colors.purple),
-              underline: Container(
-                height: 2,
-                color: Colors.purpleAccent,
-              ),
+              style: TextStyle(color: Get.theme.primaryColor),
+              underline: Container(height: 2, color: Get.theme.primaryColor),
               onChanged: (String? value) {
                 if (value == naValue) {
                   preferenceMap.remove(mapKey);
