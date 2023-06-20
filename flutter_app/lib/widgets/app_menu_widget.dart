@@ -26,14 +26,14 @@ final List<NavItem> navList = [
   NavItem(iconData: Icons.settings, route: Routes.OPTIONS, header: "Settings"),
 ];
 
-class AppMenu extends StatelessWidget {
+class AppMenu extends GetResponsiveView {
   final Widget body;
   final String title;
 
-  const AppMenu({super.key, required this.body, required this.title});
+  AppMenu({super.key, required this.body, required this.title});
 
   @override
-  Widget build(BuildContext context) {
+  Widget? desktop() {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -60,6 +60,26 @@ class AppMenu extends StatelessWidget {
           Expanded(child: body)
         ],
       ),
+    );
+  }
+
+  @override
+  Widget? tablet() {
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(title),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+            onPressed: () async {
+              Get.find<AuthService>().signOut();
+            },
+          ),
+        ],
+      ),
+      body: body,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex:
             navList.indexWhere((navItem) => navItem.route == Get.currentRoute),
