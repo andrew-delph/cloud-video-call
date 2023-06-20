@@ -16,11 +16,15 @@ import 'package:latlong2/latlong.dart';
 import '../controllers/options_controller.dart';
 import '../utils/location.dart';
 
-const distanceStep = 2;
+const double minDist = 10;
+const double maxDist = 5000;
 
 class LocationOptionsWidget extends GetView<PreferencesController> {
   final Map<String, String> customAttributes;
   final Map<String, String> customFilters;
+
+  final RxDouble dist = RxDouble(0);
+  final mapController = MapController();
 
   final valueController =
       TextEditingController(); // Controller for the value text field
@@ -63,10 +67,10 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
     Get.snackbar('Updated Location', msg, snackPosition: SnackPosition.BOTTOM);
   }
 
-  double? getDistance() {
+  double getDistance() {
     return customFilters["dist"] != null
-        ? double.parse(customFilters["dist"] ?? '0')
-        : null;
+        ? double.parse(customFilters["dist"] ?? '$maxDist')
+        : maxDist;
   }
 
   LocationOptionsWidget(
@@ -82,7 +86,7 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
         onPressed: () {
           updateLocation(context);
         },
-        child: const Text('Update Location'),
+        child: const Text('Enable Location'),
       );
 
       if (long == null || lat == null) {
@@ -91,43 +95,50 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
 
       LatLng center = LatLng(double.parse(long), double.parse(lat));
 
-      final mapController = MapController();
+      CircleMarker myLocation = CircleMarker(
+          point: center,
+          color: Colors.red.withOpacity(0.7),
+          borderStrokeWidth: 2,
+          useRadiusInMeter: true,
+          radius: minDist * 1000);
 
-      double? dist = getDistance();
-
-      double s = 100;
+      print("build");
 
       double getZoomLevel(double dist) {
         double zoomLevel;
         double radius = dist * 1000 * 2;
+        double s = 100;
         double scale = radius / s / 3;
         zoomLevel = (16 - math.log(scale) / math.log(2));
-
         log("zoomLevel: $zoomLevel");
         return zoomLevel;
       }
 
-      updateDistance(double dist) {
-        if (dist < 5) {
-          customFilters.remove('dist');
-        } else {
-          double zoom = getZoomLevel(dist);
-          if (zoom > 0) {
-            customFilters["dist"] = dist.toString();
-            mapController.move(center, getZoomLevel(dist));
+      debounce(
+        dist,
+        (double newValue) {
+          print('Throttled Value: $newValue');
+
+          double zoom = getZoomLevel(newValue);
+          mapController.move(center, zoom);
+        },
+        time: const Duration(milliseconds: 500),
+      );
+
+      updateDistance(double newDist, {bool end = false}) {
+        dist(newDist);
+        double zoom = getZoomLevel(newDist);
+        if (end) {
+          if (dist < minDist && dist > maxDist) {
+            customFilters["dist"] = newDist.toString();
+          } else {
+            customFilters.remove('dist');
           }
         }
       }
 
-      final circleMarkers = <CircleMarker>[];
-      if (dist != null) {
-        final distCircle = CircleMarker(
-            point: center,
-            color: Colors.blue.withOpacity(0.7),
-            borderStrokeWidth: 2,
-            useRadiusInMeter: true,
-            radius: dist * 1000);
-        circleMarkers.add(distCircle);
+      if (dist() < minDist) {
+        updateDistance(getDistance());
       }
 
       return Column(children: [
@@ -151,27 +162,19 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
             runAlignment: WrapAlignment.center,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Row(mainAxisSize: MainAxisSize.min, children: [
-                IconButton(
-                  icon: const Icon(Icons.remove),
-                  onPressed: () {
-                    updateDistance(dist / distanceStep);
-                  },
-                ),
-                Text("Max distance: ${getDistance()}km"),
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () {
-                    updateDistance(dist * distanceStep);
-                  },
-                )
-              ]),
-              ElevatedButton(
-                child: const Text("Disable Distance filter"),
-                onPressed: () {
-                  updateDistance(-1);
-                },
-              )
+              Obx(() => Slider(
+                    value: dist(),
+                    min: minDist,
+                    max: maxDist,
+                    divisions: 20,
+                    onChanged: (newValue) {
+                      updateDistance(newValue);
+                    },
+                    onChangeEnd: (newValue) {
+                      print('Slider value updated: $newValue');
+                      updateDistance(newValue, end: true);
+                    },
+                  ))
             ],
           )
         else
@@ -191,14 +194,34 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
                 enableScrollWheel: false,
                 interactiveFlags: InteractiveFlag.none,
                 center: center,
-                zoom: getZoomLevel(dist ?? 100),
+                zoom: getZoomLevel(dist() ?? 100),
               ),
               nonRotatedChildren: const [],
               children: [
                 TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 ),
-                CircleLayer(circles: circleMarkers),
+                Obx(() => CircleLayer(
+                    circles: dist() < maxDist
+                        ? [
+                            CircleMarker(
+                                point: center,
+                                color: Colors.blue.withOpacity(0.7),
+                                borderStrokeWidth: 2,
+                                useRadiusInMeter: true,
+                                radius: dist * 1000)
+                          ]
+                        : [])),
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: center,
+                      width: 80,
+                      height: 80,
+                      builder: (context) => const Icon(Icons.home_filled),
+                    ),
+                  ],
+                )
               ],
             ),
           ),

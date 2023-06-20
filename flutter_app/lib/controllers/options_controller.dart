@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 // Project imports:
 import 'package:flutter_app/utils/utils.dart';
+import 'package:get/get_rx/src/rx_workers/utils/debouncer.dart';
 import '../models/preferences_model.dart';
 import '../services/options_service.dart';
 
@@ -28,9 +29,12 @@ class PreferencesController extends GetxController with StateMixin {
     customFilters.listen((p0) {
       unsavedChanges(true);
     });
+
+    var updateDebouncer = Debouncer(delay: 1.seconds);
     unsavedChanges.listen((p0) {
       if (!status.isLoading) {
-        updateAttributes();
+        change(null, status: RxStatus.loading());
+        updateDebouncer.call(() => updateAttributes());
       }
     });
   }
