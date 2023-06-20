@@ -29,8 +29,6 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
   final valueController =
       TextEditingController(); // Controller for the value text field
 
-  Worker? updateDebounce;
-
   bool isEnabled() {
     return customAttributes["long"] != null && customAttributes["lat"] != null;
   }
@@ -124,35 +122,35 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
       updateDistance(getDistance());
     }
 
+    debounce(dist, (value) {
+      try {
+        mapController.move(center, getZoomLevel(value));
+      } catch (err) {
+        log.printError(info: err.toString());
+      }
+    }, time: 1.seconds);
+
     return Column(children: [
       enableSwitch,
-      if (isEnabled())
-        Wrap(
-          alignment: WrapAlignment.center,
-          runAlignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            Obx(() => Slider(
-                  value: dist(),
-                  min: minDist,
-                  max: maxDist,
-                  divisions: 20,
-                  onChanged: (newValue) {
-                    updateDistance(newValue);
-                  },
-                  onChangeEnd: (newValue) {
-                    updateDistance(newValue, end: true);
-                  },
-                ))
-          ],
-        )
-      else
-        ElevatedButton(
-          child: const Text("Enable Distance Filter"),
-          onPressed: () {
-            updateDistance(100);
-          },
-        ),
+      Wrap(
+        alignment: WrapAlignment.center,
+        runAlignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Obx(() => Slider(
+                value: dist(),
+                min: minDist,
+                max: maxDist,
+                divisions: 20,
+                onChanged: (newValue) {
+                  updateDistance(newValue);
+                },
+                onChangeEnd: (newValue) {
+                  updateDistance(newValue, end: true);
+                },
+              ))
+        ],
+      ),
       Column(children: [
         SizedBox(
           width: 300,
