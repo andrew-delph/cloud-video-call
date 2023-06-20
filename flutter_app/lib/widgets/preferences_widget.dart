@@ -111,23 +111,6 @@ class Preferences extends GetView<PreferencesController> {
                       ],
                     ),
                   ),
-                  Obx(() {
-                    return SizedBox(
-                      height: 50,
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: !controller.unsavedChanges()
-                            ? null
-                            : () async {
-                                await controller.updateAttributes();
-                                Get.snackbar(
-                                    'Updated', 'Preferences have been updated',
-                                    snackPosition: SnackPosition.BOTTOM);
-                              },
-                        child: const Text('Submit'),
-                      ),
-                    );
-                  })
                 ],
               ),
             )));

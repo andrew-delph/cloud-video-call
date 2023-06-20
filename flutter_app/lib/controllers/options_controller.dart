@@ -28,12 +28,17 @@ class PreferencesController extends GetxController with StateMixin {
     customFilters.listen((p0) {
       unsavedChanges(true);
     });
+    unsavedChanges.listen((p0) {
+      if (!status.isLoading) {
+        updateAttributes();
+      }
+    });
   }
 
   @override
-  onInit() {
+  onInit() async {
     super.onInit();
-    loadAttributes();
+    await loadAttributes();
   }
 
   Future<void> loadAttributes() async {

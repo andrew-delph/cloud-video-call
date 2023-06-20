@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:flutter_app/services/local_preferences_service.dart';
 import 'package:flutter_app/widgets/preferences_widget.dart';
 import '../controllers/home_controller.dart';
+import '../controllers/options_controller.dart';
 import '../widgets/feedback_swipe_detector.dart';
 import '../widgets/matchmaker_progress.dart';
 import '../widgets/app_menu_widget.dart';
@@ -24,6 +25,8 @@ class HomeScreen extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     Widget videoRenderLayout = VideoRenderLayout();
+
+    PreferencesController preferencesController = Get.find();
 
     videoRenderLayout = FeedbackSwipeDetector(
         isDragUpdate: () {
@@ -51,7 +54,14 @@ class HomeScreen extends GetView<HomeController> {
                       const Preferences(),
                       ElevatedButton(
                           onPressed: () {
-                            controller.ready();
+                            if (preferencesController.status.isLoading) {
+                              // This is not the best way to handle this case.
+                              Get.snackbar('Preferences Updating',
+                                  'Wait for preferences to update.',
+                                  snackPosition: SnackPosition.BOTTOM);
+                            } else {
+                              controller.ready();
+                            }
                           },
                           child: const Text("Start"))
                     ],
