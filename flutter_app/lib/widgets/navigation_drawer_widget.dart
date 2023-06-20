@@ -8,6 +8,30 @@ import 'package:get/get.dart';
 import '../routes/app_pages.dart';
 import '../services/auth_service.dart';
 
+class NavItem {
+  final Icon icon;
+  final String route;
+  final String header;
+
+  NavItem({
+    required this.icon,
+    required this.route,
+    required this.header,
+  });
+}
+
+final List<NavItem> navList = [
+  NavItem(icon: const Icon(Icons.home), route: Routes.HOME, header: "Home"),
+  NavItem(
+      icon: const Icon(Icons.history),
+      route: Routes.HISTORY,
+      header: "History"),
+  NavItem(
+      icon: const Icon(Icons.settings),
+      route: Routes.OPTIONS,
+      header: "Settings"),
+];
+
 class CustomNavigationDrawer extends StatelessWidget {
   final Widget body;
   final String title;
@@ -18,50 +42,56 @@ class CustomNavigationDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: Text(title),
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.logout),
-              tooltip: 'Logout',
-              onPressed: () async {
-                Get.find<AuthService>().signOut();
-              },
-            ),
-          ],
-        ),
-        body: Row(
-          children: [
-            SizedBox(
-                width: 72.0,
-                child: Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.home),
-                      // tooltip: 'Home',
-                      onPressed: () {
-                        Get.toNamed(Routes.HOME);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.history),
-                      // tooltip: 'Options',
-                      onPressed: () {
-                        Get.toNamed(Routes.HISTORY);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.settings),
-                      // tooltip: 'Options',
-                      onPressed: () {
-                        Get.toNamed(Routes.OPTIONS);
-                      },
-                    ),
-                  ],
-                )),
-            Expanded(child: body)
-          ],
-        ));
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(title),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+            onPressed: () async {
+              Get.find<AuthService>().signOut();
+            },
+          ),
+        ],
+      ),
+      body: Row(
+        children: [
+          SizedBox(
+              width: 72.0,
+              child: Column(
+                children: navList.map((navItem) {
+                  return leftNavItem(navItem);
+                }).toList(),
+              )),
+          Expanded(child: body)
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex:
+            navList.indexWhere((navItem) => navItem.route == Get.currentRoute),
+        onTap: (value) {
+          String route = navList[value].route;
+          Get.toNamed(route);
+        },
+        items: navList.map((navItem) {
+          return bottomNavItem(navItem);
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget leftNavItem(NavItem navItem) {
+    return IconButton(
+      icon: navItem.icon,
+      onPressed: () {
+        Get.toNamed(navItem.route);
+      },
+      // tooltip: header,
+    );
+  }
+
+  BottomNavigationBarItem bottomNavItem(NavItem navItem) {
+    return BottomNavigationBarItem(icon: navItem.icon, label: navItem.header);
   }
 }
