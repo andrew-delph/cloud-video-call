@@ -63,6 +63,7 @@ class CustomNavigationDrawer extends StatelessWidget {
               return leftNavItem(navItem);
             }).toList(),
           ),
+          const VerticalDivider(),
           Expanded(child: body)
         ],
       ),
