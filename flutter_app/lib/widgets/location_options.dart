@@ -29,23 +29,25 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
   final valueController =
       TextEditingController(); // Controller for the value text field
 
-  isValid() {
+  Worker? updateDebounce;
+
+  bool isEnabled() {
     return customAttributes["long"] != null && customAttributes["lat"] != null;
   }
 
-  canReset() {
+  bool canReset() {
     return customAttributes["long"] != null ||
         customAttributes["lat"] != null ||
         customFilters["dist"] != null;
   }
 
-  reset() {
+  void reset() {
     customAttributes.remove('long');
     customAttributes.remove('lat');
     customFilters.remove('dist');
   }
 
-  updateLocation(context) async {
+  void updateLocation(context) async {
     Position pos = await getLocation().catchError((error) {
       Get.snackbar(
         "Error",
@@ -78,155 +80,126 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      String? lat = customAttributes["lat"];
-      String? long = customAttributes["long"];
+    String? lat = customAttributes["lat"];
+    String? long = customAttributes["long"];
 
-      Widget updateLocationWidget = ElevatedButton(
-        onPressed: () {
-          updateLocation(context);
-        },
-        child: const Text('Enable Location'),
-      );
+    Widget enableSwitch = Switch(
+      value: isEnabled(),
+      onChanged: (bool value) {
+        isEnabled() ? reset() : updateLocation(context);
+      },
+    );
 
-      if (long == null || lat == null) {
-        return updateLocationWidget;
-      }
+    if (long == null || lat == null) {
+      return enableSwitch;
+    }
 
-      LatLng center = LatLng(double.parse(long), double.parse(lat));
+    LatLng center = LatLng(double.parse(long), double.parse(lat));
 
-      CircleMarker myLocation = CircleMarker(
-          point: center,
-          color: Colors.red.withOpacity(0.7),
-          borderStrokeWidth: 2,
-          useRadiusInMeter: true,
-          radius: minDist * 1000);
+    print("build");
 
-      print("build");
+    double getZoomLevel(double dist) {
+      double zoomLevel;
+      double radius = dist * 1000 * 2;
+      double s = 100;
+      double scale = radius / s / 3;
+      zoomLevel = (16 - math.log(scale) / math.log(2));
+      log("zoomLevel: $zoomLevel");
+      return zoomLevel;
+    }
 
-      double getZoomLevel(double dist) {
-        double zoomLevel;
-        double radius = dist * 1000 * 2;
-        double s = 100;
-        double scale = radius / s / 3;
-        zoomLevel = (16 - math.log(scale) / math.log(2));
-        log("zoomLevel: $zoomLevel");
-        return zoomLevel;
-      }
-
-      debounce(
-        dist,
-        (double newValue) {
-          print('Throttled Value: $newValue');
-
-          double zoom = getZoomLevel(newValue);
-          mapController.move(center, zoom);
-        },
-        time: const Duration(milliseconds: 500),
-      );
-
-      updateDistance(double newDist, {bool end = false}) {
-        dist(newDist);
-        double zoom = getZoomLevel(newDist);
-        if (end) {
-          if (dist < minDist && dist > maxDist) {
-            customFilters["dist"] = newDist.toString();
-          } else {
-            customFilters.remove('dist');
-          }
+    updateDistance(double newDist, {bool end = false}) {
+      dist(newDist);
+      if (end) {
+        if (dist >= minDist && dist <= maxDist) {
+          customFilters["dist"] = newDist.toString();
+        } else {
+          customFilters.remove('dist');
         }
       }
+    }
 
-      if (dist() < minDist) {
-        updateDistance(getDistance());
-      }
+    if (dist() < minDist) {
+      updateDistance(getDistance());
+    }
 
-      return Column(children: [
+    return Column(children: [
+      Wrap(
+        children: [
+          const Text("Enable:"),
+          enableSwitch,
+        ],
+      ),
+      if (isEnabled())
         Wrap(
+          alignment: WrapAlignment.center,
+          runAlignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                updateLocation(context);
-              },
-              child: const Text('Update Location'),
-            ),
-            ElevatedButton(
-              onPressed: canReset() ? reset : null,
-              child: const Text('Remove Location'),
-            ),
+            Obx(() => Slider(
+                  value: dist(),
+                  min: minDist,
+                  max: maxDist,
+                  divisions: 20,
+                  onChanged: (newValue) {
+                    updateDistance(newValue);
+                  },
+                  onChangeEnd: (newValue) {
+                    print('Slider value updated: $newValue');
+                    updateDistance(newValue, end: true);
+                  },
+                ))
           ],
+        )
+      else
+        ElevatedButton(
+          child: const Text("Enable Distance Filter"),
+          onPressed: () {
+            updateDistance(100);
+          },
         ),
-        if (dist != null)
-          Wrap(
-            alignment: WrapAlignment.center,
-            runAlignment: WrapAlignment.center,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Obx(() => Slider(
-                    value: dist(),
-                    min: minDist,
-                    max: maxDist,
-                    divisions: 20,
-                    onChanged: (newValue) {
-                      updateDistance(newValue);
-                    },
-                    onChangeEnd: (newValue) {
-                      print('Slider value updated: $newValue');
-                      updateDistance(newValue, end: true);
-                    },
-                  ))
-            ],
-          )
-        else
-          ElevatedButton(
-            child: const Text("Enable Distance Filter"),
-            onPressed: () {
-              updateDistance(100);
-            },
-          ),
-        Column(children: [
-          SizedBox(
-            width: 300,
-            height: 300,
-            child: FlutterMap(
-              mapController: mapController,
-              options: MapOptions(
-                enableScrollWheel: false,
-                interactiveFlags: InteractiveFlag.none,
-                center: center,
-                zoom: getZoomLevel(dist() ?? 100),
-              ),
-              nonRotatedChildren: const [],
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                ),
-                Obx(() => CircleLayer(
-                    circles: dist() < maxDist
-                        ? [
-                            CircleMarker(
-                                point: center,
-                                color: Colors.blue.withOpacity(0.7),
-                                borderStrokeWidth: 2,
-                                useRadiusInMeter: true,
-                                radius: dist * 1000)
-                          ]
-                        : [])),
-                MarkerLayer(
-                  markers: [
-                    Marker(
-                      point: center,
-                      width: 80,
-                      height: 80,
-                      builder: (context) => const Icon(Icons.home_filled),
-                    ),
-                  ],
-                )
-              ],
+      Column(children: [
+        SizedBox(
+          width: 300,
+          height: 300,
+          child: FlutterMap(
+            mapController: mapController,
+            options: MapOptions(
+              enableScrollWheel: false,
+              interactiveFlags: InteractiveFlag.none,
+              center: center,
+              zoom: getZoomLevel(dist() ?? 100),
             ),
+            nonRotatedChildren: const [],
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              ),
+              Obx(() => CircleLayer(
+                  circles: dist() < maxDist
+                      ? [
+                          CircleMarker(
+                              point: center,
+                              color: Colors.blue.withOpacity(0.7),
+                              borderStrokeWidth: 2,
+                              useRadiusInMeter: true,
+                              radius: dist * 1000)
+                        ]
+                      : [])),
+              MarkerLayer(
+                markers: [
+                  Marker(
+                    point: center,
+                    width: 80,
+                    height: 80,
+                    builder: (context) => const Icon(Icons.home_filled),
+                  ),
+                ],
+              )
+            ],
           ),
-        ]),
-      ]);
-    });
+        ),
+      ]),
+    ]);
   }
 }
