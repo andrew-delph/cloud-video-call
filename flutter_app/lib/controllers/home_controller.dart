@@ -51,12 +51,6 @@ class HomeController extends GetxController with StateMixin {
   @override
   onInit() async {
     super.onInit();
-    if (!authService.isAuthenticated()) {
-      change(null, status: RxStatus.success());
-      return;
-    }
-
-    change(null, status: RxStatus.loading());
 
     remoteMediaStream.listen((remoteMediaStream) {
       remoteVideoRenderer.update((remoteVideoRenderer) async {
@@ -117,6 +111,11 @@ class HomeController extends GetxController with StateMixin {
         isInReadyQueue(false);
       }
     });
+
+    if (!authService.isAuthenticated()) {
+      change(null, status: RxStatus.success());
+      return;
+    }
 
     await initSocket();
   }
@@ -248,6 +247,9 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<void> ready() async {
+    if (socket() == null) {
+      await initSocket();
+    }
     queueReady().catchError(
         (error) => {change(null, status: RxStatus.error(error.toString()))});
   }
