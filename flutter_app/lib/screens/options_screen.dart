@@ -12,8 +12,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../controllers/options_controller.dart';
 import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
-import '../widgets/navigation_drawer_widget.dart';
-import '../widgets/loadging_widgets.dart';
+import '../widgets/app_menu_widget.dart';
 
 class OptionsScreen extends GetView<PreferencesController> {
   const OptionsScreen({super.key});
@@ -42,7 +41,7 @@ class OptionsScreen extends GetView<PreferencesController> {
           ));
           return confirm;
         },
-        child: CustomNavigationDrawer(
+        child: AppMenu(
             title: 'Options',
             body: Container(
                 alignment: Alignment.topCenter,

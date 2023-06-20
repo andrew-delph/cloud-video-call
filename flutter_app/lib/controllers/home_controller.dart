@@ -15,7 +15,6 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:socket_io_client/socket_io_client.dart';
 
 // Project imports:
-import 'package:flutter_app/widgets/feedback_dialog.dart';
 import '../config/factory.dart';
 import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
@@ -310,8 +309,8 @@ class HomeController extends GetxController with StateMixin {
         if (success) {
           return;
         } else {
-          String? error_msg = value["error_msg"];
-          print("Failed to match: $error_msg");
+          String? errorMsg = value["error_msg"];
+          print("Failed to match: $errorMsg");
           queueReady();
           return;
         }
