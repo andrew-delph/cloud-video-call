@@ -149,7 +149,7 @@ class LeftNavWidget extends StatelessWidget {
         onTap: () {
           Get.toNamed(navItem.route);
         },
-        hoverColor: Colors.lightBlue,
+        hoverColor: Get.theme.hoverColor,
         child: Container(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0),
             decoration: selected
