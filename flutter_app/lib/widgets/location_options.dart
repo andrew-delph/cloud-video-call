@@ -83,20 +83,21 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
     String? lat = customAttributes["lat"];
     String? long = customAttributes["long"];
 
-    Widget enableSwitch = Switch(
-      value: isEnabled(),
-      onChanged: (bool value) {
-        isEnabled() ? reset() : updateLocation(context);
-      },
-    );
+    Widget enableSwitch = Row(children: <Widget>[
+      const Expanded(child: Text("Enabled")),
+      Switch(
+        value: isEnabled(),
+        onChanged: (bool newValue) {
+          isEnabled() ? reset() : updateLocation(context);
+        },
+      )
+    ]);
 
     if (long == null || lat == null) {
       return enableSwitch;
     }
 
     LatLng center = LatLng(double.parse(long), double.parse(lat));
-
-    print("build");
 
     double getZoomLevel(double dist) {
       double zoomLevel;
@@ -124,12 +125,7 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
     }
 
     return Column(children: [
-      Wrap(
-        children: [
-          const Text("Enable:"),
-          enableSwitch,
-        ],
-      ),
+      enableSwitch,
       if (isEnabled())
         Wrap(
           alignment: WrapAlignment.center,
@@ -145,7 +141,6 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
                     updateDistance(newValue);
                   },
                   onChangeEnd: (newValue) {
-                    print('Slider value updated: $newValue');
                     updateDistance(newValue, end: true);
                   },
                 ))
