@@ -13,7 +13,6 @@ import '../controllers/options_controller.dart';
 import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
 import '../widgets/navigation_drawer_widget.dart';
-import '../widgets/loadging_widgets.dart';
 
 class OptionsScreen extends GetView<PreferencesController> {
   const OptionsScreen({super.key});

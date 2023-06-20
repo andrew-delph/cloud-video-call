@@ -15,8 +15,8 @@ import 'package:flutter_app/services/local_preferences_service.dart';
 import 'package:flutter_app/widgets/preferences_widget.dart';
 import '../controllers/home_controller.dart';
 import '../widgets/feedback_swipe_detector.dart';
-import '../widgets/navigation_drawer_widget.dart';
 import '../widgets/matchmaker_progress.dart';
+import '../widgets/navigation_drawer_widget.dart';
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
@@ -123,7 +123,7 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
       if (!controller.isInChat()) {
         return Stack(
           children: [
-            MatchmakerProgress(),
+            const MatchmakerProgress(),
             Positioned(
               top: 20, // get the size of the row buttons..?
               right: 0,

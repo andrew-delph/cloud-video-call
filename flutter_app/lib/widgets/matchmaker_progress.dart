@@ -1,7 +1,10 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
+// Package imports:
 import 'package:get/get.dart';
 
+// Project imports:
 import '../controllers/home_controller.dart';
 
 class MatchmakerProgress extends GetView<HomeController> {

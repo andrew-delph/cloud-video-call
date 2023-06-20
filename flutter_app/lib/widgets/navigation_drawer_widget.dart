@@ -9,27 +9,21 @@ import '../routes/app_pages.dart';
 import '../services/auth_service.dart';
 
 class NavItem {
-  final Icon icon;
+  final IconData iconData;
   final String route;
   final String header;
 
   NavItem({
-    required this.icon,
+    required this.iconData,
     required this.route,
     required this.header,
   });
 }
 
 final List<NavItem> navList = [
-  NavItem(icon: const Icon(Icons.home), route: Routes.HOME, header: "Home"),
-  NavItem(
-      icon: const Icon(Icons.history),
-      route: Routes.HISTORY,
-      header: "History"),
-  NavItem(
-      icon: const Icon(Icons.settings),
-      route: Routes.OPTIONS,
-      header: "Settings"),
+  NavItem(iconData: Icons.home, route: Routes.HOME, header: "Home"),
+  NavItem(iconData: Icons.history, route: Routes.HISTORY, header: "History"),
+  NavItem(iconData: Icons.settings, route: Routes.OPTIONS, header: "Settings"),
 ];
 
 class CustomNavigationDrawer extends StatelessWidget {
@@ -82,20 +76,34 @@ class CustomNavigationDrawer extends StatelessWidget {
   }
 
   Widget leftNavItem(NavItem navItem) {
-    return Row(children: [
-      IconButton(
-        icon: navItem.icon,
-        onPressed: () {
-          Get.toNamed(navItem.route);
-        },
-        // tooltip: header,
-        color: navItem.route == Get.currentRoute ? Colors.amber : null,
-      ),
-      Text(navItem.header)
-    ]);
+    return LeftNavWidget(navItem: navItem);
   }
 
   BottomNavigationBarItem bottomNavItem(NavItem navItem) {
-    return BottomNavigationBarItem(icon: navItem.icon, label: navItem.header);
+    return BottomNavigationBarItem(
+        icon: Icon(navItem.iconData), label: navItem.header);
+  }
+}
+
+class LeftNavWidget extends StatelessWidget {
+  final NavItem navItem;
+
+  const LeftNavWidget({super.key, required this.navItem});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+        onTap: () {
+          Get.toNamed(navItem.route);
+        },
+        hoverColor: Colors.lightBlue,
+        child: Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            child: Row(children: [
+              Icon(navItem.iconData),
+              Padding(
+                  padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                  child: Text(navItem.header))
+            ])));
   }
 }
