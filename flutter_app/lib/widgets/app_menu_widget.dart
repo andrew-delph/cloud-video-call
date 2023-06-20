@@ -1,7 +1,9 @@
 // Flutter imports:
 
+// Dart imports:
 import 'dart:developer';
 
+// Flutter imports:
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -54,12 +56,17 @@ class AppMenu extends GetResponsiveView {
                 Get.find<AuthService>().signOut();
               },
             )
-          : ElevatedButton(
-              onPressed: () {
-                authService.signOut();
-              },
-              child: const Text('Sign In.'),
-            )
+          : Container(
+              margin: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Get.theme.focusColor)),
+                onPressed: () {
+                  authService.signOut();
+                },
+                child: const Text('Sign In'),
+              ))
     ];
   }
 
