@@ -57,13 +57,12 @@ class CustomNavigationDrawer extends StatelessWidget {
       ),
       body: Row(
         children: [
-          SizedBox(
-              width: 72.0,
-              child: Column(
-                children: navList.map((navItem) {
-                  return leftNavItem(navItem);
-                }).toList(),
-              )),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: navList.map((navItem) {
+              return leftNavItem(navItem);
+            }).toList(),
+          ),
           Expanded(child: body)
         ],
       ),
@@ -82,13 +81,17 @@ class CustomNavigationDrawer extends StatelessWidget {
   }
 
   Widget leftNavItem(NavItem navItem) {
-    return IconButton(
-      icon: navItem.icon,
-      onPressed: () {
-        Get.toNamed(navItem.route);
-      },
-      // tooltip: header,
-    );
+    return Row(children: [
+      IconButton(
+        icon: navItem.icon,
+        onPressed: () {
+          Get.toNamed(navItem.route);
+        },
+        // tooltip: header,
+        color: navItem.route == Get.currentRoute ? Colors.amber : null,
+      ),
+      Text(navItem.header)
+    ]);
   }
 
   BottomNavigationBarItem bottomNavItem(NavItem navItem) {
