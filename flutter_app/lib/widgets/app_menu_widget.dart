@@ -26,12 +26,11 @@ final List<NavItem> navList = [
   NavItem(iconData: Icons.settings, route: Routes.OPTIONS, header: "Settings"),
 ];
 
-class CustomNavigationDrawer extends StatelessWidget {
+class AppMenu extends StatelessWidget {
   final Widget body;
   final String title;
 
-  const CustomNavigationDrawer(
-      {super.key, required this.body, required this.title});
+  const AppMenu({super.key, required this.body, required this.title});
 
   @override
   Widget build(BuildContext context) {
