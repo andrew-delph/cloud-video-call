@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:flutter_app/utils/utils.dart';
 import 'package:get/get_rx/src/rx_workers/utils/debouncer.dart';
 import '../models/preferences_model.dart';
+import '../services/auth_service.dart';
 import '../services/options_service.dart';
 
 class PreferencesController extends GetxController with StateMixin {
@@ -14,7 +15,8 @@ class PreferencesController extends GetxController with StateMixin {
   final RxMap<String, String> customAttributes = <String, String>{}.obs;
   final RxMap<String, String> customFilters = <String, String>{}.obs;
   final RxDouble priority = (0.0).obs;
-  RxBool unsavedChanges = false.obs;
+  final RxBool unsavedChanges = false.obs;
+  final AuthService authService = Get.find();
 
   PreferencesController(this.optionsService) {
     constantAttributes.listen((p0) {
@@ -42,6 +44,10 @@ class PreferencesController extends GetxController with StateMixin {
   @override
   onInit() async {
     super.onInit();
+    if (!authService.isAuthenticated()) {
+      change(null, status: RxStatus.success());
+      return;
+    }
     await loadAttributes();
   }
 

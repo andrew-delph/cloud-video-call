@@ -22,6 +22,7 @@ import '../utils/utils.dart';
 
 class HomeController extends GetxController with StateMixin {
   LocalPreferences localPreferences = Get.find();
+  final AuthService authService = Get.find();
 
   Rx<MediaStream?> localMediaStream = Rx(null);
   Rx<MediaStream?> remoteMediaStream = Rx(null);
@@ -50,6 +51,10 @@ class HomeController extends GetxController with StateMixin {
   @override
   onInit() async {
     super.onInit();
+    if (!authService.isAuthenticated()) {
+      change(null, status: RxStatus.success());
+      return;
+    }
 
     change(null, status: RxStatus.loading());
 
