@@ -8,8 +8,8 @@ import 'package:get/get.dart';
 
 // Project imports:
 import '../controllers/history_controller.dart';
-import '../widgets/history_widget.dart';
 import '../widgets/app_menu_widget.dart';
+import '../widgets/history_widget.dart';
 
 class HistoryScreen extends GetView<HistoryController> {
   const HistoryScreen({super.key});

@@ -47,7 +47,7 @@ class AppMenu extends GetResponsiveView {
               onPressed: () {
                 authService.signOut();
               },
-              child: Text('Sign In.'),
+              child: const Text('Sign In.'),
             )
     ];
   }

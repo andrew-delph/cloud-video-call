@@ -15,9 +15,9 @@ import 'package:flutter_app/services/local_preferences_service.dart';
 import 'package:flutter_app/widgets/preferences_widget.dart';
 import '../controllers/home_controller.dart';
 import '../controllers/options_controller.dart';
+import '../widgets/app_menu_widget.dart';
 import '../widgets/feedback_swipe_detector.dart';
 import '../widgets/matchmaker_progress.dart';
-import '../widgets/app_menu_widget.dart';
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});

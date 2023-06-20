@@ -1,9 +1,9 @@
 // Package imports:
 import 'package:get/get.dart';
+import 'package:get/get_rx/src/rx_workers/utils/debouncer.dart';
 
 // Project imports:
 import 'package:flutter_app/utils/utils.dart';
-import 'package:get/get_rx/src/rx_workers/utils/debouncer.dart';
 import '../models/preferences_model.dart';
 import '../services/auth_service.dart';
 import '../services/options_service.dart';
