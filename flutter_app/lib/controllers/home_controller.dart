@@ -203,7 +203,7 @@ class HomeController extends GetxController with StateMixin {
       await endChat(!isInChat());
     });
     mySocket.onDisconnect((details) {
-      change(null, status: RxStatus.error(details.toString()));
+      initSocket();
     });
 
     mySocket.onConnectError((details) {
