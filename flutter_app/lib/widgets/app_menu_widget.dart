@@ -1,10 +1,14 @@
 // Flutter imports:
+
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:get/get.dart';
 
 // Project imports:
+import '../controllers/home_controller.dart';
 import '../routes/app_pages.dart';
 import '../services/auth_service.dart';
 
@@ -30,8 +34,15 @@ class AppMenu extends GetResponsiveView {
   final Widget body;
   final String title;
   final AuthService authService = Get.find();
+  HomeController? homeController;
+  RxBool isInReadyQueue = false.obs;
+  RxBool isInChat = false.obs;
 
-  AppMenu({super.key, required this.body, required this.title});
+  AppMenu(
+      {super.key,
+      required this.body,
+      required this.title,
+      super.alwaysUseBuilder = true});
 
   List<Widget> actions() {
     return <Widget>[
@@ -53,51 +64,67 @@ class AppMenu extends GetResponsiveView {
   }
 
   @override
+  Widget? builder() {
+    try {
+      homeController = Get.find<HomeController>();
+      isInReadyQueue = homeController!.isInReadyQueue;
+      isInChat = homeController!.isInChat;
+    } catch (_) {
+      log("Could not find HomeController in App Menu");
+    }
+    return null;
+  }
+
+  @override
   Widget? desktop() {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(title),
-        actions: actions(),
-      ),
-      body: Row(
-        children: [
-          Padding(
-              padding: const EdgeInsets.only(top: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: navList.map((navItem) {
-                  return leftNavItem(navItem);
-                }).toList(),
-              )),
-          const VerticalDivider(),
-          Expanded(child: body)
-        ],
-      ),
-    );
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text(title),
+          actions: actions(),
+        ),
+        body: Obx(
+          () => Row(
+            children: [
+              if (!isInReadyQueue() && !isInChat())
+                Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: navList.map((navItem) {
+                        return leftNavItem(navItem);
+                      }).toList(),
+                    )),
+              const VerticalDivider(),
+              Expanded(child: body)
+            ],
+          ),
+        ));
   }
 
   @override
   Widget? tablet() {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(title),
-        actions: actions(),
-      ),
-      body: body,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex:
-            navList.indexWhere((navItem) => navItem.route == Get.currentRoute),
-        onTap: (value) {
-          String route = navList[value].route;
-          Get.toNamed(route);
-        },
-        items: navList.map((navItem) {
-          return bottomNavItem(navItem);
-        }).toList(),
-      ),
-    );
+    return Obx(() => Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            title: Text(title),
+            actions: actions(),
+          ),
+          body: body,
+          bottomNavigationBar: (!isInReadyQueue() && !isInChat())
+              ? BottomNavigationBar(
+                  currentIndex: navList.indexWhere(
+                      (navItem) => navItem.route == Get.currentRoute),
+                  onTap: (value) {
+                    String route = navList[value].route;
+                    Get.toNamed(route);
+                  },
+                  items: navList.map((navItem) {
+                    return bottomNavItem(navItem);
+                  }).toList(),
+                )
+              : null,
+        ));
   }
 
   Widget leftNavItem(NavItem navItem) {
