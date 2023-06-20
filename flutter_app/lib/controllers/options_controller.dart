@@ -35,7 +35,6 @@ class PreferencesController extends GetxController with StateMixin {
     var updateDebouncer = Debouncer(delay: 1.seconds);
     unsavedChanges.listen((p0) {
       if (!status.isLoading) {
-        change(null, status: RxStatus.loading());
         updateDebouncer.call(() => updateAttributes());
       }
     });
