@@ -5,7 +5,7 @@ metadata:
 data:
   rabbitmq-extra-conf.conf: |
     # Add your RabbitMQ configuration here
-    prometheus.return_per_object_metrics = true
+    # prometheus.return_per_object_metrics = true
 ---
 apiVersion: apps/v1
 kind: Deployment
