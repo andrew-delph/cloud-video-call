@@ -1,6 +1,6 @@
 import { auth_middleware } from './authentication';
 import {
-  cleanMySocketServer,
+  cleanSocketServer,
   registerServerHeartbeat,
   registerSocketReady,
   unregisterSocketReady,
@@ -28,7 +28,7 @@ import { v4 as uuid } from 'uuid';
 
 const logger = common.getLogger();
 
-listenGlobalExceptions(cleanMySocketServer);
+listenGlobalExceptions(cleanSocketServer);
 
 const neo4jRpcClient = createNeo4jClient();
 

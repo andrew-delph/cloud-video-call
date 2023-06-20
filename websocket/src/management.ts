@@ -5,8 +5,6 @@ import { Socket } from 'socket.io';
 
 const logger = getLogger();
 
-const socketio_server_heartbeat = `socketio_server_heartbeat`;
-
 const getServerKey = () => {
   return `socketio_server_${process.env.HOSTNAME}`;
 };
@@ -44,7 +42,6 @@ export const cleanSocket = async (
     auth,
   );
   if (socket_id) {
-    io.in(socket_id).emit(`closing`, `cleanSocket`);
     io.in(socket_id).disconnectSockets();
   }
   await common.updateRecentlyActiveUser(mainRedisClient, auth);
@@ -53,28 +50,27 @@ export const cleanSocket = async (
   await mainRedisClient.srem(common.readySetName, auth);
   await pubRedisClient.publish(common.activeCountChannel, `change`);
   await mainRedisClient.srem(server_key, auth);
-  logger.debug(`completed cleanSocket ${auth}`);
+  logger.warn(`completed cleanSocket ${auth}`);
 };
 
-const cleanSocketServer = async (server_hostname: string) => {
-  logger.debug(`cleanSocketServer for ${server_hostname}`);
+export const cleanSocketServer = async (
+  server_hostname: string = getServerKey(),
+) => {
   const connectedAuths = await mainRedisClient.smembers(server_hostname);
+  logger.warn(
+    `cleanSocketServer server_hostname=${server_hostname} connectedAuths=${connectedAuths}`,
+  );
 
   for (const auth of connectedAuths) {
     await cleanSocket(auth, server_hostname);
   }
   await mainRedisClient.del(heartbeatPrefix + server_hostname);
-  logger.debug(`completed cleanSocketServer for ${server_hostname}`);
-};
-
-export const cleanMySocketServer = async () => {
-  logger.info(`calling cleanSocketServer ${getServerKey()}`);
-  await cleanSocketServer(getServerKey());
+  logger.warn(`completed cleanSocketServer for ${server_hostname}`);
 };
 
 export const cleanAllSocketServer = async () => {
-  logger.info(`cleanAllSocketServer`);
-  common
+  logger.warn(`cleanAllSocketServer`);
+  await common
     .redisScanKeys(mainRedisClient, heartbeatPrefix + `*`)
     .then(async (heartbeat_ids) => {
       for (const heartbeat_id of heartbeat_ids) {
@@ -95,6 +91,6 @@ export const cleanAllSocketServer = async () => {
           );
         }
       }
-      logger.info(`cleanAllSocketServer completed`);
+      logger.warn(`cleanAllSocketServer completed`);
     });
 };
