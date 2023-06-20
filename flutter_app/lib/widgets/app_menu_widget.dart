@@ -29,8 +29,28 @@ final List<NavItem> navList = [
 class AppMenu extends GetResponsiveView {
   final Widget body;
   final String title;
+  final AuthService authService = Get.find();
 
   AppMenu({super.key, required this.body, required this.title});
+
+  List<Widget> actions() {
+    return <Widget>[
+      authService.isAuthenticated()
+          ? IconButton(
+              icon: const Icon(Icons.logout),
+              tooltip: 'Logout',
+              onPressed: () async {
+                Get.find<AuthService>().signOut();
+              },
+            )
+          : ElevatedButton(
+              onPressed: () {
+                authService.signOut();
+              },
+              child: Text('Sign In.'),
+            )
+    ];
+  }
 
   @override
   Widget? desktop() {
@@ -38,15 +58,7 @@ class AppMenu extends GetResponsiveView {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(title),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Logout',
-            onPressed: () async {
-              Get.find<AuthService>().signOut();
-            },
-          ),
-        ],
+        actions: actions(),
       ),
       body: Row(
         children: [
@@ -71,15 +83,7 @@ class AppMenu extends GetResponsiveView {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(title),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Logout',
-            onPressed: () async {
-              Get.find<AuthService>().signOut();
-            },
-          ),
-        ],
+        actions: actions(),
       ),
       body: body,
       bottomNavigationBar: BottomNavigationBar(
