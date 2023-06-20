@@ -50,12 +50,14 @@ class AppMenu extends GetResponsiveView {
       ),
       body: Row(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: navList.map((navItem) {
-              return leftNavItem(navItem);
-            }).toList(),
-          ),
+          Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: navList.map((navItem) {
+                  return leftNavItem(navItem);
+                }).toList(),
+              )),
           const VerticalDivider(),
           Expanded(child: body)
         ],
@@ -111,13 +113,24 @@ class LeftNavWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool selected = navItem.route == Get.currentRoute;
     return InkWell(
         onTap: () {
           Get.toNamed(navItem.route);
         },
         hoverColor: Colors.lightBlue,
-        child: Padding(
+        child: Container(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            decoration: selected
+                ? BoxDecoration(
+                    border: Border(
+                      left: BorderSide(
+                        color: Get.theme.primaryColor,
+                        width: 6.0,
+                      ),
+                    ),
+                  )
+                : null,
             child: Row(children: [
               Icon(navItem.iconData),
               Padding(
