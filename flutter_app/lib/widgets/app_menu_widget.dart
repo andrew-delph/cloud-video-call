@@ -5,6 +5,7 @@ import 'dart:developer';
 
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:flutter_app/widgets/page_container.dart';
 
 // Package imports:
 import 'package:get/get.dart';
@@ -102,8 +103,8 @@ class AppMenu extends GetResponsiveView {
                         return leftNavItem(navItem);
                       }).toList(),
                     )),
-              const VerticalDivider(),
-              Expanded(child: body)
+              if (!isInReadyQueue() && !isInChat()) const VerticalDivider(),
+              PageContainer(child: body)
             ],
           ),
         ));
@@ -117,7 +118,7 @@ class AppMenu extends GetResponsiveView {
             title: Text(title),
             actions: actions(),
           ),
-          body: body,
+          body: Row(children: [PageContainer(child: body)]),
           bottomNavigationBar: (!isInReadyQueue() && !isInChat())
               ? BottomNavigationBar(
                   currentIndex: navList.indexWhere(
