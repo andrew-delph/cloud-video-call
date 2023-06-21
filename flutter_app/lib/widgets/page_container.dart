@@ -9,10 +9,13 @@ class PageContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: SizedBox(
-          // color: Colors.amber,
-          height: double.infinity,
-          child: SingleChildScrollView(child: child)),
-    );
+        child: LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: child,
+        ),
+      ),
+    ));
   }
 }

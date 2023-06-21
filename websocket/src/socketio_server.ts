@@ -109,7 +109,7 @@ io.on(`connection`, async (socket) => {
           mainRedisClient,
           `readyQueue`,
           socket.data.auth,
-          5,
+          20,
         );
       } catch (err) {
         callback({ ready: false, error: `${err}` });
