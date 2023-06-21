@@ -8,12 +8,12 @@ import redis from 'k6/experimental/redis';
 import http from 'k6/http';
 import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 
-const vus = 100;
+const vus = 200;
 const authKeysNum = vus + 600; // number of users created for each parallel instance running
 const iterations = 999999; //authKeysNum * 1000;
 
 const nukeData = false; // this doesnt work with multile running instances
-const uniqueAuthIds = false; //for every test new auth will be created
+const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
 const maxAuthSkip = 10; // max number of times a auth can be skipped
@@ -64,7 +64,7 @@ export const options = {
       executor: `ramping-vus`,
       startVUs: 0,
       stages: [
-        { duration: `20m`, target: vus },
+        { duration: `5m`, target: vus },
         { duration: `2d`, target: vus },
         // { duration: `3m`, target: vus * 1 },
       ],
