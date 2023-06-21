@@ -50,14 +50,14 @@ export const cleanSocket = async (
   await mainRedisClient.srem(common.readySetName, auth);
   await pubRedisClient.publish(common.activeCountChannel, `change`);
   await mainRedisClient.srem(server_key, auth);
-  logger.warn(`completed cleanSocket ${auth}`);
+  logger.debug(`completed cleanSocket ${auth}`);
 };
 
 export const cleanSocketServer = async (
   server_hostname: string = getServerKey(),
 ) => {
   const connectedAuths = await mainRedisClient.smembers(server_hostname);
-  logger.warn(
+  logger.debug(
     `cleanSocketServer server_hostname=${server_hostname} connectedAuths=${connectedAuths}`,
   );
 
@@ -65,11 +65,11 @@ export const cleanSocketServer = async (
     await cleanSocket(auth, server_hostname);
   }
   await mainRedisClient.del(heartbeatPrefix + server_hostname);
-  logger.warn(`completed cleanSocketServer for ${server_hostname}`);
+  logger.debug(`completed cleanSocketServer for ${server_hostname}`);
 };
 
 export const cleanAllSocketServer = async () => {
-  logger.warn(`cleanAllSocketServer`);
+  logger.debug(`cleanAllSocketServer`);
   await common
     .redisScanKeys(mainRedisClient, heartbeatPrefix + `*`)
     .then(async (heartbeat_ids) => {
@@ -91,6 +91,6 @@ export const cleanAllSocketServer = async () => {
           );
         }
       }
-      logger.warn(`cleanAllSocketServer completed`);
+      logger.debug(`cleanAllSocketServer completed`);
     });
 };
