@@ -238,3 +238,28 @@ export class PromClient {
 export function killSigint() {
   process.kill(process.pid, `SIGINT`);
 }
+
+export async function ratelimit(
+  redisClient: Client,
+  key: string,
+  auth: string,
+  RPM: number,
+) {
+  const rateLimitRedisKey = `ratelimit:${key}:${auth}`;
+
+  const deltaTime = moment().subtract(1, `minutes`).valueOf();
+  const currentRPM = await redisClient.zcount(
+    rateLimitRedisKey,
+    deltaTime,
+    `+inf`,
+  );
+
+  if (currentRPM >= RPM) {
+    const errorMsg = `RateLimit overflow: key=${key} auth=${auth} RPM=${RPM} currentRPM=${currentRPM}`;
+    logger.error(errorMsg);
+    throw Error(errorMsg);
+  }
+  const now = moment().valueOf();
+  await redisClient.zadd(rateLimitRedisKey, now, `${auth}:${now}`);
+  return currentRPM;
+}

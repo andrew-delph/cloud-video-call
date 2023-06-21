@@ -32,7 +32,7 @@ const driver = neo4j.driver(
   neo4j.auth.basic(`neo4j`, `password`),
 );
 
-app.get(`/health`, (req, res) => {
+app.get(`/health`, async (req, res) => {
   logger.debug(`got health check`);
   res.send(`Health is good.`);
 });
@@ -64,6 +64,13 @@ app.post(`/providefeedback`, async (req, res) => {
     res.status(403).send(`failed authentication`);
     return;
   });
+
+  try {
+    await common.ratelimit(mainRedisClient, `post_providefeedback`, uid, 5);
+  } catch (err) {
+    res.send(`${err}`);
+    return;
+  }
 
   const createFeedbackRequest = new neo4j_common.CreateFeedbackRequest();
   createFeedbackRequest.setUserId(uid);
@@ -113,6 +120,13 @@ app.put(`/preferences`, async (req, res) => {
     res.status(403).send(`failed authentication`);
     return;
   });
+
+  try {
+    await common.ratelimit(mainRedisClient, `put_preferences`, uid, 5);
+  } catch (err) {
+    res.send(`${err}`);
+    return;
+  }
 
   const putUserFiltersRequest = new neo4j_common.PutUserPerferencesRequest();
   putUserFiltersRequest.setUserId(uid);
@@ -174,6 +188,13 @@ app.get(`/preferences`, async (req, res) => {
     res.status(403).send(`failed authentication`);
     return;
   });
+
+  try {
+    await common.ratelimit(mainRedisClient, `get_preferences`, uid, 5);
+  } catch (err) {
+    res.send(`${err}`);
+    return;
+  }
 
   const checkUserFiltersRequest = new neo4j_common.GetUserPerferencesRequest();
   checkUserFiltersRequest.setUserId(uid);
@@ -238,6 +259,13 @@ app.get(`/history`, async (req, res) => {
     res.status(403).send(`failed authentication`);
     return;
   });
+
+  try {
+    await common.ratelimit(mainRedisClient, `get_history`, uid, 5);
+  } catch (err) {
+    res.send(`${err}`);
+    return;
+  }
 
   const matchHistoryRequest = new neo4j_common.MatchHistoryRequest();
   matchHistoryRequest.setUserId(uid);
