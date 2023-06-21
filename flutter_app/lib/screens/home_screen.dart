@@ -131,6 +131,7 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
 
       if (!controller.isInChat()) {
         return Stack(
+          clipBehavior: Clip.none,
           children: [
             const MatchmakerProgress(),
             Positioned(
