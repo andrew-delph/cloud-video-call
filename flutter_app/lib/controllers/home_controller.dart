@@ -305,9 +305,15 @@ class HomeController extends GetxController with StateMixin {
     // END collect the streams/tracks from remote
 
     socket()!.on("match", (request) async {
-      List data = request as List;
-      dynamic value = data[0] as dynamic;
-      Function callback = data[1] as Function;
+      late dynamic value;
+      Function? callback;
+      try {
+        List data = request as List;
+        value = data[0] as dynamic;
+        callback = data[1] as Function;
+      } catch (err) {
+        value = request;
+      }
       String? role = value["role"];
 
       bool? success = value["success"];
@@ -363,12 +369,12 @@ class HomeController extends GetxController with StateMixin {
           }
           break;
       }
-      callback(null);
+      if (callback != null) callback(null);
     });
 
     // START HANDLE ICE CANDIDATES
     tempPeerConnection.onIceCandidate = (event) {
-      print("my candidate: ${event.candidate.toString()}");
+      log("my candidate: ${event.candidate.toString()}");
       socket()!.emit("icecandidate", {
         "icecandidate": {
           'candidate': event.candidate,
@@ -378,7 +384,7 @@ class HomeController extends GetxController with StateMixin {
       });
     };
     socket()!.on("icecandidate", (data) async {
-      print("other candidate: ${data["icecandidate"]['candidate'].toString()}");
+      log("other candidate: ${data["icecandidate"]['candidate'].toString()}");
       RTCIceCandidate iceCandidate = RTCIceCandidate(
           data["icecandidate"]['candidate'],
           data["icecandidate"]['sdpMid'],
