@@ -390,9 +390,23 @@ class HomeController extends GetxController with StateMixin {
     peerConnection(tempPeerConnection);
 
     socket()!.emitWithAck("ready", {'ready': true}, ack: (data) {
-      // TODO if ack timeout then do something
       log("ready ack $data");
-      isInReadyQueue(true);
+
+      var readyAck = data["ready"];
+      if (!readyAck) {
+        Get.snackbar(
+          "Error",
+          data["error"] ?? "Uknown Ready Error",
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red.withOpacity(.75),
+          colorText: Colors.white,
+          icon: const Icon(Icons.error, color: Colors.white),
+          shouldIconPulse: true,
+          barBlur: 20,
+        );
+      } else {
+        isInReadyQueue(true);
+      }
     });
   }
 

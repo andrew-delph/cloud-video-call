@@ -71,8 +71,9 @@ class PreferencesController extends GetxController with StateMixin {
           unsavedChanges(false);
         })
         .then((value) => change(null, status: RxStatus.success()))
-        .catchError(
-            (error) => change(null, status: RxStatus.error(error.toString())));
+        .catchError((error) {
+          change(null, status: RxStatus.error(error.toString()));
+        });
   }
 
   Future<void> updateAttributes() {
@@ -97,7 +98,8 @@ class PreferencesController extends GetxController with StateMixin {
           }
         })
         .then((value) => loadAttributes())
-        .catchError(
-            (error) => change(null, status: RxStatus.error(error.toString())));
+        .catchError((error) {
+          change(null, status: RxStatus.error(error.toString()));
+        });
   }
 }
