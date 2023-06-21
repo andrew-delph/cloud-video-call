@@ -1,3 +1,4 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -8,7 +9,7 @@ class PageContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
+      child: SizedBox(
           // color: Colors.amber,
           height: double.infinity,
           child: SingleChildScrollView(child: child)),
