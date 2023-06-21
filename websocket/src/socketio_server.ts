@@ -104,6 +104,18 @@ io.on(`connection`, async (socket) => {
     const ready = data.ready == undefined ? true : data.ready;
 
     if (ready) {
+      try {
+        await common.ratelimit(
+          mainRedisClient,
+          `readyQueue`,
+          socket.data.auth,
+          5,
+        );
+      } catch (err) {
+        callback({ ready: false, error: `${err}` });
+        return;
+      }
+
       await registerSocketReady(socket);
 
       await sendMatchmakerQueue(rabbitChannel, socket.data.auth);
