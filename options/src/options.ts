@@ -68,7 +68,10 @@ app.post(`/providefeedback`, async (req, res) => {
   try {
     await common.ratelimit(mainRedisClient, `post_providefeedback`, uid, 5);
   } catch (err) {
-    res.send(`${err}`);
+    res.status(401).json({
+      error: JSON.stringify(err),
+      message: `Rate Limit`,
+    });
     return;
   }
 
@@ -124,7 +127,10 @@ app.put(`/preferences`, async (req, res) => {
   try {
     await common.ratelimit(mainRedisClient, `put_preferences`, uid, 5);
   } catch (err) {
-    res.send(`${err}`);
+    res.status(401).json({
+      error: JSON.stringify(err),
+      message: `Rate Limit`,
+    });
     return;
   }
 
@@ -192,7 +198,10 @@ app.get(`/preferences`, async (req, res) => {
   try {
     await common.ratelimit(mainRedisClient, `get_preferences`, uid, 5);
   } catch (err) {
-    res.send(`${err}`);
+    res.status(401).json({
+      error: JSON.stringify(err),
+      message: `Rate Limit`,
+    });
     return;
   }
 
@@ -263,7 +272,10 @@ app.get(`/history`, async (req, res) => {
   try {
     await common.ratelimit(mainRedisClient, `get_history`, uid, 5);
   } catch (err) {
-    res.send(`${err}`);
+    res.status(401).json({
+      error: JSON.stringify(err),
+      message: `Rate Limit`,
+    });
     return;
   }
 
