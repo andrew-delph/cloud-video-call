@@ -48,8 +48,7 @@ class HomeScreen extends GetView<HomeController> {
           (state) => Obx(
             () => (controller.isInReadyQueue() || controller.isInChat())
                 ? videoRenderLayout
-                : SingleChildScrollView(
-                    child: Column(
+                : Column(
                     children: [
                       const Preferences(),
                       ElevatedButton(
@@ -65,7 +64,7 @@ class HomeScreen extends GetView<HomeController> {
                           },
                           child: const Text("Start"))
                     ],
-                  )),
+                  ),
           ),
           onLoading: const CircularProgressIndicator(),
           onError: (error) => Column(
