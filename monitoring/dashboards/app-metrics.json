@@ -156,7 +156,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "none"
+              "mode": "normal"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -208,10 +208,22 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "((sum(node_memory_MemTotal_bytes) - sum(node_memory_MemFree_bytes)) / sum(node_memory_MemTotal_bytes)) * 100",
-          "legendFormat": "Total Mem",
+          "expr": "((sum(node_memory_MemTotal_bytes) - sum(node_memory_MemFree_bytes) - sum(node_memory_Cached_bytes)) / sum(node_memory_MemTotal_bytes)) * 100",
+          "legendFormat": "Used Mem",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "(sum(node_memory_Cached_bytes) / sum(node_memory_MemTotal_bytes)) * 100",
+          "hide": false,
+          "legendFormat": "Cached Mem",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "Memory",
@@ -584,6 +596,6 @@
   "timezone": "",
   "title": "App Stats",
   "uid": "RvSgHNuVz",
-  "version": 2,
+  "version": 1,
   "weekStart": ""
 }
