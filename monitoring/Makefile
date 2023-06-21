@@ -46,6 +46,9 @@ delete:
 	helm uninstall loki --namespace=monitoring --wait
 	helm uninstall prometheus-rabbitmq-exporter --wait
 	helm uninstall prometheus-adapter --namespace=monitoring --wait
+	
+delete_prom_pvc:
+	kubectl delete -f ./prometheus-pvc.yaml --wait
 
 watch:
 	watch kubectl get pods -n monitoring
