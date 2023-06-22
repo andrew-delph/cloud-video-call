@@ -19,6 +19,7 @@ import '../config/factory.dart';
 import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
 import '../utils/utils.dart';
+import '../widgets/feedback_dialog.dart';
 
 class HomeController extends GetxController with StateMixin {
   LocalPreferences localPreferences = Get.find();
@@ -427,10 +428,10 @@ class HomeController extends GetxController with StateMixin {
     isInReadyQueue(localPreferences.autoQueue());
     isInChat(false);
 
-    // if (!skipFeedback) {
-    //   double score = await Get.dialog(FeedbackDialog());
-    //   await sendChatScore(score);
-    // }
+    if (!skipFeedback) {
+      double score = await Get.dialog(FeedbackDialog());
+      await sendChatScore(score);
+    }
     if (localPreferences.autoQueue()) {
       await queueReady();
     }
