@@ -17,6 +17,7 @@ config:
   server.directories.plugins: '/plugins'
   dbms.security.procedures.unrestricted: 'gds.*'
   dbms.memory.transaction.total.max: '2GB'
+  server.memory.heap.max_size: '2GB'
   server.bolt.thread_pool_max_size: '1000'
 
 podSpec:

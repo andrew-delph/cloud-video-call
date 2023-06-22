@@ -50,16 +50,11 @@ logger.info(`Value of JOB: ${job}`);
 
       logger.info(`test_attributes: ${JSON.stringify(test_attributes)}`);
 
-      try {
-        results = await funcs.createGraph(
-          `shortPredictGraph`,
-          test_attributes,
-          activeUsers,
-        );
-      } catch (err) {
-        logger.error(`Ending early because not graph created.`);
-        return;
-      }
+      results = await funcs.createGraph(
+        `shortPredictGraph`,
+        test_attributes,
+        activeUsers,
+      );
 
       logger.debug(`graph: ${JSON.stringify(results.records[0])}`);
 

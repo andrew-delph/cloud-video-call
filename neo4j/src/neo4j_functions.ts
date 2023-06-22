@@ -4,6 +4,8 @@ import { Person, getPerson, indexToColor } from './person';
 import async from 'async';
 import * as neo4j from 'neo4j-driver';
 import { v4 as uuid } from 'uuid';
+import * as common from 'common';
+const logger = common.getLogger();
 
 const maxRetryTimeMs = 15 * 1000;
 
@@ -605,7 +607,7 @@ export async function createGraph(
   result = await session.run(q_graph);
 
   if (result.records.length < 1 || result.records[0].get(`graph`) == null) {
-    throw Error(`graph not created`);
+    throw Error(`graph not created: query=${q_graph}`);
   }
 
   // result = await run(
