@@ -239,6 +239,7 @@ export const compareUserFilters = async (
 
   valid = valid && filterConstants(user1Data, user2Data);
   valid = valid && filterConstants(user2Data, user1Data);
+  valid = valid && common.isTestUser(userId1) == common.isTestUser(userId2);
 
   const user1Priority =
     user1Data.priority ||
