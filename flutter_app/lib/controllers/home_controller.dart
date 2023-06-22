@@ -107,6 +107,7 @@ class HomeController extends GetxController with StateMixin {
     });
 
     isInChat.listen((isInChat) {
+      matchmakerProgess({});
       if (isInChat) {
         isInReadyQueue(false);
       }
@@ -394,7 +395,7 @@ class HomeController extends GetxController with StateMixin {
     // END HANDLE ICE CANDIDATES
 
     peerConnection(tempPeerConnection);
-
+    final completer = Completer<void>();
     socket()!.emitWithAck("ready", {'ready': true}, ack: (data) {
       log("ready ack $data");
 
@@ -410,16 +411,20 @@ class HomeController extends GetxController with StateMixin {
           shouldIconPulse: true,
           barBlur: 20,
         );
+        isInReadyQueue(false);
       } else {
         isInReadyQueue(true);
       }
+      completer.complete();
     });
+    return completer.future;
   }
 
   Future<void> endChat(bool skipFeedback) async {
     log("end chat skipFeedback=$skipFeedback");
     socket()?.emit("endchat", true);
     await resetRemote();
+    isInReadyQueue(localPreferences.autoQueue());
     isInChat(false);
 
     // if (!skipFeedback) {
@@ -427,7 +432,7 @@ class HomeController extends GetxController with StateMixin {
     //   await sendChatScore(score);
     // }
     if (localPreferences.autoQueue()) {
-      queueReady();
+      await queueReady();
     }
   }
 
