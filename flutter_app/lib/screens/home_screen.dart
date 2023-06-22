@@ -42,7 +42,7 @@ class HomeScreen extends GetView<HomeController> {
         width: 100,
         height: 100,
         child: Stack(
-          children: [videoRenderLayout, const ButtonsOverlay()],
+          children: [videoRenderLayout, ButtonsOverlay()],
         ));
 
     return AppMenu(
@@ -187,7 +187,9 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
 }
 
 class ButtonsOverlay extends GetView<HomeController> {
-  const ButtonsOverlay({super.key});
+  ButtonsOverlay({super.key});
+
+  final LocalPreferences localPreferences = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -231,11 +233,12 @@ class ButtonsOverlay extends GetView<HomeController> {
                   },
                 ),
               if (controller.localMediaStream() != null) MediaDeviceButton(),
-              if (!controller.isInChat())
+              if (!controller.isInChat() || localPreferences.autoQueue())
                 IconButton(
                   icon: const Icon(Icons.cancel),
-                  tooltip: 'Cancel',
+                  tooltip: 'Cancel Queue',
                   onPressed: () async {
+                    await controller.endChat(!controller.isInChat());
                     controller.unReady();
                   },
                 )
