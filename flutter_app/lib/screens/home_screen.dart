@@ -55,15 +55,18 @@ class HomeScreen extends GetView<HomeController> {
                     children: [
                       const Preferences(),
                       ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (preferencesController.status.isLoading) {
                               // This is not the best way to handle this case.
                               Get.snackbar('Preferences Updating',
                                   'Wait for preferences to update.',
                                   snackPosition: SnackPosition.BOTTOM);
-                            } else {
-                              controller.ready();
                             }
+
+                            if (preferencesController.unsavedChanges()) {
+                              await preferencesController.updateAttributes();
+                            }
+                            await controller.ready();
                           },
                           child: const Text("Start"))
                     ],

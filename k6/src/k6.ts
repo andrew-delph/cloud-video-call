@@ -9,7 +9,7 @@ import http from 'k6/http';
 import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 
 const vus = 100;
-const authKeysNum = vus + 500; // number of users created for each parallel instance running
+const authKeysNum = vus + 15; // number of users created for each parallel instance running
 const iterations = 999999; //authKeysNum * 1000;
 
 const nukeData = true; // this doesnt work with multile running instances

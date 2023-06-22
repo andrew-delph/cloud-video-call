@@ -32,12 +32,12 @@ class PreferencesController extends GetxController with StateMixin {
       unsavedChanges(true);
     });
 
-    var updateDebouncer = Debouncer(delay: 1.seconds);
-    unsavedChanges.listen((p0) {
-      if (!status.isLoading) {
-        updateDebouncer.call(() => updateAttributes());
-      }
-    });
+    // var updateDebouncer = Debouncer(delay: 1.seconds);
+    // unsavedChanges.listen((p0) {
+    //   if (!status.isLoading) {
+    //     updateDebouncer.call(() => updateAttributes());
+    //   }
+    // });
   }
 
   @override
