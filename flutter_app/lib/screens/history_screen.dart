@@ -22,31 +22,17 @@ class HistoryScreen extends GetView<HistoryController> {
           (state) => SingleChildScrollView(
               child: Center(
                   child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                  alignment: Alignment.topCenter,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.all(20),
-                  margin: const EdgeInsets.all(20),
-                  constraints: const BoxConstraints(
-                    maxWidth: 1000,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "History",
-                        style: TextStyle(
-                          fontSize: 35.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Divider(),
-                      HistoryWidget(historyModel: controller.historyModel())
-                    ],
-                  ))
+              const Text(
+                "History",
+                style: TextStyle(
+                  fontSize: 35.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Divider(),
+              HistoryWidget(historyModel: controller.historyModel())
             ],
           ))),
           onLoading: const CircularProgressIndicator(),
