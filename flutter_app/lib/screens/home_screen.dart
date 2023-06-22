@@ -241,7 +241,9 @@ class ButtonsOverlay extends GetView<HomeController> {
                   icon: const Icon(Icons.cancel),
                   tooltip: 'Cancel Queue',
                   onPressed: () async {
-                    await controller.endChat(!controller.isInChat());
+                    if (controller.isInChat()) {
+                      await controller.endChat(!controller.isInChat());
+                    }
                     controller.unReady();
                   },
                 )
