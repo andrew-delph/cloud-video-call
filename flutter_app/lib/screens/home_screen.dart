@@ -38,9 +38,12 @@ class HomeScreen extends GetView<HomeController> {
         },
         child: videoRenderLayout);
 
-    videoRenderLayout = Stack(
-      children: [videoRenderLayout, const ButtonsOverlay()],
-    );
+    videoRenderLayout = SizedBox(
+        width: 100,
+        height: 100,
+        child: Stack(
+          children: [videoRenderLayout, const ButtonsOverlay()],
+        ));
 
     return AppMenu(
         title: 'Home',
