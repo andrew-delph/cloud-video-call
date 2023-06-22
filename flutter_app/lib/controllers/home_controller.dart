@@ -125,9 +125,9 @@ class HomeController extends GetxController with StateMixin {
   int activeCount = 1;
 
   @override
-  Future<void> dispose() async {
+  Future<void> onClose() async {
     super.dispose();
-    socket()?.destroy();
+    socket()?.dispose();
     try {
       await localMediaStream()?.dispose();
     } catch (error) {
@@ -147,7 +147,6 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<void> initSocket() async {
-    disposeSocket();
     String socketAddress = Factory.getWsHost();
 
     log("SOCKET_ADDRESS is $socketAddress .... ${socket() == null}");
@@ -205,7 +204,10 @@ class HomeController extends GetxController with StateMixin {
       await endChat(!isInChat());
     });
     mySocket.onDisconnect((details) {
-      initSocket();
+      // if not disconnected by the client.
+      if (!"$details".contains("client")) {
+        initSocket();
+      }
     });
 
     mySocket.onConnectError((details) {
@@ -225,10 +227,6 @@ class HomeController extends GetxController with StateMixin {
     } catch (error) {
       change(null, status: RxStatus.error(error.toString()));
     }
-  }
-
-  void disposeSocket() {
-    socket()?.dispose();
   }
 
   Future<void> initLocalStream() async {

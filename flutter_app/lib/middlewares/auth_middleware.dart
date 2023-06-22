@@ -13,7 +13,9 @@ class AuthMiddleware extends GetMiddleware {
 
   @override
   RouteSettings? redirect(String? route) {
-    if (route != Routes.HOME && !authService.isAuthenticated()) {
+    if (route != Routes.HOME &&
+        route != Routes.LOGIN &&
+        !authService.isAuthenticated()) {
       return RouteSettings(name: Routes.LOGIN);
     }
     return null;
