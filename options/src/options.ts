@@ -312,7 +312,8 @@ app.post(`/nukedata`, async (req, res) => {
 
   const session = driver.session();
   await session.run(`
-    MATCH (n)
+  MATCH (n)
+  WHERE n.userId STARTS WITH 'k6_auth_'
     CALL {
       WITH n
       DETACH DELETE n
@@ -321,7 +322,7 @@ app.post(`/nukedata`, async (req, res) => {
 
   await session.close();
 
-  await mainRedisClient.flushall();
+  // await mainRedisClient.flushall();
 
   res.status(200).send(`ITS DONE.`);
 });

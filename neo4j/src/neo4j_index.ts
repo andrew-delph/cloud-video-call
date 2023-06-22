@@ -61,28 +61,17 @@ const start_time = performance.now();
 export const run = async () => {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
+    results = await funcs.run(`Match (n:Person) return n.userId;`);
 
-    let randomId = Math.random().toString(36).substring(2);
-    randomId = `andrew`;
-
-    console.table({ randomId });
-
-    results = await funcs.run(
-      `Merge (n:Person {userId: $userId}) return n.priority as priority;`,
-      {
-        userId: randomId,
-      },
-    );
-
-    console.log(results.summary);
-    // printResults(results, 10, 10);
+    // console.log(results.summary);
+    printResults(results, 200, 0, false);
 
     // await nodembeddings_flow.main();
 
     // results = await funcs.compareTypes(`Male`);
-    // // results = await funcs.getFriends();
+    results = await funcs.getFriends();
 
-    // printResults(results, 10, 10);
+    printResults(results, 100, 0, false);
 
     return;
     const node_attributes: string[] = await funcs.getAttributeKeys();

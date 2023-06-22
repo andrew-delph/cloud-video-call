@@ -9,10 +9,10 @@ import http from 'k6/http';
 import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 
 const vus = 200;
-const authKeysNum = vus + 600; // number of users created for each parallel instance running
+const authKeysNum = vus + 500; // number of users created for each parallel instance running
 const iterations = 999999; //authKeysNum * 1000;
 
-const nukeData = false; // this doesnt work with multile running instances
+const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
@@ -127,7 +127,7 @@ export async function setup() {
     authKeys.push(`${authPrefix}${i}_`);
   }
   await (async () => {
-    // await redisClient.del(authKeysName);
+    await redisClient.del(authKeysName);
     // Change this to watch and delete only if the first time
     return;
   })().then(async () => {
