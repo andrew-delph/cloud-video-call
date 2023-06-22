@@ -8,6 +8,7 @@ build:
 
 init:
 	@echo "init"
+	kubectl config current-context | grep -q "minikube" || (echo "Error: Current context is not minikube" >&2 && exit 1)
 	rm -rf dependencies
 	mkdir dependencies
 	mkdir dependencies/k6-operator
@@ -18,14 +19,10 @@ init:
 
 setup:
 	npm run webpack > /dev/null
-
-	kubectl create namespace k6 || echo "namespace already exists"
-
-	kubectl delete configmap test-scripts --ignore-not-found -n k6
-
-	kubectl delete configmap prometheus-config --ignore-not-found -n k6
-
-	kubectl create configmap test-scripts  \
+	kubectl --context minikube create namespace k6 || echo "namespace already exists"
+	kubectl --context minikube delete configmap test-scripts --ignore-not-found -n k6
+	kubectl --context minikube delete configmap prometheus-config --ignore-not-found -n k6
+	kubectl --context minikube create configmap test-scripts  \
 		--from-file=./dist/k6.js -n k6
 
 
@@ -38,11 +35,9 @@ prod:
 	./run-kube.sh resources/k6-output-grafana-cloud.yaml --external
 
 watch:
-	watch -n 15 kubectl get pods -n k6
+	watch -n 15 kubectl --context minikube get pods -n k6
 
 delete:
-	kubectl delete  -f resources/k6-output-grafana-cloud.yaml -n k6
+	kubectl --context minikube delete  -f resources/k6-output-grafana-cloud.yaml -n k6
 	# cd dependencies/k6-operator && make delete
-
-
 

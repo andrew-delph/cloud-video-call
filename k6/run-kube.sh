@@ -30,10 +30,10 @@ TAG_NAME="test-$(date +%m-%d-%H-%M-%S)"
 
 
 # Replacement doesn't seem to trigger, so we need to delete any previous execution
-kubectl delete --ignore-not-found=true --wait=true -f $RESOURCE_FILENAME -n k6
+kubectl --context minikube delete --ignore-not-found=true --wait=true -f $RESOURCE_FILENAME -n k6
 
 # Update '--tag testid=...' to include the test-script name and timestamp for uniqueness, then apply
-sed -e "s/testid\=${RESOURCE_NAME}/testid\=${TAG_NAME}/g" -e "s/WS_HOST_VALUE/${WS_HOST}/g" -e "s/OPTIONS_HOST_VALUE/${OPTIONS_HOST}/g" $RESOURCE_FILENAME | kubectl apply  -f - -n k6
+sed -e "s/testid\=${RESOURCE_NAME}/testid\=${TAG_NAME}/g" -e "s/WS_HOST_VALUE/${WS_HOST}/g" -e "s/OPTIONS_HOST_VALUE/${OPTIONS_HOST}/g" $RESOURCE_FILENAME | kubectl --context minikube apply  -f - -n k6
 
 # sed -e "s/testid\=${RESOURCE_NAME}/testid\=${TAG_NAME}/g" -e "s/WS_HOST_VALUE/${WS_HOST}/g" -e "s/OPTIONS_HOST_VALUE/${OPTIONS_HOST}/g" $RESOURCE_FILENAME
 
