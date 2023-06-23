@@ -420,6 +420,25 @@ const createFeedback = async (
     { userId, feedbackId },
   );
 
+  // unfriend
+  let unblock_rel: neo4j.QueryResult = await session.run(
+    `
+      MATCH (n1:Person)-[f1:FEEDBACK{feedbackId: $feedbackId}]->(n2:Person)
+      MATCH (n2:Person)-[f2:FEEDBACK{other: $feedbackId}]->(n1:Person)
+      WHERE f1.score >= 0 AND f2.score >= 0
+      OPTIONAL MATCH (n1)-[r3:FRIENDS]-(n2)
+      OPTIONAL MATCH (n2)-[r4:FRIENDS]-(n1)
+      OPTIONAL MATCH (n1)-[r5:NEGATIVE]-(n2)
+      OPTIONAL MATCH (n2)-[r6:NEGATIVE]-(n1)
+      // DELETE r3
+      // DELETE r4
+      DELETE r5
+      DELETE r6
+      return n1.userId, n2.userId
+    `,
+    { userId, feedbackId },
+  );
+
   // create friend
   let friend_rel: neo4j.QueryResult = await session.run(
     `
@@ -455,6 +474,8 @@ const createFeedback = async (
   logger.debug(
     `Created unfriend_rel:${JSON.stringify(
       unfriend_rel.summary.updateStatistics,
+    )} unblock_rel:${JSON.stringify(
+      unblock_rel.summary.updateStatistics,
     )} friend_rel:${JSON.stringify(
       friend_rel.summary.updateStatistics,
     )} negative_rel:${JSON.stringify(
