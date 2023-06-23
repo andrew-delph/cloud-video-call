@@ -395,6 +395,25 @@ const createFeedback = async (
     });
   }
 
+  // clean neutral friends
+  let neutral_clean_rel: any = await session.run(
+    `
+        MATCH (n1:Person)-[f1:FEEDBACK{feedbackId: $feedbackId}]->(n2:Person)
+        MATCH (n2:Person)-[f2:FEEDBACK{other: $feedbackId}]->(n1:Person)
+        WHERE f1.score = 0 OR f2.score = 0
+        OPTIONAL MATCH (n1)-[r3:FRIENDS]-(n2)
+        OPTIONAL MATCH (n2)-[r4:FRIENDS]-(n1)
+        OPTIONAL MATCH (n1)-[r5:NEGATIVE]-(n2)
+        OPTIONAL MATCH (n2)-[r6:NEGATIVE]-(n1)
+        DELETE r3
+        DELETE r4
+        DELETE r5
+        DELETE r6
+        return n1.userId, n2.userId
+      `,
+    { userId, feedbackId },
+  );
+
   // create friend
   let friend_rel: any = await session.run(
     `
@@ -408,21 +427,6 @@ const createFeedback = async (
       DELETE r3
       DELETE r4
       return r1,r2, n1.userId, n2.userId
-    `,
-    { userId, feedbackId },
-  );
-
-  // clean neutral friends
-  let neutral_friend_rel: any = await session.run(
-    `
-      MATCH (n1:Person)-[f1:FEEDBACK{feedbackId: $feedbackId}]->(n2:Person)
-      MATCH (n2:Person)-[f2:FEEDBACK{other: $feedbackId}]->(n1:Person)
-      WHERE f1.score = 0 OR f2.score = 0
-      OPTIONAL MATCH (n1)-[r3:FRIENDS]-(n2)
-      OPTIONAL MATCH (n2)-[r4:FRIENDS]-(n1)
-      DELETE r3
-      DELETE r4
-      return n1.userId, n2.userId
     `,
     { userId, feedbackId },
   );
@@ -445,7 +449,7 @@ const createFeedback = async (
   );
 
   logger.debug(
-    `Created FRIENDS:${friend_rel.records.length} FRIEND_REMOVALS:${neutral_friend_rel.records.length} NEGATIVE:${negative_rel.records.length} with score: ${score}`,
+    `Created FRIENDS:${friend_rel.records.length} NEUTRAL_CLEAN:${neutral_clean_rel.records.length} NEGATIVE:${negative_rel.records.length} with score: ${score}`,
   );
 
   await session.close();
