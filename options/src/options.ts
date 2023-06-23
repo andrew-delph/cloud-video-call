@@ -66,7 +66,7 @@ app.post(`/providefeedback`, async (req, res) => {
   });
 
   try {
-    await common.ratelimit(mainRedisClient, `post_providefeedback`, uid, 5);
+    await common.ratelimit(mainRedisClient, `post_providefeedback`, uid, 20);
   } catch (err) {
     res.status(401).json({
       error: JSON.stringify(err),
@@ -270,7 +270,7 @@ app.get(`/history`, async (req, res) => {
   });
 
   try {
-    await common.ratelimit(mainRedisClient, `get_history`, uid, 5);
+    await common.ratelimit(mainRedisClient, `get_history`, uid, 20);
   } catch (err) {
     res.status(401).json({
       error: JSON.stringify(err),

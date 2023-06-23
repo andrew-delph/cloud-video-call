@@ -378,7 +378,8 @@ const createFeedback = async (
     `
       MATCH (n1:Person {userId: $userId})-[r:MATCHED]->(n2:Person)
       WHERE id(r) = $feedbackId
-      CREATE (n1)-[f:FEEDBACK {createDate: datetime(), score: $score, feedbackId: $feedbackId, other: r.other}]->(n2) 
+      MERGE (n1)-[f:FEEDBACK {feedbackId: $feedbackId, other: r.other}]->(n2)
+      SET f.score = $score, f.createDate = datetime()
       return f
     `,
     { score, userId, feedbackId },
@@ -400,9 +401,28 @@ const createFeedback = async (
       MATCH (n1:Person)-[f1:FEEDBACK{feedbackId: $feedbackId}]->(n2:Person)
       MATCH (n2:Person)-[f2:FEEDBACK{other: $feedbackId}]->(n1:Person)
       WHERE f1.score > 0 AND f2.score > 0
+      OPTIONAL MATCH (n1)-[r3:NEGATIVE]-(n2)
+      OPTIONAL MATCH (n2)-[r4:NEGATIVE]-(n1)
       MERGE (n1)-[r1:FRIENDS]-(n2)
       MERGE (n2)-[r2:FRIENDS]-(n1)
+      DELETE r3
+      DELETE r4
       return r1,r2, n1.userId, n2.userId
+    `,
+    { userId, feedbackId },
+  );
+
+  // clean neutral friends
+  let neutral_friend_rel: any = await session.run(
+    `
+      MATCH (n1:Person)-[f1:FEEDBACK{feedbackId: $feedbackId}]->(n2:Person)
+      MATCH (n2:Person)-[f2:FEEDBACK{other: $feedbackId}]->(n1:Person)
+      WHERE f1.score = 0 OR f2.score = 0
+      OPTIONAL MATCH (n1)-[r3:FRIENDS]-(n2)
+      OPTIONAL MATCH (n2)-[r4:FRIENDS]-(n1)
+      DELETE r3
+      DELETE r4
+      return n1.userId, n2.userId
     `,
     { userId, feedbackId },
   );
@@ -411,16 +431,21 @@ const createFeedback = async (
     `
       MATCH (n1:Person)-[f1:FEEDBACK{feedbackId: $feedbackId}]->(n2:Person)
       MATCH (n2:Person)-[f2:FEEDBACK{other: $feedbackId}]->(n1:Person)
-      WHERE f1.score <= 0 OR f2.score <= 0 
+      WHERE f1.score < 0 OR f2.score < 0 
+      OPTIONAL MATCH (n1)-[r3:FRIENDS]-(n2)
+      OPTIONAL MATCH (n2)-[r4:FRIENDS]-(n1)
       MERGE (n1)-[r1:NEGATIVE]-(n2)
       MERGE (n2)-[r2:NEGATIVE]-(n1)
+      // with n1, n2, r1, r2, r3, r4
+      DELETE r3
+      DELETE r4
       return r1,r2, n1.userId, n2.userId
     `,
     { userId, feedbackId },
   );
 
   logger.debug(
-    `Created FRIENDS:${friend_rel.records.length} NEGATIVE:${negative_rel.records.length} with score: ${score}`,
+    `Created FRIENDS:${friend_rel.records.length} FRIEND_REMOVALS:${neutral_friend_rel.records.length} NEGATIVE:${negative_rel.records.length} with score: ${score}`,
   );
 
   await session.close();

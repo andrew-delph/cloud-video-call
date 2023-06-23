@@ -83,25 +83,27 @@ class HistoryItemWidget extends GetView<HistoryController> {
         ),
         if (relationShipState == RelationShipState.friends)
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               // Action to perform when the button is pressed
-              print('Button Pressed');
+              await controller.updateFeedback(historyItem.feedbackId!, 0);
             },
             child: const Text('Remove Friend'),
           ),
         if (relationShipState == RelationShipState.blocked)
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               // Action to perform when the button is pressed
               print('Button Pressed');
+              await controller.updateFeedback(historyItem.feedbackId!, -5);
             },
             child: const Text('Unblock'),
           ),
         if (relationShipState == RelationShipState.pending)
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               // Action to perform when the button is pressed
               print('Button Pressed');
+              await controller.updateFeedback(historyItem.feedbackId!, 0);
             },
             child: const Text('Cancel Friend Request'),
           ),
