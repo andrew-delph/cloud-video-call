@@ -16,7 +16,8 @@ class AuthMiddleware extends GetMiddleware {
     if (route != Routes.HOME &&
         route != Routes.LOGIN &&
         !authService.isAuthenticated()) {
-      return RouteSettings(name: Routes.LOGIN);
+      authService.signOut();
+      // return RouteSettings(name: Routes.LOGIN);
     }
     return null;
   }
