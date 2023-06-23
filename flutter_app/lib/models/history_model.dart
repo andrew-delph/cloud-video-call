@@ -26,6 +26,7 @@ class HistoryItemModel {
   String? createTime;
   double? userId1Score;
   double? userId2Score;
+  bool? friends;
 
   HistoryItemModel(
       {this.userId1,
@@ -40,6 +41,7 @@ class HistoryItemModel {
     createTime = json['createTime'];
     userId1Score = json['userId1Score'];
     userId2Score = json['userId2Score'];
+    friends = json['friends'];
   }
 
   Map<String, dynamic> toJson() {
@@ -49,6 +51,7 @@ class HistoryItemModel {
     data['createTime'] = createTime;
     data['userId1Score'] = userId1Score;
     data['userId2Score'] = userId2Score;
+    data['friends'] = friends;
     return data;
   }
 }

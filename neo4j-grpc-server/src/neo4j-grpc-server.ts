@@ -633,7 +633,8 @@ const getMatchHistory = async (
     MATCH (n1:Person{userId: $userId})-[r1:MATCHED]->(n2:Person)
     OPTIONAL MATCH (n1:Person)-[r2:FEEDBACK{feedbackId:id(r1)}]->(n2:Person)
     OPTIONAL MATCH (n2:Person)-[r3:FEEDBACK{feedbackId:r1.other}]->(n1:Person)
-    return n1.userId, n2.userId, r1.createDate, r2.score, r3.score
+    return n1.userId, n2.userId, r1.createDate, r2.score, r3.score,
+    EXISTS((n1)-[:FRIENDS]-(n2)) AS friends
     ORDER by r1.createDate DESC
     LIMIT 10
     `,
@@ -649,6 +650,7 @@ const getMatchHistory = async (
     match.setCreateTime(`${record.get(`r1.createDate`)}`);
     match.setUserId1Score(record.get(`r2.score`));
     match.setUserId2Score(record.get(`r3.score`));
+    match.setFriends(record.get(`friends`));
     reply.addMatchHistory(match);
   }
 

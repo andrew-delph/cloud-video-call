@@ -59,6 +59,10 @@ class HistoryItemWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [Text("time: ${historyItem.createTime}")],
         ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [Text("friends: ${historyItem.friends}")],
+        ),
       ],
     );
   }

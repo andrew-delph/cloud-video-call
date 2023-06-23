@@ -162,4 +162,5 @@ message Match {
   string create_time = 3;
   double user_id1_score = 4;
   double user_id2_score = 5;
+  bool friends = 6;
 }
