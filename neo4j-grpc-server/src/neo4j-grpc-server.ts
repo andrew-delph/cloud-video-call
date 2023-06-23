@@ -4,6 +4,7 @@ import {
   readUserPreferences,
   writeUserPreferencesDatabase,
 } from './UserPreferences';
+import { user_created } from './metrics';
 import { cosineSimilarity } from './utils';
 import * as common from 'common';
 import {
@@ -33,7 +34,6 @@ import {
 } from 'common-messaging';
 import * as neo4j from 'neo4j-driver';
 import { v4 } from 'uuid';
-import { user_created } from './metrics';
 
 const promClient = new common.PromClient(`neo4j-grpc-server`);
 

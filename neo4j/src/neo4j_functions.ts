@@ -2,9 +2,10 @@ import { createDotGraph, createRidgeLineChart } from './chart';
 import { printResults } from './neo4j_index';
 import { Person, getPerson, indexToColor } from './person';
 import async from 'async';
+import * as common from 'common';
 import * as neo4j from 'neo4j-driver';
 import { v4 as uuid } from 'uuid';
-import * as common from 'common';
+
 const logger = common.getLogger();
 
 const maxRetryTimeMs = 15 * 1000;
