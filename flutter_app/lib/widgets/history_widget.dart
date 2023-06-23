@@ -46,11 +46,11 @@ class HistoryItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget relationShipStateWidget;
     if (historyItem.negative ?? false) {
-      relationShipStateWidget = Text("BLOCKED");
+      relationShipStateWidget = const Text("BLOCKED");
     } else if (historyItem.friends ?? false) {
-      relationShipStateWidget = Text("FRIENDS");
+      relationShipStateWidget = const Text("FRIENDS");
     } else {
-      relationShipStateWidget = Text("NONE");
+      relationShipStateWidget = const Text("NONE");
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

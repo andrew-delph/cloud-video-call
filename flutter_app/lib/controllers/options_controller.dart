@@ -1,6 +1,5 @@
 // Package imports:
 import 'package:get/get.dart';
-import 'package:get/get_rx/src/rx_workers/utils/debouncer.dart';
 
 // Project imports:
 import 'package:flutter_app/utils/utils.dart';
