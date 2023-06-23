@@ -29,11 +29,7 @@ class HistoryWidget extends StatelessWidget {
   }
 }
 
-enum RelationShipState {
-  friends,
-  blocked,
-  none,
-}
+enum RelationShipState { friends, blocked, pending, none }
 
 class HistoryItemWidget extends StatelessWidget {
   final HistoryItemModel historyItem;
@@ -49,6 +45,8 @@ class HistoryItemWidget extends StatelessWidget {
       relationShipState = RelationShipState.blocked;
     } else if (historyItem.friends ?? false) {
       relationShipState = RelationShipState.friends;
+    } else if ((historyItem.userId1Score ?? -1) > 0) {
+      relationShipState = RelationShipState.pending;
     } else {
       relationShipState = RelationShipState.none;
     }
@@ -57,29 +55,11 @@ class HistoryItemWidget extends StatelessWidget {
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("userId1: ${historyItem.userId1}"),
-            Text("userId2: ${historyItem.userId2}")
-          ],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("userId1Score: ${historyItem.userId1Score}"),
-            Text("userId2Score: ${historyItem.userId2Score}")
-          ],
+          children: [Text("User: ${historyItem.userId2}")],
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [Text("time: ${historyItem.createTime}")],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [Text("friends: ${historyItem.friends}")],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [Text("negative: ${historyItem.negative}")],
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,7 +71,7 @@ class HistoryItemWidget extends StatelessWidget {
               // Action to perform when the button is pressed
               print('Button Pressed');
             },
-            child: Text('Remove Friend'),
+            child: const Text('Remove Friend'),
           ),
         if (relationShipState == RelationShipState.blocked)
           ElevatedButton(
@@ -99,7 +79,15 @@ class HistoryItemWidget extends StatelessWidget {
               // Action to perform when the button is pressed
               print('Button Pressed');
             },
-            child: Text('Unblock'),
+            child: const Text('Unblock'),
+          ),
+        if (relationShipState == RelationShipState.pending)
+          ElevatedButton(
+            onPressed: () {
+              // Action to perform when the button is pressed
+              print('Button Pressed');
+            },
+            child: const Text('Cancel Friend Request'),
           ),
         if (relationShipState == RelationShipState.none)
           ElevatedButton(
@@ -107,7 +95,7 @@ class HistoryItemWidget extends StatelessWidget {
               // Action to perform when the button is pressed
               print('Button Pressed');
             },
-            child: Text('Send Friend Request'),
+            child: const Text('Send Friend Request'),
           )
       ],
     );
