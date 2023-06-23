@@ -44,6 +44,14 @@ class HistoryItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget relationShipStateWidget;
+    if (historyItem.negative ?? false) {
+      relationShipStateWidget = Text("BLOCKED");
+    } else if (historyItem.friends ?? false) {
+      relationShipStateWidget = Text("FRIENDS");
+    } else {
+      relationShipStateWidget = Text("NONE");
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -72,6 +80,10 @@ class HistoryItemWidget extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [Text("negative: ${historyItem.negative}")],
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [relationShipStateWidget],
         ),
       ],
     );
