@@ -64,7 +64,6 @@ class HistoryItemWidget extends StatelessWidget {
     } else if (currentTime.difference(parsedTime).inMinutes > 1) {
       timeValue = "${currentTime.difference(parsedTime).inMinutes} mins";
     }
-    int minutesSince = currentTime.difference(parsedTime).inMinutes;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
