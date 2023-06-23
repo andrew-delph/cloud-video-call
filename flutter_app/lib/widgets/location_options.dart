@@ -20,7 +20,7 @@ const double minDist = 10;
 const double maxDist = 5000;
 
 class LocationOptionsWidget extends GetView<PreferencesController> {
-  final Map<String, String> customAttributes;
+  final RxMap<String, String> customAttributes;
   final Map<String, String> customFilters;
 
   final RxDouble dist = RxDouble(0);
@@ -28,7 +28,6 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
 
   final valueController =
       TextEditingController(); // Controller for the value text field
-
   bool isEnabled() {
     return customAttributes["long"] != null && customAttributes["lat"] != null;
   }
@@ -78,121 +77,123 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
 
   @override
   Widget build(BuildContext context) {
-    String? lat = customAttributes["lat"];
-    String? long = customAttributes["long"];
+    return Obx(() {
+      String? lat = customAttributes["lat"];
+      String? long = customAttributes["long"];
 
-    Widget enableSwitch = Row(children: <Widget>[
-      const Expanded(child: Text("Enabled")),
-      Switch(
-        value: isEnabled(),
-        onChanged: (bool newValue) {
-          isEnabled() ? reset() : updateLocation(context);
-        },
-      )
-    ]);
+      Widget enableSwitch = Row(children: <Widget>[
+        const Expanded(child: Text("Enabled")),
+        Switch(
+          value: isEnabled(),
+          onChanged: (bool newValue) {
+            newValue ? updateLocation(context) : reset();
+          },
+        )
+      ]);
 
-    if (long == null || lat == null) {
-      return enableSwitch;
-    }
+      if (long == null || lat == null) {
+        return enableSwitch;
+      }
 
-    LatLng center = LatLng(double.parse(long), double.parse(lat));
+      LatLng center = LatLng(double.parse(long), double.parse(lat));
 
-    double getZoomLevel(double dist) {
-      double zoomLevel;
-      double radius = dist * 1000 * 2;
-      double s = 100;
-      double scale = radius / s / 3;
-      zoomLevel = (16 - math.log(scale) / math.log(2));
-      log("zoomLevel: $zoomLevel");
-      return zoomLevel;
-    }
+      double getZoomLevel(double dist) {
+        double zoomLevel;
+        double radius = dist * 1000 * 2;
+        double s = 100;
+        double scale = radius / s / 3;
+        zoomLevel = (16 - math.log(scale) / math.log(2));
+        log("zoomLevel: $zoomLevel");
+        return zoomLevel;
+      }
 
-    updateDistance(double newDist, {bool end = false}) {
-      dist(newDist);
-      if (end) {
-        if (dist >= minDist && dist <= maxDist) {
-          customFilters["dist"] = newDist.toString();
-        } else {
-          customFilters.remove('dist');
+      updateDistance(double newDist, {bool end = false}) {
+        dist(newDist);
+        if (end) {
+          if (dist >= minDist && dist <= maxDist) {
+            customFilters["dist"] = newDist.toString();
+          } else {
+            customFilters.remove('dist');
+          }
         }
       }
-    }
 
-    if (dist() < minDist) {
-      updateDistance(getDistance());
-    }
-
-    debounce(dist, (value) {
-      try {
-        mapController.move(center, getZoomLevel(value));
-      } catch (err) {
-        log.printError(info: err.toString());
+      if (dist() < minDist) {
+        updateDistance(getDistance());
       }
-    }, time: 1.seconds);
 
-    return Column(children: [
-      enableSwitch,
-      Wrap(
-        alignment: WrapAlignment.center,
-        runAlignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Obx(() => Slider(
-                value: dist(),
-                min: minDist,
-                max: maxDist,
-                divisions: 20,
-                onChanged: (newValue) {
-                  updateDistance(newValue);
-                },
-                onChangeEnd: (newValue) {
-                  updateDistance(newValue, end: true);
-                },
-              ))
-        ],
-      ),
-      Column(children: [
-        SizedBox(
-          width: 300,
-          height: 300,
-          child: FlutterMap(
-            mapController: mapController,
-            options: MapOptions(
-              enableScrollWheel: false,
-              interactiveFlags: InteractiveFlag.none,
-              center: center,
-              zoom: getZoomLevel(dist() ?? 100),
-            ),
-            nonRotatedChildren: const [],
-            children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              ),
-              Obx(() => CircleLayer(
-                  circles: dist() < maxDist
-                      ? [
-                          CircleMarker(
-                              point: center,
-                              color: Colors.blue.withOpacity(0.7),
-                              borderStrokeWidth: 2,
-                              useRadiusInMeter: true,
-                              radius: dist * 1000)
-                        ]
-                      : [])),
-              MarkerLayer(
-                markers: [
-                  Marker(
-                    point: center,
-                    width: 80,
-                    height: 80,
-                    builder: (context) => const Icon(Icons.home_filled),
-                  ),
-                ],
-              )
-            ],
-          ),
+      debounce(dist, (value) {
+        try {
+          mapController.move(center, getZoomLevel(value));
+        } catch (err) {
+          log.printError(info: err.toString());
+        }
+      }, time: 1.seconds);
+
+      return Column(children: [
+        enableSwitch,
+        Wrap(
+          alignment: WrapAlignment.center,
+          runAlignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Obx(() => Slider(
+                  value: dist(),
+                  min: minDist,
+                  max: maxDist,
+                  divisions: 20,
+                  onChanged: (newValue) {
+                    updateDistance(newValue);
+                  },
+                  onChangeEnd: (newValue) {
+                    updateDistance(newValue, end: true);
+                  },
+                ))
+          ],
         ),
-      ]),
-    ]);
+        Column(children: [
+          SizedBox(
+            width: 300,
+            height: 300,
+            child: FlutterMap(
+              mapController: mapController,
+              options: MapOptions(
+                enableScrollWheel: false,
+                interactiveFlags: InteractiveFlag.none,
+                center: center,
+                zoom: getZoomLevel(dist() ?? 100),
+              ),
+              nonRotatedChildren: const [],
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                ),
+                Obx(() => CircleLayer(
+                    circles: dist() < maxDist
+                        ? [
+                            CircleMarker(
+                                point: center,
+                                color: Colors.blue.withOpacity(0.7),
+                                borderStrokeWidth: 2,
+                                useRadiusInMeter: true,
+                                radius: dist * 1000)
+                          ]
+                        : [])),
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: center,
+                      width: 80,
+                      height: 80,
+                      builder: (context) => const Icon(Icons.home_filled),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ]),
+      ]);
+    });
   }
 }

@@ -96,20 +96,18 @@ class Preferences extends GetView<PreferencesController> {
                   const Divider(),
                   Container(
                     padding: const EdgeInsets.all(20),
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Location Settings',
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    child: Column(children: [
+                      const Text(
+                        'Location Settings',
+                        style: TextStyle(
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold,
                         ),
-                        LocationOptionsWidget(
-                            customAttributes: controller.customAttributes,
-                            customFilters: controller.customFilters),
-                      ],
-                    ),
+                      ),
+                      LocationOptionsWidget(
+                          customAttributes: controller.customAttributes,
+                          customFilters: controller.customFilters)
+                    ]),
                   ),
                 ],
               ),
