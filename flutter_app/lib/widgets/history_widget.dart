@@ -94,7 +94,7 @@ class HistoryItemWidget extends GetView<HistoryController> {
             onPressed: () async {
               // Action to perform when the button is pressed
               print('Button Pressed');
-              await controller.updateFeedback(historyItem.feedbackId!, -5);
+              await controller.updateFeedback(historyItem.feedbackId!, 0);
             },
             child: const Text('Unblock'),
           ),
@@ -108,13 +108,25 @@ class HistoryItemWidget extends GetView<HistoryController> {
             child: const Text('Cancel Friend Request'),
           ),
         if (relationShipState == RelationShipState.none)
-          ElevatedButton(
-            onPressed: () async {
-              // Action to perform when the button is pressed
-              print('Button Pressed');
-              await controller.updateFeedback(historyItem.feedbackId!, 5);
-            },
-            child: const Text('Send Friend Request'),
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  // Action to perform when the button is pressed
+                  print('Button Pressed');
+                  await controller.updateFeedback(historyItem.feedbackId!, 5);
+                },
+                child: const Text('Send Friend Request'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  // Action to perform when the button is pressed
+                  print('Button Pressed');
+                  await controller.updateFeedback(historyItem.feedbackId!, -5);
+                },
+                child: const Text('Block'),
+              )
+            ],
           )
       ],
     );
