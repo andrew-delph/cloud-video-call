@@ -43,7 +43,7 @@ class HistoryItemWidget extends GetView<HistoryController> {
   @override
   Widget build(BuildContext context) {
     RelationShipState relationShipState;
-    if (historyItem.negative ?? false) {
+    if ((historyItem.userId1Score ?? 1) < 0) {
       relationShipState = RelationShipState.blocked;
     } else if (historyItem.friends ?? false) {
       relationShipState = RelationShipState.friends;
