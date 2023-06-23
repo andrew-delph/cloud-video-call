@@ -50,6 +50,21 @@ class HistoryItemWidget extends StatelessWidget {
     } else {
       relationShipState = RelationShipState.none;
     }
+
+    DateTime parsedTime = DateTime.parse('${historyItem.createTime}');
+    DateTime currentTime = DateTime.now();
+    String timeValue =
+        "${currentTime.difference(parsedTime).inSeconds} seconds";
+    if (currentTime.difference(parsedTime).inDays > 7) {
+      timeValue = "${currentTime.difference(parsedTime).inDays % 7} weeks";
+    } else if (currentTime.difference(parsedTime).inDays >= 1) {
+      timeValue = "${currentTime.difference(parsedTime).inDays} days";
+    } else if (currentTime.difference(parsedTime).inHours > 1) {
+      timeValue = "${currentTime.difference(parsedTime).inHours} hours";
+    } else if (currentTime.difference(parsedTime).inMinutes > 1) {
+      timeValue = "${currentTime.difference(parsedTime).inMinutes} mins";
+    }
+    int minutesSince = currentTime.difference(parsedTime).inMinutes;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -59,7 +74,7 @@ class HistoryItemWidget extends StatelessWidget {
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [Text("time: ${historyItem.createTime}")],
+          children: [Text("time: ${timeValue} ago")],
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
