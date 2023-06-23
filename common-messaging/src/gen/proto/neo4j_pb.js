@@ -4551,7 +4551,8 @@ proto.neo4j.Match.toObject = function(includeInstance, msg) {
     userId1Score: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
     userId2Score: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
     friends: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
-    negative: jspb.Message.getBooleanFieldWithDefault(msg, 7, false)
+    negative: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
+    feedbackId: jspb.Message.getFieldWithDefault(msg, 8, 0)
   };
 
   if (includeInstance) {
@@ -4615,6 +4616,10 @@ proto.neo4j.Match.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setNegative(value);
+      break;
+    case 8:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setFeedbackId(value);
       break;
     default:
       reader.skipField();
@@ -4691,6 +4696,13 @@ proto.neo4j.Match.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       7,
+      f
+    );
+  }
+  f = message.getFeedbackId();
+  if (f !== 0) {
+    writer.writeInt32(
+      8,
       f
     );
   }
@@ -4820,6 +4832,24 @@ proto.neo4j.Match.prototype.getNegative = function() {
  */
 proto.neo4j.Match.prototype.setNegative = function(value) {
   return jspb.Message.setProto3BooleanField(this, 7, value);
+};
+
+
+/**
+ * optional int32 feedback_id = 8;
+ * @return {number}
+ */
+proto.neo4j.Match.prototype.getFeedbackId = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.neo4j.Match} returns this
+ */
+proto.neo4j.Match.prototype.setFeedbackId = function(value) {
+  return jspb.Message.setProto3IntField(this, 8, value);
 };
 
 
