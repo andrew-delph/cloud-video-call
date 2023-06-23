@@ -22,4 +22,7 @@ class OptionsService extends ApiService {
 
   Future<Response<HistoryModel>> getHistory() => get('/history',
       contentType: 'application/json', decoder: HistoryModel.fromJson);
+
+  Future<Response> updateFeedback(dynamic body) =>
+      post('/providefeedback', body, contentType: 'application/json');
 }

@@ -18,12 +18,14 @@ import 'package:socket_io_client/socket_io_client.dart';
 import '../config/factory.dart';
 import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
+import '../services/options_service.dart';
 import '../utils/utils.dart';
 import '../widgets/feedback_dialog.dart';
 
 class HomeController extends GetxController with StateMixin {
   LocalPreferences localPreferences = Get.find();
   final AuthService authService = Get.find();
+  final OptionsService optionsService;
 
   Rx<MediaStream?> localMediaStream = Rx(null);
   Rx<MediaStream?> remoteMediaStream = Rx(null);
@@ -48,6 +50,8 @@ class HomeController extends GetxController with StateMixin {
   RxBool isCamHide = false.obs;
 
   RxMap<dynamic, dynamic> matchmakerProgess = {}.obs;
+
+  HomeController(this.optionsService);
 
   @override
   onInit() async {
@@ -603,16 +607,8 @@ class HomeController extends GetxController with StateMixin {
 
   Future<void> sendChatScore(double score) async {
     log("sending score $score");
-    var url = Uri.parse("${Factory.getOptionsHost()}/providefeedback");
-    final headers = {
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'application/json',
-      'authorization': await FirebaseAuth.instance.currentUser!.getIdToken()
-    };
     final body = {'feedback_id': feedbackId!, 'score': score};
-    return http
-        .post(url, headers: headers, body: json.encode(body))
-        .then((response) {
+    return optionsService.updateFeedback(body).then((response) {
       if (validStatusCode(response.statusCode)) {
         return;
       } else {

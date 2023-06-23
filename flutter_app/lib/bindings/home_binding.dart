@@ -9,7 +9,8 @@ import '../services/options_service.dart';
 class HomeBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<HomeController>(() => HomeController());
+    Get.lazyPut<HomeController>(
+        () => HomeController(Get.put<OptionsService>(OptionsService())));
     Get.lazyPut<PreferencesController>(
         () => PreferencesController(Get.put<OptionsService>(OptionsService())));
   }

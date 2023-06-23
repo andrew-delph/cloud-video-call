@@ -14,10 +14,14 @@ class HistoryController extends GetxController with StateMixin {
   HistoryController(this.optionsService);
 
   @override
-  onInit() {
+  onInit() async {
     super.onInit();
+    await loadHistory();
+  }
+
+  loadHistory() async {
     change(null, status: RxStatus.loading());
-    optionsService
+    await optionsService
         .getHistory()
         .then((response) => historyModel(response.body))
         .then((_) {
@@ -30,5 +34,14 @@ class HistoryController extends GetxController with StateMixin {
       print("history error: $error");
       change(null, status: RxStatus.error(error.toString()));
     });
+  }
+
+  updateFeedback(int feedbackId, int score) {
+    final body = {'feedback_id': feedbackId, 'score': score};
+    return optionsService.updateFeedback(body).catchError((error) {
+      print("history error: $error");
+      change(null, status: RxStatus.error(error.toString()));
+    }).then((value) => loadHistory());
+    ;
   }
 }

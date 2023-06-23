@@ -1,7 +1,9 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 // Project imports:
+import '../controllers/history_controller.dart';
 import '../models/history_model.dart';
 
 // Package imports:
@@ -31,7 +33,7 @@ class HistoryWidget extends StatelessWidget {
 
 enum RelationShipState { friends, blocked, pending, none }
 
-class HistoryItemWidget extends StatelessWidget {
+class HistoryItemWidget extends GetView<HistoryController> {
   final HistoryItemModel historyItem;
   const HistoryItemWidget({
     Key? key,
@@ -105,9 +107,10 @@ class HistoryItemWidget extends StatelessWidget {
           ),
         if (relationShipState == RelationShipState.none)
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               // Action to perform when the button is pressed
               print('Button Pressed');
+              await controller.updateFeedback(historyItem.feedbackId!, 5);
             },
             child: const Text('Send Friend Request'),
           )
