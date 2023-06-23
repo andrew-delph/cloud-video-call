@@ -73,7 +73,7 @@ class HistoryItemWidget extends StatelessWidget {
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [Text("time: ${timeValue} ago")],
+          children: [Text("time: $timeValue ago")],
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
