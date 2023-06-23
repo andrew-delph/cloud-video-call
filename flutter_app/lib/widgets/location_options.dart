@@ -28,6 +28,7 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
 
   final valueController =
       TextEditingController(); // Controller for the value text field
+
   bool isEnabled() {
     return customAttributes["long"] != null && customAttributes["lat"] != null;
   }
