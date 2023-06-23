@@ -44,13 +44,13 @@ class HistoryItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget relationShipStateWidget;
+    RelationShipState relationShipState;
     if (historyItem.negative ?? false) {
-      relationShipStateWidget = const Text("BLOCKED");
+      relationShipState = RelationShipState.blocked;
     } else if (historyItem.friends ?? false) {
-      relationShipStateWidget = const Text("FRIENDS");
+      relationShipState = RelationShipState.friends;
     } else {
-      relationShipStateWidget = const Text("NONE");
+      relationShipState = RelationShipState.none;
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,8 +83,32 @@ class HistoryItemWidget extends StatelessWidget {
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [relationShipStateWidget],
+          children: [Text("relationShipState: $relationShipState")],
         ),
+        if (relationShipState == RelationShipState.friends)
+          ElevatedButton(
+            onPressed: () {
+              // Action to perform when the button is pressed
+              print('Button Pressed');
+            },
+            child: Text('Remove Friend'),
+          ),
+        if (relationShipState == RelationShipState.blocked)
+          ElevatedButton(
+            onPressed: () {
+              // Action to perform when the button is pressed
+              print('Button Pressed');
+            },
+            child: Text('Unblock'),
+          ),
+        if (relationShipState == RelationShipState.none)
+          ElevatedButton(
+            onPressed: () {
+              // Action to perform when the button is pressed
+              print('Button Pressed');
+            },
+            child: Text('Send Friend Request'),
+          )
       ],
     );
   }

@@ -26,7 +26,9 @@ class HistoryController extends GetxController with StateMixin {
       } else {
         change(null, status: RxStatus.success());
       }
-    }).catchError(
-            (error) => change(null, status: RxStatus.error(error.toString())));
+    }).catchError((error) {
+      print("history error: $error");
+      change(null, status: RxStatus.error(error.toString()));
+    });
   }
 }
