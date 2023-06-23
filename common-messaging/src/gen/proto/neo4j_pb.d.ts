@@ -648,6 +648,9 @@ export class Match extends jspb.Message {
     getFriends(): boolean;
     setFriends(value: boolean): Match;
 
+    getNegative(): boolean;
+    setNegative(value: boolean): Match;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Match.AsObject;
@@ -667,5 +670,6 @@ export namespace Match {
         userId1Score: number,
         userId2Score: number,
         friends: boolean,
+        negative: boolean,
     }
 }

@@ -4550,7 +4550,8 @@ proto.neo4j.Match.toObject = function(includeInstance, msg) {
     createTime: jspb.Message.getFieldWithDefault(msg, 3, ""),
     userId1Score: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
     userId2Score: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
-    friends: jspb.Message.getBooleanFieldWithDefault(msg, 6, false)
+    friends: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
+    negative: jspb.Message.getBooleanFieldWithDefault(msg, 7, false)
   };
 
   if (includeInstance) {
@@ -4610,6 +4611,10 @@ proto.neo4j.Match.deserializeBinaryFromReader = function(msg, reader) {
     case 6:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setFriends(value);
+      break;
+    case 7:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setNegative(value);
       break;
     default:
       reader.skipField();
@@ -4679,6 +4684,13 @@ proto.neo4j.Match.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       6,
+      f
+    );
+  }
+  f = message.getNegative();
+  if (f) {
+    writer.writeBool(
+      7,
       f
     );
   }
@@ -4790,6 +4802,24 @@ proto.neo4j.Match.prototype.getFriends = function() {
  */
 proto.neo4j.Match.prototype.setFriends = function(value) {
   return jspb.Message.setProto3BooleanField(this, 6, value);
+};
+
+
+/**
+ * optional bool negative = 7;
+ * @return {boolean}
+ */
+proto.neo4j.Match.prototype.getNegative = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 7, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.neo4j.Match} returns this
+ */
+proto.neo4j.Match.prototype.setNegative = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 7, value);
 };
 
 

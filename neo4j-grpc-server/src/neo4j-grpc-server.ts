@@ -291,19 +291,11 @@ const getRelationshipScores = async (
     }
   }
 
-  if (reply.getRelationshipScoresMap().getLength() == 0) {
-    logger.debug(
-      `scores's read from redis: ${reply
-        .getRelationshipScoresMap()
-        .getLength()} of ${otherUsers.length}`,
-    );
-  } else {
-    logger.info(
-      `scores's read from redis: ${reply
-        .getRelationshipScoresMap()
-        .getLength()} of ${otherUsers.length}`,
-    );
-  }
+  logger.debug(
+    `scores's read from redis: ${reply
+      .getRelationshipScoresMap()
+      .getLength()} of ${otherUsers.length}`,
+  );
 
   const session = driver.session();
   const result = await session.run(
@@ -634,7 +626,8 @@ const getMatchHistory = async (
     OPTIONAL MATCH (n1:Person)-[r2:FEEDBACK{feedbackId:id(r1)}]->(n2:Person)
     OPTIONAL MATCH (n2:Person)-[r3:FEEDBACK{feedbackId:r1.other}]->(n1:Person)
     return n1.userId, n2.userId, r1.createDate, r2.score, r3.score,
-    EXISTS((n1)-[:FRIENDS]-(n2)) AS friends
+    EXISTS((n1)-[:FRIENDS]-(n2)) AS friends,
+    EXISTS((n1)-[:NEGATIVE]-(n2)) AS negative
     ORDER by r1.createDate DESC
     LIMIT 10
     `,
@@ -651,6 +644,7 @@ const getMatchHistory = async (
     match.setUserId1Score(record.get(`r2.score`));
     match.setUserId2Score(record.get(`r3.score`));
     match.setFriends(record.get(`friends`));
+    match.setNegative(record.get(`negative`));
     reply.addMatchHistory(match);
   }
 

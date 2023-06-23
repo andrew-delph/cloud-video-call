@@ -29,6 +29,12 @@ class HistoryWidget extends StatelessWidget {
   }
 }
 
+enum RelationShipState {
+  friends,
+  blocked,
+  none,
+}
+
 class HistoryItemWidget extends StatelessWidget {
   final HistoryItemModel historyItem;
   const HistoryItemWidget({
@@ -62,6 +68,10 @@ class HistoryItemWidget extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [Text("friends: ${historyItem.friends}")],
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [Text("negative: ${historyItem.negative}")],
         ),
       ],
     );

@@ -163,4 +163,5 @@ message Match {
   double user_id1_score = 4;
   double user_id2_score = 5;
   bool friends = 6;
+  bool negative = 7;
 }
