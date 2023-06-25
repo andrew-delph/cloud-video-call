@@ -34,7 +34,7 @@ class HomeScreen extends GetView<HomeController> {
         },
         onHorizontalDragEnd: (double score) async {
           await controller.endChat(true);
-          await controller.sendChatScore(score);
+          // await controller.sendChatScore(score);
         },
         child: videoRenderLayout);
 
