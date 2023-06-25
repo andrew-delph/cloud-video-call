@@ -63,36 +63,38 @@ class FeedbackSwipeDetectorState extends State<FeedbackSwipeDetector> {
         onHorizontalDragEnd: (details) async {
           if (widget.isDragUpdate == null || widget.isDragUpdate!()) {
             if (validScore) {
-              bool? confirm = localPreferences.feedbackPopup()
-                  ? await Get.dialog(AlertDialog(
-                      title: const Text('Send Feedback'),
-                      content: Text(
-                          'Do you want to end the call with feedback ${score.toInt()}?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Get.back(result: true);
-                            localPreferences.feedbackPopup(false);
-                            Get.snackbar('Preference Updated.',
-                                'Confirm feedback popup disabled.',
-                                snackPosition: SnackPosition.BOTTOM);
-                          },
-                          child: const Text('Disable future popup'),
-                        ),
-                        TextButton(
-                          onPressed: () => Get.back(result: false),
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () => Get.back(result: true),
-                          child: const Text('Send'),
-                        ),
-                      ],
-                    ))
-                  : true;
-              if (confirm ?? false) {
-                widget.onHorizontalDragEnd(score);
-              }
+              widget.onHorizontalDragEnd(score);
+
+              // bool? confirm = localPreferences.feedbackPopup()
+              //     ? await Get.dialog(AlertDialog(
+              //         title: const Text('Send Feedback'),
+              //         content: Text(
+              //             'Do you want to end the call with feedback ${score.toInt()}?'),
+              //         actions: [
+              //           TextButton(
+              //             onPressed: () {
+              //               Get.back(result: true);
+              //               localPreferences.feedbackPopup(false);
+              //               Get.snackbar('Preference Updated.',
+              //                   'Confirm feedback popup disabled.',
+              //                   snackPosition: SnackPosition.BOTTOM);
+              //             },
+              //             child: const Text('Disable future popup'),
+              //           ),
+              //           TextButton(
+              //             onPressed: () => Get.back(result: false),
+              //             child: const Text('Cancel'),
+              //           ),
+              //           TextButton(
+              //             onPressed: () => Get.back(result: true),
+              //             child: const Text('Send'),
+              //           ),
+              //         ],
+              //       ))
+              //     : true;
+              // if (confirm ?? false) {
+              //   widget.onHorizontalDragEnd(score);
+              // }
             }
           }
           setState(() {
