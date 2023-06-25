@@ -629,11 +629,6 @@ export async function createFilterSet(
             ? moment(filter.getLastMatchedTime())
             : moment(0),
         };
-      })
-      .filter((filterObj) => {
-        return moment(filterObj.latest_match).isBefore(
-          moment().subtract(lastMatchedCooldownMinutes, `minutes`),
-        );
       }),
   );
 }
