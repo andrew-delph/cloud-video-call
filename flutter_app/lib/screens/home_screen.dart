@@ -42,7 +42,7 @@ class HomeScreen extends GetView<HomeController> {
         width: 100,
         height: 100,
         child: Stack(
-          children: [videoRenderLayout, ButtonsOverlay()],
+          children: [videoRenderLayout, BottomButtonsOverlay()],
         ));
 
     return AppMenu(
@@ -164,15 +164,16 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
             Column(children: orientationList),
           if (localPreferences.fullscreen.isFalse)
             Positioned(
-              top: 20, // get the size of the row buttons..?
-              right: 0,
+              top: 20,
+              right: 20,
               child: Container(
                 alignment: Alignment.bottomRight,
                 width: width,
                 height: width * controller.localVideoRendererRatioHw(),
                 child: localCamera(),
               ),
-            )
+            ),
+          LeftButtonsOverlay()
         ],
       );
     });
@@ -189,8 +190,49 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
   }
 }
 
-class ButtonsOverlay extends GetView<HomeController> {
-  ButtonsOverlay({super.key});
+class LeftButtonsOverlay extends GetView<HomeController> {
+  LeftButtonsOverlay({super.key});
+
+  final LocalPreferences localPreferences = Get.find();
+
+  final RxBool liked = false.obs;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => Positioned(
+        top: 20,
+        left: 20,
+        child: Column(
+          children: [
+            IconButton(
+              tooltip: "Like",
+              color: liked() ? Colors.lightGreen : null,
+              icon: const Icon(Icons.thumb_up),
+              onPressed: () async {
+                if (liked()) {
+                  await controller.sendChatScore(0);
+                } else {
+                  await controller.sendChatScore(5);
+                }
+                liked.toggle();
+              },
+            ),
+            IconButton(
+              tooltip: "Block",
+              color: Colors.red,
+              icon: const Icon(Icons.block),
+              onPressed: () async {
+                await controller.endChat(true);
+                await controller.sendChatScore(-5);
+              },
+            ),
+          ],
+        )));
+  }
+}
+
+class BottomButtonsOverlay extends GetView<HomeController> {
+  BottomButtonsOverlay({super.key});
 
   final LocalPreferences localPreferences = Get.find();
 
