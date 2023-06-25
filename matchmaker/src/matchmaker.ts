@@ -65,8 +65,7 @@ const maxCooldownAttemps = Math.floor(
   maxCooldownDelay ** (1 / cooldownScalerValue),
 );
 
-const lastMatchedCooldownMinutes = 0; // filter of last matches
-const recentMatchesLowerScore = false;
+export const lastMatchedCooldownMinutes = 30; // filter of last matches
 
 export async function startReadyConsumer() {
   neo4jRpcClient = createNeo4jClient();
@@ -225,17 +224,20 @@ export const relationShipScoresSortFunc = (
 
   const score = calcScore();
 
+  const cooldownTime = moment().subtract(lastMatchedCooldownMinutes, `minutes`);
+
   if (
-    recentMatchesLowerScore &&
-    Math.abs(score) <= 0.1 &&
-    (a_score.latest_match != undefined || b_score.latest_match != undefined)
+    a_score.latest_match.isBefore(cooldownTime) &&
+    b_score.latest_match.isBefore(cooldownTime)
   ) {
-    if (a_score.latest_match == undefined) return -1;
-    if (b_score.latest_match == undefined) return 1;
-    else if (a_score.latest_match == b_score.latest_match) return score;
-    else return b_score.latest_match.isAfter(a_score.latest_match) ? -1 : 1;
+    return score;
+  } else if (a_score.latest_match.isBefore(cooldownTime)) {
+    return -1;
+  } else if (b_score.latest_match.isBefore(cooldownTime)) {
+    return 1;
+  } else {
+    return score;
   }
-  return score;
 };
 
 const calcScorePercentile = (attempts: number) => {

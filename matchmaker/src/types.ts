@@ -5,7 +5,7 @@ export class RelationshipScoreWrapper {
   prob: number;
   score: number;
   nscore: number;
-  latest_match: moment.Moment | null = null;
+  latest_match: moment.Moment;
 
   constructor(data: {
     otherId: string;
@@ -15,10 +15,10 @@ export class RelationshipScoreWrapper {
     latest_match?: moment.Moment;
   }) {
     this.otherId = data.otherId;
-    this.prob = data.prob || -1;
-    this.score = data.score || -1;
-    this.nscore = data.nscore || 0;
-    this.latest_match = data.latest_match || null;
+    this.prob = data.prob ?? -1;
+    this.score = data.score ?? -1;
+    this.nscore = data.nscore ?? 0;
+    this.latest_match = data.latest_match ?? moment(0);
   }
 }
 
