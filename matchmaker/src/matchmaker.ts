@@ -22,6 +22,7 @@ import {
   readyRoutingKey,
   FilterObject,
   userNotificationQueue,
+  Neo4jClient,
 } from 'common-messaging';
 import { message_helper } from 'common-messaging';
 import express from 'express';
@@ -41,11 +42,8 @@ app.get(`/health`, (req, res) => {
   logger.debug(`got health check`);
   res.send(`Health is good.`);
 });
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
 
-export const neo4jRpcClient = createNeo4jClient();
+export let neo4jRpcClient: Neo4jClient;
 
 export let mainRedisClient: Client;
 let subRedisClient: Client;
@@ -70,106 +68,8 @@ const maxCooldownAttemps = Math.floor(
 const lastMatchedCooldownMinutes = 0; // filter of last matches
 const recentMatchesLowerScore = false;
 
-export const relationShipScoresSortFunc = (
-  a: [string, RelationshipScoreWrapper],
-  b: [string, RelationshipScoreWrapper],
-) => {
-  const a_score = a[1];
-  const b_score = b[1];
-
-  // const score =
-  //   a_score.prob != b_score.prob
-  //     ? b_score.prob - a_score.prob
-  //     : b_score.score - a_score.score;
-
-  const calcScore = () => {
-    if (a_score.prob != b_score.prob) {
-      return b_score.prob - a_score.prob;
-    } else if (b_score.score != a_score.score) {
-      return b_score.score - a_score.score;
-    } else {
-      // this is reversed to that higher nscore is lower
-      return a_score.nscore - b_score.nscore;
-    }
-  };
-
-  const score = calcScore();
-
-  if (
-    recentMatchesLowerScore &&
-    Math.abs(score) <= 0.1 &&
-    (a_score.latest_match != undefined || b_score.latest_match != undefined)
-  ) {
-    if (a_score.latest_match == undefined) return -1;
-    if (b_score.latest_match == undefined) return 1;
-    else if (a_score.latest_match == b_score.latest_match) return score;
-    else return b_score.latest_match.isAfter(a_score.latest_match) ? -1 : 1;
-  }
-  return score;
-};
-
-const calcScorePercentile = (attempts: number) => {
-  return 1 - (attempts + 1) / maxCooldownAttemps / 3;
-};
-
-export const stripUserId = (userId: string): string => {
-  const split = userId.split(`_`);
-  const val = split.pop()!;
-  return val;
-};
-
-const connectRabbit = async () => {
-  [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
-
-  await rabbitChannel.assertQueue(matchQueueName, {
-    durable: true,
-  });
-
-  await rabbitChannel.assertQueue(readyQueueName, {
-    durable: true,
-    maxPriority: maxPriority,
-  });
-
-  await rabbitChannel.assertExchange(delayExchange, `x-delayed-message`, {
-    durable: true,
-    arguments: { 'x-delayed-type': `direct` },
-  });
-
-  await rabbitChannel.bindQueue(readyQueueName, delayExchange, readyRoutingKey);
-
-  await rabbitChannel.assertQueue(userNotificationQueue, {
-    durable: true,
-  });
-
-  logger.info(`rabbit connected`);
-};
-
-const neo4jGetUser = (userId: string) => {
-  const getUserPerferencesRequest = new GetUserPerferencesRequest();
-  getUserPerferencesRequest.setUserId(userId);
-  return new Promise<GetUserPerferencesResponse>(async (resolve, reject) => {
-    try {
-      neo4jRpcClient.getUserPerferences(
-        getUserPerferencesRequest,
-        (error: any, response: GetUserPerferencesResponse) => {
-          if (error) {
-            logger.error(error);
-            reject(error);
-          } else {
-            resolve(response);
-          }
-        },
-      );
-    } catch (e) {
-      logger.error(e);
-      reject(e);
-    }
-  });
-};
-
-const matchmakerChannelPrefix = `matchmaker`;
-
 export async function startReadyConsumer() {
+  neo4jRpcClient = createNeo4jClient();
   await connectRabbit();
 
   mainRedisClient = common.createRedisClient();
@@ -294,7 +194,110 @@ export async function startReadyConsumer() {
       noAck: false,
     },
   );
+
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
 }
+
+export const relationShipScoresSortFunc = (
+  a: [string, RelationshipScoreWrapper],
+  b: [string, RelationshipScoreWrapper],
+) => {
+  const a_score = a[1];
+  const b_score = b[1];
+
+  // const score =
+  //   a_score.prob != b_score.prob
+  //     ? b_score.prob - a_score.prob
+  //     : b_score.score - a_score.score;
+
+  const calcScore = () => {
+    if (a_score.prob != b_score.prob) {
+      return b_score.prob - a_score.prob;
+    } else if (b_score.score != a_score.score) {
+      return b_score.score - a_score.score;
+    } else {
+      // this is reversed to that higher nscore is lower
+      return a_score.nscore - b_score.nscore;
+    }
+  };
+
+  const score = calcScore();
+
+  if (
+    recentMatchesLowerScore &&
+    Math.abs(score) <= 0.1 &&
+    (a_score.latest_match != undefined || b_score.latest_match != undefined)
+  ) {
+    if (a_score.latest_match == undefined) return -1;
+    if (b_score.latest_match == undefined) return 1;
+    else if (a_score.latest_match == b_score.latest_match) return score;
+    else return b_score.latest_match.isAfter(a_score.latest_match) ? -1 : 1;
+  }
+  return score;
+};
+
+const calcScorePercentile = (attempts: number) => {
+  return 1 - (attempts + 1) / maxCooldownAttemps / 3;
+};
+
+export const stripUserId = (userId: string): string => {
+  const split = userId.split(`_`);
+  const val = split.pop()!;
+  return val;
+};
+
+const connectRabbit = async () => {
+  [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
+
+  await rabbitChannel.assertQueue(matchQueueName, {
+    durable: true,
+  });
+
+  await rabbitChannel.assertQueue(readyQueueName, {
+    durable: true,
+    maxPriority: maxPriority,
+  });
+
+  await rabbitChannel.assertExchange(delayExchange, `x-delayed-message`, {
+    durable: true,
+    arguments: { 'x-delayed-type': `direct` },
+  });
+
+  await rabbitChannel.bindQueue(readyQueueName, delayExchange, readyRoutingKey);
+
+  await rabbitChannel.assertQueue(userNotificationQueue, {
+    durable: true,
+  });
+
+  logger.info(`rabbit connected`);
+};
+
+const neo4jGetUser = (userId: string) => {
+  const getUserPerferencesRequest = new GetUserPerferencesRequest();
+  getUserPerferencesRequest.setUserId(userId);
+  return new Promise<GetUserPerferencesResponse>(async (resolve, reject) => {
+    try {
+      neo4jRpcClient.getUserPerferences(
+        getUserPerferencesRequest,
+        (error: any, response: GetUserPerferencesResponse) => {
+          if (error) {
+            logger.error(error);
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        },
+      );
+    } catch (e) {
+      logger.error(e);
+      reject(e);
+    }
+  });
+};
+
+const matchmakerChannelPrefix = `matchmaker`;
 
 export class CompleteError extends Error {
   constructor(message: string) {
@@ -633,4 +636,6 @@ export async function createFilterSet(
   );
 }
 
-startReadyConsumer();
+if (require.main === module) {
+  startReadyConsumer();
+}
