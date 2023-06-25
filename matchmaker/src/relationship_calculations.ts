@@ -170,9 +170,7 @@ export async function getRelationshipScores(
   // store them in map
 
   for (const filter of filtersToRequest) {
-    const relationshipScore: Score = getRelationshipScoresMap.get(
-      filter.otherId,
-    );
+    const relationshipScore = getRelationshipScoresMap.get(filter.otherId);
     if (!relationshipScore) continue;
 
     const prob = relationshipScore.getProb();
