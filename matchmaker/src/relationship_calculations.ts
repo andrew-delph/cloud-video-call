@@ -106,7 +106,7 @@ export async function getRelationshipScores(
   // pop from the readySet if in cache
 
   for (const filter of filterList) {
-    const relationshipScoreParsed: RelationshipScoreWrapper = JSON.parse(
+    const relationshipScoreParsed: any = JSON.parse(
       (await mainRedisClient.get(
         getRealtionshipScoreCacheKey(userId, filter.otherId),
       )) || `null`,

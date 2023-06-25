@@ -1,22 +1,16 @@
 import {
   calcScoreThreshold,
-  calcScoreZset,
-  expireScoreZset,
   getRelationshipScores,
 } from './relationship_calculations';
 import { FilteredUserType, RelationshipScoreWrapper } from './types';
-import { connect, ConsumeMessage } from 'amqplib';
+import { ConsumeMessage } from 'amqplib';
 import amqp from 'amqplib';
 import * as common from 'common';
 import { listenGlobalExceptions } from 'common';
 import {
   createNeo4jClient,
-  GetRelationshipScoresRequest,
-  GetRelationshipScoresResponse,
   CheckUserFiltersRequest,
   CheckUserFiltersResponse,
-  CreateUserResponse,
-  CreateUserRequest,
   GetUserPerferencesRequest,
   GetUserPerferencesResponse,
   readyQueueName,
@@ -76,7 +70,7 @@ const maxCooldownAttemps = Math.floor(
 const lastMatchedCooldownMinutes = 0; // filter of last matches
 const recentMatchesLowerScore = false;
 
-const relationShipScoresSortFunc = (
+export const relationShipScoresSortFunc = (
   a: [string, RelationshipScoreWrapper],
   b: [string, RelationshipScoreWrapper],
 ) => {
