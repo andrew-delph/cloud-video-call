@@ -3,6 +3,7 @@ import * as neo4j_common from 'common-messaging';
 import express from 'express';
 import { initializeApp } from 'firebase-admin/app';
 import * as neo4j from 'neo4j-driver';
+import moment from 'moment';
 
 var cors = require(`cors`);
 const omitDeep = require(`omit-deep-lodash`);
@@ -273,7 +274,7 @@ app.get(`/history`, async (req, res) => {
 });
 
 app.post(`/nukedata`, async (req, res) => {
-  // TODO REMOVE THIS LOL WHAT THE HECK?
+  // ONLY DELETES TEST DATA
 
   const userId: string = req.userId;
 
@@ -294,16 +295,21 @@ app.post(`/nukedata`, async (req, res) => {
   res.status(200).send(`ITS DONE.`);
 });
 
-app.post(`/activity`, async (req, res) => {
-  // TODO REMOVE THIS LOL WHAT THE HECK?
-
+app.put(`/profile`, async (req, res) => {
   const userId: string = req.userId;
 
   try {
-    await common.uploadProfilePicture(
-      `test${Math.random()}`,
-      `hehehehe${Math.random()}`,
-    );
+    await common.ratelimit(mainRedisClient, `put_profile`, userId, 2);
+  } catch (err) {
+    res.status(401).json({
+      error: JSON.stringify(err),
+      message: `Rate Limit`,
+    });
+    return;
+  }
+
+  try {
+    await common.uploadProfilePicture(`${userId}`, `hehehehe${Math.random()}`);
     res.status(200).send(`ITS DONE.`);
   } catch (err) {
     res
