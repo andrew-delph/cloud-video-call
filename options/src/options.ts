@@ -286,7 +286,8 @@ var upload = multer({
     bucket: common.PROFILE_PICTURES_BUCKET,
     key: async function (req, file, cb) {
       logger.info(`uploading file: ${JSON.stringify(file)}`);
-      cb(null, req.userId);
+      cb(`this api is disabled`);
+      // cb(null, req.userId);
     },
   }),
 });
