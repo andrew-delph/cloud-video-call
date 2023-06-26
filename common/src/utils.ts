@@ -15,7 +15,7 @@ export function isTestUser(userId: string) {
   return userId.startsWith(`k6`);
 }
 
-export async function getUid(auth: string) {
+export async function getUserId(auth: string) {
   if (auth.startsWith(`k6`)) {
     return auth;
   } else {

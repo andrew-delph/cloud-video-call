@@ -1,9 +1,7 @@
 import * as common from 'common';
-import { getUid } from 'common';
 import * as neo4j_common from 'common-messaging';
 import express from 'express';
 import { initializeApp } from 'firebase-admin/app';
-import Client from 'ioredis';
 import * as neo4j from 'neo4j-driver';
 
 var cors = require(`cors`);
@@ -27,6 +25,27 @@ const mainRedisClient = common.createRedisClient();
 app.use(express.json());
 app.use(cors());
 
+const router = express.Router();
+
+// autorize all apis
+router.use(async (req: any, res, next) => {
+  const auth = req.headers.authorization;
+
+  if (!auth) {
+    logger.debug(`Missing Authorization`);
+    next(new Error(`Missing Authorization`));
+    return;
+  }
+
+  let userId: string = await common.getUserId(auth).catch((error) => {
+    logger.debug(`getuserId error: ${error}`);
+    next(new Error(`Failed Authorization`));
+    return;
+  });
+  req.userId = userId;
+  next();
+});
+
 const driver = neo4j.driver(
   `neo4j://neo4j:7687`,
   neo4j.auth.basic(`neo4j`, `password`),
@@ -42,31 +61,10 @@ app.post(`/providefeedback`, async (req, res) => {
 
   feedback_id = parseInt(feedback_id); // TODO send number from ui
 
-  const auth = req.headers.authorization;
-
-  if (!auth) {
-    logger.debug(`Missing Authorization`);
-    res.status(403).json({ error: `Missing Authorization` });
-    return;
-  } else if (
-    !(typeof feedback_id === `number` && !isNaN(feedback_id)) ||
-    !(typeof score === `number` && !isNaN(score))
-  ) {
-    logger.debug(
-      `!feedback_id || !score) feedback_id: ${feedback_id} score: ${score}`,
-    );
-    res.status(400).json({ error: `feedback_id or score failed validation` });
-    return;
-  }
-
-  let uid: string = await getUid(auth).catch((error) => {
-    logger.debug(`getUid error: ${error}`);
-    res.status(403).send(`failed authentication`);
-    return;
-  });
+  const userId: string = req.userId;
 
   try {
-    await common.ratelimit(mainRedisClient, `post_providefeedback`, uid, 20);
+    await common.ratelimit(mainRedisClient, `post_providefeedback`, userId, 20);
   } catch (err) {
     res.status(401).json({
       error: JSON.stringify(err),
@@ -76,7 +74,7 @@ app.post(`/providefeedback`, async (req, res) => {
   }
 
   const createFeedbackRequest = new neo4j_common.CreateFeedbackRequest();
-  createFeedbackRequest.setUserId(uid);
+  createFeedbackRequest.setUserId(userId);
   createFeedbackRequest.setScore(score);
   createFeedbackRequest.setFeedbackId(feedback_id);
 
@@ -110,22 +108,10 @@ app.put(`/preferences`, async (req, res) => {
   const f_custom: { [key: string]: string } = filters.custom || {};
   const f_constant: { [key: string]: string } = filters.constant || {};
 
-  const auth = req.headers.authorization;
-
-  if (!auth) {
-    logger.debug(`Missing Authorization`);
-    res.status(403).json({ error: `Missing Authorization` });
-    return;
-  }
-
-  let uid: string = await getUid(auth).catch((error) => {
-    logger.debug(`getUid error: ${error}`);
-    res.status(403).send(`failed authentication`);
-    return;
-  });
+  const userId: string = req.userId;
 
   try {
-    await common.ratelimit(mainRedisClient, `put_preferences`, uid, 5);
+    await common.ratelimit(mainRedisClient, `put_preferences`, userId, 5);
   } catch (err) {
     res.status(401).json({
       error: JSON.stringify(err),
@@ -135,7 +121,7 @@ app.put(`/preferences`, async (req, res) => {
   }
 
   const putUserFiltersRequest = new neo4j_common.PutUserPerferencesRequest();
-  putUserFiltersRequest.setUserId(uid);
+  putUserFiltersRequest.setUserId(userId);
 
   Object.entries(a_constant).forEach(([key, value]) => {
     putUserFiltersRequest
@@ -181,22 +167,10 @@ app.put(`/preferences`, async (req, res) => {
 });
 
 app.get(`/preferences`, async (req, res) => {
-  const auth = req.headers.authorization;
-
-  if (!auth) {
-    logger.debug(`Missing Authorization`);
-    res.status(403).json({ error: `Missing Authorization` });
-    return;
-  }
-
-  let uid: string = await getUid(auth).catch((error) => {
-    logger.debug(`getUid error: ${error}`);
-    res.status(403).send(`failed authentication`);
-    return;
-  });
+  const userId: string = req.userId;
 
   try {
-    await common.ratelimit(mainRedisClient, `get_preferences`, uid, 5);
+    await common.ratelimit(mainRedisClient, `get_preferences`, userId, 5);
   } catch (err) {
     res.status(401).json({
       error: JSON.stringify(err),
@@ -206,7 +180,7 @@ app.get(`/preferences`, async (req, res) => {
   }
 
   const checkUserFiltersRequest = new neo4j_common.GetUserPerferencesRequest();
-  checkUserFiltersRequest.setUserId(uid);
+  checkUserFiltersRequest.setUserId(userId);
 
   try {
     await neo4jRpcClient.getUserPerferences(
@@ -255,22 +229,10 @@ app.get(`/preferences`, async (req, res) => {
 });
 
 app.get(`/history`, async (req, res) => {
-  const auth = req.headers.authorization;
-
-  if (!auth) {
-    logger.debug(`Missing Authorization`);
-    res.status(403).json({ error: `Missing Authorization` });
-    return;
-  }
-
-  let uid: string = await getUid(auth).catch((error) => {
-    logger.debug(`getUid error: ${error}`);
-    res.status(403).send(`failed authentication`);
-    return;
-  });
+  const userId: string = req.userId;
 
   try {
-    await common.ratelimit(mainRedisClient, `get_history`, uid, 20);
+    await common.ratelimit(mainRedisClient, `get_history`, userId, 20);
   } catch (err) {
     res.status(401).json({
       error: JSON.stringify(err),
@@ -280,7 +242,7 @@ app.get(`/history`, async (req, res) => {
   }
 
   const matchHistoryRequest = new neo4j_common.MatchHistoryRequest();
-  matchHistoryRequest.setUserId(uid);
+  matchHistoryRequest.setUserId(userId);
 
   try {
     await neo4jRpcClient.getMatchHistory(

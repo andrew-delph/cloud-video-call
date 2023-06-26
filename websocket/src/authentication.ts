@@ -1,6 +1,6 @@
 import { cleanSocket, registerSocket } from './management';
 import { mainRedisClient } from './socketio_server';
-import { getLogger, getUid } from 'common';
+import { getLogger, getUserId } from 'common';
 import * as common from 'common';
 import { Socket } from 'socket.io';
 
@@ -22,7 +22,7 @@ export const auth_middleware = async (
     next(new Error(`Authentication format error`));
     return;
   }
-  let uid: string = await getUid(auth).catch((error) => {
+  let uid: string = await getUserId(auth).catch((error) => {
     logger.debug(`getUid error: ${error}`);
     next(error);
     return;
