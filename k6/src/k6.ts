@@ -8,7 +8,7 @@ import redis from 'k6/experimental/redis';
 import http from 'k6/http';
 import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 
-const vus = 50;
+const vus = 150;
 const authKeysNum = vus + 15; // number of users created for each parallel instance running
 const iterations = 999999; //authKeysNum * 1000;
 
@@ -18,7 +18,7 @@ const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
 const maxAuthSkip = 10; // max number of times a auth can be skipped
 
-let validMatchChatTime = 60 * 3; // number of seconds to delay if valid match
+let validMatchChatTime = 60 * 10; // number of seconds to delay if valid match
 let invalidMatchChatTime = 15;
 
 // validMatchChatTime= 10
