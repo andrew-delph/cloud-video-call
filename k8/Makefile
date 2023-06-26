@@ -28,8 +28,6 @@ delete:
 	kubectl delete -f ./knative.yaml
 	kubectl delete -f ./nsf-deployment.yaml --wait
 
-nfs:
-	kubectl apply -f ./nsf-deployment.yaml --wait
 
 restart:
 	kubectl rollout restart -f ./resources/.
