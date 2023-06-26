@@ -25,10 +25,13 @@ class ProfilePicture extends GetView<PreferencesController> {
           },
           child: const Text('Upload profile'),
         ),
-        Image.network(
-          profilePhoto,
-          width: 200,
-          height: 200,
+        Container(
+          height: 100,
+          width: 100,
+          child: Image(
+              image: NetworkImage(
+            profilePhoto,
+          )),
         ),
       ],
     );
