@@ -325,9 +325,9 @@ app.put(`/profile`, upload.single(`file`), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: `No file uploaded` });
   }
+  const file = req.file as Express.MulterS3.File;
 
-  const file = req.file;
-  return res.json({ file });
+  return res.json({ location: file.location });
 });
 
 app.listen(port, () => {
