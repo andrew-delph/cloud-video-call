@@ -36,7 +36,7 @@ jobs:
           java-version: '14.0.1'
       - uses: subosito/flutter-action@v1
         with:
-          flutter-version: '3.3.10'
+          flutter-version: '3.10.5'
 
       - uses: maierj/fastlane-action@v3.0.0
         with:
