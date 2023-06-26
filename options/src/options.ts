@@ -272,6 +272,8 @@ app.get(`/history`, async (req, res) => {
 app.post(`/nukedata`, async (req, res) => {
   // TODO REMOVE THIS LOL WHAT THE HECK?
 
+  const userId: string = req.userId;
+
   const session = driver.session();
   await session.run(`
   MATCH (n)
@@ -289,8 +291,10 @@ app.post(`/nukedata`, async (req, res) => {
   res.status(200).send(`ITS DONE.`);
 });
 
-app.post(`/upload`, async (req, res) => {
+app.post(`/activity`, async (req, res) => {
   // TODO REMOVE THIS LOL WHAT THE HECK?
+
+  const userId: string = req.userId;
 
   try {
     await common.uploadProfilePicture(
