@@ -34,4 +34,15 @@ class AuthService extends GetxService {
     await FirebaseAuth.instance.signOut();
     Get.offAllNamed(Routes.LOGIN);
   }
+
+  User getUser() {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      signOut();
+      throw "Authentication Error";
+    }
+
+    return currentUser;
+  }
 }

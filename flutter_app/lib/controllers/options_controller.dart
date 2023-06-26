@@ -2,6 +2,7 @@
 
 // Package imports:
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 
@@ -112,11 +113,21 @@ class PreferencesController extends GetxController with StateMixin {
     var bytes = result?.files.first.bytes;
     var fileName = result?.files.first.name;
 
-    if (bytes != null && fileName != null) {
-      // Upload file
-      await FirebaseStorage.instance.ref('uploads/$fileName').putData(bytes);
-    } else {
-      print("something was null");
+    if (bytes == null || fileName == null) {
+      throw "something was null";
     }
+
+    var imageRef = (await FirebaseStorage.instance.ref('uploads/$fileName'));
+    imageRef.putData(bytes);
+
+    User currentUser = authService.getUser();
+
+    print("uploadTask: ${imageRef.fullPath}");
+
+    print("downloadURL: ${await imageRef.getDownloadURL()}");
+
+    await currentUser.updatePhotoURL(await imageRef.getDownloadURL());
+
+    // currentUser.updatePhotoURL(photoURL)
   }
 }
