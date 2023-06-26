@@ -295,11 +295,26 @@ app.post(`/nukedata`, async (req, res) => {
   res.status(200).send(`ITS DONE.`);
 });
 
-app.put(`/profile`, async (req, res) => {
+import multer from 'multer';
+import multerS3 from 'multer-s3';
+
+var upload = multer({
+  storage: multerS3({
+    s3: common.s3Client,
+    // acl: `public-read`,
+    bucket: common.PROFILE_PICTURES_BUCKET,
+    key: function (req, file, cb) {
+      logger.info(`uploading file: ${file}`);
+      cb(null, req.userId);
+    },
+  }),
+});
+
+app.put(`/profile`, upload.single(`file`), async (req, res) => {
   const userId: string = req.userId;
 
   try {
-    await common.ratelimit(mainRedisClient, `put_profile`, userId, 2);
+    await common.ratelimit(mainRedisClient, `put_profile`, userId, 10);
   } catch (err) {
     res.status(401).json({
       error: JSON.stringify(err),
@@ -307,18 +322,12 @@ app.put(`/profile`, async (req, res) => {
     });
     return;
   }
-
-  try {
-    await common.uploadProfilePicture(`${userId}`, `hehehehe${Math.random()}`);
-    res.status(200).send(`ITS DONE.`);
-  } catch (err) {
-    res
-      .status(500)
-      .send(
-        `${err} creds: "${process.env.AWS_ACCESS_KEY_ID!}" "${process.env
-          .AWS_SECRET_ACCESS_KEY!}"`,
-      );
+  if (!req.file) {
+    return res.status(400).json({ error: `No file uploaded` });
   }
+
+  const file = req.file;
+  return res.json({ file });
 });
 
 app.listen(port, () => {

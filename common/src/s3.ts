@@ -6,7 +6,9 @@ const credentials = {
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
 };
 
-const client = new S3Client({
+export const PROFILE_PICTURES_BUCKET = `thing72-profile-pictures`;
+
+export const s3Client = new S3Client({
   region: `us-east-1`,
   credentials: credentials,
 });
@@ -24,11 +26,11 @@ export async function uploadProfilePicture(
 ) {
   // Create a command to upload an object to S3
   const uploadCommand = new PutObjectCommand({
-    Bucket: `thing72-profile-pictures`,
+    Bucket: PROFILE_PICTURES_BUCKET,
     Key: key,
     Body: body,
   });
 
   // Upload the object using the S3Client
-  await client.send(uploadCommand);
+  await s3Client.send(uploadCommand);
 }
