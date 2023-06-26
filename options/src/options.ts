@@ -50,6 +50,23 @@ app.use(async (req: any, res, next) => {
   next();
 });
 
+const rateLimit = (key: string, RPM: number) => {
+  return async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    try {
+      await common.ratelimit(mainRedisClient, key, req.userId, RPM);
+    } catch (err) {
+      logger.warn(`${err}`);
+      return next(`Rate Limit Overflow`);
+    }
+
+    next();
+  };
+};
+
 const driver = neo4j.driver(
   `neo4j://neo4j:7687`,
   neo4j.auth.basic(`neo4j`, `password`),
@@ -60,51 +77,45 @@ app.get(`/health`, async (req, res) => {
   res.send(`Health is good.`);
 });
 
-app.post(`/providefeedback`, async (req, res) => {
-  let { feedback_id, score } = req.body;
+app.post(
+  `/providefeedback`,
+  rateLimit(`post_providefeedback`, 20),
+  async (req, res) => {
+    let { feedback_id, score } = req.body;
 
-  feedback_id = parseInt(feedback_id); // TODO send number from ui
+    feedback_id = parseInt(feedback_id); // TODO send number from ui
 
-  const userId: string = req.userId;
+    const userId: string = req.userId;
 
-  try {
-    await common.ratelimit(mainRedisClient, `post_providefeedback`, userId, 20);
-  } catch (err) {
-    res.status(401).json({
-      error: JSON.stringify(err),
-      message: `Rate Limit`,
-    });
-    return;
-  }
+    const createFeedbackRequest = new neo4j_common.CreateFeedbackRequest();
+    createFeedbackRequest.setUserId(userId);
+    createFeedbackRequest.setScore(score);
+    createFeedbackRequest.setFeedbackId(feedback_id);
 
-  const createFeedbackRequest = new neo4j_common.CreateFeedbackRequest();
-  createFeedbackRequest.setUserId(userId);
-  createFeedbackRequest.setScore(score);
-  createFeedbackRequest.setFeedbackId(feedback_id);
+    try {
+      await neo4jRpcClient.createFeedback(
+        createFeedbackRequest,
+        (error: any, response: neo4j_common.StandardResponse) => {
+          if (error) {
+            res.status(401).json({
+              error: JSON.stringify(error),
+              message: `Failed createFeedbackRequest`,
+            });
+          } else {
+            res.status(201).send(`Feedback created.`);
+          }
+        },
+      );
+    } catch (error) {
+      res.status(401).json({
+        error: JSON.stringify(error),
+        message: `failed createFeedbackRequest`,
+      });
+    }
+  },
+);
 
-  try {
-    await neo4jRpcClient.createFeedback(
-      createFeedbackRequest,
-      (error: any, response: neo4j_common.StandardResponse) => {
-        if (error) {
-          res.status(401).json({
-            error: JSON.stringify(error),
-            message: `Failed createFeedbackRequest`,
-          });
-        } else {
-          res.status(201).send(`Feedback created.`);
-        }
-      },
-    );
-  } catch (error) {
-    res.status(401).json({
-      error: JSON.stringify(error),
-      message: `failed createFeedbackRequest`,
-    });
-  }
-});
-
-app.put(`/preferences`, async (req, res) => {
+app.put(`/preferences`, rateLimit(`put_preferences`, 20), async (req, res) => {
   const { attributes = {}, filters = {} } = req.body;
 
   const a_custom: { [key: string]: string } = attributes.custom || {};
@@ -113,16 +124,6 @@ app.put(`/preferences`, async (req, res) => {
   const f_constant: { [key: string]: string } = filters.constant || {};
 
   const userId: string = req.userId;
-
-  try {
-    await common.ratelimit(mainRedisClient, `put_preferences`, userId, 5);
-  } catch (err) {
-    res.status(401).json({
-      error: JSON.stringify(err),
-      message: `Rate Limit`,
-    });
-    return;
-  }
 
   const putUserFiltersRequest = new neo4j_common.PutUserPerferencesRequest();
   putUserFiltersRequest.setUserId(userId);
@@ -170,18 +171,8 @@ app.put(`/preferences`, async (req, res) => {
   }
 });
 
-app.get(`/preferences`, async (req, res) => {
+app.get(`/preferences`, rateLimit(`get_preferences`, 20), async (req, res) => {
   const userId: string = req.userId;
-
-  try {
-    await common.ratelimit(mainRedisClient, `get_preferences`, userId, 5);
-  } catch (err) {
-    res.status(401).json({
-      error: JSON.stringify(err),
-      message: `Rate Limit`,
-    });
-    return;
-  }
 
   const checkUserFiltersRequest = new neo4j_common.GetUserPerferencesRequest();
   checkUserFiltersRequest.setUserId(userId);
@@ -232,18 +223,8 @@ app.get(`/preferences`, async (req, res) => {
   return;
 });
 
-app.get(`/history`, async (req, res) => {
+app.get(`/history`, rateLimit(`get_history`, 20), async (req, res) => {
   const userId: string = req.userId;
-
-  try {
-    await common.ratelimit(mainRedisClient, `get_history`, userId, 20);
-  } catch (err) {
-    res.status(401).json({
-      error: JSON.stringify(err),
-      message: `Rate Limit`,
-    });
-    return;
-  }
 
   const matchHistoryRequest = new neo4j_common.MatchHistoryRequest();
   matchHistoryRequest.setUserId(userId);
@@ -303,32 +284,26 @@ var upload = multer({
     s3: common.s3Client,
     // acl: `public-read`,
     bucket: common.PROFILE_PICTURES_BUCKET,
-    key: function (req, file, cb) {
-      logger.info(`uploading file: ${file}`);
+    key: async function (req, file, cb) {
+      logger.info(`uploading file: ${JSON.stringify(file)}`);
       cb(null, req.userId);
     },
   }),
 });
 
-app.put(`/profile`, upload.single(`file`), async (req, res) => {
-  const userId: string = req.userId;
+app.put(
+  `/profile`,
+  rateLimit(`put_profile`, 2),
+  upload.single(`file`),
+  async (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ error: `No file uploaded` });
+    }
+    const file = req.file as Express.MulterS3.File;
 
-  try {
-    await common.ratelimit(mainRedisClient, `put_profile`, userId, 10);
-  } catch (err) {
-    res.status(401).json({
-      error: JSON.stringify(err),
-      message: `Rate Limit`,
-    });
-    return;
-  }
-  if (!req.file) {
-    return res.status(400).json({ error: `No file uploaded` });
-  }
-  const file = req.file as Express.MulterS3.File;
-
-  return res.json({ location: file.location });
-});
+    return res.json({ location: file.location });
+  },
+);
 
 app.listen(port, () => {
   logger.info(`Listening on port ${port}`);
