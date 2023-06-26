@@ -118,7 +118,7 @@ class PreferencesController extends GetxController with StateMixin {
     }
 
     var imageRef = (await FirebaseStorage.instance.ref('uploads/$fileName'));
-    imageRef.putData(bytes);
+    await imageRef.putData(bytes);
 
     User currentUser = authService.getUser();
 

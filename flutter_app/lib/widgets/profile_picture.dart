@@ -12,11 +12,25 @@ class ProfilePicture extends GetView<PreferencesController> {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () async {
-        await controller.updateProfilePicture();
-      },
-      child: const Text('Upload profile'),
+    String profilePhoto = controller.authService.getUser().photoURL ??
+        "https://www.pngarts.com/files/10/Default-Profile-Picture-PNG-Free-Download.png";
+
+    print("photo: ${profilePhoto}");
+
+    return Row(
+      children: [
+        TextButton(
+          onPressed: () async {
+            await controller.updateProfilePicture();
+          },
+          child: const Text('Upload profile'),
+        ),
+        Image.network(
+          profilePhoto,
+          width: 200,
+          height: 200,
+        ),
+      ],
     );
   }
 }
