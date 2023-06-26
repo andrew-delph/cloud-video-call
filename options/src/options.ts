@@ -28,7 +28,10 @@ app.use(cors());
 const router = express.Router();
 
 // autorize all apis
-router.use(async (req: any, res, next) => {
+app.use(async (req: any, res, next) => {
+  if (req.path.includes(`health`)) {
+    return next();
+  }
   const auth = req.headers.authorization;
 
   if (!auth) {
