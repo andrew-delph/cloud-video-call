@@ -327,6 +327,25 @@ app.post(`/nukedata`, async (req, res) => {
   res.status(200).send(`ITS DONE.`);
 });
 
+app.post(`/upload`, async (req, res) => {
+  // TODO REMOVE THIS LOL WHAT THE HECK?
+
+  try {
+    await common.uploadProfilePicture(
+      `test${Math.random()}`,
+      `hehehehe${Math.random()}`,
+    );
+    res.status(200).send(`ITS DONE.`);
+  } catch (err) {
+    res
+      .status(500)
+      .send(
+        `${err} creds: "${process.env.AWS_ACCESS_KEY_ID!}" "${process.env
+          .AWS_SECRET_ACCESS_KEY!}"`,
+      );
+  }
+});
+
 app.listen(port, () => {
   logger.info(`Listening on port ${port}`);
 });
