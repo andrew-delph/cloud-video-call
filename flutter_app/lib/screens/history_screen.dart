@@ -42,8 +42,8 @@ class HistoryScreen extends GetView<HistoryController> {
               Text('$error'),
             ],
           ),
-          onEmpty: Column(
-            children: const [
+          onEmpty: const Column(
+            children: [
               Text("No History."),
             ],
           ),

@@ -1,4 +1,8 @@
 // Package imports:
+
+// Package imports:
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 
 // Project imports:
@@ -100,5 +104,19 @@ class PreferencesController extends GetxController with StateMixin {
         .catchError((error) {
           change(null, status: RxStatus.error(error.toString()));
         });
+  }
+
+  Future<void> updateProfilePicture() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    var bytes = result?.files.first.bytes;
+    var fileName = result?.files.first.name;
+
+    if (bytes != null && fileName != null) {
+      // Upload file
+      await FirebaseStorage.instance.ref('uploads/$fileName').putData(bytes);
+    } else {
+      print("something was null");
+    }
   }
 }

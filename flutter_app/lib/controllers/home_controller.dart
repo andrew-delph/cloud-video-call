@@ -17,7 +17,6 @@ import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
 import '../services/options_service.dart';
 import '../utils/utils.dart';
-import '../widgets/feedback_dialog.dart';
 
 class HomeController extends GetxController with StateMixin {
   LocalPreferences localPreferences = Get.find();
@@ -205,6 +204,7 @@ class HomeController extends GetxController with StateMixin {
       await endChat(!isInChat());
     });
     mySocket.onDisconnect((details) {
+      print("onDisconnect: $details");
       // if not disconnected by the client.
       if (!"$details".contains("client")) {
         initSocket();

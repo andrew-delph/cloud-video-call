@@ -13,6 +13,7 @@ import '../controllers/options_controller.dart';
 import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
 import '../widgets/app_menu_widget.dart';
+import '../widgets/profile_picture.dart';
 
 class OptionsScreen extends GetView<PreferencesController> {
   const OptionsScreen({super.key});
@@ -52,9 +53,9 @@ class OptionsScreen extends GetView<PreferencesController> {
                 child: SingleChildScrollView(
                     child: Column(
                   children: [
-                    Column(
+                    const Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text(
                           "Profile",
                           style: TextStyle(
@@ -149,8 +150,8 @@ class UserProfileWidget extends GetView<PreferencesController> {
     return Column(
       children: [
         user.isAnonymous
-            ? Row(
-                children: const [Text("This user is Anonymous.")],
+            ? const Row(
+                children: [Text("This user is Anonymous.")],
               )
             : Column(children: [
                 Row(
@@ -168,7 +169,8 @@ class UserProfileWidget extends GetView<PreferencesController> {
             const Text("Priority: "),
             Text("${controller.priority()}")
           ],
-        )
+        ),
+        const ProfilePicture()
       ],
     );
   }
