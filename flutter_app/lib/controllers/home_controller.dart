@@ -188,6 +188,7 @@ class HomeController extends GetxController with StateMixin {
     });
 
     mySocket.on('established', (data) async {
+      print("established");
       change(null, status: RxStatus.success());
     });
 
