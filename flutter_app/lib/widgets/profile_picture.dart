@@ -12,28 +12,29 @@ class ProfilePicture extends GetView<PreferencesController> {
 
   @override
   Widget build(BuildContext context) {
-    String profilePhoto = controller.authService.getUser().photoURL ??
-        "https://www.pngarts.com/files/10/Default-Profile-Picture-PNG-Free-Download.png";
+    return Obx(() {
+      String? profilePhoto = controller.authService.user()?.photoURL;
 
-    print("photo: ${profilePhoto}");
-
-    return Row(
-      children: [
-        TextButton(
-          onPressed: () async {
-            await controller.updateProfilePicture();
-          },
-          child: const Text('Upload profile'),
-        ),
-        Container(
-          height: 100,
-          width: 100,
-          child: Image(
-              image: NetworkImage(
-            profilePhoto,
-          )),
-        ),
-      ],
-    );
+      return Row(
+        children: [
+          TextButton(
+            onPressed: () async {
+              await controller.updateProfilePicture();
+            },
+            child: const Text('Upload profile'),
+          ),
+          SizedBox(
+            height: 100,
+            width: 100,
+            child: profilePhoto != null
+                ? Image(
+                    image: NetworkImage(
+                    profilePhoto,
+                  ))
+                : const Text("No profile Picture"),
+          ),
+        ],
+      );
+    });
   }
 }
