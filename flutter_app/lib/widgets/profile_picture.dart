@@ -20,7 +20,8 @@ class ProfilePicture extends GetView<PreferencesController> {
 
   @override
   Widget build(BuildContext context) {
-    var imageRef = (FirebaseStorage.instance.ref('profile-picture/$userId'));
+    var imageRef =
+        (FirebaseStorage.instance.ref('profile-picture/${userId}_100x100'));
 
     imageRef.getData().then((value) => bytes(value)).catchError((onError) {
       print("profile picture not found");

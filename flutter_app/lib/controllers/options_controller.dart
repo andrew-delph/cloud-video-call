@@ -125,7 +125,7 @@ class PreferencesController extends GetxController with StateMixin {
     var fileName = currentUser.uid;
 
     var imageRef = (FirebaseStorage.instance.ref('profile-picture/$fileName'));
-    await imageRef.putData(bytes);
+    await imageRef.putData(bytes, SettableMetadata(contentType: "image/png"));
 
     print("uploadTask: ${imageRef.fullPath}");
 
