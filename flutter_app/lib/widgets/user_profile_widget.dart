@@ -2,6 +2,7 @@
 import 'dart:typed_data';
 
 // Flutter imports:
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -24,6 +25,11 @@ class UserProfileWidget extends GetView<PreferencesController> {
     return Obx(() {
       User? user = authService.user();
 
+      final TextEditingController displayNameController =
+          TextEditingController(text: controller.userData().displayName);
+      final TextEditingController descriptionController =
+          TextEditingController(text: controller.userData().description);
+
       if (user == null) return const Text("Failed to load user.");
 
       return Column(
@@ -33,18 +39,33 @@ class UserProfileWidget extends GetView<PreferencesController> {
               const Row(
                 children: [Text("This user is Anonymous.")],
               ),
-            Row(
-              children: [
-                const Text("Display Name: "),
-                Text(controller.displayName())
-              ],
+            TextField(
+              controller: displayNameController,
+              onChanged: (value) => controller.displayName(value),
+              readOnly: !controller.unsavedChanges(),
+              decoration: const InputDecoration(
+                labelText: 'Display Name',
+                hintText: 'Enter name',
+              ),
             ),
-            Row(
-              children: [
-                const Text("Description: "),
-                Text(controller.description())
-              ],
+            TextField(
+              controller: descriptionController,
+              onChanged: (value) => controller.description(value),
+              readOnly: !controller.unsavedChanges(),
+              decoration: const InputDecoration(
+                labelText: 'Description',
+                hintText: 'Enter description',
+              ),
             ),
+            IconButton(
+                onPressed: () async {
+                  if (controller.unsavedChanges()) {
+                    controller.userData(await controller.updateMyUserData());
+                  }
+                  controller.unsavedChanges.toggle();
+                },
+                icon:
+                    Icon(controller.unsavedChanges() ? Icons.save : Icons.edit))
           ]),
           Row(
             children: [

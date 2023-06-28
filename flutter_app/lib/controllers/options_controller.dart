@@ -4,6 +4,7 @@
 import 'dart:typed_data';
 
 // Package imports:
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -12,21 +13,25 @@ import 'package:get/get.dart';
 // Project imports:
 import 'package:flutter_app/utils/utils.dart';
 import '../models/preferences_model.dart';
+import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/options_service.dart';
 
 class PreferencesController extends GetxController with StateMixin {
   final OptionsService optionsService;
+  final AuthService authService = Get.find();
+
   final RxMap<String, String> constantAttributes = <String, String>{}.obs;
   final RxMap<String, String> constantFilters = <String, String>{}.obs;
   final RxMap<String, String> customAttributes = <String, String>{}.obs;
   final RxMap<String, String> customFilters = <String, String>{}.obs;
   final RxDouble priority = (0.0).obs;
   final RxBool unsavedChanges = false.obs;
-  final AuthService authService = Get.find();
 
-  RxString displayName = "N/A".obs;
-  RxString description = "N/A".obs;
+  Rx<String?> displayName = Rx(null);
+  Rx<String?> description = Rx(null);
+
+  Rx<UserDataModel> userData = UserDataModel().obs;
 
   PreferencesController(this.optionsService) {
     constantAttributes.listen((p0) {
@@ -57,7 +62,16 @@ class PreferencesController extends GetxController with StateMixin {
       change(null, status: RxStatus.success());
       return;
     }
-    await loadAttributes();
+
+    getMyUserDoc().get().then((get) {
+      if (get.exists) {
+        userData(get.data()!);
+        description(get.data()!.description);
+        displayName(get.data()!.displayName);
+      }
+      print("user data exists: ${get.exists}");
+    });
+    loadAttributes();
   }
 
   Future<void> loadAttributes() async {
@@ -141,5 +155,29 @@ class PreferencesController extends GetxController with StateMixin {
 
     await currentUser.updatePhotoURL(await imageRef.getDownloadURL());
     Get.snackbar("Profile Picture", "Updated.");
+  }
+
+  Future<UserDataModel> updateMyUserData() async {
+    UserDataModel userData =
+        UserDataModel(displayName: displayName(), description: description());
+    await getMyUserDoc().set(userData);
+    return userData;
+  }
+
+  DocumentReference<UserDataModel> getMyUserDoc() {
+    String userId = authService.getUser().uid;
+
+    CollectionReference<UserDataModel> myUserCollection = FirebaseFirestore
+        .instance
+        .collection('users')
+        .withConverter<UserDataModel>(
+          fromFirestore: (snapshots, _) =>
+              UserDataModel.fromJson(snapshots.data()!),
+          toFirestore: (userData, _) => userData.toJson(),
+        );
+
+    DocumentReference<UserDataModel> myUserDoc = myUserCollection.doc(userId);
+
+    return myUserDoc;
   }
 }
