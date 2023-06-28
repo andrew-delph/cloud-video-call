@@ -25,6 +25,7 @@ import Client from 'ioredis';
 import { throttle } from 'lodash';
 import { Server, Socket } from 'socket.io';
 import { v4 as uuid } from 'uuid';
+import moment from 'moment';
 
 const logger = common.getLogger();
 
@@ -75,6 +76,7 @@ io.on(`error`, (err) => {
 });
 
 io.on(`connection`, async (socket) => {
+  const intervals: NodeJS.Timer[] = [];
   socket.emit(
     `message`,
     `I am ${process.env.HOSTNAME} and you are ${socket.data.auth}.`,
@@ -137,6 +139,10 @@ io.on(`connection`, async (socket) => {
     //     io.sockets.sockets.size
     //   } duration: ${Math.round(duration / 1000)}`,
     // );
+
+    for (let interval of intervals) {
+      clearInterval(interval);
+    }
   });
 
   socket.on(`client_host`, (value) => {
@@ -167,6 +173,12 @@ io.on(`connection`, async (socket) => {
   //     }
   //   });
   // }, 1000);
+
+  intervals.push(
+    setInterval(() => {
+      socket.emit(`activity`, `${moment()}`);
+    }, 1000 * 60 * 10),
+  );
 
   const createUserRequest = new CreateUserRequest();
   createUserRequest.setUserId(socket.data.auth);

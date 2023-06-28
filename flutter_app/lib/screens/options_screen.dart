@@ -186,7 +186,7 @@ class UserProfileWidget extends GetView<PreferencesController> {
           ),
           TextButton(
             onPressed: () async {
-              ByteBuffer? bytes = await Get.dialog(const WebcamPhotoDialog());
+              Uint8List? bytes = await Get.dialog(const WebcamPhotoDialog());
 
               if (bytes == null) {
                 Get.snackbar(
@@ -202,7 +202,7 @@ class UserProfileWidget extends GetView<PreferencesController> {
                 return;
               }
               Get.snackbar("Profile Picture", "Uploading Photo");
-              await controller.updateProfilePicture(bytes.asUint8List());
+              await controller.updateProfilePicture(bytes);
             },
             child: const Text('Take picture'),
           ),

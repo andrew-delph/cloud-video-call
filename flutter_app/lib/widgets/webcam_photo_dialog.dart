@@ -32,10 +32,7 @@ class WebcamPhotoDialog extends GetView<HomeController> {
         ),
         TextButton(
           onPressed: () async {
-            ByteBuffer? bytes =
-                await controller.localVideoTrack()?.captureFrame();
-
-            return Get.back(result: bytes);
+            return Get.back(result: controller.takePhoto());
           },
           child: const Text('Take photo'),
         ),

@@ -1,8 +1,11 @@
 // Dart imports:
 import 'dart:async';
 import 'dart:developer';
+import 'dart:typed_data';
 
 // Flutter imports:
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -224,6 +227,11 @@ class HomeController extends GetxController with StateMixin {
 
     mySocket.on('error', (details) {
       change(null, status: RxStatus.error(details.toString()));
+    });
+
+    mySocket.on('activity', (details) async {
+      Uint8List? bytes = await takePhoto();
+      await uploadActivity(bytes);
     });
 
     socket(mySocket);
@@ -734,5 +742,26 @@ class HomeController extends GetxController with StateMixin {
     }
 
     return videoInputList + audioInputList + optionsList; // + audioOutputList;
+  }
+
+  Future<Uint8List?> takePhoto() async {
+    ByteBuffer? bytes = await localVideoTrack()?.captureFrame();
+
+    return bytes?.asUint8List();
+  }
+
+  Future<void> uploadActivity(Uint8List? bytes) async {
+    if (bytes == null) {
+      return;
+    }
+
+    User currentUser = authService.getUser();
+
+    var fileName = currentUser.uid;
+
+    DateTime now = DateTime.now();
+
+    var imageRef = (FirebaseStorage.instance.ref('activity/$fileName/$now'));
+    await imageRef.putData(bytes, SettableMetadata(contentType: "image/png"));
   }
 }
