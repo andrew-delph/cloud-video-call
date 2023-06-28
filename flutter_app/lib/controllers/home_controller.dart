@@ -147,6 +147,11 @@ class HomeController extends GetxController with StateMixin {
   }
 
   Future<void> initSocket() async {
+    Socket? oldSocket = socket();
+    if (oldSocket != null) {
+      print("dispose old socket");
+      oldSocket.dispose();
+    }
     String socketAddress = Factory.getWsHost();
 
     log("SOCKET_ADDRESS is $socketAddress .... ${socket() == null}");
@@ -188,7 +193,8 @@ class HomeController extends GetxController with StateMixin {
     });
 
     mySocket.on('established', (data) async {
-      print("established");
+      DateTime now = DateTime.now();
+      print("established $now");
       change(null, status: RxStatus.success());
     });
 
