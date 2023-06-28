@@ -1,6 +1,8 @@
 // Dart imports:
 
 // Flutter imports:
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -14,6 +16,7 @@ import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
 import '../widgets/app_menu_widget.dart';
 import '../widgets/profile_picture.dart';
+import '../widgets/webcam_photo_dialog.dart';
 
 class OptionsScreen extends GetView<PreferencesController> {
   const OptionsScreen({super.key});
@@ -177,9 +180,32 @@ class UserProfileWidget extends GetView<PreferencesController> {
           ),
           TextButton(
             onPressed: () async {
-              await controller.updateProfilePicture();
+              await controller.updateProfilePicture(null);
             },
             child: const Text('Upload profile'),
+          ),
+          TextButton(
+            onPressed: () async {
+              ByteBuffer? bytes = await Get.dialog(const WebcamPhotoDialog());
+
+              if (bytes == null) {
+                Get.snackbar(
+                  "Profile Picture",
+                  "Failed to take photo.",
+                  snackPosition: SnackPosition.TOP,
+                  backgroundColor: Colors.red.withOpacity(.75),
+                  colorText: Colors.white,
+                  icon: const Icon(Icons.error, color: Colors.white),
+                  shouldIconPulse: true,
+                  barBlur: 20,
+                );
+                return;
+              } else {
+                Get.snackbar("Profile Picture", "Uploading Photo");
+              }
+              await controller.updateProfilePicture(bytes.asUint8List());
+            },
+            child: const Text('Take picture'),
           ),
           ProfilePicture(user.uid)
         ],

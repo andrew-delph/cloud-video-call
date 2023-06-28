@@ -1,6 +1,8 @@
 // Package imports:
 
 // Package imports:
+import 'dart:typed_data';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -107,13 +109,15 @@ class PreferencesController extends GetxController with StateMixin {
         });
   }
 
-  Future<void> updateProfilePicture() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-
-    var bytes = result?.files.first.bytes;
-
+  Future<void> updateProfilePicture(Uint8List? bytes) async {
     if (bytes == null) {
-      throw "something was null";
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+      bytes = result?.files.first.bytes;
+
+      if (bytes == null) {
+        throw "something was null";
+      }
     }
 
     User currentUser = authService.getUser();

@@ -36,7 +36,7 @@ class ProfilePicture extends GetView<PreferencesController> {
             width: 100,
             child: imageBytes != null
                 ? Image(image: MemoryImage(imageBytes))
-                : const Text("No profile Picture"),
+                : const Text("No Profile Picture"),
           ),
         ],
       );
