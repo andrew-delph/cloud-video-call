@@ -140,39 +140,51 @@ class UserProfileWidget extends GetView<PreferencesController> {
   @override
   Widget build(BuildContext context) {
     AuthService authService = Get.find();
-    User? user = authService.user();
 
-    if (user == null) return const Text("Failed to load user.");
+    return Obx(() {
+      User? user = authService.user();
 
-    String? displayName = user.displayName;
-    String? email = user.email;
+      if (user == null) return const Text("Failed to load user.");
 
-    return Column(
-      children: [
-        user.isAnonymous
-            ? const Row(
-                children: [Text("This user is Anonymous.")],
-              )
-            : Column(children: [
-                Row(
-                  children: [
-                    const Text("Display Name: "),
-                    Text(displayName ?? "No display name")
-                  ],
-                ),
-                Row(
-                  children: [const Text("Email: "), Text(email ?? "No email")],
-                ),
-              ]),
-        Row(
-          children: [
-            const Text("Priority: "),
-            Text("${controller.priority()}")
-          ],
-        ),
-        const ProfilePicture()
-      ],
-    );
+      String? displayName = user.displayName;
+      String? email = user.email;
+
+      return Column(
+        children: [
+          user.isAnonymous
+              ? const Row(
+                  children: [Text("This user is Anonymous.")],
+                )
+              : Column(children: [
+                  Row(
+                    children: [
+                      const Text("Display Name: "),
+                      Text(displayName ?? "No display name")
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Text("Email: "),
+                      Text(email ?? "No email")
+                    ],
+                  ),
+                ]),
+          Row(
+            children: [
+              const Text("Priority: "),
+              Text("${controller.priority()}")
+            ],
+          ),
+          TextButton(
+            onPressed: () async {
+              await controller.updateProfilePicture();
+            },
+            child: const Text('Upload profile'),
+          ),
+          ProfilePicture(user.uid)
+        ],
+      );
+    });
   }
 }
 

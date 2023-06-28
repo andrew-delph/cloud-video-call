@@ -111,16 +111,17 @@ class PreferencesController extends GetxController with StateMixin {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
 
     var bytes = result?.files.first.bytes;
-    var fileName = result?.files.first.name;
 
-    if (bytes == null || fileName == null) {
+    if (bytes == null) {
       throw "something was null";
     }
 
-    var imageRef = (await FirebaseStorage.instance.ref('uploads/$fileName'));
-    await imageRef.putData(bytes);
-
     User currentUser = authService.getUser();
+
+    var fileName = currentUser.uid;
+
+    var imageRef = (FirebaseStorage.instance.ref('profile-picture/$fileName'));
+    await imageRef.putData(bytes);
 
     print("uploadTask: ${imageRef.fullPath}");
 

@@ -34,6 +34,8 @@ import {
 } from 'common-messaging';
 import * as neo4j from 'neo4j-driver';
 import { v4 } from 'uuid';
+import { initializeApp, getApp } from 'firebase-admin/app';
+import { Auth } from 'firebase-admin/auth';
 
 const promClient = new common.PromClient(`neo4j-grpc-server`);
 
@@ -48,6 +50,10 @@ export const userPreferencesCacheEx = 60 * 60 * 2;
 export const compareUserFiltersCacheEx = 10;
 
 var server = new grpc.Server();
+
+const firebaseApp = initializeApp();
+
+const firebaseAuth = new Auth();
 
 type Client = ReturnType<typeof common.createRedisClient>;
 export const redisClient: Client = common.createRedisClient();

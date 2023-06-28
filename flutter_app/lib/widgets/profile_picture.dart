@@ -1,4 +1,8 @@
 // Flutter imports:
+import 'dart:typed_data';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -8,29 +12,30 @@ import 'package:get/get.dart';
 import '../controllers/options_controller.dart';
 
 class ProfilePicture extends GetView<PreferencesController> {
-  const ProfilePicture({super.key});
+  ProfilePicture(this.userId, {super.key});
+
+  final String userId;
+
+  final Rx<Uint8List?> bytes = Rx<Uint8List?>(null);
 
   @override
   Widget build(BuildContext context) {
+    var imageRef = (FirebaseStorage.instance.ref('profile-picture/$userId'));
+
+    imageRef.getData().then((value) => bytes(value)).catchError((onError) {
+      print("profile picture not found");
+    });
+
     return Obx(() {
-      String? profilePhoto = controller.authService.user()?.photoURL;
+      Uint8List? imageBytes = bytes();
 
       return Row(
         children: [
-          TextButton(
-            onPressed: () async {
-              await controller.updateProfilePicture();
-            },
-            child: const Text('Upload profile'),
-          ),
           SizedBox(
             height: 100,
             width: 100,
-            child: profilePhoto != null
-                ? Image(
-                    image: NetworkImage(
-                    profilePhoto,
-                  ))
+            child: imageBytes != null
+                ? Image(image: MemoryImage(imageBytes))
                 : const Text("No profile Picture"),
           ),
         ],
