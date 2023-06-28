@@ -200,9 +200,8 @@ class UserProfileWidget extends GetView<PreferencesController> {
                   barBlur: 20,
                 );
                 return;
-              } else {
-                Get.snackbar("Profile Picture", "Uploading Photo");
               }
+              Get.snackbar("Profile Picture", "Uploading Photo");
               await controller.updateProfilePicture(bytes.asUint8List());
             },
             child: const Text('Take picture'),
