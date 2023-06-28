@@ -1,12 +1,16 @@
+// Dart imports:
 import 'dart:typed_data';
 
-import 'package:firebase_auth/firebase_auth.dart';
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_app/widgets/profile_picture.dart';
-import 'package:flutter_app/widgets/webcam_photo_dialog.dart';
+
+// Package imports:
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
+// Project imports:
+import 'package:flutter_app/widgets/profile_picture.dart';
+import 'package:flutter_app/widgets/webcam_photo_dialog.dart';
 import '../controllers/options_controller.dart';
 import '../services/auth_service.dart';
 

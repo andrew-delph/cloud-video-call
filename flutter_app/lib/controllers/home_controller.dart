@@ -4,11 +4,11 @@ import 'dart:developer';
 import 'dart:typed_data';
 
 // Flutter imports:
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart' hide navigator;
 import 'package:socket_io_client/socket_io_client.dart' as io;

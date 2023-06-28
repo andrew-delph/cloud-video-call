@@ -1,22 +1,18 @@
 // Dart imports:
 
 // Flutter imports:
-import 'dart:typed_data';
 
+// Flutter imports:
 import 'package:flutter/material.dart';
 
 // Package imports:
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 // Project imports:
 import '../controllers/options_controller.dart';
-import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
 import '../widgets/app_menu_widget.dart';
-import '../widgets/profile_picture.dart';
-import '../widgets/webcam_photo_dialog.dart';
 
 class OptionsScreen extends GetView<PreferencesController> {
   const OptionsScreen({super.key});

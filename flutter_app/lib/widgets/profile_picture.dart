@@ -1,11 +1,11 @@
-// Flutter imports:
+// Dart imports:
 import 'dart:typed_data';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+// Flutter imports:
 import 'package:flutter/material.dart';
 
 // Package imports:
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 
 // Project imports:

@@ -1,10 +1,10 @@
 // Flutter imports:
-import 'dart:typed_data';
 
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 // Package imports:
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart';
 
 // Project imports:
@@ -20,7 +20,7 @@ class WebcamPhotoDialog extends GetView<HomeController> {
     controller.initLocalStream();
     return AlertDialog(
       title: const Text('Make a profile picture from your webcam.'),
-      content: Container(
+      content: SizedBox(
         width: 100,
         height: 100,
         child: RTCVideoView(controller.localVideoRenderer()),
