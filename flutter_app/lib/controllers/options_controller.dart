@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get/get.dart';
 
 // Project imports:
@@ -119,6 +120,15 @@ class PreferencesController extends GetxController with StateMixin {
       throw "bytes is null";
     }
 
+    // uncomment pica.min.js for index.html
+    // print("before compression: ${bytes.length}");
+    // bytes = await FlutterImageCompress.compressWithList(
+    //   bytes,
+    //   minWidth: 400,
+    //   minHeight: 400,
+    // );
+    // print("after compression: ${bytes.length}");
+
     User currentUser = authService.getUser();
 
     var fileName = currentUser.uid;
@@ -126,12 +136,7 @@ class PreferencesController extends GetxController with StateMixin {
     var imageRef = (FirebaseStorage.instance.ref('profile-picture/$fileName'));
     await imageRef.putData(bytes, SettableMetadata(contentType: "image/png"));
 
-    print("uploadTask: ${imageRef.fullPath}");
-
-    print("downloadURL: ${await imageRef.getDownloadURL()}");
-
     await currentUser.updatePhotoURL(await imageRef.getDownloadURL());
     Get.snackbar("Profile Picture", "Updated.");
-    // currentUser.updatePhotoURL(photoURL)
   }
 }
