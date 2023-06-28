@@ -26,29 +26,26 @@ class UserProfileWidget extends GetView<PreferencesController> {
 
       if (user == null) return const Text("Failed to load user.");
 
-      String? displayName = user.displayName;
-      String? email = user.email;
-
       return Column(
         children: [
-          user.isAnonymous
-              ? const Row(
-                  children: [Text("This user is Anonymous.")],
-                )
-              : Column(children: [
-                  Row(
-                    children: [
-                      const Text("Display Name: "),
-                      Text(displayName ?? "No display name")
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Text("Email: "),
-                      Text(email ?? "No email")
-                    ],
-                  ),
-                ]),
+          Column(children: [
+            if (user.isAnonymous)
+              const Row(
+                children: [Text("This user is Anonymous.")],
+              ),
+            Row(
+              children: [
+                const Text("Display Name: "),
+                Text(controller.displayName())
+              ],
+            ),
+            Row(
+              children: [
+                const Text("Description: "),
+                Text(controller.description())
+              ],
+            ),
+          ]),
           Row(
             children: [
               const Text("Priority: "),

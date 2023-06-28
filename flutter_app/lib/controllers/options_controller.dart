@@ -25,8 +25,8 @@ class PreferencesController extends GetxController with StateMixin {
   final RxBool unsavedChanges = false.obs;
   final AuthService authService = Get.find();
 
-  RxString name = "".obs;
-  RxString description = "".obs;
+  RxString displayName = "N/A".obs;
+  RxString description = "N/A".obs;
 
   PreferencesController(this.optionsService) {
     constantAttributes.listen((p0) {
