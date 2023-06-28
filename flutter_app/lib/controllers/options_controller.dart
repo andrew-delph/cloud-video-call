@@ -112,12 +112,11 @@ class PreferencesController extends GetxController with StateMixin {
   Future<void> updateProfilePicture(Uint8List? bytes) async {
     if (bytes == null) {
       FilePickerResult? result = await FilePicker.platform.pickFiles();
-
       bytes = result?.files.first.bytes;
+    }
 
-      if (bytes == null) {
-        throw "something was null";
-      }
+    if (bytes == null) {
+      throw "bytes is null";
     }
 
     User currentUser = authService.getUser();
@@ -132,7 +131,7 @@ class PreferencesController extends GetxController with StateMixin {
     print("downloadURL: ${await imageRef.getDownloadURL()}");
 
     await currentUser.updatePhotoURL(await imageRef.getDownloadURL());
-
+    Get.snackbar("Profile Picture", "Updated.");
     // currentUser.updatePhotoURL(photoURL)
   }
 }
