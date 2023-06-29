@@ -689,8 +689,6 @@ const getMatchHistory = async (
 
   const skip = page * limit;
 
-  logger.warn(`get history. limit: ${limit} page: ${page} skip: ${skip}`);
-
   const reply = new MatchHistoryResponse();
 
   const result: any = await session.run(
@@ -706,7 +704,7 @@ const getMatchHistory = async (
     SKIP ${skip}
     LIMIT ${limit}
     `,
-    { userId},
+    { userId },
   );
 
   await session.close();

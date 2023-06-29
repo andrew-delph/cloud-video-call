@@ -232,10 +232,6 @@ app.get(`/history`, rateLimit(`get_history`, 20), async (req, res) => {
   const limitInt = common.tryParseInt(limit, 5);
   const pageInt = common.tryParseInt(page, 0);
 
-  logger.warn(
-    `get history. limit: ${limit} page: ${page} limitInt: ${limitInt} pageInt: ${pageInt}`,
-  );
-
   const matchHistoryRequest = new neo4j_common.MatchHistoryRequest();
   matchHistoryRequest.setUserId(userId);
   matchHistoryRequest.setLimit(limitInt);
