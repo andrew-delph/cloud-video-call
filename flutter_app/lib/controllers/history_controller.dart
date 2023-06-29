@@ -1,8 +1,10 @@
 // Package imports:
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
 // Project imports:
 import '../models/history_model.dart';
+import '../models/user_model.dart';
 import '../services/options_service.dart';
 
 class HistoryController extends GetxController with StateMixin {
@@ -42,5 +44,22 @@ class HistoryController extends GetxController with StateMixin {
       print("history error: $error");
       change(null, status: RxStatus.error(error.toString()));
     }).then((value) => loadHistory());
+  }
+
+  Future<UserDataModel?> getUserData(String userId) async {
+    CollectionReference<UserDataModel> myUserCollection = FirebaseFirestore
+        .instance
+        .collection('users')
+        .withConverter<UserDataModel>(
+          fromFirestore: (snapshots, _) =>
+              UserDataModel.fromJson(snapshots.data()!),
+          toFirestore: (userData, _) => userData.toJson(),
+        );
+
+    DocumentReference<UserDataModel> myUserDoc = myUserCollection.doc(userId);
+
+    UserDataModel? userData = (await myUserDoc.get()).data();
+
+    return userData;
   }
 }

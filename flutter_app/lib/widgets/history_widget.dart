@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:flutter_app/widgets/profile_picture.dart';
 import '../controllers/history_controller.dart';
 import '../models/history_model.dart';
+import '../models/user_model.dart';
 
 // Package imports:
 
@@ -38,10 +39,12 @@ enum RelationShipState { friends, blocked, pending, none }
 
 class HistoryItemWidget extends GetView<HistoryController> {
   final HistoryItemModel historyItem;
-  const HistoryItemWidget({
+  HistoryItemWidget({
     Key? key,
     required this.historyItem,
   }) : super(key: key);
+
+  final Rx<UserDataModel?> userData = Rx(null);
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +58,6 @@ class HistoryItemWidget extends GetView<HistoryController> {
     } else {
       relationShipState = RelationShipState.none;
     }
-
     DateTime parsedTime = DateTime.parse('${historyItem.createTime}');
     DateTime currentTime = DateTime.now();
     String timeValue =
@@ -69,70 +71,81 @@ class HistoryItemWidget extends GetView<HistoryController> {
     } else if (currentTime.difference(parsedTime).inMinutes > 1) {
       timeValue = "${currentTime.difference(parsedTime).inMinutes} mins";
     }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+
+    controller
+        .getUserData(historyItem.userId2!)
+        .then((value) => userData(value));
+
+    return Obx(() => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [Text("User: ${historyItem.userId2}")],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [Text("time: $timeValue ago")],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [Text("relationShipState: $relationShipState")],
-        ),
-        if (relationShipState == RelationShipState.friends)
-          ElevatedButton(
-            onPressed: () async {
-              // Action to perform when the button is pressed
-              await controller.updateFeedback(historyItem.feedbackId!, 0);
-            },
-            child: const Text('Remove Friend'),
-          ),
-        if (relationShipState == RelationShipState.blocked)
-          ElevatedButton(
-            onPressed: () async {
-              // Action to perform when the button is pressed
-              print('Button Pressed');
-              await controller.updateFeedback(historyItem.feedbackId!, 0);
-            },
-            child: const Text('Unblock'),
-          ),
-        if (relationShipState == RelationShipState.pending)
-          ElevatedButton(
-            onPressed: () async {
-              // Action to perform when the button is pressed
-              print('Button Pressed');
-              await controller.updateFeedback(historyItem.feedbackId!, 0);
-            },
-            child: const Text('Cancel Friend Request'),
-          ),
-        if (relationShipState == RelationShipState.none)
-          Row(
-            children: [
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [Text("User: ${userData()?.displayName}")],
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [Text("Description: ${userData()?.description}")],
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [Text("time: $timeValue ago")],
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [Text("relationShipState: $relationShipState")],
+            ),
+            if (relationShipState == RelationShipState.friends)
               ElevatedButton(
                 onPressed: () async {
                   // Action to perform when the button is pressed
-                  print('Button Pressed');
-                  await controller.updateFeedback(historyItem.feedbackId!, 5);
+                  await controller.updateFeedback(historyItem.feedbackId!, 0);
                 },
-                child: const Text('Send Friend Request'),
+                child: const Text('Remove Friend'),
               ),
+            if (relationShipState == RelationShipState.blocked)
               ElevatedButton(
                 onPressed: () async {
                   // Action to perform when the button is pressed
                   print('Button Pressed');
-                  await controller.updateFeedback(historyItem.feedbackId!, -5);
+                  await controller.updateFeedback(historyItem.feedbackId!, 0);
                 },
-                child: const Text('Block'),
-              )
-            ],
-          ),
-        ProfilePicture(historyItem.userId2!)
-      ],
-    );
+                child: const Text('Unblock'),
+              ),
+            if (relationShipState == RelationShipState.pending)
+              ElevatedButton(
+                onPressed: () async {
+                  // Action to perform when the button is pressed
+                  print('Button Pressed');
+                  await controller.updateFeedback(historyItem.feedbackId!, 0);
+                },
+                child: const Text('Cancel Friend Request'),
+              ),
+            if (relationShipState == RelationShipState.none)
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      // Action to perform when the button is pressed
+                      print('Button Pressed');
+                      await controller.updateFeedback(
+                          historyItem.feedbackId!, 5);
+                    },
+                    child: const Text('Send Friend Request'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      // Action to perform when the button is pressed
+                      print('Button Pressed');
+                      await controller.updateFeedback(
+                          historyItem.feedbackId!, -5);
+                    },
+                    child: const Text('Block'),
+                  )
+                ],
+              ),
+            ProfilePicture(historyItem.userId2!)
+          ],
+        ));
   }
 }
