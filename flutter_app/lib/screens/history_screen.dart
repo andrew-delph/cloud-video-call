@@ -32,6 +32,12 @@ class HistoryScreen extends GetView<HistoryController> {
                 controller.nextPage();
               },
             ),
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                controller.loadHistory();
+              },
+            ),
           ],
         ));
     return AppMenu(
