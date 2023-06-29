@@ -37,6 +37,9 @@ class HomeController extends GetxController with StateMixin {
   Rx<MediaStreamTrack?> localVideoTrack = Rx(null);
   Rx<MediaStreamTrack?> localAudioTrack = Rx(null);
 
+  Rx<MediaStreamTrack?> remoteVideoTrack = Rx(null);
+  Rx<MediaStreamTrack?> remoteAudioTrack = Rx(null);
+
   Rx<io.Socket?> socket = Rx(null);
   String? feedbackId;
 
@@ -57,6 +60,9 @@ class HomeController extends GetxController with StateMixin {
     super.onInit();
 
     remoteMediaStream.listen((remoteMediaStream) {
+      log("remoteMediaStream changed!");
+      remoteVideoTrack(remoteMediaStream?.getVideoTracks().firstOrNull);
+      remoteAudioTrack(remoteMediaStream?.getAudioTracks().firstOrNull);
       remoteVideoRenderer.update((remoteVideoRenderer) async {
         await remoteVideoRenderer!.initialize();
         remoteVideoRenderer.srcObject = remoteMediaStream;
@@ -64,9 +70,9 @@ class HomeController extends GetxController with StateMixin {
     });
 
     localMediaStream.listen((localMediaStream) async {
-      localVideoTrack(localMediaStream?.getVideoTracks()[0]);
-      localAudioTrack(localMediaStream?.getAudioTracks()[0]);
       log("localMediaStream changed!");
+      localVideoTrack(localMediaStream?.getVideoTracks().firstOrNull);
+      localAudioTrack(localMediaStream?.getAudioTracks().firstOrNull);
       localVideoRenderer.update((localVideoRenderer) {
         localVideoRenderer?.initialize().then((_) {
           localVideoRenderer.srcObject = localMediaStream;

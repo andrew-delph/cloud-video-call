@@ -26,7 +26,7 @@ dev_dependencies:
     sdk: flutter
   import_sorter: ^4.6.0
 environment:
-  sdk: '>=2.18.6 <3.0.0'
+  sdk: '>=3.0.0'
 flutter:
   uses-material-design: true
 name: flutter_app
