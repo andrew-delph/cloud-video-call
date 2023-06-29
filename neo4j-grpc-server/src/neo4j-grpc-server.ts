@@ -51,9 +51,9 @@ export const compareUserFiltersCacheEx = 10;
 
 var server = new grpc.Server();
 
-const firebaseApp = initializeApp();
+// const firebaseApp = initializeApp();
 
-const firebaseAuth = new Auth();
+// const firebaseAuth = new Auth();
 
 type Client = ReturnType<typeof common.createRedisClient>;
 export const redisClient: Client = common.createRedisClient();
@@ -684,6 +684,13 @@ const getMatchHistory = async (
   const start_time = performance.now();
   const session = driver.session();
   const userId = call.request.getUserId();
+  const page = common.tryParseInt(call.request.getPage(), 0);
+  const limit = common.tryParseInt(call.request.getLimit(), 5);
+
+  const skip = page * limit;
+
+  logger.warn(`get history. limit: ${limit} page: ${page} skip: ${skip}`);
+
   const reply = new MatchHistoryResponse();
 
   const result: any = await session.run(
@@ -696,9 +703,10 @@ const getMatchHistory = async (
     EXISTS((n1)-[:NEGATIVE]-(n2)) AS negative,
     id(r1) as feedbackId
     ORDER by r1.createDate DESC
-    LIMIT 10
+    SKIP ${skip}
+    LIMIT ${limit}
     `,
-    { userId },
+    { userId},
   );
 
   await session.close();

@@ -16,37 +16,60 @@ class HistoryScreen extends GetView<HistoryController> {
 
   @override
   Widget build(BuildContext context) {
+    var paginationBar = Obx(() => Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.remove_circle),
+              onPressed: () {
+                controller.prevPage();
+              },
+            ),
+            Text("Page: ${controller.page()}"),
+            IconButton(
+              icon: const Icon(Icons.add_circle),
+              onPressed: () {
+                controller.nextPage();
+              },
+            ),
+          ],
+        ));
     return AppMenu(
         title: 'History',
-        body: controller.obx(
-          (state) => SingleChildScrollView(
-              child: Center(
-                  child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text(
-                "History",
-                style: TextStyle(
-                  fontSize: 35.0,
-                  fontWeight: FontWeight.bold,
-                ),
+        body: SingleChildScrollView(
+            child: Center(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            const Text(
+              "History",
+              style: TextStyle(
+                fontSize: 35.0,
+                fontWeight: FontWeight.bold,
               ),
-              const Divider(),
-              HistoryWidget(historyModel: controller.historyModel())
-            ],
-          ))),
-          onLoading: const CircularProgressIndicator(),
-          onError: (error) => Column(
-            children: [
-              const Text("History Error."),
-              Text('$error'),
-            ],
-          ),
-          onEmpty: const Column(
-            children: [
-              Text("No History."),
-            ],
-          ),
-        ));
+            ),
+            const Divider(),
+            controller.obx(
+              (state) => Obx(() => Column(children: [
+                    paginationBar,
+                    const Divider(),
+                    HistoryWidget(historyModel: controller.historyModel())
+                  ])),
+              onLoading: const CircularProgressIndicator(),
+              onError: (error) => Column(
+                children: [
+                  const Text("History Error."),
+                  Text('$error'),
+                ],
+              ),
+              onEmpty: Column(
+                children: [
+                  paginationBar,
+                  const Divider(),
+                  const Text("No History."),
+                ],
+              ),
+            )
+          ]),
+        )));
   }
 }

@@ -13,18 +13,26 @@ class HistoryController extends GetxController with StateMixin {
   RxBool unsavedChanges = false.obs;
   RxBool loading = false.obs;
 
+  RxInt page = 0.obs;
+
+  RxInt limit = 5.obs;
+
   HistoryController(this.optionsService);
 
   @override
   onInit() async {
     super.onInit();
     await loadHistory();
+
+    page.listen((p0) async {
+      await loadHistory();
+    });
   }
 
   loadHistory() async {
     change(null, status: RxStatus.loading());
     await optionsService
-        .getHistory()
+        .getHistory(page(), limit())
         .then((response) => historyModel(response.body))
         .then((_) {
       if (historyModel().matchHistoryList.isEmpty) {
@@ -61,5 +69,16 @@ class HistoryController extends GetxController with StateMixin {
     UserDataModel? userData = (await myUserDoc.get()).data();
 
     return userData;
+  }
+
+  void nextPage() {
+    page(page() + 1);
+  }
+
+  void prevPage() {
+    var currentPage = page();
+    if (currentPage > 0) {
+      page(currentPage - 1);
+    }
   }
 }

@@ -20,8 +20,13 @@ class OptionsService extends ApiService {
   Future<Response> updatePreferences(dynamic body) =>
       put('/preferences', body, contentType: 'application/json');
 
-  Future<Response<HistoryModel>> getHistory() => get('/history',
-      contentType: 'application/json', decoder: HistoryModel.fromJson);
+  Future<Response<HistoryModel>> getHistory(int page, int limit) {
+    Map<String, String> query = {"page": "$page", "limit": "$limit"};
+    return get('/history',
+        query: query,
+        contentType: 'application/json',
+        decoder: HistoryModel.fromJson);
+  }
 
   Future<Response> updateFeedback(dynamic body) =>
       post('/providefeedback', body, contentType: 'application/json');

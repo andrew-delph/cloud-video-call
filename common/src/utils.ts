@@ -271,3 +271,8 @@ export function shuffleArray(array: any[]) {
   }
   return array;
 }
+
+export function tryParseInt(value: any, defaultValue: number) {
+  const parsedValue = parseInt(value, 10);
+  return isNaN(parsedValue) ? defaultValue : parsedValue;
+}

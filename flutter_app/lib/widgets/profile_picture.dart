@@ -1,4 +1,5 @@
 // Dart imports:
+import 'dart:developer';
 import 'dart:typed_data';
 
 // Flutter imports:
@@ -24,7 +25,7 @@ class ProfilePicture extends GetView<PreferencesController> {
         (FirebaseStorage.instance.ref('profile-picture/${userId}_100x100'));
 
     imageRef.getData().then((value) => bytes(value)).catchError((onError) {
-      print("profile picture not found");
+      log("profile picture not found");
     });
 
     return Obx(() {

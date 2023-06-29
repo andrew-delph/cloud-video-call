@@ -150,6 +150,8 @@ message CreateFeedbackRequest {
 
 message MatchHistoryRequest {
   string user_id = 1;
+  int32 page = 2;
+  int32 limit = 3;
 }
 
 message MatchHistoryResponse {
