@@ -15,6 +15,7 @@ import 'package:latlong2/latlong.dart';
 // Project imports:
 import '../controllers/options_controller.dart';
 import '../utils/location.dart';
+import '../utils/utils.dart';
 
 const double minDist = 10;
 const double maxDist = 5000;
@@ -47,16 +48,7 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
 
   void updateLocation(context) async {
     Position pos = await getLocation().catchError((error) {
-      Get.snackbar(
-        "Error",
-        error.toString(),
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red.withOpacity(.75),
-        colorText: Colors.white,
-        icon: const Icon(Icons.error, color: Colors.white),
-        shouldIconPulse: true,
-        barBlur: 20,
-      );
+      errorSnackbar("Error", error.toString());
     });
     customAttributes["long"] = pos.latitude.toString();
     customAttributes["lat"] = pos.longitude.toString();
@@ -64,7 +56,7 @@ class LocationOptionsWidget extends GetView<PreferencesController> {
 
     String msg = "Latitude: ${pos.latitude} Longitude: ${pos.longitude}";
 
-    Get.snackbar('Updated Location', msg, snackPosition: SnackPosition.BOTTOM);
+    infoSnackbar('Updated Location', msg);
   }
 
   double getDistance() {

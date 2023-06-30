@@ -14,6 +14,7 @@ import 'package:flutter_app/widgets/profile_picture.dart';
 import 'package:flutter_app/widgets/webcam_photo_dialog.dart';
 import '../controllers/options_controller.dart';
 import '../services/auth_service.dart';
+import '../utils/utils.dart';
 
 class UserProfileWidget extends GetView<PreferencesController> {
   const UserProfileWidget({super.key});
@@ -84,19 +85,11 @@ class UserProfileWidget extends GetView<PreferencesController> {
               Uint8List? bytes = await Get.dialog(const WebcamPhotoDialog());
 
               if (bytes == null) {
-                Get.snackbar(
-                  "Profile Picture",
-                  "Failed to take photo.",
-                  snackPosition: SnackPosition.TOP,
-                  backgroundColor: Colors.red.withOpacity(.75),
-                  colorText: Colors.white,
-                  icon: const Icon(Icons.error, color: Colors.white),
-                  shouldIconPulse: true,
-                  barBlur: 20,
-                );
+                errorSnackbar("Profile Picture", "Failed to take photo.");
+
                 return;
               }
-              Get.snackbar("Profile Picture", "Uploading Photo");
+              infoSnackbar("Profile Picture", "Uploading Photo");
               await controller.updateProfilePicture(bytes);
             },
             child: const Text('Take picture'),

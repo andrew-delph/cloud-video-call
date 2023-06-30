@@ -422,16 +422,8 @@ class HomeController extends GetxController with StateMixin {
 
       var readyAck = data["ready"];
       if (!readyAck) {
-        Get.snackbar(
-          "Error",
-          data["error"] ?? "Uknown Ready Error",
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red.withOpacity(.75),
-          colorText: Colors.white,
-          icon: const Icon(Icons.error, color: Colors.white),
-          shouldIconPulse: true,
-          barBlur: 20,
-        );
+        errorSnackbar("Error", data["error"] ?? "Uknown Ready Error");
+
         isInReadyQueue(false);
       } else {
         isInReadyQueue(true);
@@ -634,16 +626,7 @@ class HomeController extends GetxController with StateMixin {
         throw Exception(errorMsg);
       }
     }).catchError((error) {
-      Get.snackbar(
-        "Error",
-        error.toString(),
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red.withOpacity(.75),
-        colorText: Colors.white,
-        icon: const Icon(Icons.error, color: Colors.white),
-        shouldIconPulse: true,
-        barBlur: 20,
-      );
+      errorSnackbar("Error", error.toString());
     });
   }
 

@@ -154,7 +154,7 @@ class PreferencesController extends GetxController with StateMixin {
     await imageRef.putData(bytes, SettableMetadata(contentType: "image/png"));
 
     await currentUser.updatePhotoURL(await imageRef.getDownloadURL());
-    Get.snackbar("Profile Picture", "Updated.");
+    infoSnackbar("Profile Picture", "Updated.");
   }
 
   Future<UserDataModel> updateMyUserData() async {

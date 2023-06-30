@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 // Project imports:
 import '../controllers/auth_controller.dart';
 import '../routes/app_pages.dart';
+import '../utils/utils.dart';
 
 class LoginScreen extends GetView<AuthController> {
   const LoginScreen({super.key});
@@ -23,16 +24,7 @@ class LoginScreen extends GetView<AuthController> {
                 .signInAnonymously()
                 .then((value) => Get.offAllNamed(Routes.HOME))
                 .catchError((err) {
-              Get.snackbar(
-                "Error",
-                err.toString(),
-                snackPosition: SnackPosition.TOP,
-                backgroundColor: Colors.red.withOpacity(.75),
-                colorText: Colors.white,
-                icon: const Icon(Icons.error, color: Colors.white),
-                shouldIconPulse: true,
-                barBlur: 20,
-              );
+              errorSnackbar("Error", err.toString());
             });
           },
         ),
@@ -43,16 +35,7 @@ class LoginScreen extends GetView<AuthController> {
                 .signinWithGoogle()
                 .then((value) => Get.offAllNamed(Routes.HOME))
                 .catchError((err) {
-              Get.snackbar(
-                "Error",
-                err.toString(),
-                snackPosition: SnackPosition.TOP,
-                backgroundColor: Colors.red.withOpacity(.75),
-                colorText: Colors.white,
-                icon: const Icon(Icons.error, color: Colors.white),
-                shouldIconPulse: true,
-                barBlur: 20,
-              );
+              errorSnackbar("Error", err.toString());
             });
           },
         )

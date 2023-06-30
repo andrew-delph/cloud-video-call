@@ -15,6 +15,7 @@ import 'package:flutter_app/services/local_preferences_service.dart';
 import 'package:flutter_app/widgets/preferences_widget.dart';
 import '../controllers/home_controller.dart';
 import '../controllers/options_controller.dart';
+import '../utils/utils.dart';
 import '../widgets/app_menu_widget.dart';
 import '../widgets/feedback_swipe_detector.dart';
 import '../widgets/matchmaker_progress.dart';
@@ -58,9 +59,8 @@ class HomeScreen extends GetView<HomeController> {
                           onPressed: () async {
                             if (preferencesController.status.isLoading) {
                               // This is not the best way to handle this case.
-                              Get.snackbar('Preferences Updating',
-                                  'Wait for preferences to update.',
-                                  snackPosition: SnackPosition.BOTTOM);
+                              infoSnackbar('Preferences Updating',
+                                  'Wait for preferences to update.');
                             }
 
                             if (preferencesController.unsavedChanges()) {
