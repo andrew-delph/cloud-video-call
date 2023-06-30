@@ -256,7 +256,7 @@ export const match = async (msgContent: MatchMessage) => {
 
     const hostApproval = (resolve: any, reject: any) => {
       io.in(socket1)
-        .timeout(1000 * 10000)
+        .timeout(matchTimeout * 2)
         .emit(
           `match`,
           {
@@ -284,7 +284,7 @@ export const match = async (msgContent: MatchMessage) => {
 
     const guestApproval = (resolve: any, reject: any) => {
       io.in(socket2)
-        .timeout(1000 * 10000)
+        .timeout(matchTimeout * 2)
         .emit(
           `match`,
           {
