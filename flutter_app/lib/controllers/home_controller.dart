@@ -132,6 +132,8 @@ class HomeController extends GetxController with StateMixin<Widget> {
       matchmakerProgess({});
       if (isInReadyQueue) {
         change(const MatchmakerProgress(), status: RxStatus.success());
+      } else {
+        change(null, status: RxStatus.success());
       }
     });
 
@@ -339,7 +341,6 @@ class HomeController extends GetxController with StateMixin<Widget> {
     // END collect the streams/tracks from remote
 
     socket()!.on("match", (request) async {
-      isInReadyQueue(false);
       late dynamic value;
       Function? callback;
       try {
@@ -450,6 +451,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
         isInReadyQueue(false);
       } else {
         isInReadyQueue(true);
+        isInReadyQueue.refresh();
       }
       completer.complete();
     });

@@ -46,53 +46,60 @@ class MatchmakerProgress extends GetView<HomeController> {
       ),
     );
 
-    return child;
-
-    child = Column(
-      children: [
-        child,
-        ElevatedButton(
-            onPressed: () async {
-              if (preferencesController.status.isLoading) {
-                // This is not the best way to handle this case.
-                infoSnackbar(
-                    'Preferences Updating', 'Wait for preferences to update.');
-              }
-
-              if (preferencesController.unsavedChanges()) {
-                await preferencesController.updateAttributes();
-              }
-              await controller.ready();
-            },
-            child: const Text("Start"))
-      ],
-    );
-
-    double width = min;
-
-    child = Stack(
-      clipBehavior: Clip.none,
-      children: [
-        child,
-        Positioned(
-          top: 20, // get the size of the row buttons..?
-          right: 0,
-          child: Container(
-            alignment: Alignment.bottomRight,
-            width: width,
-            height: width * controller.localVideoRendererRatioHw(),
-            child: localCamera(),
-          ),
-        )
-      ],
-    );
-
     return SizedBox(
         width: 100,
         height: 100,
         child: Stack(
           children: [child, BottomButtonsOverlay()],
         ));
+
+    // return child;
+
+    // child = Column(
+    //   children: [
+    //     child,
+    //     ElevatedButton(
+    //         onPressed: () async {
+    //           if (preferencesController.status.isLoading) {
+    //             // This is not the best way to handle this case.
+    //             infoSnackbar(
+    //                 'Preferences Updating', 'Wait for preferences to update.');
+    //           }
+
+    //           if (preferencesController.unsavedChanges()) {
+    //             await preferencesController.updateAttributes();
+    //           }
+    //           await controller.ready();
+    //         },
+    //         child: const Text("Start"))
+    //   ],
+    // );
+
+    // double width = min;
+
+    // child = Stack(
+    //   clipBehavior: Clip.none,
+    //   children: [
+    //     child,
+    //     Positioned(
+    //       top: 20, // get the size of the row buttons..?
+    //       right: 0,
+    //       child: Container(
+    //         alignment: Alignment.bottomRight,
+    //         width: width,
+    //         height: width * controller.localVideoRendererRatioHw(),
+    //         child: localCamera(),
+    //       ),
+    //     )
+    //   ],
+    // );
+
+    // return SizedBox(
+    //     width: 100,
+    //     height: 100,
+    //     child: Stack(
+    //       children: [child, BottomButtonsOverlay()],
+    //     ));
   }
 
   Widget localCamera() {

@@ -58,25 +58,6 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
         if (localPreferences.fullscreen.isTrue) Expanded(child: localCamera())
       ];
 
-      if (!controller.isInChat()) {
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            const MatchmakerProgress(),
-            Positioned(
-              top: 20, // get the size of the row buttons..?
-              right: 0,
-              child: Container(
-                alignment: Alignment.bottomRight,
-                width: width,
-                height: width * controller.localVideoRendererRatioHw(),
-                child: localCamera(),
-              ),
-            )
-          ],
-        );
-      }
-
       Widget videoRenderLayout = Stack(
         children: [
           if (isLandscape)
