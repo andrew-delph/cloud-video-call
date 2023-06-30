@@ -1,5 +1,6 @@
 // Package imports:
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 // Project imports:
@@ -23,6 +24,7 @@ class AuthService extends GetxService {
       signOut();
       throw "Authentication Error";
     }
+    // return kReleaseMode ? token : "k6_auth_admin";
     return token;
   }
 

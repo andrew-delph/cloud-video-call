@@ -336,19 +336,29 @@ class HomeController extends GetxController with StateMixin {
       } catch (err) {
         value = request;
       }
+
       String? role = value["role"];
 
       bool? success = value["success"];
 
       if (success != null) {
         if (success) {
-          return;
         } else {
           String? errorMsg = value["error_msg"];
           print("Failed to match: $errorMsg");
-          queueReady();
-          return;
         }
+        return;
+      }
+
+      String? approve = value["approve"];
+
+      if (approve != null) {
+        if (callback != null) {
+          callback({"approve": true});
+        } else {
+          print("approve has no callback");
+        }
+        return;
       }
 
       List? iceServers = value["iceServers"];
