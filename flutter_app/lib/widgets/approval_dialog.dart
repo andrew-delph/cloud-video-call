@@ -1,5 +1,6 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:flutter_app/widgets/profile_picture.dart';
 
 // Package imports:
 import 'package:get/get.dart';
@@ -19,7 +20,8 @@ class ApprovalDialog extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Submit Feedback for your chat.'),
-      content: Text('Do you approve $userId?'),
+      content: Column(
+          children: [Text('Do you approve $userId?'), ProfilePicture(userId)]),
       actions: [
         TextButton(
           onPressed: () => Get.back(result: false),
