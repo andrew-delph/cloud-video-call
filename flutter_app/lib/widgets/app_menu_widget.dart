@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 
 // Project imports:
 import 'package:flutter_app/widgets/page_container.dart';
+import 'package:get_storage/get_storage.dart';
 import '../controllers/home_controller.dart';
 import '../routes/app_pages.dart';
 import '../services/auth_service.dart';
@@ -37,9 +38,8 @@ class AppMenu extends GetResponsiveView {
   final Widget body;
   final String title;
   final AuthService authService = Get.find();
-  HomeController? homeController;
-  RxBool isInReadyQueue = false.obs;
-  RxBool isInChat = false.obs;
+
+  RxBool displayMenu = true.obs;
 
   AppMenu(
       {super.key,
@@ -74,9 +74,10 @@ class AppMenu extends GetResponsiveView {
   @override
   Widget? builder() {
     try {
-      homeController = Get.find<HomeController>();
-      isInReadyQueue = homeController!.isInReadyQueue;
-      isInChat = homeController!.isInChat;
+      HomeController homeController = Get.find<HomeController>();
+      homeController.addListener(() {
+        displayMenu(homeController.state == null);
+      });
     } catch (_) {
       log("Could not find HomeController in App Menu");
     }
@@ -94,7 +95,7 @@ class AppMenu extends GetResponsiveView {
         body: Obx(
           () => Row(
             children: [
-              if (!isInReadyQueue() && !isInChat())
+              if (displayMenu())
                 Padding(
                     padding: const EdgeInsets.only(top: 16.0),
                     child: Column(
@@ -103,7 +104,7 @@ class AppMenu extends GetResponsiveView {
                         return leftNavItem(navItem);
                       }).toList(),
                     )),
-              if (!isInReadyQueue() && !isInChat()) const VerticalDivider(),
+              if (displayMenu()) const VerticalDivider(),
               PageContainer(child: body)
             ],
           ),
@@ -119,7 +120,7 @@ class AppMenu extends GetResponsiveView {
             actions: actions(),
           ),
           body: Row(children: [PageContainer(child: body)]),
-          bottomNavigationBar: (!isInReadyQueue() && !isInChat())
+          bottomNavigationBar: (displayMenu())
               ? BottomNavigationBar(
                   currentIndex: navList.indexWhere(
                       (navItem) => navItem.route == Get.currentRoute),
