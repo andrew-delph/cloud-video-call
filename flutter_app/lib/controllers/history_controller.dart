@@ -72,7 +72,9 @@ class HistoryController extends GetxController with StateMixin {
   }
 
   void nextPage() {
-    page(page() + 1);
+    if (historyModel().matchHistoryList.isNotEmpty) {
+      page(page() + 1);
+    }
   }
 
   void prevPage() {
