@@ -33,6 +33,23 @@ class MatchmakerProgress extends GetView<HomeController> {
                 Obx(() => Text(
                       "Progress: ${controller.matchmakerProgess().toString()}",
                     )),
+                Obx(() => controller.approveUser().isNotEmpty
+                    ? Row(
+                        children: [
+                          Text(
+                            "Approve User: ${controller.approveUser()}",
+                          ),
+                          TextButton(
+                            onPressed: () => controller.approveMatch(false),
+                            child: const Text('Reject'),
+                          ),
+                          TextButton(
+                            onPressed: () => controller.approveMatch(true),
+                            child: const Text('Approve'),
+                          ),
+                        ],
+                      )
+                    : Container()),
               ],
             ),
           ),

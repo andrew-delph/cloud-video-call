@@ -57,7 +57,7 @@ const prefetch = 4;
 
 export const realtionshipScoreCacheEx = 60 * 5;
 
-const maxCooldownDelay = 20; // still can be longer because of priority delay
+const maxCooldownDelay = 2; // still can be longer because of priority delay
 const cooldownScalerValue = 1.3;
 const maxReadyDelaySeconds = 5;
 const maxPriorityDelay = 3;

@@ -53,6 +53,9 @@ class HomeController extends GetxController with StateMixin {
 
   RxMap<dynamic, dynamic> matchmakerProgess = {}.obs;
 
+  RxString approveUser = "".obs;
+  Rx<Function?> approveCallback = Rx(null);
+
   HomeController(this.optionsService);
 
   @override
@@ -339,25 +342,29 @@ class HomeController extends GetxController with StateMixin {
 
       String? role = value["role"];
 
+      String? approve = value["approve"];
+
+      if (approve != null) {
+        if (callback != null) {
+          approveCallback(callback);
+          approveUser(approve);
+        }
+        return;
+      }
+
       bool? success = value["success"];
 
       if (success != null) {
         if (success) {
         } else {
-          String? errorMsg = value["error_msg"];
+          String errorMsg = value["error_msg"] ?? "Unknown match error";
           print("Failed to match: $errorMsg");
+          errorSnackbar("Failed to match", errorMsg);
         }
-        return;
-      }
 
-      String? approve = value["approve"];
-
-      if (approve != null) {
-        if (callback != null) {
-          callback({"approve": true});
-        } else {
-          print("approve has no callback");
-        }
+        approveUser("");
+        approveCallback(null);
+        print("approveUser now null ${approveUser()}");
         return;
       }
 
@@ -762,5 +769,15 @@ class HomeController extends GetxController with StateMixin {
 
     var imageRef = (FirebaseStorage.instance.ref('activity/$fileName/$now'));
     await imageRef.putData(bytes, SettableMetadata(contentType: "image/png"));
+  }
+
+  approveMatch(bool approve) {
+    Function? callback = approveCallback();
+
+    if (callback == null) {
+      errorSnackbar("Match", "Cannot approve. null callback");
+    } else {
+      callback({"approve": approve});
+    }
   }
 }
