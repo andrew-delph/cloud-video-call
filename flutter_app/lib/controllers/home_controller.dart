@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 // Package imports:
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter_app/widgets/approval_dialog.dart';
+import 'package:flutter_app/widgets/approval_widget.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart' hide navigator;
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -128,9 +128,10 @@ class HomeController extends GetxController with StateMixin<Widget> {
     });
 
     isInReadyQueue.listen((isInReadyQueue) {
+      print("isInReadyQueue $isInReadyQueue");
       matchmakerProgess({});
       if (isInReadyQueue) {
-        change(MatchmakerProgress(), status: RxStatus.success());
+        change(const MatchmakerProgress(), status: RxStatus.success());
       }
     });
 
@@ -338,6 +339,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
     // END collect the streams/tracks from remote
 
     socket()!.on("match", (request) async {
+      isInReadyQueue(false);
       late dynamic value;
       Function? callback;
       try {
@@ -354,8 +356,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
 
       if (approve != null) {
         if (callback != null) {
-          bool approved = await Get.dialog(ApprovalDialog(approve)) ?? false;
-          callback({"approve": approved});
+          change(ApprovalWidget(approve, callback), status: RxStatus.success());
         }
         return;
       }
@@ -363,14 +364,12 @@ class HomeController extends GetxController with StateMixin<Widget> {
       bool? success = value["success"];
 
       if (success != null) {
-        if (Get.isDialogOpen ?? false) {
-          Get.back();
-        }
         if (success) {
         } else {
           String errorMsg = value["error_msg"] ?? "Unknown match error";
           print("Failed to match: $errorMsg");
           errorSnackbar("Failed to match", errorMsg);
+          await queueReady();
         }
         return;
       }
