@@ -21,8 +21,10 @@ import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
 import '../services/options_service.dart';
 import '../utils/utils.dart';
+import '../widgets/matchmaker_progress.dart';
+import '../widgets/video_render_layout.dart';
 
-class HomeController extends GetxController with StateMixin {
+class HomeController extends GetxController with StateMixin<Widget> {
   LocalPreferences localPreferences = Get.find();
   final AuthService authService = Get.find();
   final OptionsService optionsService;
@@ -121,6 +123,14 @@ class HomeController extends GetxController with StateMixin {
       matchmakerProgess({});
       if (isInChat) {
         isInReadyQueue(false);
+        change(VideoRenderLayout(), status: RxStatus.success());
+      }
+    });
+
+    isInReadyQueue.listen((isInReadyQueue) {
+      matchmakerProgess({});
+      if (isInReadyQueue) {
+        change(MatchmakerProgress(), status: RxStatus.success());
       }
     });
 
