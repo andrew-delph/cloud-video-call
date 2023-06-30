@@ -254,6 +254,62 @@ export const match = async (msgContent: MatchMessage) => {
       throw Error(error);
     });
 
+    const hostApproval = (resolve: any, reject: any) => {
+      io.in(socket1)
+        .timeout(1000 * 10000)
+        .emit(
+          `match`,
+          {
+            approve: userId2,
+          },
+          (err: any, response: any[]) => {
+            if (err) {
+              reject(`host: ${err.message}`);
+            } else {
+              const approved = response.length > 0 && response[0].approve;
+              if (approved) {
+                resolve();
+              } else {
+                reject(`host: rejected`);
+              }
+              logger.debug(
+                `got approval from: ${userId2} response ${JSON.stringify(
+                  response,
+                )} approved ${approved}`,
+              );
+            }
+          },
+        );
+    };
+
+    const guestApproval = (resolve: any, reject: any) => {
+      io.in(socket2)
+        .timeout(1000 * 10000)
+        .emit(
+          `match`,
+          {
+            approve: userId1,
+          },
+          (err: any, response: any[]) => {
+            if (err) {
+              reject(`host: ${err.message}`);
+            } else {
+              const approved = response.length > 0 && response[0].approve;
+              if (approved) {
+                resolve();
+              } else {
+                reject(`host: rejected`);
+              }
+              logger.debug(
+                `got approval from: ${userId2} response ${JSON.stringify(
+                  response,
+                )} approved ${approved}`,
+              );
+            }
+          },
+        );
+    };
+
     const hostCallback = (resolve: any, reject: any) => {
       io.in(socket1)
         .timeout(matchTimeout)
@@ -298,9 +354,13 @@ export const match = async (msgContent: MatchMessage) => {
         );
     };
 
-    return await new Promise(guestCallback).then(async () => {
-      return await new Promise(hostCallback);
-    });
+    return Promise.all([new Promise(hostApproval), new Promise(guestApproval)])
+      .then(async () => {
+        return await new Promise(guestCallback);
+      })
+      .then(async () => {
+        return await new Promise(hostCallback);
+      });
   };
 
   return await matchPromiseChain()

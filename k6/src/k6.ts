@@ -8,7 +8,7 @@ import redis from 'k6/experimental/redis';
 import http from 'k6/http';
 import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 
-const vus = 150;
+const vus = 50;
 const authKeysNum = vus + 15; // number of users created for each parallel instance running
 const iterations = 999999; //authKeysNum * 1000;
 
@@ -242,7 +242,7 @@ export default async function () {
         // start the match sequence
         for (let i = 0; i < matches; i++) {
           await (() => {
-            expectMatch = socket.expectMessage(`match`, 0, 2);
+            expectMatch = socket.expectMessage(`match`, 0, 3);
             const readyPromise = socket.sendWithAck(`ready`, {});
             return readyPromise;
           })()
@@ -253,12 +253,20 @@ export default async function () {
             })
             .then((data: any) => {
               console.log(`ready..`);
-              ready_success.add(true, extraLabels());
-              ready_elapsed.add(data.elapsed, extraLabels());
               return expectMatch.take(1);
+            }).then((data: any) => {
+              console.log(`approval..`);
+              check(data, {
+                'approval has approve': (data: any) =>
+                  data && data.data && data.data.approve,
+              });
+              if (typeof data.callback === `function`) {
+                data.callback({approve:true});
+              }
+              return expectMatch.take(2);
             })
             .then(async (data: any) => {
-              console.log(`match 1`);
+              console.log(`match 2 ...`);
               if (typeof data.callback === `function`) {
                 data.callback(`ok`);
               }
@@ -283,7 +291,7 @@ export default async function () {
                   data.data.iceServers.length > 0,
               });
 
-              const matchSuccess = await expectMatch.take(2);
+              const matchSuccess = await expectMatch.take(3);
 
               if (
                 !matchSuccess ||
