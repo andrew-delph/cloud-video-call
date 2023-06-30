@@ -264,13 +264,13 @@ export const match = async (msgContent: MatchMessage) => {
           },
           (err: any, response: any[]) => {
             if (err) {
-              reject(`host: ${err.message}`);
+              reject(`Approval timeout.`);
             } else {
               const approved = response.length > 0 && response[0].approve;
               if (approved) {
                 resolve();
               } else {
-                reject(`host: rejected`);
+                reject(`Rejected.`);
               }
               logger.debug(
                 `got approval from: ${userId2} response ${JSON.stringify(
@@ -292,13 +292,13 @@ export const match = async (msgContent: MatchMessage) => {
           },
           (err: any, response: any[]) => {
             if (err) {
-              reject(`host: ${err.message}`);
+              reject(`Approval timeout.`);
             } else {
               const approved = response.length > 0 && response[0].approve;
               if (approved) {
                 resolve();
               } else {
-                reject(`host: rejected`);
+                reject(`Rejected.`);
               }
               logger.debug(
                 `got approval from: ${userId2} response ${JSON.stringify(
@@ -324,7 +324,7 @@ export const match = async (msgContent: MatchMessage) => {
           },
           (err: any, response: any) => {
             if (err) {
-              reject(`host: ${err.message}`);
+              reject(`Failed to initated match.`);
             } else {
               resolve();
             }
@@ -346,7 +346,7 @@ export const match = async (msgContent: MatchMessage) => {
           },
           (err: any, response: any) => {
             if (err) {
-              reject(`guest: ${err.message}`);
+              reject(`Failed to initated match.`);
             } else {
               resolve();
             }
@@ -369,7 +369,7 @@ export const match = async (msgContent: MatchMessage) => {
       io.in(socket2).emit(`match`, { success: true });
     })
     .catch(async (error: any) => {
-      const errorMsg = `pairing failed with: ${error}`;
+      const errorMsg = `${error}`;
       logger.debug(errorMsg);
       io.in(socket1).emit(`match`, { success: false, error_msg: errorMsg });
       io.in(socket2).emit(`match`, { success: false, error_msg: errorMsg });
