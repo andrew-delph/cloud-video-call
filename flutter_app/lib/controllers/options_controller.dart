@@ -78,15 +78,7 @@ class PreferencesController extends GetxController with StateMixin {
     change(null, status: RxStatus.loading());
     return optionsService
         .getPreferences()
-        .then((response) {
-          Preferences? preferences = response.body;
-
-          if (validStatusCode(response.statusCode) && preferences != null) {
-          } else {
-            String errorMsg = ('Failed to load preferences data.').toString();
-            throw Exception(errorMsg);
-          }
-
+        .then((preferences) {
           constantAttributes.addAll(preferences.constantAttributes);
           constantFilters.addAll(preferences.constantFilters);
           customAttributes.addAll(preferences.customAttributes);
@@ -114,17 +106,10 @@ class PreferencesController extends GetxController with StateMixin {
     };
     return optionsService
         .updatePreferences(body)
-        .then((response) {
-          if (validStatusCode(response.statusCode)) {
-          } else {
-            const String errorMsg = 'Failed to update preferences.';
-            throw Exception(response.body.toString());
-          }
-        })
         .then((value) => loadAttributes())
         .catchError((error) {
-          change(null, status: RxStatus.error(error.toString()));
-        });
+      change(null, status: RxStatus.error(error.toString()));
+    });
   }
 
   Future<void> updateProfilePicture(Uint8List? bytes) async {

@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-bool validStatusCode(int? statusCode) {
-  return statusCode != null && statusCode >= 200 && statusCode < 300;
-}
-
 class Pair<T1, T2> {
   final T1 first;
   final T2 second;
@@ -34,4 +30,19 @@ void errorSnackbar(String title, String message) {
 
 void infoSnackbar(String title, String message) {
   Get.snackbar(title, message);
+}
+
+bool validStatusCode(int? statusCode) {
+  return statusCode != null && statusCode >= 200 && statusCode < 300;
+}
+
+T validateRequestGetBody<T>(Response<T> response) {
+  if (!validStatusCode(response.statusCode)) {
+    throw "Invalid status code ${response.statusCode}";
+  }
+  T? body = response.body;
+  if (body == null) {
+    throw "Body is null";
+  }
+  return body;
 }

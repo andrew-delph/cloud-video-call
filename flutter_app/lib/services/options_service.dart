@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../config/factory.dart';
 import '../models/history_model.dart';
 import '../models/preferences_model.dart';
+import '../utils/utils.dart';
 import 'api_service.dart';
 
 class OptionsService extends ApiService {
@@ -12,22 +13,27 @@ class OptionsService extends ApiService {
     httpClient.baseUrl = Factory.getOptionsHost();
   }
 
-  Future<Response> health() => get('/health');
+  Future<dynamic> health() =>
+      get('/health').then((response) => validateRequestGetBody(response));
 
-  Future<Response<Preferences>> getPreferences() => get('/preferences',
-      contentType: 'application/json', decoder: Preferences.fromJson);
+  Future<Preferences> getPreferences() => get('/preferences',
+          contentType: 'application/json', decoder: Preferences.fromJson)
+      .then((response) => validateRequestGetBody(response));
 
-  Future<Response> updatePreferences(dynamic body) =>
-      put('/preferences', body, contentType: 'application/json');
+  Future<dynamic> updatePreferences(dynamic body) =>
+      put('/preferences', body, contentType: 'application/json')
+          .then((response) => validateRequestGetBody(response));
 
-  Future<Response<HistoryModel>> getHistory(int page, int limit) {
+  Future<HistoryModel> getHistory(int page, int limit) {
     Map<String, String> query = {"page": "$page", "limit": "$limit"};
     return get('/history',
-        query: query,
-        contentType: 'application/json',
-        decoder: HistoryModel.fromJson);
+            query: query,
+            contentType: 'application/json',
+            decoder: HistoryModel.fromJson)
+        .then((response) => validateRequestGetBody(response));
   }
 
-  Future<Response> updateFeedback(dynamic body) =>
-      post('/providefeedback', body, contentType: 'application/json');
+  Future<dynamic> updateFeedback(dynamic body) =>
+      post('/providefeedback', body, contentType: 'application/json')
+          .then((response) => validateRequestGetBody(response));
 }

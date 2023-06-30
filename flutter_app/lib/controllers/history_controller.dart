@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import '../models/history_model.dart';
 import '../models/user_model.dart';
 import '../services/options_service.dart';
+import '../utils/utils.dart';
 
 class HistoryController extends GetxController with StateMixin {
   final OptionsService optionsService;
@@ -33,7 +34,7 @@ class HistoryController extends GetxController with StateMixin {
     change(null, status: RxStatus.loading());
     await optionsService
         .getHistory(page(), limit())
-        .then((response) => historyModel(response.body))
+        .then((body) => historyModel(body))
         .then((_) {
       if (historyModel().matchHistoryList.isEmpty) {
         change(null, status: RxStatus.empty());
