@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 // Package imports:
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_app/widgets/approval_dialog.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart' hide navigator;
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -52,9 +53,6 @@ class HomeController extends GetxController with StateMixin {
   RxBool isCamHide = false.obs;
 
   RxMap<dynamic, dynamic> matchmakerProgess = {}.obs;
-
-  RxString approveUser = "".obs;
-  Rx<Function?> approveCallback = Rx(null);
 
   HomeController(this.optionsService);
 
@@ -346,8 +344,8 @@ class HomeController extends GetxController with StateMixin {
 
       if (approve != null) {
         if (callback != null) {
-          approveCallback(callback);
-          approveUser(approve);
+          bool approved = await Get.dialog(ApprovalDialog(approve)) ?? false;
+          callback({"approve": approved});
         }
         return;
       }
@@ -355,16 +353,15 @@ class HomeController extends GetxController with StateMixin {
       bool? success = value["success"];
 
       if (success != null) {
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
         if (success) {
         } else {
           String errorMsg = value["error_msg"] ?? "Unknown match error";
           print("Failed to match: $errorMsg");
           errorSnackbar("Failed to match", errorMsg);
         }
-
-        approveUser("");
-        approveCallback(null);
-        print("approveUser now null ${approveUser()}");
         return;
       }
 
@@ -769,15 +766,5 @@ class HomeController extends GetxController with StateMixin {
 
     var imageRef = (FirebaseStorage.instance.ref('activity/$fileName/$now'));
     await imageRef.putData(bytes, SettableMetadata(contentType: "image/png"));
-  }
-
-  approveMatch(bool approve) {
-    Function? callback = approveCallback();
-
-    if (callback == null) {
-      errorSnackbar("Match", "Cannot approve. null callback");
-    } else {
-      callback({"approve": approve});
-    }
   }
 }
