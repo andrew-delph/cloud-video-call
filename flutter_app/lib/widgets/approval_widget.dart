@@ -7,12 +7,15 @@ import 'package:get/get.dart';
 
 // Project imports:
 import '../controllers/home_controller.dart';
+import '../models/user_model.dart';
 
 class ApprovalWidget extends GetView<HomeController> {
   final String userId;
   final Function callback;
 
   final RxBool sent = false.obs;
+
+  final Rx<UserDataModel?> userData = Rx(null);
 
   ApprovalWidget(
     this.userId,
@@ -22,32 +25,41 @@ class ApprovalWidget extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => AlertDialog(
-          title: const Text('Submit Feedback for your chat.'),
-          content: Column(children: [
-            Text('Do you approve $userId?'),
-            ProfilePicture(userId)
-          ]),
-          actions: [
-            TextButton(
-              onPressed: sent()
-                  ? null
-                  : () {
-                      callback({"approve": false});
-                      sent(true);
-                    },
-              child: const Text('Reject'),
-            ),
-            TextButton(
-              onPressed: sent()
-                  ? null
-                  : () {
-                      callback({"approve": true});
-                      sent(true);
-                    },
-              child: const Text('Approve'),
-            ),
-          ],
-        ));
+    controller.optionsService
+        .getUserData(userId)
+        .then((value) => userData(value));
+
+    return Obx(
+      () => Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        const Text(
+          "Appove user",
+          style: TextStyle(
+            fontSize: 35.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const Divider(),
+        Text(userData()?.displayName ?? "Loading..."),
+        Text(userData()?.description ?? "Loading..."),
+        TextButton(
+          onPressed: sent()
+              ? null
+              : () {
+                  callback({"approve": false});
+                  sent(true);
+                },
+          child: const Text('Reject'),
+        ),
+        TextButton(
+          onPressed: sent()
+              ? null
+              : () {
+                  callback({"approve": true});
+                  sent(true);
+                },
+          child: const Text('Approve'),
+        ),
+      ]),
+    );
   }
 }

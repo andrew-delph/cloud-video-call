@@ -59,20 +59,7 @@ class HistoryController extends GetxController with StateMixin {
   }
 
   Future<UserDataModel?> getUserData(String userId) async {
-    CollectionReference<UserDataModel> myUserCollection = FirebaseFirestore
-        .instance
-        .collection('users')
-        .withConverter<UserDataModel>(
-          fromFirestore: (snapshots, _) =>
-              UserDataModel.fromJson(snapshots.data()!),
-          toFirestore: (userData, _) => userData.toJson(),
-        );
-
-    DocumentReference<UserDataModel> myUserDoc = myUserCollection.doc(userId);
-
-    UserDataModel? userData = (await myUserDoc.get()).data();
-
-    return userData;
+    return optionsService.getUserData(userId);
   }
 
   void nextPage() {

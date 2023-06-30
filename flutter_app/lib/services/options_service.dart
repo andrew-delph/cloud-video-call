@@ -1,10 +1,12 @@
 // Package imports:
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
 // Project imports:
 import '../config/factory.dart';
 import '../models/history_model.dart';
 import '../models/preferences_model.dart';
+import '../models/user_model.dart';
 import '../utils/utils.dart';
 import 'api_service.dart';
 
@@ -36,4 +38,21 @@ class OptionsService extends ApiService {
   Future<dynamic> updateFeedback(dynamic body) =>
       post('/providefeedback', body, contentType: 'application/json')
           .then((response) => validateRequestGetBody(response));
+
+  Future<UserDataModel?> getUserData(String userId) async {
+    CollectionReference<UserDataModel> myUserCollection = FirebaseFirestore
+        .instance
+        .collection('users')
+        .withConverter<UserDataModel>(
+          fromFirestore: (snapshots, _) =>
+              UserDataModel.fromJson(snapshots.data()!),
+          toFirestore: (userData, _) => userData.toJson(),
+        );
+
+    DocumentReference<UserDataModel> myUserDoc = myUserCollection.doc(userId);
+
+    UserDataModel? userData = (await myUserDoc.get()).data();
+
+    return userData;
+  }
 }
