@@ -49,10 +49,13 @@ class HistoryController extends GetxController with StateMixin {
 
   updateFeedback(int feedbackId, int score) {
     final body = {'feedback_id': feedbackId, 'score': score};
-    return optionsService.updateFeedback(body).catchError((error) {
+    return optionsService
+        .updateFeedback(body)
+        .then((value) => loadHistory())
+        .catchError((error) {
       print("history error: $error");
       change(null, status: RxStatus.error(error.toString()));
-    }).then((value) => loadHistory());
+    });
   }
 
   Future<UserDataModel?> getUserData(String userId) async {

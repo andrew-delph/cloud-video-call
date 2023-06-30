@@ -109,6 +109,7 @@ class PreferencesController extends GetxController with StateMixin {
         .then((value) => loadAttributes())
         .catchError((error) {
       change(null, status: RxStatus.error(error.toString()));
+      throw error;
     });
   }
 
