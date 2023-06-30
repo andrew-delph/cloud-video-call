@@ -41,6 +41,7 @@ class ApprovalWidget extends GetView<HomeController> {
         const Divider(),
         Text(userData()?.displayName ?? "Loading..."),
         Text(userData()?.description ?? "Loading..."),
+        ProfilePicture(userId),
         TextButton(
           onPressed: sent()
               ? null
