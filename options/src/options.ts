@@ -2,8 +2,10 @@ import * as common from 'common';
 import * as neo4j_common from 'common-messaging';
 import express from 'express';
 import { initializeApp } from 'firebase-admin/app';
-import * as neo4j from 'neo4j-driver';
 import moment from 'moment';
+import multer from 'multer';
+import multerS3 from 'multer-s3';
+import * as neo4j from 'neo4j-driver';
 
 var cors = require(`cors`);
 const omitDeep = require(`omit-deep-lodash`);
@@ -283,9 +285,6 @@ app.post(`/nukedata`, async (req, res) => {
 
   res.status(200).send(`ITS DONE.`);
 });
-
-import multer from 'multer';
-import multerS3 from 'multer-s3';
 
 var upload = multer({
   storage: multerS3({

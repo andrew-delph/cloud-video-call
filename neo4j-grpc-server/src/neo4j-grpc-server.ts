@@ -32,10 +32,10 @@ import {
   grpc,
   FilterObject,
 } from 'common-messaging';
-import * as neo4j from 'neo4j-driver';
-import { v4 } from 'uuid';
 import { initializeApp, getApp } from 'firebase-admin/app';
 import { Auth } from 'firebase-admin/auth';
+import * as neo4j from 'neo4j-driver';
+import { v4 } from 'uuid';
 
 const promClient = new common.PromClient(`neo4j-grpc-server`);
 

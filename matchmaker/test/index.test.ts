@@ -1,10 +1,10 @@
-import moment from 'moment';
 import {
   lastMatchedCooldownMinutes,
   relationShipScoresSortFunc,
 } from '../src/matchmaker';
 import { RelationshipScoreWrapper } from '../src/types';
 import { shuffleArray } from 'common';
+import moment from 'moment';
 
 test(`adds 1 + 2 to equal 3`, () => {
   expect(1 + 2).toBe(3);

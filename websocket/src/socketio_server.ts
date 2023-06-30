@@ -23,9 +23,9 @@ import { initializeApp } from 'firebase-admin/app';
 import { createServer } from 'http';
 import Client from 'ioredis';
 import { throttle } from 'lodash';
+import moment from 'moment';
 import { Server, Socket } from 'socket.io';
 import { v4 as uuid } from 'uuid';
-import moment from 'moment';
 
 const logger = common.getLogger();
 
