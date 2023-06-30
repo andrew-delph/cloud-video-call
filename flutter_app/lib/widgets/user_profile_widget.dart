@@ -2,7 +2,6 @@
 import 'dart:typed_data';
 
 // Flutter imports:
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:

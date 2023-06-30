@@ -1,15 +1,18 @@
+// Dart imports:
 import 'dart:math';
 
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
+// Package imports:
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart';
 
+// Project imports:
 import '../controllers/home_controller.dart';
 import '../screens/home_screen.dart';
 import '../services/local_preferences_service.dart';
 import 'feedback_swipe_detector.dart';
-import 'matchmaker_progress.dart';
 
 class VideoRenderLayout extends GetResponsiveView<HomeController> {
   VideoRenderLayout({super.key});

@@ -1,11 +1,11 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter_app/widgets/profile_picture.dart';
 
 // Package imports:
 import 'package:get/get.dart';
 
 // Project imports:
+import 'package:flutter_app/widgets/profile_picture.dart';
 import '../controllers/home_controller.dart';
 import '../models/user_model.dart';
 

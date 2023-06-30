@@ -1,7 +1,6 @@
 // Dart imports:
 
 // Dart imports:
-import 'dart:math';
 
 // Flutter imports:
 import 'package:flutter/material.dart';
@@ -17,9 +16,6 @@ import '../controllers/home_controller.dart';
 import '../controllers/options_controller.dart';
 import '../utils/utils.dart';
 import '../widgets/app_menu_widget.dart';
-import '../widgets/feedback_swipe_detector.dart';
-import '../widgets/matchmaker_progress.dart';
-import '../widgets/video_render_layout.dart';
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});

@@ -1,15 +1,14 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 // Package imports:
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart';
 
 // Project imports:
 import '../controllers/home_controller.dart';
 import '../controllers/options_controller.dart';
 import '../screens/home_screen.dart';
-import '../utils/utils.dart';
 
 class MatchmakerProgress extends GetView<HomeController> {
   final min = -10.0;

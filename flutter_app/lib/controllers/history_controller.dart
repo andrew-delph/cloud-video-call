@@ -1,12 +1,10 @@
 // Package imports:
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
 // Project imports:
 import '../models/history_model.dart';
 import '../models/user_model.dart';
 import '../services/options_service.dart';
-import '../utils/utils.dart';
 
 class HistoryController extends GetxController with StateMixin {
   final OptionsService optionsService;

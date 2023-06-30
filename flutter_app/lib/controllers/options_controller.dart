@@ -12,7 +12,6 @@ import 'package:get/get.dart';
 
 // Project imports:
 import 'package:flutter_app/utils/utils.dart';
-import '../models/preferences_model.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/options_service.dart';

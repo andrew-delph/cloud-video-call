@@ -11,7 +11,6 @@ import 'package:get/get.dart';
 
 // Project imports:
 import 'package:flutter_app/widgets/page_container.dart';
-import 'package:get_storage/get_storage.dart';
 import '../controllers/home_controller.dart';
 import '../routes/app_pages.dart';
 import '../services/auth_service.dart';
