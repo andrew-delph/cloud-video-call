@@ -81,6 +81,28 @@ class OptionsScreen extends GetView<PreferencesController> {
                         Column(children: [
                           Row(
                             children: [
+                              const Expanded(child: Text("Auto Accept:")),
+                              Switch(
+                                value: localPreferences.autoAccept(),
+                                onChanged: (bool newValue) async {
+                                  localPreferences.autoAccept(newValue);
+                                },
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              const Expanded(child: Text("Auto Queue:")),
+                              Switch(
+                                value: localPreferences.autoQueue(),
+                                onChanged: (bool newValue) async {
+                                  localPreferences.autoQueue(newValue);
+                                },
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
                               const Expanded(child: Text("Swipe:")),
                               Switch(
                                 value: localPreferences.swipeFeedback(),
@@ -97,17 +119,6 @@ class OptionsScreen extends GetView<PreferencesController> {
                                 value: localPreferences.feedbackPopup(),
                                 onChanged: (bool newValue) async {
                                   localPreferences.feedbackPopup(newValue);
-                                },
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Expanded(child: Text("Auto Queue:")),
-                              Switch(
-                                value: localPreferences.autoQueue(),
-                                onChanged: (bool newValue) async {
-                                  localPreferences.autoQueue(newValue);
                                 },
                               )
                             ],

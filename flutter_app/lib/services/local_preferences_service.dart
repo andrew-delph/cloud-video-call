@@ -10,6 +10,7 @@ dynamic darkTheme = ThemeData.dark().copyWith();
 
 class LocalPreferences extends GetxService {
   final autoQueue = true.obs;
+  final autoAccept = false.obs;
   final feedbackPopup = false.obs;
   final swipeFeedback = false.obs;
   final videoDeviceLabel = 'Default'.obs;
@@ -25,6 +26,9 @@ class LocalPreferences extends GetxService {
 
     autoQueue.value = box.read('autoQueue') ?? autoQueue.value;
     ever(autoQueue, (value) => box.write('autoQueue', value));
+
+    autoAccept.value = box.read('autoAccept') ?? autoAccept.value;
+    ever(autoAccept, (value) => box.write('autoAccept', value));
 
     feedbackPopup.value = box.read('feedbackPopup') ?? feedbackPopup.value;
     ever(feedbackPopup, (value) => box.write('feedbackPopup', value));
