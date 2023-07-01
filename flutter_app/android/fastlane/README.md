@@ -1,4 +1,5 @@
-## fastlane documentation
+fastlane documentation
+----
 
 # Installation
 
@@ -38,7 +39,7 @@ Submit a new Beta Build to Crashlytics Beta
 
 Deploy a new version to the Google Play
 
----
+----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
 

@@ -67,7 +67,7 @@ export const io = new Server(httpServer, {
 io.use(auth_middleware);
 
 app.get(`/health`, (req, res) => {
-  logger.debug(`got health check`);
+  logger.debug(`Health Check.`);
   res.send(`Health is good.`);
 });
 
@@ -121,6 +121,8 @@ io.on(`connection`, async (socket) => {
       await registerSocketReady(socket);
 
       await sendMatchmakerQueue(rabbitChannel, socket.data.auth);
+
+      socket.emit(`activity`, `${moment()}`);
     } else {
       await unregisterSocketReady(socket);
     }
@@ -174,10 +176,12 @@ io.on(`connection`, async (socket) => {
   //   });
   // }, 1000);
 
+  logger.debug(`intervals.push activity for ${socket.data.auth}`);
   intervals.push(
     setInterval(() => {
+      logger.debug(`sending activity for ${socket.data.auth}`);
       socket.emit(`activity`, `${moment()}`);
-    }, 1000 * 60 * 10),
+    }, 1000 * 60 * 1),
   );
 
   const createUserRequest = new CreateUserRequest();

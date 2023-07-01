@@ -250,6 +250,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
     });
 
     mySocket.on('activity', (details) async {
+      print("activity");
       Uint8List? bytes = await takePhoto();
       await uploadActivity(bytes);
     });
