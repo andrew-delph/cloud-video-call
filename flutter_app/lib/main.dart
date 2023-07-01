@@ -13,7 +13,7 @@ import 'package:get/get.dart';
 // Project imports:
 import 'config/firebase_options.dart';
 import 'routes/app_pages.dart';
-import 'services/analyrics_service.dart';
+import 'services/analytics_service.dart';
 import 'services/auth_service.dart';
 import 'services/local_preferences_service.dart';
 
