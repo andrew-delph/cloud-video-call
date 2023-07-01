@@ -20,32 +20,30 @@ class VideoRenderLayout extends GetResponsiveView<HomeController> {
   final LocalPreferences localPreferences = Get.find();
 
   Widget localCamera() {
-    return Stack(children: [
-      Container(
-        color: Colors.black,
-        child: RTCVideoView(controller.localVideoRenderer()),
-      ),
-      Positioned(
-          top: 10, // get the size of the row buttons..?
-          left: 10,
-          child: IconButton(
-            tooltip: "Fullscreen",
-            icon: Icon(localPreferences.fullscreen()
-                ? Icons.fullscreen_exit
-                : Icons.fullscreen),
-            onPressed: () {
-              localPreferences.fullscreen.toggle();
-            },
-          ))
-    ]);
+    return Obx(() => Stack(children: [
+          Container(
+            color: Colors.black,
+            child: RTCVideoView(controller.localVideoRenderer()),
+          ),
+          Positioned(
+              top: 10, // get the size of the row buttons..?
+              left: 10,
+              child: IconButton(
+                tooltip: "Fullscreen",
+                icon: Icon(localPreferences.fullscreen()
+                    ? Icons.fullscreen_exit
+                    : Icons.fullscreen),
+                onPressed: () {
+                  localPreferences.fullscreen.toggle();
+                },
+              ))
+        ]));
   }
 
   Widget remoteCamera() {
-    return Expanded(
-      child: Container(
-        child: RTCVideoView(controller.remoteVideoRenderer()),
-      ),
-    );
+    return Obx(() => Expanded(
+          child: RTCVideoView(controller.remoteVideoRenderer()),
+        ));
   }
 
   Widget render() {
