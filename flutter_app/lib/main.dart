@@ -28,9 +28,12 @@ void main() async {
     return true;
   };
 
+  AnalyticsService analyticsService = Get.find<AnalyticsService>();
+
   runApp(GetMaterialApp(
     debugShowCheckedModeBanner: false,
     title: "Random Video Chat with AI",
+    navigatorObservers: <NavigatorObserver>[analyticsService.observer],
     initialRoute: Routes.HOME,
     getPages: AppPages.pages,
   ));
