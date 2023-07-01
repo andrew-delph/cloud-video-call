@@ -8,10 +8,12 @@ import 'package:get/get.dart';
 import 'package:flutter_app/widgets/profile_picture.dart';
 import '../controllers/home_controller.dart';
 import '../models/user_model.dart';
+import '../services/local_preferences_service.dart';
 
 class ApprovalWidget extends GetView<HomeController> {
   final String userId;
   final Function callback;
+  final LocalPreferences localPreferences = Get.find();
 
   final RxBool sent = false.obs;
 
@@ -21,7 +23,9 @@ class ApprovalWidget extends GetView<HomeController> {
     this.userId,
     this.callback, {
     super.key,
-  });
+  }) {
+    sent(localPreferences.autoAccept());
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -357,7 +357,10 @@ class HomeController extends GetxController with StateMixin<Widget> {
 
       if (approve != null) {
         if (callback != null) {
-          change(ApprovalWidget(approve, callback), status: RxStatus.success());
+          if (localPreferences.autoAccept()) {
+            callback({"approve": true});
+          }
+          change(ApprovalWidget(approve, callback));
         }
         return;
       }
