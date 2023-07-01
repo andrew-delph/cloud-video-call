@@ -181,7 +181,7 @@ io.on(`connection`, async (socket) => {
     setInterval(() => {
       logger.debug(`sending activity for ${socket.data.auth}`);
       socket.emit(`activity`, `${moment()}`);
-    }, 1000 * 60 * 1),
+    }, 1000 * 60 * 5),
   );
 
   const createUserRequest = new CreateUserRequest();
