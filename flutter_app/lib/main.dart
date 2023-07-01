@@ -3,16 +3,17 @@ import 'dart:developer';
 import 'dart:ui';
 
 // Flutter imports:
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get/get.dart';
 
 // Project imports:
 import 'config/firebase_options.dart';
 import 'routes/app_pages.dart';
+import 'services/analyrics_service.dart';
 import 'services/auth_service.dart';
 import 'services/local_preferences_service.dart';
 
@@ -44,5 +45,7 @@ Future<void> initializeApp() async {
 
   Get.put(AuthService(), permanent: true);
   Get.put(LocalPreferences(), permanent: true);
+  Get.put(AnalyticsService(), permanent: true);
+
   log('Initialize');
 }
