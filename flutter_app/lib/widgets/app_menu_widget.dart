@@ -14,6 +14,7 @@ import 'package:flutter_app/widgets/page_container.dart';
 import '../controllers/home_controller.dart';
 import '../routes/app_pages.dart';
 import '../services/auth_service.dart';
+import 'notifications.dart';
 
 class NavItem {
   final IconData iconData;
@@ -48,6 +49,7 @@ class AppMenu extends GetResponsiveView {
 
   List<Widget> actions() {
     return <Widget>[
+      if (authService.isAuthenticated()) const NotificationsButton(),
       authService.isAuthenticated()
           ? IconButton(
               icon: const Icon(Icons.logout),

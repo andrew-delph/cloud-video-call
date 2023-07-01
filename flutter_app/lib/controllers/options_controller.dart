@@ -62,7 +62,7 @@ class PreferencesController extends GetxController with StateMixin {
       return;
     }
 
-    getMyUserDoc().get().then((get) {
+    getMyUserProfileDoc().get().then((get) {
       if (get.exists) {
         userData(get.data()!);
         description(get.data()!.description);
@@ -145,11 +145,11 @@ class PreferencesController extends GetxController with StateMixin {
   Future<UserDataModel> updateMyUserData() async {
     UserDataModel userData =
         UserDataModel(displayName: displayName(), description: description());
-    await getMyUserDoc().set(userData);
+    await getMyUserProfileDoc().set(userData);
     return userData;
   }
 
-  DocumentReference<UserDataModel> getMyUserDoc() {
+  DocumentReference<UserDataModel> getMyUserProfileDoc() {
     String userId = authService.getUser().uid;
 
     CollectionReference<UserDataModel> myUserCollection = FirebaseFirestore

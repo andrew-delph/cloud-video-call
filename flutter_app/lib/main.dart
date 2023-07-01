@@ -11,6 +11,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get/get.dart';
 
 // Project imports:
+import 'package:flutter_app/widgets/notifications.dart';
 import 'config/firebase_options.dart';
 import 'routes/app_pages.dart';
 import 'services/analytics_service.dart';
@@ -49,6 +50,8 @@ Future<void> initializeApp() async {
   Get.put(AuthService(), permanent: true);
   Get.put(LocalPreferences(), permanent: true);
   Get.put(AnalyticsService(), permanent: true);
+
+  Get.put(NotificationsController(), permanent: true);
 
   log('Initialize');
 }
