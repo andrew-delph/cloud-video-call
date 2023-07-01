@@ -1,7 +1,9 @@
 // Dart imports:
 import 'dart:developer';
+import 'dart:ui';
 
 // Flutter imports:
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -16,6 +18,14 @@ import 'services/local_preferences_service.dart';
 
 void main() async {
   await initializeApp();
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  };
+  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 
   runApp(GetMaterialApp(
     debugShowCheckedModeBanner: false,
