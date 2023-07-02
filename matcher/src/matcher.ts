@@ -17,8 +17,10 @@ import {
   MatchMessage,
   userMessageQueue,
   userNotificationQueue,
+  chatEventQueue,
 } from 'common-messaging';
 import {
+  parseChatEventMessage,
   parseMatchMessage,
   parseUserNotificationMessage,
   parseUserSocketMessage,
@@ -211,6 +213,44 @@ export async function matchConsumer() {
         await addNotification(userId, title, description);
       } catch (e) {
         logger.error(`userNotification error=` + e); // TODO fix for types
+      } finally {
+        rabbitChannel.ack(msg);
+      }
+    },
+    {
+      noAck: false,
+    },
+  );
+
+  rabbitChannel.consume(
+    chatEventQueue,
+    async (msg: ConsumeMessage | null) => {
+      if (msg == null) {
+        logger.error(`msg is null.`);
+        return;
+      }
+
+      let sourceId: string = ``;
+      let targetId: string = ``;
+      let message: string = ``;
+
+      try {
+        const msgContent = parseChatEventMessage(msg.content);
+        sourceId = msgContent.getSource();
+        targetId = msgContent.getTarget();
+        message = msgContent.getMessage();
+
+        logger.debug(`ChatEventMessage ${sourceId}, ${targetId}, ${message}`);
+
+        const targetSocket = await mainRedisClient.hget(
+          common.connectedAuthMapName,
+          targetId,
+        );
+
+        if (!targetSocket) {
+        }
+      } catch (e) {
+        logger.error(`ChatEventMessage error=` + e); // TODO fix for types
       } finally {
         rabbitChannel.ack(msg);
       }

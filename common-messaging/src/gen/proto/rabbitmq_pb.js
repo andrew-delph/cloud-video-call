@@ -1105,8 +1105,8 @@ proto.rabbitmq.ChatEventMessage.prototype.toObject = function(opt_includeInstanc
  */
 proto.rabbitmq.ChatEventMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    sourceid: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    targetid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    source: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    target: jspb.Message.getFieldWithDefault(msg, 2, ""),
     message: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
@@ -1146,11 +1146,11 @@ proto.rabbitmq.ChatEventMessage.deserializeBinaryFromReader = function(msg, read
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setSourceid(value);
+      msg.setSource(value);
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.setTargetid(value);
+      msg.setTarget(value);
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
@@ -1185,14 +1185,14 @@ proto.rabbitmq.ChatEventMessage.prototype.serializeBinary = function() {
  */
 proto.rabbitmq.ChatEventMessage.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSourceid();
+  f = message.getSource();
   if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = message.getTargetid();
+  f = message.getTarget();
   if (f.length > 0) {
     writer.writeString(
       2,
@@ -1210,10 +1210,10 @@ proto.rabbitmq.ChatEventMessage.serializeBinaryToWriter = function(message, writ
 
 
 /**
- * optional string sourceId = 1;
+ * optional string source = 1;
  * @return {string}
  */
-proto.rabbitmq.ChatEventMessage.prototype.getSourceid = function() {
+proto.rabbitmq.ChatEventMessage.prototype.getSource = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -1222,16 +1222,16 @@ proto.rabbitmq.ChatEventMessage.prototype.getSourceid = function() {
  * @param {string} value
  * @return {!proto.rabbitmq.ChatEventMessage} returns this
  */
-proto.rabbitmq.ChatEventMessage.prototype.setSourceid = function(value) {
+proto.rabbitmq.ChatEventMessage.prototype.setSource = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * optional string targetId = 2;
+ * optional string target = 2;
  * @return {string}
  */
-proto.rabbitmq.ChatEventMessage.prototype.getTargetid = function() {
+proto.rabbitmq.ChatEventMessage.prototype.getTarget = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -1240,7 +1240,7 @@ proto.rabbitmq.ChatEventMessage.prototype.getTargetid = function() {
  * @param {string} value
  * @return {!proto.rabbitmq.ChatEventMessage} returns this
  */
-proto.rabbitmq.ChatEventMessage.prototype.setTargetid = function(value) {
+proto.rabbitmq.ChatEventMessage.prototype.setTarget = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 

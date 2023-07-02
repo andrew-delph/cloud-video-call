@@ -34,7 +34,7 @@ message UserNotificationMessage{
 
 
 message ChatEventMessage{
-  string sourceId = 1;
-  string targetId = 2;
+  string source = 1;
+  string target = 2;
   string message = 3;
 }

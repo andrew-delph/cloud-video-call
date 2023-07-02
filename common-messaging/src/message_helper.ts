@@ -133,8 +133,8 @@ export async function sendChatEventMessage(
 ) {
   const userChatEventMessage: ChatEventMessage = new ChatEventMessage();
 
-  userChatEventMessage.setSourceid(sourceId);
-  userChatEventMessage.setTargetid(targetId);
+  userChatEventMessage.setSource(sourceId);
+  userChatEventMessage.setTarget(targetId);
   userChatEventMessage.setMessage(message);
 
   await rabbitChannel.sendToQueue(

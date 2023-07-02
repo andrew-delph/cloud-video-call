@@ -148,11 +148,11 @@ export namespace UserNotificationMessage {
 }
 
 export class ChatEventMessage extends jspb.Message { 
-    getSourceid(): string;
-    setSourceid(value: string): ChatEventMessage;
+    getSource(): string;
+    setSource(value: string): ChatEventMessage;
 
-    getTargetid(): string;
-    setTargetid(value: string): ChatEventMessage;
+    getTarget(): string;
+    setTarget(value: string): ChatEventMessage;
 
     getMessage(): string;
     setMessage(value: string): ChatEventMessage;
@@ -170,8 +170,8 @@ export class ChatEventMessage extends jspb.Message {
 
 export namespace ChatEventMessage {
     export type AsObject = {
-        sourceid: string,
-        targetid: string,
+        source: string,
+        target: string,
         message: string,
     }
 }
