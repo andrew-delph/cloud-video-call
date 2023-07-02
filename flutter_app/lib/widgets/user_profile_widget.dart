@@ -93,7 +93,14 @@ class UserProfileWidget extends GetView<PreferencesController> {
             },
             child: const Text('Take picture'),
           ),
-          ProfilePicture(user.uid)
+          ProfilePicture(user.uid),
+          TextButton(
+            onPressed: () async {
+              AuthService authService = Get.find();
+              authService.deleteUser();
+            },
+            child: const Text('Delete User'),
+          ),
         ],
       );
     });

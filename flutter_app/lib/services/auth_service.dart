@@ -46,4 +46,9 @@ class AuthService extends GetxService {
 
     return currentUser;
   }
+
+  void deleteUser() {
+    User user = getUser();
+    user.delete();
+  }
 }
