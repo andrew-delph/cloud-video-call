@@ -439,7 +439,7 @@ async function matchmakerFlow(
   );
 
   // send data here...
-  await message_helper.sendUserNotification(
+  await message_helper.sendUserMessage(
     rabbitChannel,
     readyMessage.getUserId(),
     `matchmakerProgess`,

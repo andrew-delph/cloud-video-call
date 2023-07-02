@@ -117,3 +117,32 @@ export namespace UserSocketMessage {
         jsonData: string,
     }
 }
+
+export class UserNotificationMessage extends jspb.Message { 
+    getUserId(): string;
+    setUserId(value: string): UserNotificationMessage;
+
+    getTitle(): string;
+    setTitle(value: string): UserNotificationMessage;
+
+    getDescription(): string;
+    setDescription(value: string): UserNotificationMessage;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): UserNotificationMessage.AsObject;
+    static toObject(includeInstance: boolean, msg: UserNotificationMessage): UserNotificationMessage.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: UserNotificationMessage, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): UserNotificationMessage;
+    static deserializeBinaryFromReader(message: UserNotificationMessage, reader: jspb.BinaryReader): UserNotificationMessage;
+}
+
+export namespace UserNotificationMessage {
+    export type AsObject = {
+        userId: string,
+        title: string,
+        description: string,
+    }
+}

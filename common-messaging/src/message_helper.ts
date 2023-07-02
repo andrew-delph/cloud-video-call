@@ -3,6 +3,7 @@ import {
   MatchmakerMessage,
   MatchMessage,
   UserSocketMessage,
+  UserNotificationMessage,
 } from './gen/proto/rabbitmq_pb';
 import { messageToBuffer } from './utils';
 import { bufferToUint8Array } from './utils';
@@ -13,6 +14,7 @@ import {
   maxPriority,
   readyRoutingKey,
   userMessageQueue,
+  userNotificationQueue,
 } from './variables';
 import amqp from 'amqplib';
 
@@ -84,24 +86,47 @@ export function parseMatchMessage(buffer: Buffer) {
   return MatchMessage.deserializeBinary(bufferToUint8Array(buffer));
 }
 
-export async function sendUserNotification(
+export async function sendUserMessage(
   rabbitChannel: amqp.Channel,
   userId: string,
   eventName: string,
   data: any,
 ) {
-  const userNotificationMessage: UserSocketMessage = new UserSocketMessage();
+  const userSocketMessage: UserSocketMessage = new UserSocketMessage();
 
-  userNotificationMessage.setUserId(userId);
-  userNotificationMessage.setEventName(eventName);
-  userNotificationMessage.setJsonData(JSON.stringify(data));
+  userSocketMessage.setUserId(userId);
+  userSocketMessage.setEventName(eventName);
+  userSocketMessage.setJsonData(JSON.stringify(data));
 
   await rabbitChannel.sendToQueue(
     userMessageQueue,
+    messageToBuffer(userSocketMessage),
+  );
+}
+
+export async function sendUserNotification(
+  rabbitChannel: amqp.Channel,
+  userId: string,
+  title: string,
+  description: string,
+) {
+  const userNotificationMessage: UserNotificationMessage =
+    new UserNotificationMessage();
+
+  userNotificationMessage.setUserId(userId);
+  userNotificationMessage.setTitle(title);
+  userNotificationMessage.setDescription(description);
+
+  await rabbitChannel.sendToQueue(
+    userNotificationQueue,
     messageToBuffer(userNotificationMessage),
   );
 }
 
-export function parseUserNotification(buffer: Buffer) {
+export function parseUserSocketMessage(buffer: Buffer) {
   return UserSocketMessage.deserializeBinary(bufferToUint8Array(buffer));
+}
+
+export function parseUserNotificationMessage(buffer: Buffer) {
+  return UserNotificationMessage.deserializeBinary(bufferToUint8Array(buffer));
 }

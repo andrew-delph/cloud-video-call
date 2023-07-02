@@ -25,3 +25,9 @@ message UserSocketMessage {
   string event_name = 2;
   string json_data = 3;
 }
+
+message UserNotificationMessage{
+  string user_id = 1;
+  string title = 2;
+  string description = 3;
+}

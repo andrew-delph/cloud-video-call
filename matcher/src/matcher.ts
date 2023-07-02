@@ -20,7 +20,8 @@ import {
 } from 'common-messaging';
 import {
   parseMatchMessage,
-  parseUserNotification,
+  parseUserNotificationMessage,
+  parseUserSocketMessage,
   sendReadyQueue,
 } from 'common-messaging/src/message_helper';
 import * as dotenv from 'dotenv';
@@ -29,6 +30,7 @@ import { createServer } from 'http';
 import Client from 'ioredis';
 import { Server } from 'socket.io';
 import { v4 as uuid } from 'uuid';
+import { addNotification } from './notifications';
 
 const prom = common.prom;
 const logger = common.getLogger();
@@ -146,7 +148,7 @@ export async function matchConsumer() {
       let jsonData: string = ``;
 
       try {
-        const msgContent = parseUserNotification(msg.content);
+        const msgContent = parseUserSocketMessage(msg.content);
         userId = msgContent.getUserId();
         eventName = msgContent.getEventName();
         jsonData = msgContent.getJsonData();
@@ -174,7 +176,37 @@ export async function matchConsumer() {
 
         io.in(socket).emit(eventName, JSON.parse(jsonData));
       } catch (e) {
-        logger.debug(`userNotification error=` + e); // TODO fix for types
+        logger.debug(`userMessage error=` + e); // TODO fix for types
+      } finally {
+        rabbitChannel.ack(msg);
+      }
+    },
+    {
+      noAck: false,
+    },
+  );
+
+  rabbitChannel.consume(
+    userNotificationQueue,
+    async (msg: ConsumeMessage | null) => {
+      if (msg == null) {
+        logger.error(`msg is null.`);
+        return;
+      }
+
+      let userId: string = ``;
+      let title: string = ``;
+      let description: string = ``;
+
+      try {
+        const msgContent = parseUserNotificationMessage(msg.content);
+        userId = msgContent.getUserId();
+        title = msgContent.getTitle();
+        description = msgContent.getDescription();
+
+        await addNotification(userId, title, description);
+      } catch (e) {
+        logger.error(`userNotification error=` + e); // TODO fix for types
       } finally {
         rabbitChannel.ack(msg);
       }

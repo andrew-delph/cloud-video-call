@@ -7,11 +7,16 @@ const firestore = getFirestore();
 
 const notificationsCollection = firestore.collection(`notifications`);
 
-async function addNotification(
+export async function addNotification(
   userId: string,
   title: string,
   description: string,
 ) {
+  if (!userId || !title || !description) {
+    throw Error(
+      `addNotification !userId || !title || !description userId ${userId} title ${title} description ${description}`,
+    );
+  }
   await notificationsCollection.add({
     userId,
     time: `${moment()}`,
