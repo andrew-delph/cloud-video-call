@@ -104,10 +104,18 @@ class NotificationsController extends GetxController with StateMixin {
       );
     }).toList();
 
-    // popups.add(const PopupMenuItem<String>(
-    //   value: "load_more",
-    //   child: NotificationsLoadMore(),
-    // ));
+    if (popups.isEmpty) {
+      popups.add(const PopupMenuItem<String>(
+        value: "load_more",
+        child: Text("No Notifications."),
+      ));
+    } else {
+      popups.add(const PopupMenuItem<String>(
+        value: "load_more",
+        child: NotificationsLoadMore(),
+      ));
+    }
+
     return popups;
   }
 }
