@@ -24,4 +24,7 @@ analyze:
 	flutter pub run dependency_validator
 	dart analyze
 
+dev:
+	flutter run -d chrome --hot
+
 
