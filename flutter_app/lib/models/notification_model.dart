@@ -29,7 +29,7 @@ class NotificationModel {
   }
 
   bool isRead() {
-    return !(read ?? false);
+    return read ?? false;
   }
 
   Map<String, dynamic> toJson() {
