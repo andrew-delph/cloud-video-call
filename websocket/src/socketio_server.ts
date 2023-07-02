@@ -187,17 +187,6 @@ io.on(`connection`, async (socket) => {
     }, 1000 * 60 * 5),
   );
 
-  intervals.push(
-    setInterval(() => {
-      sendUserNotification(
-        rabbitChannel,
-        socket.data.auth,
-        `from socket.io server`,
-        `time: ${moment()}`,
-      );
-    }, 1000 * 20),
-  );
-
   const createUserRequest = new CreateUserRequest();
   createUserRequest.setUserId(socket.data.auth);
   try {
