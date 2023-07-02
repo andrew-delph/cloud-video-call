@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_app/utils/utils.dart';
 import 'package:get/get.dart';
 
 // Project imports:
@@ -63,6 +64,9 @@ class NotificationsController extends GetxController with StateMixin {
 
     unreadStream.listen((event) {
       unread(event.size);
+      for (var element in event.docChanges) {
+        infoSnackbar("Notification", "${element.doc.data()?.title}");
+      }
     });
   }
 
