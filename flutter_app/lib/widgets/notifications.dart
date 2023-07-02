@@ -32,23 +32,33 @@ class NotificationsController extends GetxController with StateMixin {
     String userId = authService.getUser().uid;
     var myNotificationsStream = notificationCollection
         .where('userId', isEqualTo: userId)
+        .where(
+          'archive',
+          isEqualTo: false,
+        )
         .orderBy("time", descending: true)
         .limit(5)
         .snapshots();
 
     myNotificationsStream.listen((event) {
-      for (var element in event.docChanges) {
-        var notificationId = element.doc.id;
-        var notificationData = element.doc.data();
-        print("notification: ${notificationData?.title}");
-        if (notificationData == null) continue;
+      notifications.clear();
+      for (var element in event.docs) {
+        var notificationId = element.id;
+        var notificationData = element.data();
         notifications[notificationId] = notificationData;
       }
     });
 
     var unreadStream = notificationCollection
         .where('userId', isEqualTo: userId)
-        .where('read', isEqualTo: false)
+        .where(
+          'read',
+          isEqualTo: false,
+        )
+        .where(
+          'archive',
+          isEqualTo: false,
+        )
         .snapshots();
 
     unreadStream.listen((event) {
@@ -63,15 +73,42 @@ class NotificationsController extends GetxController with StateMixin {
       title: "${DateTime.now().toString()}",
       time: DateTime.now().toString(),
       read: false,
+      archive: false,
     ));
   }
 
   readNotification(String id) async {
+    print("readNotification $id");
     notificationCollection.doc(id).update({"read": true});
+  }
+
+  archiveNotification(String id) async {
+    print("archiveNotification $id");
+    notificationCollection.doc(id).update({"archive": true});
   }
 
   DocumentReference<NotificationModel> getMyNotificationsDoc() {
     return notificationCollection.doc();
+  }
+
+  List<PopupMenuItem<String>> loadNotifications() {
+    print("loadNotifications");
+    var popups = notifications().entries.map((entry) {
+      if (!(entry.value.isRead())) {
+        readNotification(entry.key);
+      }
+
+      return PopupMenuItem<String>(
+        value: entry.key,
+        child: NotificationsItem(entry.key, entry.value),
+      );
+    }).toList();
+
+    popups.add(const PopupMenuItem<String>(
+      value: "load_more",
+      child: NotificationsLoadMore(),
+    ));
+    return popups;
   }
 }
 
@@ -82,25 +119,18 @@ class NotificationsButton extends GetView<NotificationsController> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        PopupMenuButton<String>(
-          icon: Obx(() => Badge(
-                label: Text(controller.unread.toString()),
-                isLabelVisible: controller.unread() > 0,
-                child: const Icon(Icons.notifications),
-              )),
-          onSelected: (value) {
-            controller.addNotification();
-            controller.readNotification(value);
-          },
-          itemBuilder: (BuildContext context) => controller
-              .notifications()
-              .entries
-              .map((entry) => PopupMenuItem<String>(
-                    value: entry.key,
-                    child: NotificationsItem(entry.value),
-                  ))
-              .toList(),
-        )
+        Obx(() {
+          print("calling the build thing");
+          return PopupMenuButton<String>(
+            icon: Badge(
+              label: Text(controller.unread.toString()),
+              isLabelVisible: controller.unread() > 0,
+              child: const Icon(Icons.notifications),
+            ),
+            itemBuilder: (BuildContext context) =>
+                controller.loadNotifications(),
+          );
+        })
       ],
     );
   }
@@ -108,16 +138,41 @@ class NotificationsButton extends GetView<NotificationsController> {
 
 class NotificationsItem extends GetView<NotificationsController> {
   final NotificationModel notification;
+  final String id;
 
-  const NotificationsItem(this.notification, {super.key});
+  const NotificationsItem(this.id, this.notification, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(notification.title ?? "No title."),
-        Text(notification.description ?? "No description.")
-      ],
+    return Row(children: [
+      Expanded(
+          child: Column(
+        children: [
+          Text(notification.title ?? "No title."),
+          Text(notification.description ?? "No description.")
+        ],
+      )),
+      IconButton(
+          onPressed: () {
+            controller.archiveNotification(id);
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.close))
+    ]);
+  }
+}
+
+class NotificationsLoadMore extends GetView<NotificationsController> {
+  const NotificationsLoadMore({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        print("loading more");
+        controller.addNotification();
+      },
+      child: const Text("Load More."),
     );
   }
 }

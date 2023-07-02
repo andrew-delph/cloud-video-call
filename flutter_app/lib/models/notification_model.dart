@@ -4,9 +4,15 @@ class NotificationModel {
   String? title;
   String? description;
   bool? read;
+  bool? archive;
 
   NotificationModel(
-      {this.userId, this.time, this.title, this.description, this.read});
+      {this.userId,
+      this.time,
+      this.title,
+      this.description,
+      this.read,
+      this.archive});
 
   NotificationModel.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
@@ -14,11 +20,16 @@ class NotificationModel {
     title = json['title'];
     description = json['description'];
     read = json['read'];
+    archive = json['archive'];
   }
 
   @override
   String toString() {
     return toJson().toString();
+  }
+
+  bool isRead() {
+    return !(read ?? false);
   }
 
   Map<String, dynamic> toJson() {
@@ -28,6 +39,7 @@ class NotificationModel {
     data['title'] = title;
     data['description'] = description;
     data['read'] = read;
+    data['archive'] = archive;
     return data;
   }
 }
