@@ -51,7 +51,7 @@ Future<void> initializeApp() async {
   Get.put(LocalPreferences(), permanent: true);
   Get.put(AnalyticsService(), permanent: true);
 
-  Get.put(NotificationsController(), permanent: true);
+  Get.lazyPut(() => NotificationsController());
 
   log('Initialize');
 }
