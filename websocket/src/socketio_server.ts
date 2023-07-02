@@ -16,7 +16,10 @@ import {
   createNeo4jClient,
   matchmakerQueueName,
 } from 'common-messaging';
-import { sendMatchmakerQueue } from 'common-messaging/src/message_helper';
+import {
+  sendMatchmakerQueue,
+  sendUserNotification,
+} from 'common-messaging/src/message_helper';
 import * as dotenv from 'dotenv';
 import express from 'express';
 import { initializeApp } from 'firebase-admin/app';
@@ -182,6 +185,17 @@ io.on(`connection`, async (socket) => {
       logger.debug(`sending activity for ${socket.data.auth}`);
       socket.emit(`activity`, `${moment()}`);
     }, 1000 * 60 * 5),
+  );
+
+  intervals.push(
+    setInterval(() => {
+      sendUserNotification(
+        rabbitChannel,
+        socket.data.auth,
+        `from socket.io server`,
+        `time: ${moment()}`,
+      );
+    }, 1000 * 20),
   );
 
   const createUserRequest = new CreateUserRequest();

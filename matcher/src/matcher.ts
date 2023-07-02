@@ -204,6 +204,10 @@ export async function matchConsumer() {
         title = msgContent.getTitle();
         description = msgContent.getDescription();
 
+        logger.debug(
+          `sending notification ${userId}, ${title}, ${description}`,
+        );
+
         await addNotification(userId, title, description);
       } catch (e) {
         logger.error(`userNotification error=` + e); // TODO fix for types
