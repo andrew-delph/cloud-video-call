@@ -334,6 +334,9 @@ importers:
 
   neo4j-grpc-server:
     dependencies:
+      amqplib:
+        specifier: ^0.10.3
+        version: 0.10.3
       common:
         specifier: link:../common
         version: link:../common
@@ -362,6 +365,9 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
     devDependencies:
+      '@types/amqplib':
+        specifier: ^0.10.1
+        version: 0.10.1
       '@types/chai':
         specifier: ^4.3.5
         version: 4.3.5

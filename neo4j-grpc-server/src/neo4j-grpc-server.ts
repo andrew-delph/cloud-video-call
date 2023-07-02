@@ -36,13 +36,18 @@ import { initializeApp, getApp } from 'firebase-admin/app';
 import { Auth } from 'firebase-admin/auth';
 import * as neo4j from 'neo4j-driver';
 import { v4 } from 'uuid';
-
-const promClient = new common.PromClient(`neo4j-grpc-server`);
+import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
+import { sendUserNotification } from 'common-messaging/src/message_helper';
 
 common.listenGlobalExceptions(async () => {
   await promClient.stop();
   await server.forceShutdown();
 });
+
+let rabbitConnection: Connection;
+let rabbitChannel: Channel;
+
+const promClient = new common.PromClient(`neo4j-grpc-server`);
 
 promClient.startPush();
 
@@ -390,7 +395,7 @@ const createFeedback = async (
       WHERE id(r) = $feedbackId
       MERGE (n1)-[f:FEEDBACK {feedbackId: $feedbackId, other: r.other}]->(n2)
       SET f.score = $score, f.createDate = datetime()
-      return f
+      return f , n2.userId as otherUser
     `,
     { score, userId, feedbackId },
   );
@@ -407,6 +412,8 @@ const createFeedback = async (
       message: `Feedback not created.`,
     });
   }
+
+  const otherUser = feedback_rel.records[0].get(`otherUser`);
 
   // unfriend
   let unfriend_rel: neo4j.QueryResult = await session.run(
@@ -488,6 +495,30 @@ const createFeedback = async (
       negative_rel.summary.updateStatistics,
     )} with score: ${score}`,
   );
+
+  if (score > 0) {
+    const friends_created =
+      friend_rel.summary.updateStatistics.updates().relationshipsCreated;
+    if (friends_created) {
+      sendUserNotification(
+        rabbitChannel,
+        otherUser,
+        `Friend Request Accepted`,
+        `${otherUser} has accepted your friend request`,
+      );
+    } else {
+      sendUserNotification(
+        rabbitChannel,
+        otherUser,
+        `Friend Request`,
+        `You recieved a friend request from ${otherUser}`,
+      );
+    }
+
+    logger.debug(
+      `friends_created: ${friends_created} .... ${friend_rel.records.length}`,
+    );
+  }
 
   await session.close();
 
@@ -748,6 +779,9 @@ const addr = `0.0.0.0:${process.env.PORT || 80}`;
 
 server.bindAsync(addr, grpc.ServerCredentials.createInsecure(), async () => {
   await verifyIndexes();
+
+  [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
+
   logger.info(`starting on: ${addr}`);
   server.start();
 });

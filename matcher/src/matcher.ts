@@ -171,7 +171,7 @@ export async function matchConsumer() {
         }
 
         logger.debug(
-          `User Notification: userid ${userId}, eventName: ${eventName}`,
+          `UserSocketMessage: userid ${userId}, eventName: ${eventName}`,
         );
 
         io.in(socket).emit(eventName, JSON.parse(jsonData));
@@ -205,7 +205,7 @@ export async function matchConsumer() {
         description = msgContent.getDescription();
 
         logger.debug(
-          `sending notification ${userId}, ${title}, ${description}`,
+          `UserNotificationMessage ${userId}, ${title}, ${description}`,
         );
 
         await addNotification(userId, title, description);
