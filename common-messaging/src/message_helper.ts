@@ -2,7 +2,7 @@ import {
   ReadyMessage,
   MatchmakerMessage,
   MatchMessage,
-  UserNotificationMessage,
+  UserSocketMessage,
 } from './gen/proto/rabbitmq_pb';
 import { messageToBuffer } from './utils';
 import { bufferToUint8Array } from './utils';
@@ -12,7 +12,7 @@ import {
   matchmakerQueueName,
   maxPriority,
   readyRoutingKey,
-  userNotificationQueue,
+  userMessageQueue,
 } from './variables';
 import amqp from 'amqplib';
 
@@ -90,19 +90,18 @@ export async function sendUserNotification(
   eventName: string,
   data: any,
 ) {
-  const userNotificationMessage: UserNotificationMessage =
-    new UserNotificationMessage();
+  const userNotificationMessage: UserSocketMessage = new UserSocketMessage();
 
   userNotificationMessage.setUserId(userId);
   userNotificationMessage.setEventName(eventName);
   userNotificationMessage.setJsonData(JSON.stringify(data));
 
   await rabbitChannel.sendToQueue(
-    userNotificationQueue,
+    userMessageQueue,
     messageToBuffer(userNotificationMessage),
   );
 }
 
 export function parseUserNotification(buffer: Buffer) {
-  return UserNotificationMessage.deserializeBinary(bufferToUint8Array(buffer));
+  return UserSocketMessage.deserializeBinary(bufferToUint8Array(buffer));
 }

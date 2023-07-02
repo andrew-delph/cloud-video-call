@@ -21,8 +21,8 @@ import {
   delayExchange,
   readyRoutingKey,
   FilterObject,
-  userNotificationQueue,
   Neo4jClient,
+  userMessageQueue,
 } from 'common-messaging';
 import { message_helper } from 'common-messaging';
 import express from 'express';
@@ -269,7 +269,7 @@ const connectRabbit = async () => {
 
   await rabbitChannel.bindQueue(readyQueueName, delayExchange, readyRoutingKey);
 
-  await rabbitChannel.assertQueue(userNotificationQueue, {
+  await rabbitChannel.assertQueue(userMessageQueue, {
     durable: true,
   });
 

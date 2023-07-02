@@ -20,7 +20,7 @@ message MatchMessage {
   double score = 3;
 }
 
-message UserNotificationMessage {
+message UserSocketMessage {
   string user_id = 1;
   string event_name = 2;
   string json_data = 3;

@@ -15,7 +15,7 @@ import {
   matchQueueName,
   matchmakerQueueName,
   MatchMessage,
-  userNotificationQueue,
+  userMessageQueue,
 } from 'common-messaging';
 import {
   parseMatchMessage,
@@ -72,7 +72,7 @@ export async function matchConsumer() {
     durable: true,
   });
 
-  await rabbitChannel.assertQueue(userNotificationQueue, {
+  await rabbitChannel.assertQueue(userMessageQueue, {
     durable: true,
   });
   logger.info(`rabbitmq connected`);
@@ -129,7 +129,7 @@ export async function matchConsumer() {
   );
 
   rabbitChannel.consume(
-    userNotificationQueue,
+    userMessageQueue,
     async (msg: ConsumeMessage | null) => {
       if (msg == null) {
         logger.error(`msg is null.`);
