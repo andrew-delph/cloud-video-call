@@ -23,6 +23,7 @@ import {
   FilterObject,
   Neo4jClient,
   userMessageQueue,
+  userNotificationQueue,
 } from 'common-messaging';
 import { message_helper } from 'common-messaging';
 import express from 'express';
@@ -270,6 +271,10 @@ const connectRabbit = async () => {
   await rabbitChannel.bindQueue(readyQueueName, delayExchange, readyRoutingKey);
 
   await rabbitChannel.assertQueue(userMessageQueue, {
+    durable: true,
+  });
+
+  await rabbitChannel.assertQueue(userNotificationQueue, {
     durable: true,
   });
 

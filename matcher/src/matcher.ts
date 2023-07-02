@@ -16,6 +16,7 @@ import {
   matchmakerQueueName,
   MatchMessage,
   userMessageQueue,
+  userNotificationQueue,
 } from 'common-messaging';
 import {
   parseMatchMessage,
@@ -73,6 +74,10 @@ export async function matchConsumer() {
   });
 
   await rabbitChannel.assertQueue(userMessageQueue, {
+    durable: true,
+  });
+
+  await rabbitChannel.assertQueue(userNotificationQueue, {
     durable: true,
   });
   logger.info(`rabbitmq connected`);
