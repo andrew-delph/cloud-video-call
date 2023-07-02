@@ -26,6 +26,7 @@
     "firebase-admin": "^10.3.0",
     "firebase-functions": "^4.1.1",
     "ioredis": "5.2.5",
+    "moment": "^2.29.4",
     "redlock": "^5.0.0-beta.2",
     "socket.io": "4.6.1",
     "uuid": "^9.0.0"
