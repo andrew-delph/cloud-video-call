@@ -510,7 +510,7 @@ const createFeedback = async (
       sendUserNotification(
         rabbitChannel,
         otherUser,
-        `Friend Request`,
+        `Friend Request Recieved`,
         `You recieved a friend request from ${otherUser}`,
       );
     }
