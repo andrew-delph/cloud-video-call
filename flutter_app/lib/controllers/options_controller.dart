@@ -122,6 +122,8 @@ class PreferencesController extends GetxController with StateMixin {
       throw "bytes is null";
     }
 
+    await deleteProfilePicture();
+
     // uncomment pica.min.js for index.html
     // print("before compression: ${bytes.length}");
     // bytes = await FlutterImageCompress.compressWithList(
@@ -133,13 +135,46 @@ class PreferencesController extends GetxController with StateMixin {
 
     User currentUser = authService.getUser();
 
-    var fileName = currentUser.uid;
+    var userId = currentUser.uid;
 
-    var imageRef = (FirebaseStorage.instance.ref('profile-picture/$fileName'));
+    var imageRef = (FirebaseStorage.instance.ref('profile-picture/$userId'));
     await imageRef.putData(bytes, SettableMetadata(contentType: "image/png"));
 
-    await currentUser.updatePhotoURL(await imageRef.getDownloadURL());
+    int maxWaitCount = 10;
+    for (int i = 0; i <= maxWaitCount; i++) {
+      var imageRef =
+          (FirebaseStorage.instance.ref('profile-picture/${userId}_100x100'));
+
+      try {
+        await imageRef.getMetadata();
+        break;
+      } catch (_) {}
+
+      if (i == maxWaitCount) {
+        errorSnackbar("Upload Failed.", "Failed to upload profile picutre.");
+        return;
+      } else {
+        await Future.delayed(const Duration(microseconds: 500));
+      }
+    }
+
     infoSnackbar("Profile Picture", "Updated.");
+    unsavedChanges.refresh();
+  }
+
+  Future<void> deleteProfilePicture() async {
+    User currentUser = authService.getUser();
+
+    var userId = currentUser.uid;
+
+    try {
+      var imageRef =
+          (FirebaseStorage.instance.ref('profile-picture/${userId}_100x100'));
+
+      await imageRef.delete();
+    } catch (_) {
+      print("no profile picture to delete.");
+    }
   }
 
   Future<UserDataModel> updateMyUserData() async {
