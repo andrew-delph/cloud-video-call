@@ -31,3 +31,10 @@ message UserNotificationMessage{
   string title = 2;
   string description = 3;
 }
+
+
+message ChatEventMessage{
+  string sourceId = 1;
+  string targetId = 2;
+  string message = 3;
+}

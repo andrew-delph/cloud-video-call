@@ -146,3 +146,32 @@ export namespace UserNotificationMessage {
         description: string,
     }
 }
+
+export class ChatEventMessage extends jspb.Message { 
+    getSourceid(): string;
+    setSourceid(value: string): ChatEventMessage;
+
+    getTargetid(): string;
+    setTargetid(value: string): ChatEventMessage;
+
+    getMessage(): string;
+    setMessage(value: string): ChatEventMessage;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): ChatEventMessage.AsObject;
+    static toObject(includeInstance: boolean, msg: ChatEventMessage): ChatEventMessage.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: ChatEventMessage, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): ChatEventMessage;
+    static deserializeBinaryFromReader(message: ChatEventMessage, reader: jspb.BinaryReader): ChatEventMessage;
+}
+
+export namespace ChatEventMessage {
+    export type AsObject = {
+        sourceid: string,
+        targetid: string,
+        message: string,
+    }
+}
