@@ -30,6 +30,10 @@ export async function addNotification(
       `addNotification !userId || !title || !description userId ${userId} title ${title} description ${description}`,
     );
   }
+  if (common.isTestUser(userId)) {
+    logger.debug(`ignoring notification for test user.`);
+    return;
+  }
   await notificationsCollection.add({
     userId,
     time: `${moment()}`,
