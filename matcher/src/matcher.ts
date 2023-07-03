@@ -25,6 +25,7 @@ import {
   parseUserNotificationMessage,
   parseUserSocketMessage,
   sendReadyQueue,
+  sendUserNotification,
 } from 'common-messaging/src/message_helper';
 import * as dotenv from 'dotenv';
 import express from 'express';
@@ -230,24 +231,57 @@ export async function matchConsumer() {
         return;
       }
 
-      let sourceId: string = ``;
-      let targetId: string = ``;
+      let source: string = ``;
+      let target: string = ``;
       let message: string = ``;
 
       try {
         const msgContent = parseChatEventMessage(msg.content);
-        sourceId = msgContent.getSource();
-        targetId = msgContent.getTarget();
+        source = msgContent.getSource();
+        target = msgContent.getTarget();
         message = msgContent.getMessage();
 
-        logger.debug(`ChatEventMessage ${sourceId}, ${targetId}, ${message}`);
+        logger.debug(`ChatEventMessage ${source}, ${target}, ${message}`);
+
+        const chatMessage = await common.persistChat(
+          mainRedisClient,
+          source,
+          target,
+          message,
+        );
 
         const targetSocket = await mainRedisClient.hget(
           common.connectedAuthMapName,
-          targetId,
+          target,
         );
 
-        if (!targetSocket) {
+        let notify: boolean;
+
+        if (targetSocket) {
+          // TODO if the client is not tracking the chat. dont bother sending.
+          try {
+            await io
+              .in(targetSocket)
+              .timeout(3000)
+              .emitWithAck(`chat`, chatMessage);
+            notify = false;
+          } catch (err) {
+            logger.debug(
+              `target ${target} targetSocket ${targetSocket} did not ack chat message. Will send notification.`,
+            );
+            notify = true;
+          }
+        } else {
+          notify = true;
+        }
+
+        if (notify) {
+          await sendUserNotification(
+            rabbitChannel,
+            target,
+            `Unread Message`,
+            `Messages from ${target}`,
+          );
         }
       } catch (e) {
         logger.error(`ChatEventMessage error=` + e); // TODO fix for types
