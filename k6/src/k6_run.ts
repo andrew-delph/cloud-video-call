@@ -78,11 +78,18 @@ export const options = {
     //   ],
     // },
 
-    chat: {
+    chatStream: {
+      executor: `shared-iterations`,
+      exec: `biChatStream`,
+      vus: 5,
+      iterations: 2000,
+      maxDuration: `10h`,
+    },
+    chatPull: {
       executor: `shared-iterations`,
       exec: `biChatPull`,
-      vus: 1,
-      iterations: 1,
+      vus: 5,
+      iterations: 2000,
       maxDuration: `10h`,
     },
   },
@@ -450,7 +457,7 @@ export async function biChatStream() {
       error_counter.add(1);
     });
 
-    const numberOfChats = 1000;
+    const numberOfChats = 100;
 
     const socket1ExpectChat = socket1.expectMessage(`chat`, 0, numberOfChats);
     const socket2ExpectChat = socket2.expectMessage(`chat`, 0, numberOfChats);
@@ -582,13 +589,9 @@ export async function biChatPull() {
 
         check(chatMessages, {
           '>= 5 msgs returned': (val) => {
-            return val.length >= 5;
+            return Array.isArray(val) && val.length >= 5;
           },
         });
-        console.log(
-          `r.body`,
-          chatMessages.map((value) => value.message),
-        );
       });
   });
 
