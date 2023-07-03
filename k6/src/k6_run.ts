@@ -431,9 +431,9 @@ export async function longWait() {
 
 export async function chat() {
   console.log(`RUNNING CHAT`);
-  let auth1: string = `k6_bi_chat${Math.random()}`;
+  let auth1: string = `k6_bi_chat_1_${Math.random()}`;
 
-  let auth2: string = `k6_bi_chat${Math.random()}`;
+  let auth2: string = `k6_bi_chat_2_${Math.random()}`;
 
   const socket1 = new K6SocketIoExp(ws_url, { auth: auth1 }, {}, 0);
 
@@ -450,7 +450,7 @@ export async function chat() {
       error_counter.add(1);
     });
 
-    const numberOfChats = 10;
+    const numberOfChats = 2000;
 
     const socket1ExpectChat = socket1.expectMessage(`chat`, 0, numberOfChats);
     const socket2ExpectChat = socket2.expectMessage(`chat`, 0, numberOfChats);
@@ -468,17 +468,34 @@ export async function chat() {
         established_elapsed.add(data.elapsed);
       })
       .then(async () => {
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < numberOfChats; i++) {
           socket1.send(
             `chat`,
-            { target: auth2, message: `msg from socket1. #${numberOfChats}` },
+            { target: auth2, message: `msg from socket1. #${i}` },
             null,
           );
           socket2.send(
             `chat`,
-            { target: auth1, message: `msg from socket2. #${numberOfChats}` },
+            { target: auth1, message: `msg from socket2. #${i}` },
             null,
           );
+
+          socket1ExpectChat.take(i + 1).then((data) => {
+            if (typeof data.callback === `function`) {
+              data.callback({ good: `1111` });
+            } else {
+              error_counter.add(1);
+              console.error(`no chat ack.`);
+            }
+          });
+          socket2ExpectChat.take(i + 1).then((data) => {
+            if (typeof data.callback === `function`) {
+              data.callback({ good: `2222` });
+            } else {
+              error_counter.add(1);
+              console.error(`no chat ack.`);
+            }
+          });
         }
 
         return Promise.all([
