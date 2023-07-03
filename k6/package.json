@@ -25,7 +25,7 @@
     "node": ">=16 <17"
   },
   "scripts": {
-    "local": "npm run webpack && bash ./run-local.sh dist/k6.js",
+    "local": "npm run webpack && bash ./run-local.sh dist/k6_run.js",
     "webpack": "webpack --no-color",
     "webpack:watch": "webpack --progress --watch"
   },

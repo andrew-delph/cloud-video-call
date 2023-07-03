@@ -1,11 +1,10 @@
 import { uuidv4 as uuid } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
-import { setTimeout, clearTimeout } from 'k6/experimental/timers';
 import { check } from 'k6';
+import { setTimeout, clearTimeout } from 'k6/experimental/timers';
 import { ReplaySubject, take } from 'rxjs';
 
 class CustomReplaySubject extends ReplaySubject<any> {
-
-  take(num:number):Promise<any>{
+  take(num: number): Promise<any> {
     return this.pipe(take(num)).toPromise();
   }
 }
@@ -106,7 +105,7 @@ export abstract class K6SocketIoBase {
       clearTimeout(max_time_timeout);
       this.closeWaitingEvents();
       check(this.connected, { 'connection made': (r) => r });
-      check(this.hasError, { "no error": (r) => !r });
+      check(this.hasError, { 'no error': (r) => !r });
     });
   }
 
@@ -215,7 +214,11 @@ export abstract class K6SocketIoBase {
     );
   }
 
-  expectMessage(event: string, timeout = 0,expected_num=1):CustomReplaySubject {
+  expectMessage(
+    event: string,
+    timeout = 0,
+    expected_num = 1,
+  ): CustomReplaySubject {
     const startTime = Date.now();
     const waitingEventId: string = `${event}-${uuid()}`;
     const wrapper = this;
@@ -224,12 +227,12 @@ export abstract class K6SocketIoBase {
     const expectSubject = new CustomReplaySubject();
 
     const eventMessageHandle = (data: any, callback: any) => {
-      console.log(`got expected msg`,event,data)
-      recieved_num = recieved_num+ 1;
+      console.log(`got expected msg`, event, data);
+      recieved_num = recieved_num + 1;
       const elapsed = Date.now() - startTime;
-      const isSuccess = elapsed < timeout || timeout==0;
+      const isSuccess = elapsed < timeout || timeout == 0;
 
-      if(recieved_num == expected_num){
+      if (recieved_num == expected_num) {
         delete wrapper.waitingEventMap[waitingEventId];
         delete wrapper.eventMessageHandleMap[event];
       }
@@ -240,7 +243,7 @@ export abstract class K6SocketIoBase {
         expectSubject.error(Error(`timeout reached for ${waitingEventId}`));
       }
     };
-    wrapper.setEventMessageHandle(event,eventMessageHandle);
+    wrapper.setEventMessageHandle(event, eventMessageHandle);
     wrapper.waitingEventMap[waitingEventId] = expectSubject.error;
 
     return expectSubject;

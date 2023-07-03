@@ -1,14 +1,13 @@
-const secure = false;
-const domain = __ENV.HOST || `localhost:8888`;
-
-import http from 'k6/http';
-import { check, sleep } from 'k6';
-import { options_url, redisClient } from './k6';
-
+import { options_url, redisClient } from './k6_run';
 import {
   randomString,
   randomIntBetween,
 } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+import { check, sleep } from 'k6';
+import http from 'k6/http';
+
+const secure = false;
+const domain = __ENV.HOST || `localhost:8888`;
 
 export enum UserType {
   Random = `Random`,
@@ -63,9 +62,9 @@ export const createLocationBound = (auth: string): User => {
 
 export let hotRange = 6;
 
-export const setHotRange = (range:number)=>{
-  hotRange = range
-}
+export const setHotRange = (range: number) => {
+  hotRange = range;
+};
 
 function* hotnessGeneratorFunction() {
   let current = 0;
@@ -86,14 +85,14 @@ export const createHot = (auth: string): User => {
 };
 
 export const createGroupA = (auth: string): User => {
-  const attributes = {group:`aaa`};
+  const attributes = { group: `aaa` };
   const filters = {};
 
   return new User(auth, attributes, filters, UserType.GroupA);
 };
 
 export const createGroupB = (auth: string): User => {
-  const attributes = {group:`bbb`};
+  const attributes = { group: `bbb` };
   const filters = {};
 
   return new User(auth, attributes, filters, UserType.GroupB);

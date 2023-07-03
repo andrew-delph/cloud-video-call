@@ -1,5 +1,6 @@
 import { K6SocketIoBase } from './K6SocketIoBase';
 import ws, { Socket } from 'k6/ws';
+
 export class K6SocketIoMain extends K6SocketIoBase {
   connect(): void {
     const socketIo = this;
