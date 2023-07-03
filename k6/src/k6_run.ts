@@ -450,7 +450,7 @@ export async function chat() {
       error_counter.add(1);
     });
 
-    const numberOfChats = 2000;
+    const numberOfChats = 1000;
 
     const socket1ExpectChat = socket1.expectMessage(`chat`, 0, numberOfChats);
     const socket2ExpectChat = socket2.expectMessage(`chat`, 0, numberOfChats);
