@@ -6,6 +6,7 @@ import {
 } from './UserPreferences';
 import { user_created } from './metrics';
 import { cosineSimilarity } from './utils';
+import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
 import * as common from 'common';
 import {
   CreateMatchRequest,
@@ -32,12 +33,11 @@ import {
   grpc,
   FilterObject,
 } from 'common-messaging';
+import { sendUserNotification } from 'common-messaging/src/message_helper';
 import { initializeApp, getApp } from 'firebase-admin/app';
 import { Auth } from 'firebase-admin/auth';
 import * as neo4j from 'neo4j-driver';
 import { v4 } from 'uuid';
-import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
-import { sendUserNotification } from 'common-messaging/src/message_helper';
 
 common.listenGlobalExceptions(async () => {
   await promClient.stop();

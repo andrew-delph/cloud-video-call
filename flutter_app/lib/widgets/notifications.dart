@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_app/utils/utils.dart';
 import 'package:get/get.dart';
 
 // Project imports:
 import 'package:flutter_app/models/notification_model.dart';
+import 'package:flutter_app/utils/utils.dart';
 import '../services/auth_service.dart';
 
 class NotificationsController extends GetxController with StateMixin {
@@ -74,7 +74,7 @@ class NotificationsController extends GetxController with StateMixin {
     String userId = authService.getUser().uid;
     await notificationCollection.add(NotificationModel(
       userId: userId,
-      title: "${DateTime.now().toString()}",
+      title: DateTime.now().toString(),
       time: DateTime.now().toString(),
       read: false,
       archive: false,

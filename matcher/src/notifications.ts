@@ -1,8 +1,9 @@
+import * as common from 'common';
 import { credential } from 'firebase-admin';
 import { initializeApp, getApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import moment from 'moment';
-import * as common from 'common';
+
 const logger = common.getLogger();
 
 const serviceAccount = JSON.parse(
