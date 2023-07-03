@@ -481,6 +481,12 @@ export async function chat() {
           );
 
           socket1ExpectChat.take(i + 1).then((data) => {
+            check(JSON.stringify(data), {
+              'message is in order.': (msg) => {
+                return msg.includes(`#${i}`);
+              },
+            });
+
             if (typeof data.callback === `function`) {
               data.callback({ good: `1111` });
             } else {
@@ -489,6 +495,11 @@ export async function chat() {
             }
           });
           socket2ExpectChat.take(i + 1).then((data) => {
+            check(JSON.stringify(data), {
+              'message is in order.': (msg) => {
+                return msg.includes(`#${i}`);
+              },
+            });
             if (typeof data.callback === `function`) {
               data.callback({ good: `2222` });
             } else {
