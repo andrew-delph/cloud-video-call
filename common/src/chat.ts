@@ -45,8 +45,8 @@ export async function retrieveChat(
 
   const rawMessages: string[] = await redisClient.lrange(
     key,
-    -startIndex,
     -(startIndex + limit),
+    -startIndex - 1,
   );
 
   const chatMessages: ChatMessage[] = rawMessages.map((msg) => JSON.parse(msg));
@@ -54,7 +54,7 @@ export async function retrieveChat(
   return chatMessages;
 }
 
-type ChatMessage = {
+export type ChatMessage = {
   source: string;
   target: string;
   timestamp: string;

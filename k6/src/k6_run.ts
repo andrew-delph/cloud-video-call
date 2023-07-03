@@ -80,7 +80,7 @@ export const options = {
 
     chat: {
       executor: `shared-iterations`,
-      exec: `chat`,
+      exec: `biChatPull`,
       vus: 1,
       iterations: 1,
       maxDuration: `10h`,
@@ -429,11 +429,11 @@ export async function longWait() {
   socket.connect();
 }
 
-export async function chat() {
-  console.log(`RUNNING CHAT`);
-  let auth1: string = `k6_bi_chat_1_${Math.random()}`;
+export async function biChatStream() {
+  console.log(`RUNNING biChatStream`);
+  let auth1: string = `k6_bi_stream_chat_1_${Math.random()}`;
 
-  let auth2: string = `k6_bi_chat_2_${Math.random()}`;
+  let auth2: string = `k6_bi_stream_chat_2_${Math.random()}`;
 
   const socket1 = new K6SocketIoExp(ws_url, { auth: auth1 }, {}, 0);
 
@@ -517,6 +517,78 @@ export async function chat() {
       .finally(async () => {
         socket2.close();
         socket1.close();
+      });
+  });
+
+  socket1.connect();
+  socket2.connect();
+}
+
+export async function biChatPull() {
+  console.log(`RUNNING biChatPull`);
+  let auth1: string = `k6_bi_pull_chat_1_${Math.random()}`;
+
+  let auth2: string = `k6_bi_pull_chat_2_${Math.random()}`;
+
+  const socket1 = new K6SocketIoExp(ws_url, { auth: auth1 }, {}, 0);
+
+  const socket2 = new K6SocketIoExp(ws_url, { auth: auth2 }, {}, 0);
+
+  socket1.setOnConnect(() => {
+    socket1.on(`error`, () => {
+      error_counter.add(1);
+    });
+  });
+
+  socket2.setOnConnect(() => {
+    socket2.on(`error`, () => {
+      error_counter.add(1);
+    });
+
+    const numberOfChats = 10;
+
+    Promise.all([
+      socket1.expectMessage(`established`).take(1),
+      socket2.expectMessage(`established`).take(1),
+    ])
+      .catch((error) => {
+        established_success.add(false);
+        return Promise.reject(error);
+      })
+      .then((data: any) => {
+        established_success.add(true);
+        established_elapsed.add(data.elapsed);
+        socket2.close();
+      })
+      .then(async () => {
+        for (let i = 0; i < numberOfChats; i++) {
+          socket1.send(
+            `chat`,
+            { target: auth2, message: `msg from socket1. #${i}` },
+            null,
+          );
+        }
+        await socket1.sleep(1000 * 10);
+        return;
+      })
+      .finally(async () => {
+        socket1.close();
+        const r = http.get(`${options_url}/chat/${auth1}`, {
+          headers: {
+            authorization: auth2,
+          },
+        });
+        const chatMessages: any[] = r.json(`chatMessages`) as any;
+
+        check(chatMessages, {
+          '>= 5 msgs returned': (val) => {
+            return val.length >= 5;
+          },
+        });
+        console.log(
+          `r.body`,
+          chatMessages.map((value) => value.message),
+        );
       });
   });
 
