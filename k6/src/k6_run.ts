@@ -450,9 +450,10 @@ export async function chat() {
       error_counter.add(1);
     });
 
-    const socket1ExpectChat = socket1.expectMessage(`established`);
+    const numberOfChats = 10;
 
-    const socket2ExpectChat = socket2.expectMessage(`established`);
+    const socket1ExpectChat = socket1.expectMessage(`chat`, 0, numberOfChats);
+    const socket2ExpectChat = socket2.expectMessage(`chat`, 0, numberOfChats);
 
     Promise.all([
       socket1.expectMessage(`established`).take(1),
@@ -467,35 +468,30 @@ export async function chat() {
         established_elapsed.add(data.elapsed);
       })
       .then(async () => {
-        socket1.send(
-          `chat`,
-          { target: auth2, message: `this is a test msg from 1` },
-          null,
-        );
-        socket2.send(
-          `chat`,
-          { target: auth1, message: `this is a test msg from 2` },
-          null,
-        );
+        for (let i = 0; i < 10; i++) {
+          socket1.send(
+            `chat`,
+            { target: auth2, message: `msg from socket1. #${numberOfChats}` },
+            null,
+          );
+          socket2.send(
+            `chat`,
+            { target: auth1, message: `msg from socket2. #${numberOfChats}` },
+            null,
+          );
+        }
 
         return Promise.all([
-          socket2ExpectChat.take(1),
-          socket2ExpectChat.take(1),
+          socket1ExpectChat.take(numberOfChats),
+          socket2ExpectChat.take(numberOfChats),
         ]);
       })
       .finally(async () => {
         socket2.close();
+        socket1.close();
       });
   });
 
   socket1.connect();
   socket2.connect();
-
-  socket1.setEventMessageHandle(`chat`, (data: any) => {
-    console.log(`socket1 got chat msg. ${JSON.stringify(data)}`);
-  });
-
-  socket2.setEventMessageHandle(`chat`, (data: any) => {
-    console.log(`socket2 got chat msg. ${JSON.stringify(data)}`);
-  });
 }
