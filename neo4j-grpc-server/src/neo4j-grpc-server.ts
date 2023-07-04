@@ -558,7 +558,9 @@ const checkUserFilters = async (
     const results = await session.run(
       `
       MATCH (n:Person{userId: $userId1})-[r:MATCHED]-(m:Person{userId: $userId2})
-      RETURN n.userId, m.userId, r.createDate
+      RETURN n.userId, m.userId, r.createDate, 
+      exists((n)-[:FRIENDS]-(m)) AS friends,
+      exists((n)-[:NEGATIVE]-(m)) AS negative
       ORDER by r.createDate DESC
       LIMIT 1
       `,
@@ -572,8 +574,8 @@ const checkUserFilters = async (
       responseFilter.setLastMatchedTime(
         `${results.records[0].get(`r.createDate`)}`,
       );
-    } else {
-      responseFilter.setLastMatchedTime(``);
+      responseFilter.setFriends(results.records[0].get(`friends`));
+      responseFilter.setNegative(results.records[0].get(`negative`));
     }
     reply.addFilters(responseFilter);
   }

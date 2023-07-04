@@ -19,6 +19,12 @@ import {
   userMessageQueue,
   userNotificationQueue,
   chatEventQueue,
+  makeGrpcRequest,
+  GetUserPerferencesRequest,
+  GetUserPerferencesResponse,
+  CheckUserFiltersResponse,
+  CheckUserFiltersRequest,
+  FilterObject,
 } from 'common-messaging';
 import {
   parseChatEventMessage,
@@ -245,6 +251,34 @@ export async function matchConsumer() {
         source = msgContent.getSource();
         target = msgContent.getTarget();
         message = msgContent.getMessage();
+
+        const checkUserFiltersRequest = new CheckUserFiltersRequest();
+
+        const filter = new FilterObject();
+        filter.setUserId1(source);
+        filter.setUserId2(target);
+
+        checkUserFiltersRequest.addFilters(filter);
+
+        const checkUserFiltersResponse = await makeGrpcRequest<
+          CheckUserFiltersRequest,
+          CheckUserFiltersResponse
+        >(
+          neo4jRpcClient,
+          neo4jRpcClient.checkUserFilters,
+          checkUserFiltersRequest,
+        );
+
+        const filterResponse = checkUserFiltersResponse.getFiltersList()[0];
+
+        if (!filterResponse.getFriends()) {
+          logger.warn(
+            `Message sent not friends: ${source}, ${target}, ${message} filterResponse= ${JSON.stringify(
+              checkUserFiltersResponse.toObject(),
+            )}`,
+          );
+          throw `not friends`;
+        }
 
         logger.debug(`ChatEventMessage ${source}, ${target}, ${message}`);
 
