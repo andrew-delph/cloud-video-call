@@ -57,7 +57,7 @@ Future<void> initializeApp() async {
 
   Get.put(ChatController(), permanent: true);
 
-  Get.lazyPut(() => NotificationsController());
+  Get.put(NotificationsController(), permanent: true);
 
   log('Initialize');
 }
