@@ -2,6 +2,7 @@
 import 'package:flutter_app/controllers/home_controller.dart';
 import 'package:get/get.dart';
 
+import '../models/chat_event_model.dart';
 import '../services/auth_service.dart';
 import '../services/options_service.dart';
 
@@ -10,33 +11,28 @@ import '../services/options_service.dart';
 class ChatController extends GetxController {
   ChatController();
 
-  final RxMap chatMap = RxMap();
+  final RxMap<String, RxList<ChatEventModel>> chatMap = RxMap();
   final OptionsService optionsService = Get.find();
   final AuthService authService = Get.find();
 
   appendChat(String userId, dynamic chatEvent) {
-    RxList chatRoom = loadChat(userId);
+    RxList<ChatEventModel> chatRoom = loadChat(userId);
 
     chatRoom.add(chatEvent);
   }
 
-  RxList loadChat(String userId) {
-    chatMap.putIfAbsent(userId, () {
+  RxList<ChatEventModel> loadChat(String userId) {
+    RxList<ChatEventModel> chatRoom = chatMap.putIfAbsent(userId, () {
       final HomeController homeController = Get.find();
 
-      var temp = RxList();
+      var temp = RxList<ChatEventModel>();
 
-      optionsService.loadChat(userId).then((response) {
-        List loadedMessages = response["chatMessages"] ?? [];
-
-        print("loadedMessages ${loadedMessages.length}");
-
+      optionsService.loadChat(userId).then((loadedMessages) {
         temp.addAll(loadedMessages);
         homeController.listenEvent("chat", (data) {
-          String source = data["source"];
-          String target = data["target"];
+          ChatEventModel chatEvent = ChatEventModel.fromJson(data);
 
-          if (source == userId) {
+          if (chatEvent.source == userId) {
             temp.add(data);
             return "good";
           }
@@ -45,8 +41,6 @@ class ChatController extends GetxController {
 
       return temp;
     });
-
-    RxList chatRoom = chatMap[userId];
 
     return chatRoom;
   }

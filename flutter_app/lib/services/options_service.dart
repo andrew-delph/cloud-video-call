@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 // Project imports:
 import '../config/factory.dart';
+import '../models/chat_event_model.dart';
 import '../models/history_model.dart';
 import '../models/preferences_model.dart';
 import '../models/user_model.dart';
@@ -58,8 +59,11 @@ class OptionsService extends ApiService {
     return userData;
   }
 
-  Future<dynamic> loadChat(String userId) => get(
+  Future<List<ChatEventModel>> loadChat(String userId) => get(
         '/chat/$userId',
         contentType: 'application/json',
-      ).then((response) => validateRequestGetBody(response));
+      ).then((response) => validateRequestGetBody(response, decoder: (body) {
+            List<dynamic> chatMessages = body["chatMessages"] ?? [];
+            return chatMessages.map((e) => ChatEventModel.fromJson(e)).toList();
+          }));
 }
