@@ -15,6 +15,10 @@ class ChatRoom extends GetView<ChatController> {
   Widget build(BuildContext context) {
     RxList<ChatEventModel> chatList = controller.loadChat(userId);
 
+    RxString msgInput = "".obs;
+
+    TextEditingController msgInputController = TextEditingController();
+
     return Obx(() => Column(
           children: chatList()
                   // ignore: unnecessary_cast
@@ -23,11 +27,22 @@ class ChatRoom extends GetView<ChatController> {
                       ) as Widget)
                   .toList() +
               [
-                TextButton(
-                  onPressed: () {
-                    controller.sendMessage(userId, "tseting...");
-                  },
-                  child: const Text("SEND MSG"),
+                Column(
+                  children: [
+                    TextField(
+                      controller: msgInputController,
+                      decoration: const InputDecoration(
+                        labelText: 'Enter Text',
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        controller.sendMessage(userId, msgInputController.text);
+                        msgInputController.clear();
+                      },
+                      child: const Text("SEND MSG"),
+                    )
+                  ],
                 )
               ],
         ));
