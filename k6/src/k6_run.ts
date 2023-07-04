@@ -60,15 +60,15 @@ export const options = {
     //   iterations: iterations,
     //   maxDuration: `10h`,
     // },
-    // ramping: {
-    //   executor: `ramping-vus`,
-    //   startVUs: 0,
-    //   stages: [
-    //     { duration: `5m`, target: vus },
-    //     { duration: `2d`, target: vus },
-    //     // { duration: `3m`, target: vus * 1 },
-    //   ],
-    // },
+    ramping: {
+      executor: `ramping-vus`,
+      startVUs: 0,
+      stages: [
+        { duration: `5m`, target: vus },
+        { duration: `2d`, target: vus },
+        // { duration: `3m`, target: vus * 1 },
+      ],
+    },
     // longConnection: {
     //   executor: `ramping-vus`,
     //   exec: `longWait`,
@@ -77,21 +77,20 @@ export const options = {
     //     { duration: `2d`, target: 1000 },
     //   ],
     // },
-
-    chatStream: {
-      executor: `shared-iterations`,
-      exec: `biChatStream`,
-      vus: 5,
-      iterations: 2000,
-      maxDuration: `10h`,
-    },
-    chatPull: {
-      executor: `shared-iterations`,
-      exec: `biChatPull`,
-      vus: 5,
-      iterations: 2000,
-      maxDuration: `10h`,
-    },
+    // chatStream: {
+    //   executor: `shared-iterations`,
+    //   exec: `biChatStream`,
+    //   vus: 5,
+    //   iterations: 2000,
+    //   maxDuration: `10h`,
+    // },
+    // chatPull: {
+    //   executor: `shared-iterations`,
+    //   exec: `biChatPull`,
+    //   vus: 5,
+    //   iterations: 2000,
+    //   maxDuration: `10h`,
+    // },
   },
 };
 
