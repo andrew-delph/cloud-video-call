@@ -25,21 +25,21 @@ class ChatController extends GetxController {
     RxList<ChatEventModel> chatRoom = chatMap.putIfAbsent(userId, () {
       final HomeController homeController = Get.find();
 
-      var temp = RxList<ChatEventModel>();
+      var newChatRoom = RxList<ChatEventModel>();
 
       optionsService.loadChat(userId).then((loadedMessages) {
-        temp.addAll(loadedMessages);
+        newChatRoom.addAll(loadedMessages);
         homeController.listenEvent("chat", (data) {
           ChatEventModel chatEvent = ChatEventModel.fromJson(data);
 
           if (chatEvent.source == userId) {
-            temp.add(data);
+            newChatRoom.add(data);
             return "good";
           }
         });
       });
 
-      return temp;
+      return newChatRoom;
     });
 
     return chatRoom;
