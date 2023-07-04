@@ -6,7 +6,7 @@ import '../models/history_model.dart';
 import '../models/user_model.dart';
 import '../services/options_service.dart';
 
-class HistoryController extends GetxController with StateMixin {
+class HistoryController extends GetxController with StateMixin<HistoryModel> {
   final OptionsService optionsService;
   Rx<HistoryModel> historyModel = Rx(HistoryModel());
   RxBool unsavedChanges = false.obs;
@@ -22,25 +22,17 @@ class HistoryController extends GetxController with StateMixin {
   onInit() async {
     super.onInit();
     await loadHistory();
-
-    page.listen((p0) async {
-      await loadHistory();
-    });
   }
 
-  loadHistory() async {
+  Future loadHistory() async {
     change(null, status: RxStatus.loading());
-    await optionsService
-        .getHistory(page(), limit())
-        .then((body) => historyModel(body))
-        .then((_) {
-      if (historyModel().matchHistoryList.isEmpty) {
+    return await optionsService.getHistory(page(), limit()).then((body) async {
+      if (body.matchHistoryList.isEmpty) {
         change(null, status: RxStatus.empty());
       } else {
-        change(null, status: RxStatus.success());
+        change(body, status: RxStatus.success());
       }
     }).catchError((error) {
-      print("history error: $error");
       change(null, status: RxStatus.error(error.toString()));
     });
   }
@@ -60,16 +52,18 @@ class HistoryController extends GetxController with StateMixin {
     return optionsService.getUserData(userId);
   }
 
-  void nextPage() {
+  Future<void> nextPage() async {
     if (historyModel().matchHistoryList.isNotEmpty) {
       page(page() + 1);
     }
+    await loadHistory();
   }
 
-  void prevPage() {
+  Future<void> prevPage() async {
     var currentPage = page();
     if (currentPage > 0) {
       page(currentPage - 1);
     }
+    await loadHistory();
   }
 }

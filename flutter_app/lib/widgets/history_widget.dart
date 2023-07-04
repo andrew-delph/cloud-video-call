@@ -14,7 +14,7 @@ import 'chat_room_widget.dart';
 // Package imports:
 
 class HistoryWidget extends StatelessWidget {
-  final HistoryModel historyModel;
+  final HistoryModel? historyModel;
   const HistoryWidget({
     Key? key,
     required this.historyModel,
@@ -22,8 +22,8 @@ class HistoryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> historyList =
-        historyModel.matchHistoryList.expand((historyItem) {
+    List<StatelessWidget>? historyList =
+        historyModel?.matchHistoryList.expand((historyItem) {
       return [
         HistoryItemWidget(
           historyItem: historyItem,
@@ -32,7 +32,8 @@ class HistoryWidget extends StatelessWidget {
       ];
     }).toList();
 
-    return Column(children: historyList);
+    return Column(
+        children: historyList ?? [const Text("Error Loading History")]);
   }
 }
 
@@ -49,6 +50,7 @@ class HistoryItemWidget extends GetView<HistoryController> {
 
   @override
   Widget build(BuildContext context) {
+    print("build history");
     RelationShipState relationShipState;
     if ((historyItem.userId1Score ?? 1) < 0) {
       relationShipState = RelationShipState.blocked;

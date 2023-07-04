@@ -62,7 +62,9 @@ const rateLimit = (key: string, RPM: number) => {
       await common.ratelimit(mainRedisClient, key, req.userId, RPM);
     } catch (err) {
       logger.warn(`${err}`);
-      return next(`Rate Limit Overflow`);
+      return res
+        .status(401)
+        .json({ error: `Rate Limit Overflow`, message: `${err}` });
     }
 
     next();
