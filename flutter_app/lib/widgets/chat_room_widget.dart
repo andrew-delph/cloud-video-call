@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_app/services/auth_service.dart';
 import 'package:get/get.dart';
 
 import '../controllers/chat_controller.dart';
+import '../models/chat_event_model.dart';
 
 class ChatRoom extends GetView<ChatController> {
   const ChatRoom(this.userId, {super.key});
@@ -11,12 +13,14 @@ class ChatRoom extends GetView<ChatController> {
 
   @override
   Widget build(BuildContext context) {
-    RxList chatList = controller.loadChat(userId);
+    RxList<ChatEventModel> chatList = controller.loadChat(userId);
 
     return Obx(() => Column(
           children: chatList()
                   // ignore: unnecessary_cast
-                  .map((e) => Text(e.toString()) as Widget)
+                  .map((e) => ChatItem(
+                        chatEvent: e,
+                      ) as Widget)
                   .toList() +
               [
                 TextButton(
@@ -27,5 +31,21 @@ class ChatRoom extends GetView<ChatController> {
                 )
               ],
         ));
+  }
+}
+
+class ChatItem extends StatelessWidget {
+  final ChatEventModel chatEvent;
+  final AuthService authService = Get.find();
+
+  ChatItem({super.key, required this.chatEvent});
+
+  @override
+  Widget build(BuildContext context) {
+    String myUserId = authService.getUser().uid;
+    return Row(children: [
+      Text("${(myUserId == chatEvent.source) ? "ME" : chatEvent.source}: "),
+      Text("${chatEvent.message}")
+    ]);
   }
 }
