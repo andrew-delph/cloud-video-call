@@ -11,9 +11,10 @@ class ChatRoom extends GetView<ChatController> {
 
   @override
   Widget build(BuildContext context) {
+    RxList chatList = controller.loadChat(userId);
+
     return Obx(() => Column(
-          children: controller
-                  .loadChat(userId)()
+          children: chatList()
                   // ignore: unnecessary_cast
                   .map((e) => Text(e.toString()) as Widget)
                   .toList() +
