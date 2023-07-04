@@ -3,6 +3,7 @@ import 'package:flutter_app/controllers/home_controller.dart';
 import 'package:get/get.dart';
 
 import '../services/auth_service.dart';
+import '../services/options_service.dart';
 
 // Project imports:
 
@@ -10,7 +11,7 @@ class ChatController extends GetxController {
   ChatController();
 
   final RxMap chatMap = RxMap();
-
+  final OptionsService optionsService = Get.find();
   final AuthService authService = Get.find();
 
   appendChat(String userId, dynamic chatEvent) {
@@ -24,8 +25,16 @@ class ChatController extends GetxController {
       final HomeController homeController = Get.find();
 
       var temp = RxList();
-      homeController.listenEvent("chat", (data) {
-        temp.add(data);
+
+      optionsService.loadChat(userId).then((response) {
+        List loadedMessages = response["chatMessages"] ?? [];
+
+        print("loadedMessages ${loadedMessages.length}");
+
+        temp.addAll(loadedMessages);
+        homeController.listenEvent("chat", (data) {
+          temp.add(data);
+        });
       });
 
       return temp;

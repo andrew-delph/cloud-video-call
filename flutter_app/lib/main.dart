@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_app/controllers/chat_controller.dart';
+import 'package:flutter_app/services/options_service.dart';
 import 'package:get/get.dart';
 
 // Project imports:
@@ -50,6 +51,8 @@ Future<void> initializeApp() async {
 
   Get.put(AuthService(), permanent: true);
   Get.put(LocalPreferences(), permanent: true);
+
+  Get.put(OptionsService(), permanent: true);
   Get.put(AnalyticsService(), permanent: true);
 
   Get.put(ChatController(), permanent: true);
