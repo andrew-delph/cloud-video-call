@@ -33,7 +33,7 @@ class ChatController extends GetxController {
           ChatEventModel chatEvent = ChatEventModel.fromJson(data);
 
           if (chatEvent.source == userId) {
-            newChatRoom.add(data);
+            newChatRoom.add(chatEvent);
             return "good";
           }
         });

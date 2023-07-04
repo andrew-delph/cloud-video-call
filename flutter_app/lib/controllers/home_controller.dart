@@ -803,7 +803,6 @@ class HomeController extends GetxController with StateMixin<Widget> {
         value = request;
       }
       var callbackData = dataHandler(value);
-      print("callbackData $callbackData callback $callback");
       if (callbackData != null && callback != null) {
         callback(callbackData);
       }
