@@ -54,4 +54,9 @@ class OptionsService extends ApiService {
 
     return userData;
   }
+
+  Future<dynamic> loadChat(String userId) => get(
+        '/chat/$userId',
+        contentType: 'application/json',
+      ).then((response) => validateRequestGetBody(response));
 }

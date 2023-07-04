@@ -9,6 +9,7 @@ import 'package:flutter_app/widgets/profile_picture.dart';
 import '../controllers/history_controller.dart';
 import '../models/history_model.dart';
 import '../models/user_model.dart';
+import 'chat_room_widget.dart';
 
 // Package imports:
 
@@ -103,6 +104,8 @@ class HistoryItemWidget extends GetView<HistoryController> {
                 },
                 child: const Text('Remove Friend'),
               ),
+            if (relationShipState == RelationShipState.friends)
+              ChatRoom(historyItem.userId2!),
             if (relationShipState == RelationShipState.blocked)
               ElevatedButton(
                 onPressed: () async {

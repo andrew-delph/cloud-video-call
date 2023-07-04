@@ -264,6 +264,21 @@ app.get(`/history`, rateLimit(`get_history`, 20), async (req, res) => {
   return;
 });
 
+app.get(`/chat/:otherId`, rateLimit(`get_chat`, 20), async (req, res) => {
+  const userId: string = req.userId;
+  const otherId = req.params.otherId;
+
+  const chatMessages: common.ChatMessage[] = await common.retrieveChat(
+    mainRedisClient,
+    userId,
+    otherId,
+    0,
+    5,
+  );
+  res.status(200).json({ userId, otherId, chatMessages });
+  return;
+});
+
 app.post(`/nukedata`, async (req, res) => {
   // ONLY DELETES TEST DATA
 

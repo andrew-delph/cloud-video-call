@@ -13,10 +13,12 @@ import {
   CreateUserRequest,
   CreateUserResponse,
   ReadyMessage,
+  chatEventQueue,
   createNeo4jClient,
   matchmakerQueueName,
 } from 'common-messaging';
 import {
+  sendChatEventMessage,
   sendMatchmakerQueue,
   sendUserNotification,
 } from 'common-messaging/src/message_helper';
@@ -43,6 +45,10 @@ const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
 
   await rabbitChannel.assertQueue(matchmakerQueueName, {
+    durable: true,
+  });
+
+  await rabbitChannel.assertQueue(chatEventQueue, {
     durable: true,
   });
 
@@ -102,6 +108,17 @@ io.on(`connection`, async (socket) => {
   });
 
   socket.on(`message`, (msg) => {
+    console.log(`message:`, msg);
+  });
+
+  socket.on(`chat`, async (msg) => {
+    logger.debug(`chat msg: ${JSON.stringify(msg)}`);
+    await sendChatEventMessage(
+      rabbitChannel,
+      socket.data.auth,
+      msg[`target`],
+      msg[`message`],
+    );
     console.log(`message:`, msg);
   });
 

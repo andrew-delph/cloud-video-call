@@ -23,7 +23,7 @@ setup:
 	kubectl --context minikube delete configmap test-scripts --ignore-not-found -n k6
 	kubectl --context minikube delete configmap prometheus-config --ignore-not-found -n k6
 	kubectl --context minikube create configmap test-scripts  \
-		--from-file=./dist/k6.js -n k6
+		--from-file=./dist/k6_run.js -n k6
 
 
 run:

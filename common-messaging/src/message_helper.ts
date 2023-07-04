@@ -4,10 +4,12 @@ import {
   MatchMessage,
   UserSocketMessage,
   UserNotificationMessage,
+  ChatEventMessage,
 } from './gen/proto/rabbitmq_pb';
 import { messageToBuffer } from './utils';
 import { bufferToUint8Array } from './utils';
 import {
+  chatEventQueue,
   delayExchange,
   matchQueueName,
   matchmakerQueueName,
@@ -123,10 +125,32 @@ export async function sendUserNotification(
   );
 }
 
+export async function sendChatEventMessage(
+  rabbitChannel: amqp.Channel,
+  sourceId: string,
+  targetId: string,
+  message: string,
+) {
+  const userChatEventMessage: ChatEventMessage = new ChatEventMessage();
+
+  userChatEventMessage.setSource(sourceId);
+  userChatEventMessage.setTarget(targetId);
+  userChatEventMessage.setMessage(message);
+
+  await rabbitChannel.sendToQueue(
+    chatEventQueue,
+    messageToBuffer(userChatEventMessage),
+  );
+}
+
 export function parseUserSocketMessage(buffer: Buffer) {
   return UserSocketMessage.deserializeBinary(bufferToUint8Array(buffer));
 }
 
 export function parseUserNotificationMessage(buffer: Buffer) {
   return UserNotificationMessage.deserializeBinary(bufferToUint8Array(buffer));
+}
+
+export function parseChatEventMessage(buffer: Buffer) {
+  return ChatEventMessage.deserializeBinary(bufferToUint8Array(buffer));
 }

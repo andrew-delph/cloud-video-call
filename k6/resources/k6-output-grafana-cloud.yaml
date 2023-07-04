@@ -17,8 +17,8 @@ spec:
       name: test-scripts
       # TODO - Want a different test script? Change it here.
       # file: k6_main.js
-      file: k6.js
-  arguments: --tag testid=k6-output-grafana-cloud 
+      file: k6_run.js
+  arguments: --tag testid=k6-output-grafana-cloud
   runner:
     # TODO Change the image to your published image!
     image: andrewdelph/k6-tests:latest

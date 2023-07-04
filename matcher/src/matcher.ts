@@ -1,4 +1,5 @@
 import { iceServers, loadIceServers } from './iceservers';
+import { addNotification } from './notifications';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
 import axios from 'axios';
@@ -17,12 +18,15 @@ import {
   MatchMessage,
   userMessageQueue,
   userNotificationQueue,
+  chatEventQueue,
 } from 'common-messaging';
 import {
+  parseChatEventMessage,
   parseMatchMessage,
   parseUserNotificationMessage,
   parseUserSocketMessage,
   sendReadyQueue,
+  sendUserNotification,
 } from 'common-messaging/src/message_helper';
 import * as dotenv from 'dotenv';
 import express from 'express';
@@ -30,7 +34,6 @@ import { createServer } from 'http';
 import Client from 'ioredis';
 import { Server } from 'socket.io';
 import { v4 as uuid } from 'uuid';
-import { addNotification } from './notifications';
 
 const prom = common.prom;
 const logger = common.getLogger();
@@ -82,6 +85,11 @@ export async function matchConsumer() {
   await rabbitChannel.assertQueue(userNotificationQueue, {
     durable: true,
   });
+
+  await rabbitChannel.assertQueue(chatEventQueue, {
+    durable: true,
+  });
+
   logger.info(`rabbitmq connected`);
 
   mainRedisClient = common.createRedisClient();
@@ -211,6 +219,77 @@ export async function matchConsumer() {
         await addNotification(userId, title, description);
       } catch (e) {
         logger.error(`userNotification error=` + e); // TODO fix for types
+      } finally {
+        rabbitChannel.ack(msg);
+      }
+    },
+    {
+      noAck: false,
+    },
+  );
+
+  rabbitChannel.consume(
+    chatEventQueue,
+    async (msg: ConsumeMessage | null) => {
+      if (msg == null) {
+        logger.error(`msg is null.`);
+        return;
+      }
+
+      let source: string = ``;
+      let target: string = ``;
+      let message: string = ``;
+
+      try {
+        const msgContent = parseChatEventMessage(msg.content);
+        source = msgContent.getSource();
+        target = msgContent.getTarget();
+        message = msgContent.getMessage();
+
+        logger.debug(`ChatEventMessage ${source}, ${target}, ${message}`);
+
+        const chatMessage = await common.persistChat(
+          mainRedisClient,
+          source,
+          target,
+          message,
+        );
+
+        const targetSocket = await mainRedisClient.hget(
+          common.connectedAuthMapName,
+          target,
+        );
+
+        let notify: boolean;
+
+        if (targetSocket) {
+          // TODO if the client is not tracking the chat. dont bother sending.
+          try {
+            await io
+              .in(targetSocket)
+              .timeout(3000)
+              .emitWithAck(`chat`, chatMessage);
+            notify = false;
+          } catch (err) {
+            logger.debug(
+              `target ${target} targetSocket ${targetSocket} did not ack chat message. Will send notification.`,
+            );
+            notify = true;
+          }
+        } else {
+          notify = true;
+        }
+
+        if (notify) {
+          await sendUserNotification(
+            rabbitChannel,
+            target,
+            `Unread Message`,
+            `Messages from ${target}`,
+          );
+        }
+      } catch (e) {
+        logger.error(`ChatEventMessage error=` + e); // TODO fix for types
       } finally {
         rabbitChannel.ack(msg);
       }

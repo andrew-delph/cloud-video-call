@@ -1,15 +1,18 @@
-import http from 'k6/http';
-
+import { options_url } from '../k6_run';
 import { check, sleep } from 'k6';
-import { options_url } from '../k6';
+import http from 'k6/http';
 
 export const nuke = () => {
   console.log(`starting nuke`);
-  const r = http.post(`${options_url}/nukedata`,{},{
-    headers: {
-      authorization: `k6_admin`,
+  const r = http.post(
+    `${options_url}/nukedata`,
+    {},
+    {
+      headers: {
+        authorization: `k6_admin`,
+      },
     },
-  },);
+  );
   console.log(`completed nuke`);
   check(r, { 'DATA NUKED': r && r.status == 200 });
 };

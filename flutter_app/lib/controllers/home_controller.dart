@@ -23,11 +23,13 @@ import '../services/options_service.dart';
 import '../utils/utils.dart';
 import '../widgets/matchmaker_progress.dart';
 import '../widgets/video_render_layout.dart';
+import 'chat_controller.dart';
 
 class HomeController extends GetxController with StateMixin<Widget> {
   LocalPreferences localPreferences = Get.find();
   final AuthService authService = Get.find();
   final OptionsService optionsService;
+  final ChatController chatController = Get.find();
 
   Rx<MediaStream?> localMediaStream = Rx(null);
   Rx<MediaStream?> remoteMediaStream = Rx(null);
@@ -56,7 +58,9 @@ class HomeController extends GetxController with StateMixin<Widget> {
 
   RxMap<dynamic, dynamic> matchmakerProgess = {}.obs;
 
-  HomeController(this.optionsService);
+  HomeController(
+    this.optionsService,
+  );
 
   @override
   onInit() async {
@@ -781,5 +785,28 @@ class HomeController extends GetxController with StateMixin<Widget> {
 
     var imageRef = (FirebaseStorage.instance.ref('activity/$fileName/$now'));
     await imageRef.putData(bytes, SettableMetadata(contentType: "image/png"));
+  }
+
+  void emitEvent(String event, dynamic data) {
+    socket()!.emit(event, data);
+  }
+
+  void listenEvent(String event, dynamic Function(dynamic) dataHandler) {
+    socket()!.on(event, (request) {
+      late dynamic value;
+      Function? callback;
+      try {
+        List data = request as List;
+        value = data[0] as dynamic;
+        callback = data[1] as Function;
+      } catch (err) {
+        value = request;
+      }
+      var callbackData = dataHandler(value);
+      print("callbackData $callbackData callback $callback");
+      if (callbackData != null && callback != null) {
+        callback(callbackData);
+      }
+    });
   }
 }

@@ -60,15 +60,15 @@ export const options = {
     //   iterations: iterations,
     //   maxDuration: `10h`,
     // },
-    ramping: {
-      executor: `ramping-vus`,
-      startVUs: 0,
-      stages: [
-        { duration: `5m`, target: vus },
-        { duration: `2d`, target: vus },
-        // { duration: `3m`, target: vus * 1 },
-      ],
-    },
+    // ramping: {
+    //   executor: `ramping-vus`,
+    //   startVUs: 0,
+    //   stages: [
+    //     { duration: `5m`, target: vus },
+    //     { duration: `2d`, target: vus },
+    //     // { duration: `3m`, target: vus * 1 },
+    //   ],
+    // },
     // longConnection: {
     //   executor: `ramping-vus`,
     //   exec: `longWait`,
@@ -77,6 +77,21 @@ export const options = {
     //     { duration: `2d`, target: 1000 },
     //   ],
     // },
+
+    chatStream: {
+      executor: `shared-iterations`,
+      exec: `biChatStream`,
+      vus: 5,
+      iterations: 2000,
+      maxDuration: `10h`,
+    },
+    chatPull: {
+      executor: `shared-iterations`,
+      exec: `biChatPull`,
+      vus: 5,
+      iterations: 2000,
+      maxDuration: `10h`,
+    },
   },
 };
 
@@ -254,14 +269,15 @@ export default async function () {
             .then((data: any) => {
               console.log(`ready..`);
               return expectMatch.take(1);
-            }).then((data: any) => {
+            })
+            .then((data: any) => {
               console.log(`approval..`);
               check(data, {
                 'approval has approve': (data: any) =>
                   data && data.data && data.data.approve,
               });
               if (typeof data.callback === `function`) {
-                data.callback({approve:true});
+                data.callback({ approve: true });
               }
               return expectMatch.take(2);
             })
@@ -418,4 +434,167 @@ export async function longWait() {
       });
   });
   socket.connect();
+}
+
+export async function biChatStream() {
+  console.log(`RUNNING biChatStream`);
+  let auth1: string = `k6_bi_stream_chat_1_${Math.random()}`;
+
+  let auth2: string = `k6_bi_stream_chat_2_${Math.random()}`;
+
+  const socket1 = new K6SocketIoExp(ws_url, { auth: auth1 }, {}, 0);
+
+  const socket2 = new K6SocketIoExp(ws_url, { auth: auth2 }, {}, 0);
+
+  socket1.setOnConnect(() => {
+    socket1.on(`error`, () => {
+      error_counter.add(1);
+    });
+  });
+
+  socket2.setOnConnect(() => {
+    socket2.on(`error`, () => {
+      error_counter.add(1);
+    });
+
+    const numberOfChats = 100;
+
+    const socket1ExpectChat = socket1.expectMessage(`chat`, 0, numberOfChats);
+    const socket2ExpectChat = socket2.expectMessage(`chat`, 0, numberOfChats);
+
+    Promise.all([
+      socket1.expectMessage(`established`).take(1),
+      socket2.expectMessage(`established`).take(1),
+    ])
+      .catch((error) => {
+        established_success.add(false);
+        return Promise.reject(error);
+      })
+      .then((data: any) => {
+        established_success.add(true);
+        established_elapsed.add(data.elapsed);
+      })
+      .then(async () => {
+        for (let i = 0; i < numberOfChats; i++) {
+          socket1.send(
+            `chat`,
+            { target: auth2, message: `msg from socket1. #${i}` },
+            null,
+          );
+          socket2.send(
+            `chat`,
+            { target: auth1, message: `msg from socket2. #${i}` },
+            null,
+          );
+
+          socket1ExpectChat.take(i + 1).then((data) => {
+            check(JSON.stringify(data), {
+              'message is in order.': (msg) => {
+                return msg.includes(`#${i}`);
+              },
+            });
+
+            if (typeof data.callback === `function`) {
+              data.callback({ good: `1111` });
+            } else {
+              error_counter.add(1);
+              console.error(`no chat ack.`);
+            }
+          });
+          socket2ExpectChat.take(i + 1).then((data) => {
+            check(JSON.stringify(data), {
+              'message is in order.': (msg) => {
+                return msg.includes(`#${i}`);
+              },
+            });
+            if (typeof data.callback === `function`) {
+              data.callback({ good: `2222` });
+            } else {
+              error_counter.add(1);
+              console.error(`no chat ack.`);
+            }
+          });
+        }
+
+        return Promise.all([
+          socket1ExpectChat.take(numberOfChats),
+          socket2ExpectChat.take(numberOfChats),
+        ]);
+      })
+      .finally(async () => {
+        socket2.close();
+        socket1.close();
+      });
+  });
+
+  socket1.connect();
+  socket2.connect();
+}
+
+export async function biChatPull() {
+  console.log(`RUNNING biChatPull`);
+  let auth1: string = `k6_bi_pull_chat_1_${Math.random()}`;
+
+  let auth2: string = `k6_bi_pull_chat_2_${Math.random()}`;
+
+  const socket1 = new K6SocketIoExp(ws_url, { auth: auth1 }, {}, 0);
+
+  const socket2 = new K6SocketIoExp(ws_url, { auth: auth2 }, {}, 0);
+
+  socket1.setOnConnect(() => {
+    socket1.on(`error`, () => {
+      error_counter.add(1);
+    });
+  });
+
+  socket2.setOnConnect(() => {
+    socket2.on(`error`, () => {
+      error_counter.add(1);
+    });
+
+    const numberOfChats = 10;
+
+    Promise.all([
+      socket1.expectMessage(`established`).take(1),
+      socket2.expectMessage(`established`).take(1),
+    ])
+      .catch((error) => {
+        established_success.add(false);
+        return Promise.reject(error);
+      })
+      .then((data: any) => {
+        established_success.add(true);
+        established_elapsed.add(data.elapsed);
+        socket2.close();
+      })
+      .then(async () => {
+        for (let i = 0; i < numberOfChats; i++) {
+          socket1.send(
+            `chat`,
+            { target: auth2, message: `msg from socket1. #${i}` },
+            null,
+          );
+        }
+        await socket1.sleep(1000 * 10);
+        return;
+      })
+      .finally(async () => {
+        socket1.close();
+        const r = http.get(`${options_url}/chat/${auth1}`, {
+          headers: {
+            authorization: auth2,
+          },
+        });
+        const chatMessages: any[] = r.json(`chatMessages`) as any;
+
+        check(chatMessages, {
+          '>= 5 msgs returned': (val) => {
+            return Array.isArray(val) && val.length >= 5;
+          },
+        });
+      });
+  });
+
+  socket1.connect();
+  socket2.connect();
 }

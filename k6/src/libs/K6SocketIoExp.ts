@@ -1,5 +1,6 @@
 import { K6SocketIoBase } from './K6SocketIoBase';
 import { WebSocket } from 'k6/experimental/websockets';
+
 export class K6SocketIoExp extends K6SocketIoBase {
   connect(): void {
     const socketIo = this;

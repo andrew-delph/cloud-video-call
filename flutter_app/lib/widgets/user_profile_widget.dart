@@ -97,6 +97,7 @@ class UserProfileWidget extends GetView<PreferencesController> {
           TextButton(
             onPressed: () async {
               AuthService authService = Get.find();
+
               authService.deleteUser();
             },
             child: const Text('Delete User'),
