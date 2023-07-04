@@ -30,43 +30,52 @@ class NotificationsController extends GetxController with StateMixin {
   onInit() {
     super.onInit();
     print("init NotificationsController");
-    String userId = authService.getUser().uid;
-    var myNotificationsStream = notificationCollection
-        .where('userId', isEqualTo: userId)
-        .where(
-          'archive',
-          isEqualTo: false,
-        )
-        .orderBy("time", descending: true)
-        .limit(5)
-        .snapshots();
 
-    myNotificationsStream.listen((event) {
-      notifications.clear();
-      for (var element in event.docs) {
-        var notificationId = element.id;
-        var notificationData = element.data();
-        notifications[notificationId] = notificationData;
+    authService.user.listen((user) {
+      if (user == null) {
+        print("user not logged in. no notifications....");
+        return;
+      } else {
+        print("listening to user notifications");
       }
-    });
+      String userId = user.uid;
+      var myNotificationsStream = notificationCollection
+          .where('userId', isEqualTo: userId)
+          .where(
+            'archive',
+            isEqualTo: false,
+          )
+          .orderBy("time", descending: true)
+          .limit(5)
+          .snapshots();
 
-    var unreadStream = notificationCollection
-        .where('userId', isEqualTo: userId)
-        .where(
-          'read',
-          isEqualTo: false,
-        )
-        .where(
-          'archive',
-          isEqualTo: false,
-        )
-        .snapshots();
+      myNotificationsStream.listen((event) {
+        notifications.clear();
+        for (var element in event.docs) {
+          var notificationId = element.id;
+          var notificationData = element.data();
+          notifications[notificationId] = notificationData;
+        }
+      });
 
-    unreadStream.listen((event) {
-      unread(event.size);
-      for (var element in event.docChanges) {
-        infoSnackbar("Notification", "${element.doc.data()?.title}");
-      }
+      var unreadStream = notificationCollection
+          .where('userId', isEqualTo: userId)
+          .where(
+            'read',
+            isEqualTo: false,
+          )
+          .where(
+            'archive',
+            isEqualTo: false,
+          )
+          .snapshots();
+
+      unreadStream.listen((event) {
+        unread(event.size);
+        for (var element in event.docChanges) {
+          infoSnackbar("Notification", "${element.doc.data()?.title}");
+        }
+      });
     });
   }
 
