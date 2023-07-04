@@ -17,6 +17,7 @@ export enum UserType {
   Hot = `Hot`,
   GroupA = `GroupA`,
   GroupB = `GroupB`,
+  ChatStream = `ChatStream`,
 }
 
 export const createRandom = (auth: string): User => {
@@ -58,6 +59,18 @@ export const createLocationBound = (auth: string): User => {
   const filters = { custom: { distance: 100 } };
 
   return new User(auth, attributes, filters, UserType.LocationBound);
+};
+
+export const createChatStream = (): User => {
+  let attributes: any = { test: `biChatStream` };
+  let filters = { test: `biChatStream` };
+
+  return new User(
+    `k6_bi_stream_chat_1_${Math.random()}`,
+    attributes,
+    filters,
+    UserType.ChatStream,
+  );
 };
 
 export let hotRange = 6;

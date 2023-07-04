@@ -1,5 +1,5 @@
 import * as usersLib from './User';
-import { User, userFunctions } from './User';
+import { User, createChatStream, userFunctions } from './User';
 import { K6SocketIoExp } from './libs/K6SocketIoExp';
 import { nuke, shuffleArray } from './libs/utils';
 import { check, sleep } from 'k6';
@@ -8,7 +8,7 @@ import redis from 'k6/experimental/redis';
 import http from 'k6/http';
 import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 
-const vus = 50;
+const vus = 5;
 const authKeysNum = vus + 15; // number of users created for each parallel instance running
 const iterations = 999999; //authKeysNum * 1000;
 
@@ -54,21 +54,21 @@ const updateAuthVars = () => {
 export const options = {
   setupTimeout: `20m`,
   scenarios: {
-    // shared: {
-    //   executor: `shared-iterations`,
-    //   vus: vus,
-    //   iterations: iterations,
-    //   maxDuration: `10h`,
-    // },
-    ramping: {
-      executor: `ramping-vus`,
-      startVUs: 0,
-      stages: [
-        { duration: `5m`, target: vus },
-        { duration: `2d`, target: vus },
-        // { duration: `3m`, target: vus * 1 },
-      ],
+    shared: {
+      executor: `shared-iterations`,
+      vus: 4,
+      iterations: 4,
+      maxDuration: `10h`,
     },
+    // ramping: {
+    //   executor: `ramping-vus`,
+    //   startVUs: 0,
+    //   stages: [
+    //     { duration: `5m`, target: vus },
+    //     { duration: `2d`, target: vus },
+    //     // { duration: `3m`, target: vus * 1 },
+    //   ],
+    // },
     // longConnection: {
     //   executor: `ramping-vus`,
     //   exec: `longWait`,
@@ -80,8 +80,8 @@ export const options = {
     // chatStream: {
     //   executor: `shared-iterations`,
     //   exec: `biChatStream`,
-    //   vus: 5,
-    //   iterations: 2000,
+    //   vus: 4,
+    //   iterations: 4,
     //   maxDuration: `10h`,
     // },
     // chatPull: {
@@ -196,6 +196,83 @@ const getAuth = async () => {
 
   return auth;
 };
+const extraLabels = (myUser: usersLib.User) => {
+  return { type: myUser.getTypeString() };
+  // return {}
+};
+
+function matchUser(socket: K6SocketIoExp, myUser: usersLib.User): Promise<any> {
+  let expectMatch: any;
+  return (() => {
+    expectMatch = socket.expectMessage(`match`, 0, 3);
+    const readyPromise = socket.sendWithAck(`ready`, {});
+    return readyPromise;
+  })()
+    .catch((error) => {
+      console.info(`failed ready`);
+      ready_success.add(false, extraLabels(myUser));
+      return Promise.reject(error);
+    })
+    .then((data: any) => {
+      console.log(`ready..`);
+      return expectMatch.take(1);
+    })
+    .then((data: any) => {
+      console.log(`match 1 ... ${data}`);
+      check(data, {
+        'approval has approve': (data: any) =>
+          data && data.data && data.data.approve,
+      });
+      if (typeof data.callback === `function`) {
+        data.callback({ approve: true });
+      }
+      return expectMatch.take(2);
+    })
+    .then(async (data: any) => {
+      console.log(`match 2 ...  ${data}`);
+      if (typeof data.callback === `function`) {
+        data.callback(`ok`);
+      }
+      match_success.add(true, extraLabels(myUser));
+      match_elapsed.add(data.elapsed, extraLabels(myUser));
+      match_elapsed_gauge.add(data.elapsed / 1000, extraLabels(myUser));
+      success_counter.add(1, extraLabels(myUser));
+      check(data, {
+        'match has feedback id': (data: any) =>
+          data && data.data && data.data.feedback_id,
+        'match has role': (data: any) => data && data.data && data.data.role,
+        'match has other': (data: any) => data && data.data && data.data.other,
+        'match has score': (data: any) =>
+          data && data.data && data.data.score != null,
+        'match has iceservers': (data: any) =>
+          data &&
+          data.data &&
+          data.data.iceServers != null &&
+          Array.isArray(data.data.iceServers) &&
+          data.data.iceServers.length > 0,
+      });
+
+      const matchSuccess = await expectMatch.take(3);
+
+      console.log(`match 3 ...  ${data}`);
+
+      if (!matchSuccess || !matchSuccess.data || !matchSuccess.data.success) {
+        console.error(
+          `matchSuccess.success is incorrect: ${JSON.stringify(matchSuccess)}`,
+        );
+        throw `matchSuccess.success is incorrect: ${matchSuccess.data.success}`;
+      } else {
+        console.log(`matchSuccess.success: ${matchSuccess.data.success}`);
+      }
+
+      return data.data;
+    })
+    .catch((error) => {
+      console.info(`failed match`);
+      match_success.add(false, extraLabels(myUser));
+      return Promise.reject(error);
+    });
+}
 export default async function () {
   let auth: string;
   try {
@@ -211,17 +288,12 @@ export default async function () {
 
   const myUser = await usersLib.fromRedis(auth);
 
-  const extraLabels = () => {
-    return { type: myUser.getTypeString() };
-    // return {}
-  };
-
   const socket = new K6SocketIoExp(ws_url, { auth: auth }, {});
 
   socket.setEventMessageHandle(
     `matchmakerProgess`,
     (data: any, callback: any) => {
-      matchmakerProgess.add(1, extraLabels());
+      matchmakerProgess.add(1, extraLabels(myUser));
       check(data, {
         'valid matchmakerProgess': (data: any) =>
           data && data.readySize != null && data.filterSize != null,
@@ -237,7 +309,7 @@ export default async function () {
     let expectMatch: any;
 
     socket.on(`error`, () => {
-      error_counter.add(1, extraLabels());
+      error_counter.add(1, extraLabels(myUser));
       console.error(`socket.on.error`);
     });
 
@@ -246,92 +318,16 @@ export default async function () {
       .take(1)
       .catch((error) => {
         console.info(`failed established`);
-        established_success.add(false, extraLabels());
+        established_success.add(false, extraLabels(myUser));
         return Promise.reject(error);
       })
       .then(async (data: any) => {
-        established_success.add(true, extraLabels());
-        established_elapsed.add(data.elapsed, extraLabels());
+        established_success.add(true, extraLabels(myUser));
+        established_elapsed.add(data.elapsed, extraLabels(myUser));
 
         // start the match sequence
         for (let i = 0; i < matches; i++) {
-          await (() => {
-            expectMatch = socket.expectMessage(`match`, 0, 3);
-            const readyPromise = socket.sendWithAck(`ready`, {});
-            return readyPromise;
-          })()
-            .catch((error) => {
-              console.info(`failed ready`);
-              ready_success.add(false, extraLabels());
-              return Promise.reject(error);
-            })
-            .then((data: any) => {
-              console.log(`ready..`);
-              return expectMatch.take(1);
-            })
-            .then((data: any) => {
-              console.log(`approval..`);
-              check(data, {
-                'approval has approve': (data: any) =>
-                  data && data.data && data.data.approve,
-              });
-              if (typeof data.callback === `function`) {
-                data.callback({ approve: true });
-              }
-              return expectMatch.take(2);
-            })
-            .then(async (data: any) => {
-              console.log(`match 2 ...`);
-              if (typeof data.callback === `function`) {
-                data.callback(`ok`);
-              }
-              match_success.add(true, extraLabels());
-              match_elapsed.add(data.elapsed, extraLabels());
-              match_elapsed_gauge.add(data.elapsed / 1000, extraLabels());
-              success_counter.add(1, extraLabels());
-              check(data, {
-                'match has feedback id': (data: any) =>
-                  data && data.data && data.data.feedback_id,
-                'match has role': (data: any) =>
-                  data && data.data && data.data.role,
-                'match has other': (data: any) =>
-                  data && data.data && data.data.other,
-                'match has score': (data: any) =>
-                  data && data.data && data.data.score != null,
-                'match has iceservers': (data: any) =>
-                  data &&
-                  data.data &&
-                  data.data.iceServers != null &&
-                  Array.isArray(data.data.iceServers) &&
-                  data.data.iceServers.length > 0,
-              });
-
-              const matchSuccess = await expectMatch.take(3);
-
-              if (
-                !matchSuccess ||
-                !matchSuccess.data ||
-                !matchSuccess.data.success
-              ) {
-                console.error(
-                  `matchSuccess.success is incorrect: ${JSON.stringify(
-                    matchSuccess,
-                  )}`,
-                );
-                throw `matchSuccess.success is incorrect: ${matchSuccess.data.success}`;
-              } else {
-                console.log(
-                  `matchSuccess.success: ${matchSuccess.data.success}`,
-                );
-              }
-
-              return data.data;
-            })
-            .catch((error) => {
-              console.info(`failed match`);
-              match_success.add(false, extraLabels());
-              return Promise.reject(error);
-            })
+          await matchUser(socket, myUser)
             .then(async (data: any) => {
               // prediction_score_trend.add(data.score);
 
@@ -340,13 +336,13 @@ export default async function () {
               const score = validMatch ? 5 : -5;
 
               if (validMatch) {
-                valid_score.add(1, extraLabels());
+                valid_score.add(1, extraLabels(myUser));
               } else {
-                invalid_score.add(1, extraLabels());
+                invalid_score.add(1, extraLabels(myUser));
               }
 
-              score_trend.add(score, extraLabels());
-              score_gauge.add(score, extraLabels());
+              score_trend.add(score, extraLabels(myUser));
+              score_gauge.add(score, extraLabels(myUser));
 
               const r = http.post(
                 `${options_url}/providefeedback`,
@@ -377,7 +373,7 @@ export default async function () {
         }
       })
       .catch((error) => {
-        error_counter.add(1, extraLabels());
+        error_counter.add(1, extraLabels(myUser));
         console.error(`end run:`, error);
       })
       .finally(async () => {
@@ -437,13 +433,12 @@ export async function longWait() {
 
 export async function biChatStream() {
   console.log(`RUNNING biChatStream`);
-  let auth1: string = `k6_bi_stream_chat_1_${Math.random()}`;
 
-  let auth2: string = `k6_bi_stream_chat_2_${Math.random()}`;
+  let user1: User = createChatStream();
 
-  const socket1 = new K6SocketIoExp(ws_url, { auth: auth1 }, {}, 0);
+  await user1.init(true);
 
-  const socket2 = new K6SocketIoExp(ws_url, { auth: auth2 }, {}, 0);
+  const socket1 = new K6SocketIoExp(ws_url, { auth: user1.auth }, {}, 0);
 
   socket1.setOnConnect(() => {
     socket1.on(`error`, () => {
@@ -451,38 +446,35 @@ export async function biChatStream() {
     });
   });
 
-  socket2.setOnConnect(() => {
-    socket2.on(`error`, () => {
-      error_counter.add(1);
-    });
+  const numberOfChats = 100;
 
-    const numberOfChats = 100;
+  const socket1ExpectChat = socket1.expectMessage(`chat`, 0, numberOfChats);
 
-    const socket1ExpectChat = socket1.expectMessage(`chat`, 0, numberOfChats);
-    const socket2ExpectChat = socket2.expectMessage(`chat`, 0, numberOfChats);
+  socket1.setOnConnect(() => {
+    matchUser(socket1, user1)
+      .then((data) => {
+        const score = 5;
 
-    Promise.all([
-      socket1.expectMessage(`established`).take(1),
-      socket2.expectMessage(`established`).take(1),
-    ])
-      .catch((error) => {
-        established_success.add(false);
-        return Promise.reject(error);
+        const r = http.post(
+          `${options_url}/providefeedback`,
+          JSON.stringify({
+            feedback_id: data.feedback_id,
+            score: score,
+          }),
+          {
+            headers: {
+              authorization: user1.auth,
+              'Content-Type': `application/json`,
+            },
+          },
+        );
+        return data;
       })
-      .then((data: any) => {
-        established_success.add(true);
-        established_elapsed.add(data.elapsed);
-      })
-      .then(async () => {
+      .then(async (data) => {
         for (let i = 0; i < numberOfChats; i++) {
           socket1.send(
             `chat`,
-            { target: auth2, message: `msg from socket1. #${i}` },
-            null,
-          );
-          socket2.send(
-            `chat`,
-            { target: auth1, message: `msg from socket2. #${i}` },
+            { target: data.other, message: `msg from socket1. #${i}` },
             null,
           );
 
@@ -500,34 +492,16 @@ export async function biChatStream() {
               console.error(`no chat ack.`);
             }
           });
-          socket2ExpectChat.take(i + 1).then((data) => {
-            check(JSON.stringify(data), {
-              'message is in order.': (msg) => {
-                return msg.includes(`#${i}`);
-              },
-            });
-            if (typeof data.callback === `function`) {
-              data.callback({ good: `2222` });
-            } else {
-              error_counter.add(1);
-              console.error(`no chat ack.`);
-            }
-          });
         }
 
-        return Promise.all([
-          socket1ExpectChat.take(numberOfChats),
-          socket2ExpectChat.take(numberOfChats),
-        ]);
+        return Promise.all([socket1ExpectChat.take(numberOfChats)]);
       })
       .finally(async () => {
-        socket2.close();
         socket1.close();
       });
   });
 
   socket1.connect();
-  socket2.connect();
 }
 
 export async function biChatPull() {
