@@ -54,12 +54,12 @@ const updateAuthVars = () => {
 export const options = {
   setupTimeout: `20m`,
   scenarios: {
-    shared: {
-      executor: `shared-iterations`,
-      vus: 4,
-      iterations: 4,
-      maxDuration: `10h`,
-    },
+    // shared: {
+    //   executor: `shared-iterations`,
+    //   vus: 4,
+    //   iterations: 4,
+    //   maxDuration: `10h`,
+    // },
     // ramping: {
     //   executor: `ramping-vus`,
     //   startVUs: 0,
@@ -77,13 +77,13 @@ export const options = {
     //     { duration: `2d`, target: 1000 },
     //   ],
     // },
-    // chatStream: {
-    //   executor: `shared-iterations`,
-    //   exec: `biChatStream`,
-    //   vus: 4,
-    //   iterations: 4,
-    //   maxDuration: `10h`,
-    // },
+    chatStream: {
+      executor: `shared-iterations`,
+      exec: `biChatStream`,
+      vus: 4,
+      iterations: 4,
+      maxDuration: `10h`,
+    },
     // chatPull: {
     //   executor: `shared-iterations`,
     //   exec: `biChatPull`,
@@ -218,20 +218,26 @@ function matchUser(socket: K6SocketIoExp, myUser: usersLib.User): Promise<any> {
       return expectMatch.take(1);
     })
     .then((data: any) => {
-      console.log(`match 1 ... ${data}`);
+      console.log(`match 1 ... ${JSON.stringify(data)}`);
       check(data, {
         'approval has approve': (data: any) =>
           data && data.data && data.data.approve,
       });
       if (typeof data.callback === `function`) {
         data.callback({ approve: true });
+      } else {
+        console.error(`no approval ack.`);
+        throw `no approval ack.`;
       }
       return expectMatch.take(2);
     })
     .then(async (data: any) => {
-      console.log(`match 2 ...  ${data}`);
+      console.log(`match 2 ...  ${JSON.stringify(data)}`);
       if (typeof data.callback === `function`) {
         data.callback(`ok`);
+      } else {
+        console.error(`no accept ack. ${JSON.stringify(data)}`);
+        throw `no accept ack.`;
       }
       match_success.add(true, extraLabels(myUser));
       match_elapsed.add(data.elapsed, extraLabels(myUser));
@@ -254,7 +260,7 @@ function matchUser(socket: K6SocketIoExp, myUser: usersLib.User): Promise<any> {
 
       const matchSuccess = await expectMatch.take(3);
 
-      console.log(`match 3 ...  ${data}`);
+      console.log(`match 3 ...  ${JSON.stringify(data)}`);
 
       if (!matchSuccess || !matchSuccess.data || !matchSuccess.data.success) {
         console.error(
@@ -434,11 +440,16 @@ export async function longWait() {
 export async function biChatStream() {
   console.log(`RUNNING biChatStream`);
 
-  let user1: User = createChatStream();
+  const user1: User = createChatStream();
 
   await user1.init(true);
 
-  const socket1 = new K6SocketIoExp(ws_url, { auth: user1.auth }, {}, 0);
+  const socket1 = new K6SocketIoExp(
+    ws_url,
+    { auth: user1.auth },
+    {},
+    1000 * 60 * 2,
+  );
 
   socket1.setOnConnect(() => {
     socket1.on(`error`, () => {
@@ -490,8 +501,10 @@ export async function biChatStream() {
             } else {
               error_counter.add(1);
               console.error(`no chat ack.`);
+              throw `no chat ack.`;
             }
           });
+          await socket1.sleep(500);
         }
 
         return Promise.all([socket1ExpectChat.take(numberOfChats)]);

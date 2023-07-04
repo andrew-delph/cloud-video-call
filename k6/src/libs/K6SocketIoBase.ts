@@ -172,7 +172,7 @@ export abstract class K6SocketIoBase {
           eventMessageHandle(message, callback);
         } else {
           if (event == `message` || event == `activeCount`) break;
-          console.log(`no eventMessageHandle:`, event);
+          // console.log(`no eventMessageHandle:`, event);
         }
         break;
       }
@@ -227,7 +227,7 @@ export abstract class K6SocketIoBase {
     const expectSubject = new CustomReplaySubject();
 
     const eventMessageHandle = (data: any, callback: any) => {
-      console.log(`got expected msg`, event, data);
+      // console.log(`got expected msg`, event, data);
       recieved_num = recieved_num + 1;
       const elapsed = Date.now() - startTime;
       const isSuccess = elapsed < timeout || timeout == 0;

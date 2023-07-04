@@ -206,11 +206,13 @@ const createMatch = async (
   await session.close();
 
   if (matchResult.records.length != 1) {
-    logger.error(`matchResult.records.length != 1`);
+    logger.error(
+      `matchResult.records.length != 1 ${matchResult.records.length}`,
+    );
     callback(
       {
         code: grpc.status.UNKNOWN,
-        details: `matchResult.records.length != 1`,
+        details: `matchResult.records.length != 1 ${matchResult.records.length}`,
         metadata: new grpc.Metadata(),
       },
       null,
