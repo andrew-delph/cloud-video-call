@@ -33,7 +33,13 @@ class ChatController extends GetxController {
 
         temp.addAll(loadedMessages);
         homeController.listenEvent("chat", (data) {
-          temp.add(data);
+          String source = data["source"];
+          String target = data["target"];
+
+          if (source == userId) {
+            temp.add(data);
+            return "good";
+          }
         });
       });
 

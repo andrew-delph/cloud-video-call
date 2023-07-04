@@ -791,7 +791,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
     socket()!.emit(event, data);
   }
 
-  void listenEvent(String event, dynamic Function(dynamic) handler) {
+  void listenEvent(String event, dynamic Function(dynamic) dataHandler) {
     socket()!.on(event, (request) {
       late dynamic value;
       Function? callback;
@@ -802,7 +802,11 @@ class HomeController extends GetxController with StateMixin<Widget> {
       } catch (err) {
         value = request;
       }
-      handler(value);
+      var callbackData = dataHandler(value);
+      print("callbackData $callbackData callback $callback");
+      if (callbackData != null && callback != null) {
+        callback(callbackData);
+      }
     });
   }
 }
