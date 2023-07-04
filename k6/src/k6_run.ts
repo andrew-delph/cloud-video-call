@@ -8,9 +8,9 @@ import redis from 'k6/experimental/redis';
 import http from 'k6/http';
 import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 
-const vus = 5;
+const vus = 50;
 const authKeysNum = vus + 15; // number of users created for each parallel instance running
-const iterations = 999999; //authKeysNum * 1000;
+const iterations = vus * 2; //authKeysNum * 1000;
 
 const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
@@ -54,12 +54,12 @@ const updateAuthVars = () => {
 export const options = {
   setupTimeout: `20m`,
   scenarios: {
-    // shared: {
-    //   executor: `shared-iterations`,
-    //   vus: 4,
-    //   iterations: 4,
-    //   maxDuration: `10h`,
-    // },
+    shared: {
+      executor: `shared-iterations`,
+      vus: vus,
+      iterations: iterations,
+      maxDuration: `10h`,
+    },
     // ramping: {
     //   executor: `ramping-vus`,
     //   startVUs: 0,
@@ -80,8 +80,8 @@ export const options = {
     chatStream: {
       executor: `shared-iterations`,
       exec: `biChatStream`,
-      vus: 4,
-      iterations: 4,
+      vus: 50,
+      iterations: 100,
       maxDuration: `10h`,
     },
     // chatPull: {
