@@ -1213,7 +1213,7 @@
           },
           "editorMode": "builder",
           "exemplar": false,
-          "expr": "k6_checks_rate{testid=~\"$testid\"}",
+          "expr": "k6_checks_rate{testid=~\"$testid\", scenario=~\"$scenario\"}",
           "format": "table",
           "instant": true,
           "range": true,
@@ -3503,7 +3503,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -4698,8 +4699,8 @@
       {
         "current": {
           "selected": false,
-          "text": "test-06-14-19-01-06",
-          "value": "test-06-14-19-01-06"
+          "text": "test-07-04-17-57-47",
+          "value": "test-07-04-17-57-47"
         },
         "datasource": {
           "type": "prometheus",
@@ -4751,8 +4752,8 @@
       {
         "current": {
           "selected": false,
-          "text": "test-06-14-19-01-06",
-          "value": "test-06-14-19-01-06"
+          "text": "test-07-04-17-57-47",
+          "value": "test-07-04-17-57-47"
         },
         "datasource": {
           "type": "prometheus",
