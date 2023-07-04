@@ -32,6 +32,7 @@ class HistoryController extends GetxController with StateMixin<HistoryModel> {
       } else {
         change(body, status: RxStatus.success());
       }
+      historyModel(body);
     }).catchError((error) {
       change(null, status: RxStatus.error(error.toString()));
     });
@@ -55,15 +56,15 @@ class HistoryController extends GetxController with StateMixin<HistoryModel> {
   Future<void> nextPage() async {
     if (historyModel().matchHistoryList.isNotEmpty) {
       page(page() + 1);
+      await loadHistory();
     }
-    await loadHistory();
   }
 
   Future<void> prevPage() async {
     var currentPage = page();
     if (currentPage > 0) {
       page(currentPage - 1);
+      await loadHistory();
     }
-    await loadHistory();
   }
 }
