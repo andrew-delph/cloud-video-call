@@ -553,7 +553,7 @@ const checkUserFilters = async (
     responseFilter.setUserId1(requestFilter.getUserId1());
     responseFilter.setUserId2(requestFilter.getUserId2());
 
-    if (!passed) continue;
+    // if (!passed) continue;
 
     const results = await session.run(
       `
