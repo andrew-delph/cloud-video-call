@@ -15,8 +15,6 @@ class ChatRoom extends GetView<ChatController> {
   Widget build(BuildContext context) {
     RxList<ChatEventModel> chatList = controller.loadChat(userId);
 
-    RxString msgInput = "".obs;
-
     TextEditingController msgInputController = TextEditingController();
 
     return Obx(() => Column(
