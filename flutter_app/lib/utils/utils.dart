@@ -39,13 +39,19 @@ bool validStatusCode(int? statusCode) {
   return statusCode != null && statusCode >= 200 && statusCode < 300;
 }
 
-T validateRequestGetBody<T>(Response<T> response) {
+T validateRequestGetBody<T>(Response<dynamic> response,
+    {T Function(dynamic)? decoder}) {
   if (!validStatusCode(response.statusCode)) {
     throw "Invalid status code ${response.statusCode}";
   }
-  T? body = response.body;
+  dynamic body = response.body;
   if (body == null) {
     throw "Body is null";
   }
-  return body;
+
+  if (decoder != null) {
+    return decoder(body);
+  } else {
+    return body;
+  }
 }

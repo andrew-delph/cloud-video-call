@@ -17,9 +17,11 @@ class OptionsService extends ApiService {
   Future<dynamic> health() =>
       get('/health').then((response) => validateRequestGetBody(response));
 
-  Future<Preferences> getPreferences() => get('/preferences',
-          contentType: 'application/json', decoder: Preferences.fromJson)
-      .then((response) => validateRequestGetBody(response));
+  Future<Preferences> getPreferences() => get(
+        '/preferences',
+        contentType: 'application/json',
+      ).then((response) =>
+          validateRequestGetBody(response, decoder: Preferences.fromJson));
 
   Future<dynamic> updatePreferences(dynamic body) =>
       put('/preferences', body, contentType: 'application/json')
@@ -27,11 +29,12 @@ class OptionsService extends ApiService {
 
   Future<HistoryModel> getHistory(int page, int limit) {
     Map<String, String> query = {"page": "$page", "limit": "$limit"};
-    return get('/history',
-            query: query,
-            contentType: 'application/json',
-            decoder: HistoryModel.fromJson)
-        .then((response) => validateRequestGetBody(response));
+    return get(
+      '/history',
+      query: query,
+      contentType: 'application/json',
+    ).then((response) =>
+        validateRequestGetBody(response, decoder: HistoryModel.fromJson));
   }
 
   Future<dynamic> updateFeedback(dynamic body) =>
