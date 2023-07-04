@@ -45,15 +45,13 @@ class ChatController extends GetxController {
     return chatRoom;
   }
 
-  sendMessage(String userId, String message) {
+  sendMessage(String target, String message) {
     final HomeController homeController = Get.find();
 
-    dynamic chatEvent = {
-      "source": authService.getUser().uid,
-      "target": userId,
-      "message": message,
-    };
+    ChatEventModel chatEvent = ChatEventModel(
+        message: message, source: authService.getUser().uid, target: target);
 
-    homeController.emitEvent("chat", chatEvent);
+    homeController.emitEvent("chat", chatEvent.toJson());
+    loadChat(target).add(chatEvent);
   }
 }
