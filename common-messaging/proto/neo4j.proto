@@ -87,7 +87,9 @@ message FilterObject {
   string user_id1 = 1;
   string user_id2 = 2;
   bool passed = 3;
-  string last_matched_time = 4; 
+  string last_matched_time = 4;
+  bool friends = 5; 
+  bool negative = 6; 
 }
 
 message CheckUserFiltersRequest {

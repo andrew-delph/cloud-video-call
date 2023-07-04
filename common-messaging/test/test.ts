@@ -68,4 +68,27 @@ describe(`Test rabbitmq messages`, function () {
 
     console.log(filter.toObject());
   });
+
+  it(`default values`, function () {
+    const userId1 = `testid1`;
+    const userId2 = `testid2`;
+    const passed = true;
+    const lastMatchedTime = `1223344`;
+
+    const filter = new FilterObject();
+    filter.setUserId1(userId1);
+    filter.setUserId1(userId2);
+    filter.setPassed(passed);
+
+    assert.equal(false, filter.getFriends());
+    assert.equal(false, filter.getNegative());
+    assert.equal(``, filter.getLastMatchedTime());
+
+    filter.setFriends(true);
+    filter.setLastMatchedTime(lastMatchedTime);
+
+    assert.equal(true, filter.getFriends());
+
+    assert.equal(lastMatchedTime, filter.getLastMatchedTime());
+  });
 });
