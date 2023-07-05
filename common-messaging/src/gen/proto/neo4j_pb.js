@@ -4479,7 +4479,7 @@ proto.neo4j.MatchHistoryRequest.prototype.setLimit = function(value) {
  * @private {!Array<number>}
  * @const
  */
-proto.neo4j.MatchHistoryResponse.repeatedFields_ = [1];
+proto.neo4j.MatchHistoryResponse.repeatedFields_ = [2];
 
 
 
@@ -4512,6 +4512,7 @@ proto.neo4j.MatchHistoryResponse.prototype.toObject = function(opt_includeInstan
  */
 proto.neo4j.MatchHistoryResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
+    total: jspb.Message.getFieldWithDefault(msg, 1, 0),
     matchHistoryList: jspb.Message.toObjectList(msg.getMatchHistoryList(),
     proto.neo4j.Match.toObject, includeInstance)
   };
@@ -4551,6 +4552,10 @@ proto.neo4j.MatchHistoryResponse.deserializeBinaryFromReader = function(msg, rea
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setTotal(value);
+      break;
+    case 2:
       var value = new proto.neo4j.Match;
       reader.readMessage(value,proto.neo4j.Match.deserializeBinaryFromReader);
       msg.addMatchHistory(value);
@@ -4584,10 +4589,17 @@ proto.neo4j.MatchHistoryResponse.prototype.serializeBinary = function() {
  */
 proto.neo4j.MatchHistoryResponse.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getTotal();
+  if (f !== 0) {
+    writer.writeInt32(
+      1,
+      f
+    );
+  }
   f = message.getMatchHistoryList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
-      1,
+      2,
       f,
       proto.neo4j.Match.serializeBinaryToWriter
     );
@@ -4596,12 +4608,30 @@ proto.neo4j.MatchHistoryResponse.serializeBinaryToWriter = function(message, wri
 
 
 /**
- * repeated Match match_history = 1;
+ * optional int32 total = 1;
+ * @return {number}
+ */
+proto.neo4j.MatchHistoryResponse.prototype.getTotal = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.neo4j.MatchHistoryResponse} returns this
+ */
+proto.neo4j.MatchHistoryResponse.prototype.setTotal = function(value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * repeated Match match_history = 2;
  * @return {!Array<!proto.neo4j.Match>}
  */
 proto.neo4j.MatchHistoryResponse.prototype.getMatchHistoryList = function() {
   return /** @type{!Array<!proto.neo4j.Match>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.neo4j.Match, 1));
+    jspb.Message.getRepeatedWrapperField(this, proto.neo4j.Match, 2));
 };
 
 
@@ -4610,7 +4640,7 @@ proto.neo4j.MatchHistoryResponse.prototype.getMatchHistoryList = function() {
  * @return {!proto.neo4j.MatchHistoryResponse} returns this
 */
 proto.neo4j.MatchHistoryResponse.prototype.setMatchHistoryList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 1, value);
+  return jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
 
 
@@ -4620,7 +4650,7 @@ proto.neo4j.MatchHistoryResponse.prototype.setMatchHistoryList = function(value)
  * @return {!proto.neo4j.Match}
  */
 proto.neo4j.MatchHistoryResponse.prototype.addMatchHistory = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.neo4j.Match, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.neo4j.Match, opt_index);
 };
 
 

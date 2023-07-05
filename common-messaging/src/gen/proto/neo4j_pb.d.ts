@@ -623,6 +623,9 @@ export namespace MatchHistoryRequest {
 }
 
 export class MatchHistoryResponse extends jspb.Message { 
+    getTotal(): number;
+    setTotal(value: number): MatchHistoryResponse;
+
     clearMatchHistoryList(): void;
     getMatchHistoryList(): Array<Match>;
     setMatchHistoryList(value: Array<Match>): MatchHistoryResponse;
@@ -641,6 +644,7 @@ export class MatchHistoryResponse extends jspb.Message {
 
 export namespace MatchHistoryResponse {
     export type AsObject = {
+        total: number,
         matchHistoryList: Array<Match.AsObject>,
     }
 }
