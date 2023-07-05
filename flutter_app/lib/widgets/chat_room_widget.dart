@@ -1,8 +1,11 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_app/services/auth_service.dart';
+
+// Package imports:
 import 'package:get/get.dart';
 
+// Project imports:
+import 'package:flutter_app/services/auth_service.dart';
 import '../controllers/chat_controller.dart';
 import '../models/chat_event_model.dart';
 

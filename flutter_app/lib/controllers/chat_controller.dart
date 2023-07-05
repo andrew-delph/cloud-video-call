@@ -1,7 +1,8 @@
 // Package imports:
-import 'package:flutter_app/controllers/home_controller.dart';
 import 'package:get/get.dart';
 
+// Project imports:
+import 'package:flutter_app/controllers/home_controller.dart';
 import '../models/chat_event_model.dart';
 import '../services/auth_service.dart';
 import '../services/options_service.dart';

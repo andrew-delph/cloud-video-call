@@ -1,12 +1,11 @@
 // Dart imports:
-import 'dart:developer';
 import 'dart:typed_data';
 
 // Flutter imports:
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 
@@ -17,7 +16,7 @@ class ProfilePicture extends GetView<PreferencesController> {
   ProfilePicture(this.userId, {super.key});
 
   final String userId;
-  final RxString photoUrl = "".obs;
+  final Rx<Widget> photoWidget = Rx(const CircularProgressIndicator());
 
   final Rx<Uint8List?> bytes = Rx<Uint8List?>(null);
 
@@ -28,9 +27,16 @@ class ProfilePicture extends GetView<PreferencesController> {
 
     imageRef
         .getDownloadURL()
-        .then((value) => photoUrl(value))
+        .then((value) => photoWidget(CachedNetworkImage(
+              imageUrl: value,
+              placeholder: (context, url) => const CircularProgressIndicator(),
+              errorWidget: (context, url, error) {
+                return const Icon(Icons.no_photography_sharp);
+              },
+            )))
         .catchError((err) {
       print("no profile photo: $err");
+      photoWidget(const Icon(Icons.no_photography_sharp));
     });
 
     return Obx(() {
@@ -39,16 +45,7 @@ class ProfilePicture extends GetView<PreferencesController> {
           SizedBox(
             height: 100,
             width: 100,
-            child: photoUrl().isEmpty
-                ? const Icon(Icons.no_photography_sharp)
-                : CachedNetworkImage(
-                    imageUrl: photoUrl(),
-                    placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
-                    errorWidget: (context, url, error) {
-                      return const Icon(Icons.no_photography_sharp);
-                    },
-                  ),
+            child: photoWidget(),
           )
         ],
       );
