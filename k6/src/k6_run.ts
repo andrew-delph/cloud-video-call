@@ -375,12 +375,15 @@ export default async function () {
               } else {
                 await socket.sleep(invalidMatchChatTime * 1000);
               }
+            })
+            .then(async () => {
+              await socket.sendWithAck(`endchat`, true, 1000 * 10);
             });
         }
       })
       .catch((error) => {
         error_counter.add(1, extraLabels(myUser));
-        console.error(`end run:`, error);
+        console.error(`end run: ${error}`);
       })
       .finally(async () => {
         socket.close();

@@ -180,9 +180,13 @@ io.on(`connection`, async (socket) => {
     socket.to(`room-${socket.id}`).emit(`icecandidate`, value);
   });
 
-  socket.on(`endchat`, (value) => {
+  socket.on(`endchat`, (value, callback) => {
     socket.to(`room-${socket.id}`).emit(`endchat`, value);
     io.socketsLeave(`room-${socket.id}`);
+
+    if (callback != null) {
+      callback({ ended: true });
+    }
   });
 
   await pubRedisClient.publish(common.activeCountChannel, `change`);
