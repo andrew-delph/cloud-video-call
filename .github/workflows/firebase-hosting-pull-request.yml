@@ -12,17 +12,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Flutter cache
+        uses: actions/cache@v3
+        with:
+          path: '/opt/hostedtoolcache/flutter'
+          key: flutter
       - uses: actions/setup-java@v1
         with:
           java-version: '14.0.1'
       - uses: subosito/flutter-action@v1
         with:
-          flutter-version: '3.3.10'
+          flutter-version: '3.10.5'
       - name: Get dependencies
         run: flutter pub get
         working-directory: flutter_app
       - name: Build app
-        run: flutter build web --dart-define="SOCKET_ADDRESS=https://react-video-call-fjutjsrlaa-uc.a.run.app"
+        run: flutter build web --dart-define="SOCKET_ADDRESS=https://react-video-call-fjutjsrlaa-uc.a.run.app" --dart2js-optimization O4
         working-directory: flutter_app
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
