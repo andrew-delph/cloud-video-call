@@ -1245,9 +1245,7 @@ proto.neo4j.EndCallRequest.prototype.toObject = function(opt_includeInstance) {
  */
 proto.neo4j.EndCallRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    matchId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    key: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    value: jspb.Message.getFieldWithDefault(msg, 3, "")
+    matchId: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -1288,14 +1286,6 @@ proto.neo4j.EndCallRequest.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setMatchId(value);
       break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setKey(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setValue(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -1332,20 +1322,6 @@ proto.neo4j.EndCallRequest.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getKey();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getValue();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
 };
 
 
@@ -1364,42 +1340,6 @@ proto.neo4j.EndCallRequest.prototype.getMatchId = function() {
  */
 proto.neo4j.EndCallRequest.prototype.setMatchId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string key = 2;
- * @return {string}
- */
-proto.neo4j.EndCallRequest.prototype.getKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.neo4j.EndCallRequest} returns this
- */
-proto.neo4j.EndCallRequest.prototype.setKey = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string value = 3;
- * @return {string}
- */
-proto.neo4j.EndCallRequest.prototype.getValue = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.neo4j.EndCallRequest} returns this
- */
-proto.neo4j.EndCallRequest.prototype.setValue = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 

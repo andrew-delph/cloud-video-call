@@ -122,12 +122,6 @@ export class EndCallRequest extends jspb.Message {
     getMatchId(): string;
     setMatchId(value: string): EndCallRequest;
 
-    getKey(): string;
-    setKey(value: string): EndCallRequest;
-
-    getValue(): string;
-    setValue(value: string): EndCallRequest;
-
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): EndCallRequest.AsObject;
@@ -142,8 +136,6 @@ export class EndCallRequest extends jspb.Message {
 export namespace EndCallRequest {
     export type AsObject = {
         matchId: string,
-        key: string,
-        value: string,
     }
 }
 
