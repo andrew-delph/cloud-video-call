@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 // Project imports:
-import '../controllers/auth_controller.dart';
 import '../controllers/chat_controller.dart';
-import '../routes/app_pages.dart';
-import '../utils/utils.dart';
 import '../widgets/app_menu_widget.dart';
 
 class ChatScreen extends GetView<ChatController> {

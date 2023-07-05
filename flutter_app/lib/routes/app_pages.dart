@@ -1,8 +1,8 @@
 // Package imports:
-import 'package:flutter_app/screens/chat_screen.dart';
 import 'package:get/get.dart';
 
 // Project imports:
+import 'package:flutter_app/screens/chat_screen.dart';
 import 'package:flutter_app/screens/history_screen.dart';
 import 'package:flutter_app/screens/home_screen.dart';
 import 'package:flutter_app/screens/options_screen.dart';

@@ -10,7 +10,6 @@ import '../controllers/history_controller.dart';
 import '../models/history_model.dart';
 import '../models/user_model.dart';
 import '../utils/utils.dart';
-import 'chat_room_widget.dart';
 
 // Package imports:
 
