@@ -25,18 +25,18 @@ class ProfilePicture extends GetView<PreferencesController> {
     var imageRef =
         (FirebaseStorage.instance.ref('profile-picture/${userId}_100x100'));
 
-    imageRef
-        .getDownloadURL()
-        .then((value) => photoWidget(CachedNetworkImage(
-              imageUrl: value,
-              placeholder: (context, url) => const CircularProgressIndicator(),
-              errorWidget: (context, url, error) {
-                return const Icon(Icons.error);
-              },
-            )))
-        .catchError((err) {
-      print("no profile photo: $err");
-      photoWidget(const Icon(Icons.no_photography_sharp));
+    imageRef.getDownloadURL().then((value) {
+      // print("photo url: $value");
+      return photoWidget(CachedNetworkImage(
+        imageUrl: value,
+        placeholder: (context, url) => const CircularProgressIndicator(),
+        errorWidget: (context, url, error) {
+          return const Icon(Icons.error);
+        },
+      ));
+    }).catchError((err) {
+      // print("pp catchError");
+      return photoWidget(const Icon(Icons.no_photography_sharp));
     });
 
     return Obx(() {
