@@ -108,7 +108,7 @@ const verifyIndexes = async () => {
   );
 
   await session.run(
-    `CREATE INDEX FEEDBACK_feedbackId IF NOT EXISTS FOR ()-[r:FEEDBACK]-() ON (r.feedbackId)`,
+    `CREATE INDEX FEEDBACK_feedbackId IF NOT EXISTS FOR ()-[r:FEEDBACK]-() ON (r.matchId)`,
   );
 
   await session.close();
@@ -223,8 +223,8 @@ const createMatch = async (
   try {
     const r1_id = matchResult.records[0].get(`id(r1)`);
     const r2_id = matchResult.records[0].get(`id(r2)`);
-    reply.setRelationshipId1(`${r1_id}`);
-    reply.setRelationshipId2(`${r2_id}`);
+    reply.setMatchId1(`${r1_id}`);
+    reply.setMatchId2(`${r2_id}`);
   } catch (e: any) {
     logger.error(`stupid get error: ${e}`);
     callback(
@@ -376,15 +376,15 @@ const createFeedback = async (
   callback: grpc.sendUnaryData<StandardResponse>,
 ): Promise<void> => {
   const userId = call.request.getUserId();
-  const feedbackId = call.request.getFeedbackId();
+  const matchId = call.request.getMatchId();
   const score = call.request.getScore();
   const reply = new StandardResponse();
 
-  if (!userId || !feedbackId) {
-    logger.error(`! userId || !feedbackId`);
+  if (!userId || !matchId) {
+    logger.error(`! userId || !matchId`);
     return callback({
       code: grpc.status.INVALID_ARGUMENT,
-      message: `! userId || !feedbackId`,
+      message: `! userId || !matchId`,
     });
   }
 
@@ -394,20 +394,20 @@ const createFeedback = async (
   const feedback_rel = await session.run(
     `
       MATCH (n1:Person {userId: $userId})-[r:MATCHED]->(n2:Person)
-      WHERE id(r) = $feedbackId
-      MERGE (n1)-[f:FEEDBACK {feedbackId: $feedbackId, other: r.other}]->(n2)
+      WHERE id(r) = $matchId
+      MERGE (n1)-[f:FEEDBACK {matchId: $matchId, other: r.other}]->(n2)
       SET f.score = $score, f.createDate = datetime()
       return f , n2.userId as otherUser
     `,
-    { score, userId, feedbackId },
+    { score, userId, matchId },
   );
 
   if (feedback_rel.records.length != 1) {
     logger.error(
-      `Failed to create feedback for ${feedbackId}. length: ${feedback_rel.records.length} `,
+      `Failed to create feedback for ${matchId}. length: ${feedback_rel.records.length} `,
     );
     logger.error(
-      `${feedbackId} feedback_rel=${JSON.stringify(feedback_rel.records)} `,
+      `${matchId} feedback_rel=${JSON.stringify(feedback_rel.records)} `,
     );
     return callback({
       code: grpc.status.UNKNOWN,
@@ -420,7 +420,7 @@ const createFeedback = async (
   // unfriend
   let unfriend_rel: neo4j.QueryResult = await session.run(
     `
-      MATCH (n1:Person)-[f1:FEEDBACK{feedbackId: $feedbackId}]->(n2:Person)
+      MATCH (n1:Person)-[f1:FEEDBACK{matchId: $matchId}]->(n2:Person)
       WHERE f1.score = 0
       OPTIONAL MATCH (n1)-[r3:FRIENDS]-(n2)
       OPTIONAL MATCH (n2)-[r4:FRIENDS]-(n1)
@@ -432,14 +432,14 @@ const createFeedback = async (
       // DELETE r6
       return n1.userId, n2.userId
     `,
-    { userId, feedbackId },
+    { userId, matchId },
   );
 
   // unfriend
   let unblock_rel: neo4j.QueryResult = await session.run(
     `
-      MATCH (n1:Person)-[f1:FEEDBACK{feedbackId: $feedbackId}]->(n2:Person)
-      MATCH (n2:Person)-[f2:FEEDBACK{other: $feedbackId}]->(n1:Person)
+      MATCH (n1:Person)-[f1:FEEDBACK{matchId: $matchId}]->(n2:Person)
+      MATCH (n2:Person)-[f2:FEEDBACK{other: $matchId}]->(n1:Person)
       WHERE f1.score >= 0 AND f2.score >= 0
       OPTIONAL MATCH (n1)-[r3:FRIENDS]-(n2)
       OPTIONAL MATCH (n2)-[r4:FRIENDS]-(n1)
@@ -451,14 +451,14 @@ const createFeedback = async (
       DELETE r6
       return n1.userId, n2.userId
     `,
-    { userId, feedbackId },
+    { userId, matchId },
   );
 
   // create friend
   let friend_rel: neo4j.QueryResult = await session.run(
     `
-      MATCH (n1:Person)-[f1:FEEDBACK{feedbackId: $feedbackId}]->(n2:Person)
-      MATCH (n2:Person)-[f2:FEEDBACK{other: $feedbackId}]->(n1:Person)
+      MATCH (n1:Person)-[f1:FEEDBACK{matchId: $matchId}]->(n2:Person)
+      MATCH (n2:Person)-[f2:FEEDBACK{other: $matchId}]->(n1:Person)
       WHERE f1.score > 0 AND f2.score > 0
       OPTIONAL MATCH (n1)-[r3:NEGATIVE]-(n2)
       OPTIONAL MATCH (n2)-[r4:NEGATIVE]-(n1)
@@ -468,12 +468,12 @@ const createFeedback = async (
       DELETE r4
       return r1,r2, n1.userId, n2.userId
     `,
-    { userId, feedbackId },
+    { userId, matchId },
   );
 
   let negative_rel: neo4j.QueryResult = await session.run(
     `
-      MATCH (n1:Person)-[f1:FEEDBACK{feedbackId: $feedbackId}]->(n2:Person)
+      MATCH (n1:Person)-[f1:FEEDBACK{matchId: $matchId}]->(n2:Person)
       WHERE f1.score < 0
       OPTIONAL MATCH (n1)-[r3:FRIENDS]-(n2)
       OPTIONAL MATCH (n2)-[r4:FRIENDS]-(n1)
@@ -483,7 +483,7 @@ const createFeedback = async (
       DELETE r4
       return r1,r2, n1.userId, n2.userId
     `,
-    { userId, feedbackId },
+    { userId, matchId },
   );
 
   logger.debug(
@@ -735,12 +735,12 @@ const getMatchHistory = async (
   const result: any = await session.run(
     `
     MATCH (n1:Person{userId: $userId})-[r1:MATCHED]->(n2:Person)
-    OPTIONAL MATCH (n1:Person)-[r2:FEEDBACK{feedbackId:id(r1)}]->(n2:Person)
-    OPTIONAL MATCH (n2:Person)-[r3:FEEDBACK{feedbackId:r1.other}]->(n1:Person)
+    OPTIONAL MATCH (n1:Person)-[r2:FEEDBACK{matchId:id(r1)}]->(n2:Person)
+    OPTIONAL MATCH (n2:Person)-[r3:FEEDBACK{matchId:r1.other}]->(n1:Person)
     return n1.userId, n2.userId, r1.createDate, r2.score, r3.score,
     EXISTS((n1)-[:FRIENDS]-(n2)) AS friends,
     EXISTS((n1)-[:NEGATIVE]-(n2)) AS negative,
-    id(r1) as feedbackId
+    id(r1) as matchId
     ORDER by r1.createDate DESC
     SKIP ${skip}
     LIMIT ${limit}
@@ -770,7 +770,7 @@ const getMatchHistory = async (
     match.setUserId2Score(record.get(`r3.score`));
     match.setFriends(record.get(`friends`));
     match.setNegative(record.get(`negative`));
-    match.setFeedbackId(record.get(`feedbackId`));
+    match.setFriends(record.get(`matchId`));
     reply.addMatchHistory(match);
   }
 

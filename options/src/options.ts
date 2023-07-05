@@ -85,16 +85,16 @@ app.post(
   `/providefeedback`,
   rateLimit(`post_providefeedback`, 20),
   async (req, res) => {
-    let { feedback_id, score } = req.body;
+    let { match_id, score } = req.body;
 
-    feedback_id = parseInt(feedback_id); // TODO send number from ui
+    match_id = parseInt(match_id); // TODO send number from ui
 
     const userId: string = req.userId;
 
     const createFeedbackRequest = new neo4j_common.CreateFeedbackRequest();
     createFeedbackRequest.setUserId(userId);
     createFeedbackRequest.setScore(score);
-    createFeedbackRequest.setFeedbackId(feedback_id);
+    createFeedbackRequest.setMatchId(match_id);
 
     try {
       await neo4jRpcClient.createFeedback(

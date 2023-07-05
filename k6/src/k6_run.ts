@@ -245,7 +245,7 @@ function matchUser(socket: K6SocketIoExp, myUser: usersLib.User): Promise<any> {
       success_counter.add(1, extraLabels(myUser));
       check(data, {
         'match has feedback id': (data: any) =>
-          data && data.data && data.data.feedback_id,
+          data && data.data && data.data.match_id,
         'match has role': (data: any) => data && data.data && data.data.role,
         'match has other': (data: any) => data && data.data && data.data.other,
         'match has score': (data: any) =>
@@ -353,7 +353,7 @@ export default async function () {
               const r = http.post(
                 `${options_url}/providefeedback`,
                 JSON.stringify({
-                  feedback_id: data.feedback_id,
+                  match_id: data.match_id,
                   score: score,
                 }),
                 {
@@ -472,7 +472,7 @@ export async function biChatStream() {
         const r = http.post(
           `${options_url}/providefeedback`,
           JSON.stringify({
-            feedback_id: data.feedback_id,
+            match_id: data.match_id,
             score: score,
           }),
           {

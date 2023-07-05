@@ -90,11 +90,11 @@ export class CreateMatchResponse extends jspb.Message {
     getUserId2(): string;
     setUserId2(value: string): CreateMatchResponse;
 
-    getRelationshipId1(): string;
-    setRelationshipId1(value: string): CreateMatchResponse;
+    getMatchId1(): string;
+    setMatchId1(value: string): CreateMatchResponse;
 
-    getRelationshipId2(): string;
-    setRelationshipId2(value: string): CreateMatchResponse;
+    getMatchId2(): string;
+    setMatchId2(value: string): CreateMatchResponse;
 
 
     serializeBinary(): Uint8Array;
@@ -113,14 +113,14 @@ export namespace CreateMatchResponse {
         message: string,
         userId1: string,
         userId2: string,
-        relationshipId1: string,
-        relationshipId2: string,
+        matchId1: string,
+        matchId2: string,
     }
 }
 
 export class UpdateMatchRequest extends jspb.Message { 
-    getRelationshipId(): string;
-    setRelationshipId(value: string): UpdateMatchRequest;
+    getMatchId(): string;
+    setMatchId(value: string): UpdateMatchRequest;
 
     getKey(): string;
     setKey(value: string): UpdateMatchRequest;
@@ -141,7 +141,7 @@ export class UpdateMatchRequest extends jspb.Message {
 
 export namespace UpdateMatchRequest {
     export type AsObject = {
-        relationshipId: string,
+        matchId: string,
         key: string,
         value: string,
     }
@@ -568,8 +568,8 @@ export class CreateFeedbackRequest extends jspb.Message {
     getUserId(): string;
     setUserId(value: string): CreateFeedbackRequest;
 
-    getFeedbackId(): number;
-    setFeedbackId(value: number): CreateFeedbackRequest;
+    getMatchId(): number;
+    setMatchId(value: number): CreateFeedbackRequest;
 
     getScore(): number;
     setScore(value: number): CreateFeedbackRequest;
@@ -588,7 +588,7 @@ export class CreateFeedbackRequest extends jspb.Message {
 export namespace CreateFeedbackRequest {
     export type AsObject = {
         userId: string,
-        feedbackId: number,
+        matchId: number,
         score: number,
     }
 }
@@ -671,8 +671,8 @@ export class Match extends jspb.Message {
     getNegative(): boolean;
     setNegative(value: boolean): Match;
 
-    getFeedbackId(): number;
-    setFeedbackId(value: number): Match;
+    getMatchId(): number;
+    setMatchId(value: number): Match;
 
 
     serializeBinary(): Uint8Array;
@@ -694,6 +694,6 @@ export namespace Match {
         userId2Score: number,
         friends: boolean,
         negative: boolean,
-        feedbackId: number,
+        matchId: number,
     }
 }

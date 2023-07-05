@@ -46,7 +46,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
   Rx<MediaStreamTrack?> remoteAudioTrack = Rx(null);
 
   Rx<io.Socket?> socket = Rx(null);
-  String? feedbackId;
+  String? matchId;
 
   RxDouble localVideoRendererRatioHw = 0.0.obs;
   RxDouble remoteVideoRendererRatioHw = 0.0.obs;
@@ -384,11 +384,11 @@ class HomeController extends GetxController with StateMixin<Widget> {
       }
 
       List? iceServers = value["iceServers"];
-      feedbackId = value["feedback_id"];
-      log("feedback_id: $feedbackId");
-      if (feedbackId == null) {
-        log('feedbackId == null', error: true);
-        throw 'feedbackId == null';
+      matchId = value["match_id"];
+      log("match_id: $matchId");
+      if (matchId == null) {
+        log('matchId == null', error: true);
+        throw 'matchId == null';
       }
 
       if (iceServers == null) {
@@ -650,7 +650,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
 
   Future<void> sendChatScore(double score) async {
     log("sending score $score");
-    final body = {'feedback_id': feedbackId!, 'score': score};
+    final body = {'match_id': matchId!, 'score': score};
     return optionsService.updateFeedback(body).then((response) {
       if (validStatusCode(response.statusCode)) {
         return;

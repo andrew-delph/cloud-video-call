@@ -102,7 +102,7 @@ class HistoryItemWidget extends GetView<HistoryController> {
               ElevatedButton(
                 onPressed: () async {
                   // Action to perform when the button is pressed
-                  await controller.updateFeedback(historyItem.feedbackId!, 0);
+                  await controller.updateFeedback(historyItem.matchId!, 0);
                 },
                 child: const Text('Remove Friend'),
               ),
@@ -113,7 +113,7 @@ class HistoryItemWidget extends GetView<HistoryController> {
                 onPressed: () async {
                   // Action to perform when the button is pressed
                   print('Button Pressed');
-                  await controller.updateFeedback(historyItem.feedbackId!, 0);
+                  await controller.updateFeedback(historyItem.matchId!, 0);
                 },
                 child: const Text('Unblock'),
               ),
@@ -122,7 +122,7 @@ class HistoryItemWidget extends GetView<HistoryController> {
                 onPressed: () async {
                   // Action to perform when the button is pressed
                   print('Button Pressed');
-                  await controller.updateFeedback(historyItem.feedbackId!, 0);
+                  await controller.updateFeedback(historyItem.matchId!, 0);
                 },
                 child: const Text('Cancel Friend Request'),
               ),
@@ -134,7 +134,7 @@ class HistoryItemWidget extends GetView<HistoryController> {
                       // Action to perform when the button is pressed
                       print('Button Pressed');
                       await controller.updateFeedback(
-                          historyItem.feedbackId!, 5);
+                          historyItem.matchId!, 5);
                     },
                     child: const Text('Send Friend Request'),
                   ),
@@ -143,7 +143,7 @@ class HistoryItemWidget extends GetView<HistoryController> {
                       // Action to perform when the button is pressed
                       print('Button Pressed');
                       await controller.updateFeedback(
-                          historyItem.feedbackId!, -5);
+                          historyItem.matchId!, -5);
                     },
                     child: const Text('Block'),
                   )

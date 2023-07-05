@@ -38,8 +38,8 @@ class HistoryController extends GetxController with StateMixin<HistoryModel> {
     });
   }
 
-  updateFeedback(int feedbackId, int score) {
-    final body = {'feedback_id': feedbackId, 'score': score};
+  updateFeedback(int matchId, int score) {
+    final body = {'match_id': matchId, 'score': score};
     return optionsService
         .updateFeedback(body)
         .then((value) => loadHistory())

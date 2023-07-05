@@ -452,7 +452,7 @@ export const match = async (msgContent: MatchMessage) => {
           `match`,
           {
             role: `host`,
-            feedback_id: matchResponse.getRelationshipId1(),
+            match_id: matchResponse.getMatchId1(),
             other: userId2,
             score: score,
             iceServers: iceServers,
@@ -474,7 +474,7 @@ export const match = async (msgContent: MatchMessage) => {
           `match`,
           {
             role: `guest`,
-            feedback_id: matchResponse.getRelationshipId2(),
+            match_id: matchResponse.getMatchId2(),
             other: userId1,
             score: score,
             iceServers: iceServers,
