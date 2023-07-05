@@ -162,16 +162,15 @@ class LeftNavWidget extends StatelessWidget {
         hoverColor: Get.theme.hoverColor,
         child: Container(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-            decoration: selected
-                ? BoxDecoration(
-                    border: Border(
-                      left: BorderSide(
-                        color: Get.theme.primaryColor,
-                        width: 6.0,
-                      ),
-                    ),
-                  )
-                : null,
+            decoration: BoxDecoration(
+              border: Border(
+                left: BorderSide(
+                  color:
+                      selected ? Get.theme.primaryColor : Get.theme.canvasColor,
+                  width: 6.0,
+                ),
+              ),
+            ),
             child: Row(children: [
               Icon(navItem.iconData),
               Padding(
