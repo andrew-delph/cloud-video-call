@@ -23,7 +23,7 @@ class ChatScreen extends GetView<ChatController> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
               Text(
-                "History",
+                "Chat",
                 style: TextStyle(
                   fontSize: 35.0,
                   fontWeight: FontWeight.bold,

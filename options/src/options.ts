@@ -266,7 +266,7 @@ app.get(`/history`, rateLimit(`get_history`, 20), async (req, res) => {
   return;
 });
 
-app.get(`/chat/:otherId`, rateLimit(`get_chat`, 20), async (req, res) => {
+app.get(`/chat/:otherId`, rateLimit(`get_chat_id`, 20), async (req, res) => {
   const userId: string = req.userId;
   const otherId = req.params.otherId;
 
@@ -278,6 +278,12 @@ app.get(`/chat/:otherId`, rateLimit(`get_chat`, 20), async (req, res) => {
     5,
   );
   res.status(200).json({ userId, otherId, chatMessages });
+  return;
+});
+
+app.get(`/chat`, rateLimit(`get_chat`, 20), async (req, res) => {
+  const chatRooms = [`test1`, `test2`];
+  res.status(200).json({ chatRooms });
   return;
 });
 

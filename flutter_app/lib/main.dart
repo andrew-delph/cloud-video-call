@@ -61,8 +61,6 @@ Future<void> initializeApp() async {
   Get.put(OptionsService(), permanent: true);
   Get.put(AnalyticsService(), permanent: true);
 
-  Get.put(ChatController(), permanent: true);
-
   Get.put(NotificationsController(), permanent: true);
 
   log('Initialize');

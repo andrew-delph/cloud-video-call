@@ -23,13 +23,11 @@ import '../services/options_service.dart';
 import '../utils/utils.dart';
 import '../widgets/matchmaker_progress.dart';
 import '../widgets/video_render_layout.dart';
-import 'chat_controller.dart';
 
 class HomeController extends GetxController with StateMixin<Widget> {
   LocalPreferences localPreferences = Get.find();
   final AuthService authService = Get.find();
   final OptionsService optionsService;
-  final ChatController chatController = Get.find();
 
   Rx<MediaStream?> localMediaStream = Rx(null);
   Rx<MediaStream?> remoteMediaStream = Rx(null);

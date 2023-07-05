@@ -12,6 +12,13 @@ import '../services/options_service.dart';
 class ChatController extends GetxController {
   ChatController();
 
+  @override
+  onInit() async {
+    print("init ChatController");
+    super.onInit();
+    await loadChatRooms();
+  }
+
   final RxMap<String, RxList<ChatEventModel>> chatMap = RxMap();
   final OptionsService optionsService = Get.find();
   final AuthService authService = Get.find();
@@ -20,6 +27,12 @@ class ChatController extends GetxController {
     RxList<ChatEventModel> chatRoom = loadChat(userId);
 
     chatRoom.add(chatEvent);
+  }
+
+  loadChatRooms() async {
+    var chatRooms = await optionsService.loadChatRooms();
+
+    print("chatRooms: $chatRooms");
   }
 
   RxList<ChatEventModel> loadChat(String userId) {

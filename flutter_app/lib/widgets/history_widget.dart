@@ -138,8 +138,6 @@ class HistoryItemWidget extends GetView<HistoryController> {
                 },
                 child: const Text('Remove Friend'),
               ),
-            if (relationShipState == RelationShipState.friends)
-              ChatRoom(historyItem.userId2!),
             if (relationShipState == RelationShipState.blocked)
               ElevatedButton(
                 onPressed: () async {

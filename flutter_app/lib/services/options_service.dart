@@ -66,4 +66,9 @@ class OptionsService extends ApiService {
             List<dynamic> chatMessages = body["chatMessages"] ?? [];
             return chatMessages.map((e) => ChatEventModel.fromJson(e)).toList();
           }));
+
+  Future<dynamic> loadChatRooms() => get(
+        '/chat',
+        contentType: 'application/json',
+      ).then((response) => validateRequestGetBody(response));
 }

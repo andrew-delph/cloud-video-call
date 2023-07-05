@@ -7,6 +7,7 @@ import 'package:flutter_app/screens/history_screen.dart';
 import 'package:flutter_app/screens/home_screen.dart';
 import 'package:flutter_app/screens/options_screen.dart';
 import '../bindings/auth_binding.dart';
+import '../bindings/chat_binding.dart';
 import '../bindings/history_binding.dart';
 import '../bindings/home_binding.dart';
 import '../bindings/options_binding.dart';
@@ -43,7 +44,7 @@ class AppPages {
     GetPage(
         name: Routes.CHAT,
         page: () => const ChatScreen(),
-        binding: HomeBinding(),
+        binding: ChatBinding(),
         middlewares: [AuthMiddleware()],
         transition: Transition.fadeIn),
   ];
