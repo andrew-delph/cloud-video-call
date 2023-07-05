@@ -641,6 +641,9 @@ export class Match extends jspb.Message {
     getMatchId(): number;
     setMatchId(value: number): Match;
 
+    getEndtime(): string;
+    setEndtime(value: string): Match;
+
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Match.AsObject;
@@ -662,5 +665,6 @@ export namespace Match {
         friends: boolean,
         negative: boolean,
         matchId: number,
+        endtime: string,
     }
 }
