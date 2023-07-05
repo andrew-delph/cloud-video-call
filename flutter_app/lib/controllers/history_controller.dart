@@ -54,7 +54,10 @@ class HistoryController extends GetxController with StateMixin<HistoryModel> {
   }
 
   Future<void> nextPage() async {
-    if (historyModel().matchHistoryList.isNotEmpty) {
+    int current = (page() + 1) * limit();
+
+    if (historyModel().matchHistoryList.isNotEmpty &&
+        current < historyModel().total) {
       page(page() + 1);
       await loadHistory();
     }

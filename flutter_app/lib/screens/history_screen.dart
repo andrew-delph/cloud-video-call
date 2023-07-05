@@ -37,7 +37,7 @@ class HistoryScreen extends GetView<HistoryController> {
               onPressed: () async {
                 await controller.loadHistory();
               },
-            ),
+            )
           ],
         ));
     return AppMenu(

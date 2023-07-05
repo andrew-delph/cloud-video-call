@@ -1,21 +1,20 @@
 class HistoryModel {
   List<HistoryItemModel> matchHistoryList = [];
+  int total = 0;
 
   HistoryModel();
 
-  factory HistoryModel.fromJson(dynamic json) {
-    HistoryModel history = HistoryModel();
-    if (json['matchHistoryList'] != null) {
-      json['matchHistoryList'].forEach((v) {
-        history.matchHistoryList.add(HistoryItemModel.fromJson(v));
-      });
-    }
-    return history;
+  HistoryModel.fromJson(dynamic json) {
+    json['matchHistoryList'].forEach((v) {
+      matchHistoryList.add(HistoryItemModel.fromJson(v));
+    });
+    total = json['total'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['matchHistoryList'] = matchHistoryList.map((v) => v.toJson()).toList();
+    total = data['total'];
     return data;
   }
 }
