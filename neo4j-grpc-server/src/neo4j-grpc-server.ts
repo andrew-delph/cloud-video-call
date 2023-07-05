@@ -506,6 +506,12 @@ const createFeedback = async (
         rabbitChannel,
         otherUser,
         `Friend Request Accepted`,
+        `${userId} has accepted your friend request`,
+      );
+      sendUserNotification(
+        rabbitChannel,
+        userId,
+        `Friend Request Accepted`,
         `${otherUser} has accepted your friend request`,
       );
     } else {
@@ -513,7 +519,7 @@ const createFeedback = async (
         rabbitChannel,
         otherUser,
         `Friend Request Recieved`,
-        `You recieved a friend request from ${otherUser}`,
+        `You recieved a friend request from ${userId}`,
       );
     }
 

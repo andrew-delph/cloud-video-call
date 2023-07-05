@@ -32,7 +32,11 @@ void errorSnackbar(String title, String message) {
 }
 
 void infoSnackbar(String title, String message) {
-  Get.snackbar(title, message);
+  Get.snackbar(
+    title,
+    message,
+    snackPosition: SnackPosition.BOTTOM,
+  );
 }
 
 bool validStatusCode(int? statusCode) {

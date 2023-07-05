@@ -15,7 +15,7 @@ class NotificationsController extends GetxController with StateMixin {
 
   RxMap<String, NotificationModel> notifications = RxMap();
 
-  RxInt unread = 0.obs;
+  RxInt unread = (-1).obs;
 
   CollectionReference<NotificationModel> notificationCollection =
       FirebaseFirestore.instance
@@ -71,10 +71,12 @@ class NotificationsController extends GetxController with StateMixin {
           .snapshots();
 
       unreadStream.listen((event) {
-        unread(event.size);
-        for (var element in event.docChanges) {
-          infoSnackbar("Notification", "${element.doc.data()?.title}");
+        if (unread() >= 0) {
+          for (var element in event.docChanges) {
+            infoSnackbar("Notification", "${element.doc.data()?.title}");
+          }
         }
+        unread(event.size);
       });
     });
   }
@@ -119,13 +121,13 @@ class NotificationsController extends GetxController with StateMixin {
 
     if (popups.isEmpty) {
       popups.add(const PopupMenuItem<String>(
-        value: "load_more",
+        value: "none",
         child: Text("No Notifications."),
       ));
     } else {
       popups.add(const PopupMenuItem<String>(
-        value: "load_more",
-        child: NotificationsLoadMore(),
+        value: "archive",
+        child: Text("Archive Notifications."),
       ));
     }
 
@@ -143,6 +145,16 @@ class NotificationsButton extends GetView<NotificationsController> {
         Obx(() {
           print("calling the build thing");
           return PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == "archive") {
+                for (String notificationId in controller.notifications().keys) {
+                  controller.archiveNotification(notificationId);
+                }
+              } else if (value == "none") {
+              } else {
+                controller.archiveNotification(value);
+              }
+            },
             icon: Badge(
               label: Text(controller.unread.toString()),
               isLabelVisible: controller.unread() > 0,
@@ -167,18 +179,41 @@ class NotificationsItem extends GetView<NotificationsController> {
   Widget build(BuildContext context) {
     return Row(children: [
       Expanded(
-          child: Column(
-        children: [
-          Text(notification.title ?? "No title."),
-          Text(notification.description ?? "No description.")
-        ],
-      )),
-      IconButton(
-          onPressed: () {
-            controller.archiveNotification(id);
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.close))
+          child: Container(
+              padding: const EdgeInsets.all(2), // Padding inside the container
+              margin: const EdgeInsets.all(2), // Margin around the container
+              decoration: BoxDecoration(
+                color: notification.read ?? false
+                    ? null
+                    : Colors.blue, // Background color
+                borderRadius: BorderRadius.circular(2), // Rounded corners
+                // border: const Border(
+                //     bottom: BorderSide(
+                //       color: Colors.black, // Border color
+                //       width: 2, // Border width
+                //     ),
+                //     top: BorderSide.none,
+                //     left: BorderSide.none,
+                //     right: BorderSide.none),
+                border: Border.all(
+                  color: Colors.black, // Border color
+                  width: 2, // Border width
+                ),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    notification.title ?? "No title.",
+                  ),
+                  Text(notification.description ?? "No description.")
+                ],
+              ))),
+      // IconButton(
+      //     onPressed: () {
+      //       controller.archiveNotification(id);
+      //       Navigator.pop(context);
+      //     },
+      //     icon: const Icon(Icons.close))
     ]);
   }
 }
