@@ -5,4 +5,5 @@ abstract class Routes {
   static String LOGIN = '/login';
   static String OPTIONS = '/options';
   static String HISTORY = '/history';
+  static String CHAT = '/chat';
 }

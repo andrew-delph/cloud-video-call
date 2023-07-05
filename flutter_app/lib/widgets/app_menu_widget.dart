@@ -31,6 +31,7 @@ class NavItem {
 final List<NavItem> navList = [
   NavItem(iconData: Icons.home, route: Routes.HOME, header: "Home"),
   NavItem(iconData: Icons.history, route: Routes.HISTORY, header: "History"),
+  NavItem(iconData: Icons.chat_rounded, route: Routes.CHAT, header: "Chat"),
   NavItem(iconData: Icons.settings, route: Routes.OPTIONS, header: "Settings"),
 ];
 

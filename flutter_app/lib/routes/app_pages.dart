@@ -1,4 +1,5 @@
 // Package imports:
+import 'package:flutter_app/screens/chat_screen.dart';
 import 'package:get/get.dart';
 
 // Project imports:
@@ -37,6 +38,12 @@ class AppPages {
         name: Routes.HISTORY,
         page: () => const HistoryScreen(),
         binding: HistoryBinding(),
+        middlewares: [AuthMiddleware()],
+        transition: Transition.fadeIn),
+    GetPage(
+        name: Routes.CHAT,
+        page: () => const ChatScreen(),
+        binding: HomeBinding(),
         middlewares: [AuthMiddleware()],
         transition: Transition.fadeIn),
   ];
