@@ -15,6 +15,8 @@ class NotificationsController extends GetxController with StateMixin {
 
   RxMap<String, NotificationModel> notifications = RxMap();
 
+  RxSet<String> alreadySnackbar = RxSet();
+
   RxInt unread = (-1).obs;
 
   CollectionReference<NotificationModel> notificationCollection =
@@ -74,10 +76,14 @@ class NotificationsController extends GetxController with StateMixin {
         if (unread() >= 0) {
           for (var element in event.docChanges) {
             var notification = element.doc.data();
-            if (!(notification?.read ?? false)) {
+            if (!(notification?.read ?? false) &&
+                !alreadySnackbar().contains(element.doc.id)) {
               infoSnackbar("Notification", "${notification?.title}");
             }
           }
+        }
+        for (var element in event.docChanges) {
+          alreadySnackbar.add(element.doc.id);
         }
         unread(event.size);
       });
@@ -128,7 +134,7 @@ class NotificationsController extends GetxController with StateMixin {
 
     readNotifications(notifications()
         .entries
-        .where((entry) => entry.value.isRead())
+        .where((entry) => !entry.value.isRead())
         .map((entry) => entry.key)
         .toList());
 
@@ -159,13 +165,14 @@ class NotificationsButton extends GetView<NotificationsController> {
           print("calling the build thing");
           return PopupMenuButton<String>(
             onSelected: (value) {
-              if (value == "archive") {
+              if (value == "none") {
+                // possible change to an empty string...
+              } else if (value == "archive") {
                 controller.archiveNotifications(controller
                     .notifications()
                     .entries
                     .map((entry) => entry.key)
                     .toList());
-              } else if (value == "none") {
               } else {
                 controller.archiveNotifications([value]);
               }
