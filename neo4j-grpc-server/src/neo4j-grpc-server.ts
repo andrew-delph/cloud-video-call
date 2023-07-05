@@ -254,20 +254,24 @@ const endCall = async (
 ): Promise<void> => {
   const matchId = call.request.getMatchId();
 
-  try {
-    let session = driver.session();
-    const results = await session.run(
-      `
+  let session = driver.session();
+  const results = await session.run(
+    `
         MATCH (n1:Person)-[r1:MATCHED]->(n2:Person),(n2:Person)-[r2:MATCHED]->(n1:Person)
         WHERE id(r1) = $matchId AND id(r2) = r1.other
+        SET r1.endTime = COALESCE(r1.endTime, datetime()), 
+        r2.endTime = COALESCE(r2.endTime, datetime())
         return r1,r2
       `,
-      { matchId },
-    );
-    await session.close();
+    { matchId },
+  );
+  await session.close();
+  if (results.records.length != 1) {
     logger.error(`endCall length: ${results.records.length}`);
-  } catch (err) {
-    logger.error(`endCall matchId: ${matchId} error: ${err}`);
+    return callback({
+      code: grpc.status.NOT_FOUND,
+      message: `results.records.length = ${results.records.length}`,
+    });
   }
 
   callback(null, new StandardResponse());
