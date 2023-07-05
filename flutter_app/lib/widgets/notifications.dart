@@ -162,7 +162,6 @@ class NotificationsButton extends GetView<NotificationsController> {
     return Row(
       children: [
         Obx(() {
-          print("calling the build thing");
           return PopupMenuButton<String>(
             onSelected: (value) {
               if (value == "none") {
