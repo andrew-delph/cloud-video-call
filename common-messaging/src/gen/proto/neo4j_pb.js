@@ -969,8 +969,8 @@ proto.neo4j.CreateMatchResponse.toObject = function(includeInstance, msg) {
     message: jspb.Message.getFieldWithDefault(msg, 2, ""),
     userId1: jspb.Message.getFieldWithDefault(msg, 3, ""),
     userId2: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    matchId1: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    matchId2: jspb.Message.getFieldWithDefault(msg, 6, "")
+    matchId1: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    matchId2: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -1024,11 +1024,11 @@ proto.neo4j.CreateMatchResponse.deserializeBinaryFromReader = function(msg, read
       msg.setUserId2(value);
       break;
     case 5:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {number} */ (reader.readInt32());
       msg.setMatchId1(value);
       break;
     case 6:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {number} */ (reader.readInt32());
       msg.setMatchId2(value);
       break;
     default:
@@ -1089,15 +1089,15 @@ proto.neo4j.CreateMatchResponse.serializeBinaryToWriter = function(message, writ
     );
   }
   f = message.getMatchId1();
-  if (f.length > 0) {
-    writer.writeString(
+  if (f !== 0) {
+    writer.writeInt32(
       5,
       f
     );
   }
   f = message.getMatchId2();
-  if (f.length > 0) {
-    writer.writeString(
+  if (f !== 0) {
+    writer.writeInt32(
       6,
       f
     );
@@ -1178,38 +1178,38 @@ proto.neo4j.CreateMatchResponse.prototype.setUserId2 = function(value) {
 
 
 /**
- * optional string match_id1 = 5;
- * @return {string}
+ * optional int32 match_id1 = 5;
+ * @return {number}
  */
 proto.neo4j.CreateMatchResponse.prototype.getMatchId1 = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
 /**
- * @param {string} value
+ * @param {number} value
  * @return {!proto.neo4j.CreateMatchResponse} returns this
  */
 proto.neo4j.CreateMatchResponse.prototype.setMatchId1 = function(value) {
-  return jspb.Message.setProto3StringField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional string match_id2 = 6;
- * @return {string}
+ * optional int32 match_id2 = 6;
+ * @return {number}
  */
 proto.neo4j.CreateMatchResponse.prototype.getMatchId2 = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
 /**
- * @param {string} value
+ * @param {number} value
  * @return {!proto.neo4j.CreateMatchResponse} returns this
  */
 proto.neo4j.CreateMatchResponse.prototype.setMatchId2 = function(value) {
-  return jspb.Message.setProto3StringField(this, 6, value);
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
@@ -1245,7 +1245,7 @@ proto.neo4j.EndCallRequest.prototype.toObject = function(opt_includeInstance) {
  */
 proto.neo4j.EndCallRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    matchId: jspb.Message.getFieldWithDefault(msg, 1, "")
+    matchId: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -1283,7 +1283,7 @@ proto.neo4j.EndCallRequest.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {number} */ (reader.readInt32());
       msg.setMatchId(value);
       break;
     default:
@@ -1316,8 +1316,8 @@ proto.neo4j.EndCallRequest.prototype.serializeBinary = function() {
 proto.neo4j.EndCallRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getMatchId();
-  if (f.length > 0) {
-    writer.writeString(
+  if (f !== 0) {
+    writer.writeInt32(
       1,
       f
     );
@@ -1326,20 +1326,20 @@ proto.neo4j.EndCallRequest.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string match_id = 1;
- * @return {string}
+ * optional int32 match_id = 1;
+ * @return {number}
  */
 proto.neo4j.EndCallRequest.prototype.getMatchId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
- * @param {string} value
+ * @param {number} value
  * @return {!proto.neo4j.EndCallRequest} returns this
  */
 proto.neo4j.EndCallRequest.prototype.setMatchId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 

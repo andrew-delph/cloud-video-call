@@ -90,11 +90,11 @@ export class CreateMatchResponse extends jspb.Message {
     getUserId2(): string;
     setUserId2(value: string): CreateMatchResponse;
 
-    getMatchId1(): string;
-    setMatchId1(value: string): CreateMatchResponse;
+    getMatchId1(): number;
+    setMatchId1(value: number): CreateMatchResponse;
 
-    getMatchId2(): string;
-    setMatchId2(value: string): CreateMatchResponse;
+    getMatchId2(): number;
+    setMatchId2(value: number): CreateMatchResponse;
 
 
     serializeBinary(): Uint8Array;
@@ -113,14 +113,14 @@ export namespace CreateMatchResponse {
         message: string,
         userId1: string,
         userId2: string,
-        matchId1: string,
-        matchId2: string,
+        matchId1: number,
+        matchId2: number,
     }
 }
 
 export class EndCallRequest extends jspb.Message { 
-    getMatchId(): string;
-    setMatchId(value: string): EndCallRequest;
+    getMatchId(): number;
+    setMatchId(value: number): EndCallRequest;
 
 
     serializeBinary(): Uint8Array;
@@ -135,7 +135,7 @@ export class EndCallRequest extends jspb.Message {
 
 export namespace EndCallRequest {
     export type AsObject = {
-        matchId: string,
+        matchId: number,
     }
 }
 

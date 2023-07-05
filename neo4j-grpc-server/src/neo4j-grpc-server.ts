@@ -222,8 +222,8 @@ const createMatch = async (
   try {
     const r1_id = matchResult.records[0].get(`id(r1)`);
     const r2_id = matchResult.records[0].get(`id(r2)`);
-    reply.setMatchId1(`${r1_id}`);
-    reply.setMatchId2(`${r2_id}`);
+    reply.setMatchId1(r1_id);
+    reply.setMatchId2(r2_id);
   } catch (e: any) {
     logger.error(`stupid get error: ${e}`);
     callback(
@@ -254,19 +254,21 @@ const endCall = async (
 ): Promise<void> => {
   const matchId = call.request.getMatchId();
 
-  logger.error(`matchId: ${matchId}`);
-
-  // let session = driver.session();
-  // const results = await session.run(
-  //   `
-  //     MATCH (n1:Person)-[r1:MATCHED]->(n2:Person),(n2:Person)-[r2:MATCHED]->(n1:Person)
-  //     WHERE id(r1) = $matchId AND id(r2) == r1.other
-  //     return r1,r2
-  //   `,
-  //   { matchId },
-  // );
-  // await session.close();
-  // logger.error(`endCall length: ${results.records.length}`);
+  try {
+    let session = driver.session();
+    const results = await session.run(
+      `
+        MATCH (n1:Person)-[r1:MATCHED]->(n2:Person),(n2:Person)-[r2:MATCHED]->(n1:Person)
+        WHERE id(r1) = $matchId AND id(r2) = r1.other
+        return r1,r2
+      `,
+      { matchId },
+    );
+    await session.close();
+    logger.error(`endCall length: ${results.records.length}`);
+  } catch (err) {
+    logger.error(`endCall matchId: ${matchId} error: ${err}`);
+  }
 
   callback(null, new StandardResponse());
 };

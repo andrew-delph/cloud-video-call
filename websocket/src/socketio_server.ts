@@ -186,7 +186,7 @@ io.on(`connection`, async (socket) => {
     socket.to(`room-${socket.id}`).emit(`endchat`, value);
     io.socketsLeave(`room-${socket.id}`);
 
-    const match_id: string = value.match_id;
+    const match_id: number = value.match_id;
     const endCallRequest = new EndCallRequest();
     endCallRequest.setMatchId(match_id);
 
