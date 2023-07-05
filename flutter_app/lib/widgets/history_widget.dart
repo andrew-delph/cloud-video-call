@@ -88,8 +88,13 @@ class HistoryItemWidget extends GetView<HistoryController> {
 
     String lengthTimeSinceString;
     if (parsedCreateTime != null && parsedEndTime != null) {
-      lengthTimeSinceString =
-          "${parsedCreateTime.difference(parsedEndTime).inMinutes} mins";
+      if (parsedEndTime.difference(parsedCreateTime).inMinutes == 0) {
+        lengthTimeSinceString =
+            "${parsedEndTime.difference(parsedCreateTime).inSeconds} secs";
+      } else {
+        lengthTimeSinceString =
+            "${parsedEndTime.difference(parsedCreateTime).inMinutes} mins";
+      }
     } else if (parsedCreateTime == null) {
       lengthTimeSinceString = "Error parsing CreateTime";
     } else if (parsedEndTime == null) {
