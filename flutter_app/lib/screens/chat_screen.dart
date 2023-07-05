@@ -30,7 +30,7 @@ class ChatScreen extends GetView<ChatController> {
                 ),
               ),
               Divider(),
-              Text("Test")
+              Text("Left nav of recent chats. Open window for each chat.")
             ])));
   }
 }
