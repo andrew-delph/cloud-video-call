@@ -16,8 +16,6 @@ import {
   GetRelationshipScoresRequest,
   GetRelationshipScoresResponse,
   Neo4jService,
-  UpdateMatchRequest,
-  UpdateMatchResponse,
   CheckUserFiltersResponse,
   CheckUserFiltersRequest,
   GetUserPerferencesRequest,
@@ -32,6 +30,7 @@ import {
   Match,
   grpc,
   FilterObject,
+  EndCallRequest,
 } from 'common-messaging';
 import { sendUserNotification } from 'common-messaging/src/message_helper';
 import { initializeApp, getApp } from 'firebase-admin/app';
@@ -249,14 +248,11 @@ const createMatch = async (
   callback(null, reply);
 };
 
-const updateMatch = (
-  call: grpc.ServerUnaryCall<UpdateMatchRequest, UpdateMatchResponse>,
-  callback: grpc.sendUnaryData<UpdateMatchResponse>,
+const endCall = (
+  call: grpc.ServerUnaryCall<EndCallRequest, StandardResponse>,
+  callback: grpc.sendUnaryData<StandardResponse>,
 ): void => {
-  // call.request.getUserId();
-  const reply = new UpdateMatchResponse();
-  reply.setMessage(`Updated match succesfully`);
-  callback(null, reply);
+  callback(null, new StandardResponse());
 };
 
 function defaultScore() {

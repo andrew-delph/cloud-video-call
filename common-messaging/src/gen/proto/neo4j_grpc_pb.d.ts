@@ -11,7 +11,7 @@ import * as proto_neo4j_pb from "../proto/neo4j_pb";
 interface INeo4jService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
     createUser: INeo4jService_ICreateUser;
     createMatch: INeo4jService_ICreateMatch;
-    updateMatch: INeo4jService_IUpdateMatch;
+    endCall: INeo4jService_IEndCall;
     createFeedback: INeo4jService_ICreateFeedback;
     getRelationshipScores: INeo4jService_IGetRelationshipScores;
     checkUserFilters: INeo4jService_ICheckUserFilters;
@@ -39,14 +39,14 @@ interface INeo4jService_ICreateMatch extends grpc.MethodDefinition<proto_neo4j_p
     responseSerialize: grpc.serialize<proto_neo4j_pb.CreateMatchResponse>;
     responseDeserialize: grpc.deserialize<proto_neo4j_pb.CreateMatchResponse>;
 }
-interface INeo4jService_IUpdateMatch extends grpc.MethodDefinition<proto_neo4j_pb.UpdateMatchRequest, proto_neo4j_pb.UpdateMatchResponse> {
-    path: "/neo4j.Neo4j/UpdateMatch";
+interface INeo4jService_IEndCall extends grpc.MethodDefinition<proto_neo4j_pb.EndCallRequest, proto_neo4j_pb.StandardResponse> {
+    path: "/neo4j.Neo4j/EndCall";
     requestStream: false;
     responseStream: false;
-    requestSerialize: grpc.serialize<proto_neo4j_pb.UpdateMatchRequest>;
-    requestDeserialize: grpc.deserialize<proto_neo4j_pb.UpdateMatchRequest>;
-    responseSerialize: grpc.serialize<proto_neo4j_pb.UpdateMatchResponse>;
-    responseDeserialize: grpc.deserialize<proto_neo4j_pb.UpdateMatchResponse>;
+    requestSerialize: grpc.serialize<proto_neo4j_pb.EndCallRequest>;
+    requestDeserialize: grpc.deserialize<proto_neo4j_pb.EndCallRequest>;
+    responseSerialize: grpc.serialize<proto_neo4j_pb.StandardResponse>;
+    responseDeserialize: grpc.deserialize<proto_neo4j_pb.StandardResponse>;
 }
 interface INeo4jService_ICreateFeedback extends grpc.MethodDefinition<proto_neo4j_pb.CreateFeedbackRequest, proto_neo4j_pb.StandardResponse> {
     path: "/neo4j.Neo4j/CreateFeedback";
@@ -117,7 +117,7 @@ export const Neo4jService: INeo4jService;
 export interface INeo4jServer {
     createUser: grpc.handleUnaryCall<proto_neo4j_pb.CreateUserRequest, proto_neo4j_pb.CreateUserResponse>;
     createMatch: grpc.handleUnaryCall<proto_neo4j_pb.CreateMatchRequest, proto_neo4j_pb.CreateMatchResponse>;
-    updateMatch: grpc.handleUnaryCall<proto_neo4j_pb.UpdateMatchRequest, proto_neo4j_pb.UpdateMatchResponse>;
+    endCall: grpc.handleUnaryCall<proto_neo4j_pb.EndCallRequest, proto_neo4j_pb.StandardResponse>;
     createFeedback: grpc.handleUnaryCall<proto_neo4j_pb.CreateFeedbackRequest, proto_neo4j_pb.StandardResponse>;
     getRelationshipScores: grpc.handleUnaryCall<proto_neo4j_pb.GetRelationshipScoresRequest, proto_neo4j_pb.GetRelationshipScoresResponse>;
     checkUserFilters: grpc.handleUnaryCall<proto_neo4j_pb.CheckUserFiltersRequest, proto_neo4j_pb.CheckUserFiltersResponse>;
@@ -134,9 +134,9 @@ export interface INeo4jClient {
     createMatch(request: proto_neo4j_pb.CreateMatchRequest, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.CreateMatchResponse) => void): grpc.ClientUnaryCall;
     createMatch(request: proto_neo4j_pb.CreateMatchRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.CreateMatchResponse) => void): grpc.ClientUnaryCall;
     createMatch(request: proto_neo4j_pb.CreateMatchRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.CreateMatchResponse) => void): grpc.ClientUnaryCall;
-    updateMatch(request: proto_neo4j_pb.UpdateMatchRequest, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.UpdateMatchResponse) => void): grpc.ClientUnaryCall;
-    updateMatch(request: proto_neo4j_pb.UpdateMatchRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.UpdateMatchResponse) => void): grpc.ClientUnaryCall;
-    updateMatch(request: proto_neo4j_pb.UpdateMatchRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.UpdateMatchResponse) => void): grpc.ClientUnaryCall;
+    endCall(request: proto_neo4j_pb.EndCallRequest, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    endCall(request: proto_neo4j_pb.EndCallRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    endCall(request: proto_neo4j_pb.EndCallRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
     createFeedback(request: proto_neo4j_pb.CreateFeedbackRequest, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
     createFeedback(request: proto_neo4j_pb.CreateFeedbackRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
     createFeedback(request: proto_neo4j_pb.CreateFeedbackRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
@@ -168,9 +168,9 @@ export class Neo4jClient extends grpc.Client implements INeo4jClient {
     public createMatch(request: proto_neo4j_pb.CreateMatchRequest, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.CreateMatchResponse) => void): grpc.ClientUnaryCall;
     public createMatch(request: proto_neo4j_pb.CreateMatchRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.CreateMatchResponse) => void): grpc.ClientUnaryCall;
     public createMatch(request: proto_neo4j_pb.CreateMatchRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.CreateMatchResponse) => void): grpc.ClientUnaryCall;
-    public updateMatch(request: proto_neo4j_pb.UpdateMatchRequest, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.UpdateMatchResponse) => void): grpc.ClientUnaryCall;
-    public updateMatch(request: proto_neo4j_pb.UpdateMatchRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.UpdateMatchResponse) => void): grpc.ClientUnaryCall;
-    public updateMatch(request: proto_neo4j_pb.UpdateMatchRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.UpdateMatchResponse) => void): grpc.ClientUnaryCall;
+    public endCall(request: proto_neo4j_pb.EndCallRequest, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    public endCall(request: proto_neo4j_pb.EndCallRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    public endCall(request: proto_neo4j_pb.EndCallRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
     public createFeedback(request: proto_neo4j_pb.CreateFeedbackRequest, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
     public createFeedback(request: proto_neo4j_pb.CreateFeedbackRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;
     public createFeedback(request: proto_neo4j_pb.CreateFeedbackRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: proto_neo4j_pb.StandardResponse) => void): grpc.ClientUnaryCall;

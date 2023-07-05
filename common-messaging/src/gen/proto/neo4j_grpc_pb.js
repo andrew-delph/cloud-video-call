@@ -81,6 +81,17 @@ function deserialize_neo4j_CreateUserResponse(buffer_arg) {
   return proto_neo4j_pb.CreateUserResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_neo4j_EndCallRequest(arg) {
+  if (!(arg instanceof proto_neo4j_pb.EndCallRequest)) {
+    throw new Error('Expected argument of type neo4j.EndCallRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_neo4j_EndCallRequest(buffer_arg) {
+  return proto_neo4j_pb.EndCallRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_neo4j_GetRelationshipScoresRequest(arg) {
   if (!(arg instanceof proto_neo4j_pb.GetRelationshipScoresRequest)) {
     throw new Error('Expected argument of type neo4j.GetRelationshipScoresRequest');
@@ -180,28 +191,6 @@ function deserialize_neo4j_StandardResponse(buffer_arg) {
   return proto_neo4j_pb.StandardResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_neo4j_UpdateMatchRequest(arg) {
-  if (!(arg instanceof proto_neo4j_pb.UpdateMatchRequest)) {
-    throw new Error('Expected argument of type neo4j.UpdateMatchRequest');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_neo4j_UpdateMatchRequest(buffer_arg) {
-  return proto_neo4j_pb.UpdateMatchRequest.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
-function serialize_neo4j_UpdateMatchResponse(arg) {
-  if (!(arg instanceof proto_neo4j_pb.UpdateMatchResponse)) {
-    throw new Error('Expected argument of type neo4j.UpdateMatchResponse');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_neo4j_UpdateMatchResponse(buffer_arg) {
-  return proto_neo4j_pb.UpdateMatchResponse.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
 function serialize_neo4j_UpdatePerferencesRequest(arg) {
   if (!(arg instanceof proto_neo4j_pb.UpdatePerferencesRequest)) {
     throw new Error('Expected argument of type neo4j.UpdatePerferencesRequest');
@@ -239,16 +228,16 @@ createUser: {
     responseSerialize: serialize_neo4j_CreateMatchResponse,
     responseDeserialize: deserialize_neo4j_CreateMatchResponse,
   },
-  updateMatch: {
-    path: '/neo4j.Neo4j/UpdateMatch',
+  endCall: {
+    path: '/neo4j.Neo4j/EndCall',
     requestStream: false,
     responseStream: false,
-    requestType: proto_neo4j_pb.UpdateMatchRequest,
-    responseType: proto_neo4j_pb.UpdateMatchResponse,
-    requestSerialize: serialize_neo4j_UpdateMatchRequest,
-    requestDeserialize: deserialize_neo4j_UpdateMatchRequest,
-    responseSerialize: serialize_neo4j_UpdateMatchResponse,
-    responseDeserialize: deserialize_neo4j_UpdateMatchResponse,
+    requestType: proto_neo4j_pb.EndCallRequest,
+    responseType: proto_neo4j_pb.StandardResponse,
+    requestSerialize: serialize_neo4j_EndCallRequest,
+    requestDeserialize: deserialize_neo4j_EndCallRequest,
+    responseSerialize: serialize_neo4j_StandardResponse,
+    responseDeserialize: deserialize_neo4j_StandardResponse,
   },
   createFeedback: {
     path: '/neo4j.Neo4j/CreateFeedback',

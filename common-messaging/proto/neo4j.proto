@@ -12,7 +12,7 @@ service Neo4j {
 
   rpc CreateMatch (CreateMatchRequest) returns (CreateMatchResponse) {}
 
-  rpc UpdateMatch (UpdateMatchRequest) returns (UpdateMatchResponse) {}
+  rpc EndCall (EndCallRequest) returns (StandardResponse) {}
 
   rpc CreateFeedback (CreateFeedbackRequest) returns (StandardResponse) {}
 
@@ -55,16 +55,12 @@ message CreateMatchResponse {
 }
 
 
-message UpdateMatchRequest {
+message EndCallRequest {
   string match_id = 1;
   string key = 2;
   string value = 3;
 }
 
-message UpdateMatchResponse {
-  bool error = 1;
-  string message = 2;
-}
 
 message GetRelationshipScoresRequest {
   string user_id = 1;

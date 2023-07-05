@@ -118,57 +118,32 @@ export namespace CreateMatchResponse {
     }
 }
 
-export class UpdateMatchRequest extends jspb.Message { 
+export class EndCallRequest extends jspb.Message { 
     getMatchId(): string;
-    setMatchId(value: string): UpdateMatchRequest;
+    setMatchId(value: string): EndCallRequest;
 
     getKey(): string;
-    setKey(value: string): UpdateMatchRequest;
+    setKey(value: string): EndCallRequest;
 
     getValue(): string;
-    setValue(value: string): UpdateMatchRequest;
+    setValue(value: string): EndCallRequest;
 
 
     serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): UpdateMatchRequest.AsObject;
-    static toObject(includeInstance: boolean, msg: UpdateMatchRequest): UpdateMatchRequest.AsObject;
+    toObject(includeInstance?: boolean): EndCallRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: EndCallRequest): EndCallRequest.AsObject;
     static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
     static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: UpdateMatchRequest, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): UpdateMatchRequest;
-    static deserializeBinaryFromReader(message: UpdateMatchRequest, reader: jspb.BinaryReader): UpdateMatchRequest;
+    static serializeBinaryToWriter(message: EndCallRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): EndCallRequest;
+    static deserializeBinaryFromReader(message: EndCallRequest, reader: jspb.BinaryReader): EndCallRequest;
 }
 
-export namespace UpdateMatchRequest {
+export namespace EndCallRequest {
     export type AsObject = {
         matchId: string,
         key: string,
         value: string,
-    }
-}
-
-export class UpdateMatchResponse extends jspb.Message { 
-    getError(): boolean;
-    setError(value: boolean): UpdateMatchResponse;
-
-    getMessage(): string;
-    setMessage(value: string): UpdateMatchResponse;
-
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): UpdateMatchResponse.AsObject;
-    static toObject(includeInstance: boolean, msg: UpdateMatchResponse): UpdateMatchResponse.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: UpdateMatchResponse, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): UpdateMatchResponse;
-    static deserializeBinaryFromReader(message: UpdateMatchResponse, reader: jspb.BinaryReader): UpdateMatchResponse;
-}
-
-export namespace UpdateMatchResponse {
-    export type AsObject = {
-        error: boolean,
-        message: string,
     }
 }
 
