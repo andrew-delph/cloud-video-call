@@ -10,7 +10,7 @@ import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 
 const vus = 50;
 const authKeysNum = vus + 15; // number of users created for each parallel instance running
-const iterations = vus * 2; //authKeysNum * 1000;
+const iterations = 999999; //authKeysNum * 1000;
 
 const nukeData = true; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
@@ -77,13 +77,13 @@ export const options = {
     //     { duration: `2d`, target: 1000 },
     //   ],
     // },
-    chatStream: {
-      executor: `shared-iterations`,
-      exec: `biChatStream`,
-      vus: 50,
-      iterations: 100,
-      maxDuration: `10h`,
-    },
+    // chatStream: {
+    //   executor: `shared-iterations`,
+    //   exec: `biChatStream`,
+    //   vus: 50,
+    //   iterations: 100,
+    //   maxDuration: `10h`,
+    // },
     // chatPull: {
     //   executor: `shared-iterations`,
     //   exec: `biChatPull`,
