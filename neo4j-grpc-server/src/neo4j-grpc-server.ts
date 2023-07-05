@@ -748,7 +748,18 @@ const getMatchHistory = async (
     { userId },
   );
 
+  const count_result: any = await session.run(
+    `
+    MATCH (n1:Person{userId: $userId})-[r1:MATCHED]->(n2:Person)
+    return count(r1) as total
+    `,
+    { userId },
+  );
+
   await session.close();
+  const total = count_result.records[0].get(`total`);
+
+  reply.setTotal(total);
 
   for (const record of result.records) {
     const match = new Match();
