@@ -12,6 +12,7 @@ import {
   GetRelationshipScoresRequest,
   GetRelationshipScoresResponse,
   Score,
+  makeGrpcRequest,
 } from 'common-messaging';
 
 const logger = common.getLogger();
@@ -133,29 +134,17 @@ export async function getRelationshipScores(
   getRelationshipScoresRequest.setOtherUsersList(
     filtersToRequest.map((filter) => filter.otherId),
   );
-
-  const getRelationshipScoresResponse =
-    await new Promise<GetRelationshipScoresResponse>(
-      async (resolve, reject) => {
-        try {
-          await neo4jRpcClient.getRelationshipScores(
-            getRelationshipScoresRequest,
-            (error: any, response: GetRelationshipScoresResponse) => {
-              if (error) {
-                reject(error);
-              } else {
-                resolve(response);
-              }
-            },
-          );
-        } catch (e) {
-          reject(e);
-        }
-      },
-    ).catch((e) => {
-      logger.error(`getRelationshipScores`, e);
-      throw new RetryError(e);
-    });
+  const getRelationshipScoresResponse = await makeGrpcRequest<
+    GetRelationshipScoresRequest,
+    GetRelationshipScoresResponse
+  >(
+    neo4jRpcClient,
+    neo4jRpcClient.getRelationshipScores,
+    getRelationshipScoresRequest,
+  ).catch((e) => {
+    logger.error(`getRelationshipScores`, e);
+    throw new RetryError(e);
+  });
 
   const getRelationshipScoresMap =
     getRelationshipScoresResponse.getRelationshipScoresMap();

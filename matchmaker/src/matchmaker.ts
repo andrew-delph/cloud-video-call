@@ -24,6 +24,7 @@ import {
   Neo4jClient,
   userMessageQueue,
   userNotificationQueue,
+  makeGrpcRequest,
 } from 'common-messaging';
 import { message_helper } from 'common-messaging';
 import express from 'express';
@@ -284,24 +285,12 @@ const connectRabbit = async () => {
 const neo4jGetUser = (userId: string) => {
   const getUserPerferencesRequest = new GetUserPerferencesRequest();
   getUserPerferencesRequest.setUserId(userId);
-  return new Promise<GetUserPerferencesResponse>(async (resolve, reject) => {
-    try {
-      neo4jRpcClient.getUserPerferences(
-        getUserPerferencesRequest,
-        (error: any, response: GetUserPerferencesResponse) => {
-          if (error) {
-            logger.error(error);
-            reject(error);
-          } else {
-            resolve(response);
-          }
-        },
-      );
-    } catch (e) {
-      logger.error(e);
-      reject(e);
-    }
-  });
+
+  return makeGrpcRequest<GetUserPerferencesRequest, GetUserPerferencesResponse>(
+    neo4jRpcClient,
+    neo4jRpcClient.getUserPerferences,
+    getUserPerferencesRequest,
+  );
 };
 
 const matchmakerChannelPrefix = `matchmaker`;
@@ -584,23 +573,11 @@ async function matchmakerFlow(
 const neo4jCheckUserFiltersRequest = (
   checkUserFiltersRequest: CheckUserFiltersRequest,
 ) => {
-  return new Promise<CheckUserFiltersResponse>(async (resolve, reject) => {
-    try {
-      neo4jRpcClient.checkUserFilters(
-        checkUserFiltersRequest,
-        (error: any, response: CheckUserFiltersResponse) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(response);
-          }
-        },
-      );
-    } catch (e) {
-      logger.error(`checkUserFiltersRequest error: ${e}`);
-      reject(e);
-    }
-  });
+  return makeGrpcRequest<CheckUserFiltersRequest, CheckUserFiltersResponse>(
+    neo4jRpcClient,
+    neo4jRpcClient.checkUserFilters,
+    checkUserFiltersRequest,
+  );
 };
 
 export async function createFilterSet(
