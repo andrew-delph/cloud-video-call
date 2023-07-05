@@ -15,6 +15,7 @@ import {
   ReadyMessage,
   chatEventQueue,
   createNeo4jClient,
+  makeGrpcRequest,
   matchmakerQueueName,
 } from 'common-messaging';
 import {
@@ -206,28 +207,21 @@ io.on(`connection`, async (socket) => {
 
   const createUserRequest = new CreateUserRequest();
   createUserRequest.setUserId(socket.data.auth);
-  try {
-    neo4jRpcClient.createUser(
-      createUserRequest,
-      (error: any, response: CreateUserResponse) => {
-        if (!error) {
-          logger.info(`created user.... ${socket.data.auth}`);
-          socket.emit(`established`, `Connection established.`);
-        } else {
-          socket.emit(
-            `message`,
-            `Connection NOT established. ${JSON.stringify(error)}`,
-          );
-          logger.error(`createUser error: ${error.message}`);
-          logger.error(`createUser error: ${JSON.stringify(error)}`);
-          socket.disconnect();
-        }
-      },
-    );
-  } catch (e) {
-    logger.error(`creat user error! ${e}`);
-    socket.disconnect();
-  }
+  makeGrpcRequest<CreateUserRequest, CreateUserResponse>(
+    neo4jRpcClient,
+    neo4jRpcClient.createUser,
+    createUserRequest,
+  )
+    .then(() => {
+      socket.emit(`established`, `Connection established.`);
+    })
+    .catch((error) => {
+      socket.emit(
+        `message`,
+        `Connection NOT established. ${JSON.stringify(error)}`,
+      );
+      socket.disconnect();
+    });
 });
 
 export const getServer = async (listen: boolean) => {
