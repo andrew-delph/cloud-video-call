@@ -381,29 +381,10 @@ export const match = async (msgContent: MatchMessage) => {
     request.setUserId1(userId1);
     request.setUserId2(userId2);
 
-    const matchResponse = await new Promise<CreateMatchResponse>(
-      async (resolve: any, reject: any) => {
-        try {
-          await neo4jRpcClient.createMatch(request, (error, response) => {
-            if (error) {
-              logger.error(`neo4j create match error: ${error}`);
-              reject(error);
-            } else if (
-              !response.getRelationshipId1() ||
-              !response.getRelationshipId2()
-            ) {
-              reject(
-                `!matchResponse.getRelationshipId1() || !matchResponse.getRelationshipId2()`,
-              );
-            } else {
-              resolve(response);
-            }
-          });
-        } catch (e) {
-          reject(e);
-        }
-      },
-    ).catch((error) => {
+    const matchResponse = await makeGrpcRequest<
+      CreateMatchRequest,
+      CreateMatchResponse
+    >(neo4jRpcClient, neo4jRpcClient.createMatch, request).catch((error) => {
       logger.error(`createMatch: ${error}`);
       throw Error(error);
     });
