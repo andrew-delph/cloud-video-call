@@ -9,7 +9,6 @@ import {
   grpc,
   CreateUserRequest,
   CreateMatchRequest,
-  UpdateMatchRequest,
   CreateMatchResponse,
   CreateUserResponse,
   createNeo4jClient,

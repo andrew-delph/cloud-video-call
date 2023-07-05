@@ -248,10 +248,26 @@ const createMatch = async (
   callback(null, reply);
 };
 
-const endCall = (
+const endCall = async (
   call: grpc.ServerUnaryCall<EndCallRequest, StandardResponse>,
   callback: grpc.sendUnaryData<StandardResponse>,
-): void => {
+): Promise<void> => {
+  const matchId = call.request.getMatchId();
+
+  logger.error(`matchId: ${matchId}`);
+
+  // let session = driver.session();
+  // const results = await session.run(
+  //   `
+  //     MATCH (n1:Person)-[r1:MATCHED]->(n2:Person),(n2:Person)-[r2:MATCHED]->(n1:Person)
+  //     WHERE id(r1) = $matchId AND id(r2) == r1.other
+  //     return r1,r2
+  //   `,
+  //   { matchId },
+  // );
+  // await session.close();
+  // logger.error(`endCall length: ${results.records.length}`);
+
   callback(null, new StandardResponse());
 };
 
@@ -783,7 +799,7 @@ const getMatchHistory = async (
 server.addService(Neo4jService, {
   createUser,
   createMatch,
-  updateMatch,
+  endCall,
   getRelationshipScores,
   checkUserFilters,
   getUserPerferences,

@@ -8,7 +8,7 @@ import redis from 'k6/experimental/redis';
 import http from 'k6/http';
 import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 
-const vus = 50;
+const vus = 4;
 const authKeysNum = vus + 15; // number of users created for each parallel instance running
 const iterations = 999999; //authKeysNum * 1000;
 
@@ -333,52 +333,52 @@ export default async function () {
 
         // start the match sequence
         for (let i = 0; i < matches; i++) {
-          await matchUser(socket, myUser)
-            .then(async (data: any) => {
-              // prediction_score_trend.add(data.score);
+          await matchUser(socket, myUser).then(async (data: any) => {
+            // prediction_score_trend.add(data.score);
 
-              let validMatch: boolean = await myUser.getValidMatch(data.other);
+            let validMatch: boolean = await myUser.getValidMatch(data.other);
 
-              const score = validMatch ? 5 : -5;
+            const score = validMatch ? 5 : -5;
 
-              if (validMatch) {
-                valid_score.add(1, extraLabels(myUser));
-              } else {
-                invalid_score.add(1, extraLabels(myUser));
-              }
+            if (validMatch) {
+              valid_score.add(1, extraLabels(myUser));
+            } else {
+              invalid_score.add(1, extraLabels(myUser));
+            }
 
-              score_trend.add(score, extraLabels(myUser));
-              score_gauge.add(score, extraLabels(myUser));
+            score_trend.add(score, extraLabels(myUser));
+            score_gauge.add(score, extraLabels(myUser));
 
-              const r = http.post(
-                `${options_url}/providefeedback`,
-                JSON.stringify({
-                  match_id: data.match_id,
-                  score: score,
-                }),
-                {
-                  headers: {
-                    authorization: auth,
-                    'Content-Type': `application/json`,
-                  },
+            const r = http.post(
+              `${options_url}/providefeedback`,
+              JSON.stringify({
+                match_id: data.match_id,
+                score: score,
+              }),
+              {
+                headers: {
+                  authorization: auth,
+                  'Content-Type': `application/json`,
                 },
-              );
-              check(r, {
-                'feedback response status is 201': r && r.status == 201,
-              });
-
-              return validMatch;
-            })
-            .then(async (validMatch: boolean) => {
-              if (validMatch) {
-                await socket.sleep(validMatchChatTime * 1000);
-              } else {
-                await socket.sleep(invalidMatchChatTime * 1000);
-              }
-            })
-            .then(async () => {
-              await socket.sendWithAck(`endchat`, true, 1000 * 10);
+              },
+            );
+            check(r, {
+              'feedback response status is 201': r && r.status == 201,
             });
+
+            // sleep
+            if (validMatch) {
+              await socket.sleep(validMatchChatTime * 1000);
+            } else {
+              await socket.sleep(invalidMatchChatTime * 1000);
+            }
+
+            await socket.sendWithAck(
+              `endchat`,
+              { match_id: data.match_id },
+              1000 * 10,
+            );
+          });
         }
       })
       .catch((error) => {
