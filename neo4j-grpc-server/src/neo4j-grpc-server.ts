@@ -259,8 +259,8 @@ const endCall = async (
     `
         MATCH (n1:Person)-[r1:MATCHED]->(n2:Person),(n2:Person)-[r2:MATCHED]->(n1:Person)
         WHERE id(r1) = $matchId AND id(r2) = r1.other
-        SET r1.endTime = COALESCE(r1.endTime, datetime()), 
-        r2.endTime = COALESCE(r2.endTime, datetime())
+        SET r1.endDate = COALESCE(r1.endDate, datetime()), 
+        r2.endDate = COALESCE(r2.endDate, datetime())
         return r1,r2
       `,
     { matchId },
@@ -755,7 +755,7 @@ const getMatchHistory = async (
     MATCH (n1:Person{userId: $userId})-[r1:MATCHED]->(n2:Person)
     OPTIONAL MATCH (n1:Person)-[r2:FEEDBACK{matchId:id(r1)}]->(n2:Person)
     OPTIONAL MATCH (n2:Person)-[r3:FEEDBACK{matchId:r1.other}]->(n1:Person)
-    return n1.userId, n2.userId, r1.createDate, r2.score, r3.score,
+    return n1.userId, n2.userId, r1.createDate, r1.endDate, r2.score, r3.score,
     EXISTS((n1)-[:FRIENDS]-(n2)) AS friends,
     EXISTS((n1)-[:NEGATIVE]-(n2)) AS negative,
     id(r1) as matchId
@@ -784,6 +784,7 @@ const getMatchHistory = async (
     match.setUserId1(userId);
     match.setUserId2(record.get(`n2.userId`));
     match.setCreateTime(`${record.get(`r1.createDate`)}`);
+    match.setEndTime(`${record.get(`r1.endDate`)}`);
     match.setUserId1Score(record.get(`r2.score`));
     match.setUserId2Score(record.get(`r3.score`));
     match.setFriends(record.get(`friends`));

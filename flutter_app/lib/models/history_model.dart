@@ -23,6 +23,7 @@ class HistoryItemModel {
   String? userId1;
   String? userId2;
   String? createTime;
+  String? endTime;
   double? userId1Score;
   double? userId2Score;
   bool? friends;
@@ -33,6 +34,7 @@ class HistoryItemModel {
       {this.userId1,
       this.userId2,
       this.createTime,
+      this.endTime,
       this.userId1Score,
       this.userId2Score});
 
@@ -40,6 +42,7 @@ class HistoryItemModel {
     userId1 = json['userId1'];
     userId2 = json['userId2'];
     createTime = json['createTime'];
+    endTime = json['endTime'];
     userId1Score = json['userId1Score'];
     userId2Score = json['userId2Score'];
     friends = json['friends'];
@@ -52,6 +55,7 @@ class HistoryItemModel {
     data['userId1'] = userId1;
     data['userId2'] = userId2;
     data['createTime'] = createTime;
+    data['endTime'] = endTime;
     data['userId1Score'] = userId1Score;
     data['userId2Score'] = userId2Score;
     data['friends'] = friends;

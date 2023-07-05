@@ -9,6 +9,7 @@ import 'package:flutter_app/widgets/profile_picture.dart';
 import '../controllers/history_controller.dart';
 import '../models/history_model.dart';
 import '../models/user_model.dart';
+import '../utils/utils.dart';
 import 'chat_room_widget.dart';
 
 // Package imports:
@@ -61,18 +62,40 @@ class HistoryItemWidget extends GetView<HistoryController> {
     } else {
       relationShipState = RelationShipState.none;
     }
-    DateTime parsedTime = DateTime.parse('${historyItem.createTime}');
+    DateTime? parsedCreateTime = parseDateTime('${historyItem.createTime}');
+    DateTime? parsedEndTime = parseDateTime('${historyItem.endTime}');
+
     DateTime currentTime = DateTime.now();
-    String timeValue =
-        "${currentTime.difference(parsedTime).inSeconds} seconds";
-    if (currentTime.difference(parsedTime).inDays > 7) {
-      timeValue = "${currentTime.difference(parsedTime).inDays % 7} weeks";
-    } else if (currentTime.difference(parsedTime).inDays >= 1) {
-      timeValue = "${currentTime.difference(parsedTime).inDays} days";
-    } else if (currentTime.difference(parsedTime).inHours > 1) {
-      timeValue = "${currentTime.difference(parsedTime).inHours} hours";
-    } else if (currentTime.difference(parsedTime).inMinutes > 1) {
-      timeValue = "${currentTime.difference(parsedTime).inMinutes} mins";
+    String startTimeSinceString;
+    if (parsedCreateTime == null) {
+      startTimeSinceString = "Error parsing CreateTime";
+    } else if (currentTime.difference(parsedCreateTime).inDays > 7) {
+      startTimeSinceString =
+          "${currentTime.difference(parsedCreateTime).inDays % 7} weeks";
+    } else if (currentTime.difference(parsedCreateTime).inDays >= 1) {
+      startTimeSinceString =
+          "${currentTime.difference(parsedCreateTime).inDays} days";
+    } else if (currentTime.difference(parsedCreateTime).inHours > 1) {
+      startTimeSinceString =
+          "${currentTime.difference(parsedCreateTime).inHours} hours";
+    } else if (currentTime.difference(parsedCreateTime).inMinutes > 1) {
+      startTimeSinceString =
+          "${currentTime.difference(parsedCreateTime).inMinutes} mins";
+    } else {
+      startTimeSinceString =
+          "${currentTime.difference(parsedCreateTime).inSeconds} seconds";
+    }
+
+    String lengthTimeSinceString;
+    if (parsedCreateTime != null && parsedEndTime != null) {
+      lengthTimeSinceString =
+          "${parsedCreateTime.difference(parsedEndTime).inMinutes} mins";
+    } else if (parsedCreateTime == null) {
+      lengthTimeSinceString = "Error parsing CreateTime";
+    } else if (parsedEndTime == null) {
+      lengthTimeSinceString = "Error parsing EndTime";
+    } else {
+      lengthTimeSinceString = "Error";
     }
 
     controller
@@ -92,7 +115,11 @@ class HistoryItemWidget extends GetView<HistoryController> {
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [Text("time: $timeValue ago")],
+              children: [Text("time: $startTimeSinceString ago")],
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [Text("length: $lengthTimeSinceString")],
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,8 +160,7 @@ class HistoryItemWidget extends GetView<HistoryController> {
                     onPressed: () async {
                       // Action to perform when the button is pressed
                       print('Button Pressed');
-                      await controller.updateFeedback(
-                          historyItem.matchId!, 5);
+                      await controller.updateFeedback(historyItem.matchId!, 5);
                     },
                     child: const Text('Send Friend Request'),
                   ),
@@ -142,8 +168,7 @@ class HistoryItemWidget extends GetView<HistoryController> {
                     onPressed: () async {
                       // Action to perform when the button is pressed
                       print('Button Pressed');
-                      await controller.updateFeedback(
-                          historyItem.matchId!, -5);
+                      await controller.updateFeedback(historyItem.matchId!, -5);
                     },
                     child: const Text('Block'),
                   )

@@ -164,5 +164,5 @@ message Match {
   bool friends = 6;
   bool negative = 7;
   int32 match_id = 8;
-  string endTime = 9;
+  string end_time = 9;
 }

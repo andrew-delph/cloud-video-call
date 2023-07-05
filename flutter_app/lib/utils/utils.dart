@@ -59,3 +59,12 @@ T validateRequestGetBody<T>(Response<dynamic> response,
     return body;
   }
 }
+
+DateTime? parseDateTime(String dateString) {
+  try {
+    return DateTime.parse(dateString);
+  } catch (err) {
+    print("Error parseDateTime: $err");
+    return null;
+  }
+}

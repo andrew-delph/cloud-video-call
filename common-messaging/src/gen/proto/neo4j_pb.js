@@ -4461,7 +4461,7 @@ proto.neo4j.Match.toObject = function(includeInstance, msg) {
     friends: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
     negative: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
     matchId: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    endtime: jspb.Message.getFieldWithDefault(msg, 9, "")
+    endTime: jspb.Message.getFieldWithDefault(msg, 9, "")
   };
 
   if (includeInstance) {
@@ -4532,7 +4532,7 @@ proto.neo4j.Match.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 9:
       var value = /** @type {string} */ (reader.readString());
-      msg.setEndtime(value);
+      msg.setEndTime(value);
       break;
     default:
       reader.skipField();
@@ -4619,7 +4619,7 @@ proto.neo4j.Match.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getEndtime();
+  f = message.getEndTime();
   if (f.length > 0) {
     writer.writeString(
       9,
@@ -4774,10 +4774,10 @@ proto.neo4j.Match.prototype.setMatchId = function(value) {
 
 
 /**
- * optional string endTime = 9;
+ * optional string end_time = 9;
  * @return {string}
  */
-proto.neo4j.Match.prototype.getEndtime = function() {
+proto.neo4j.Match.prototype.getEndTime = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
 };
 
@@ -4786,7 +4786,7 @@ proto.neo4j.Match.prototype.getEndtime = function() {
  * @param {string} value
  * @return {!proto.neo4j.Match} returns this
  */
-proto.neo4j.Match.prototype.setEndtime = function(value) {
+proto.neo4j.Match.prototype.setEndTime = function(value) {
   return jspb.Message.setProto3StringField(this, 9, value);
 };
 

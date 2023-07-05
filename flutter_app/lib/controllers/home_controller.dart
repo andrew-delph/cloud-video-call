@@ -46,7 +46,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
   Rx<MediaStreamTrack?> remoteAudioTrack = Rx(null);
 
   Rx<io.Socket?> socket = Rx(null);
-  String? matchId;
+  int? matchId;
 
   RxDouble localVideoRendererRatioHw = 0.0.obs;
   RxDouble remoteVideoRendererRatioHw = 0.0.obs;
@@ -468,7 +468,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
 
   Future<void> endChat(bool skipFeedback) async {
     log("end chat skipFeedback=$skipFeedback");
-    socket()?.emit("endchat", true);
+    socket()?.emit("endchat", {"match_id": matchId});
     await resetRemote();
     isInReadyQueue(localPreferences.autoQueue());
     isInChat(false);
