@@ -19,6 +19,7 @@ config:
   dbms.memory.transaction.total.max: '2GB'
   server.memory.heap.max_size: '2GB'
   server.bolt.thread_pool_max_size: '1000'
+  db.lock.acquisition.timeout: '30s'
 
 podSpec:
   priorityClassName: 'high-priority'
