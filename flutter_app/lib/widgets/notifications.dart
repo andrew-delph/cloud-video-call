@@ -73,7 +73,10 @@ class NotificationsController extends GetxController with StateMixin {
       unreadStream.listen((event) {
         if (unread() >= 0) {
           for (var element in event.docChanges) {
-            infoSnackbar("Notification", "${element.doc.data()?.title}");
+            var notification = element.doc.data();
+            if (!(notification?.read ?? false)) {
+              infoSnackbar("Notification", "${notification?.title}");
+            }
           }
         }
         unread(event.size);
@@ -92,14 +95,22 @@ class NotificationsController extends GetxController with StateMixin {
     ));
   }
 
-  readNotification(String id) async {
-    print("readNotification $id");
-    notificationCollection.doc(id).update({"read": true});
+  readNotifications(List<String> ids) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    for (var id in ids) {
+      batch.update(notificationCollection.doc(id), {"read": true});
+      print("readNotification $id");
+    }
+    await batch.commit();
   }
 
-  archiveNotification(String id) async {
-    print("archiveNotification $id");
-    notificationCollection.doc(id).update({"archive": true});
+  archiveNotifications(List<String> ids) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    for (var id in ids) {
+      batch.update(notificationCollection.doc(id), {"archive": true});
+      print("archiveNotification $id");
+    }
+    await batch.commit();
   }
 
   DocumentReference<NotificationModel> getMyNotificationsDoc() {
@@ -109,15 +120,17 @@ class NotificationsController extends GetxController with StateMixin {
   List<PopupMenuItem<String>> loadNotifications() {
     print("loadNotifications");
     var popups = notifications().entries.map((entry) {
-      if (!(entry.value.isRead())) {
-        readNotification(entry.key);
-      }
-
       return PopupMenuItem<String>(
         value: entry.key,
         child: NotificationsItem(entry.key, entry.value),
       );
     }).toList();
+
+    readNotifications(notifications()
+        .entries
+        .where((entry) => entry.value.isRead())
+        .map((entry) => entry.key)
+        .toList());
 
     if (popups.isEmpty) {
       popups.add(const PopupMenuItem<String>(
@@ -147,12 +160,14 @@ class NotificationsButton extends GetView<NotificationsController> {
           return PopupMenuButton<String>(
             onSelected: (value) {
               if (value == "archive") {
-                for (String notificationId in controller.notifications().keys) {
-                  controller.archiveNotification(notificationId);
-                }
+                controller.archiveNotifications(controller
+                    .notifications()
+                    .entries
+                    .map((entry) => entry.key)
+                    .toList());
               } else if (value == "none") {
               } else {
-                controller.archiveNotification(value);
+                controller.archiveNotifications([value]);
               }
             },
             icon: Badge(
