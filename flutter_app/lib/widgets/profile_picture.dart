@@ -31,7 +31,7 @@ class ProfilePicture extends GetView<PreferencesController> {
               imageUrl: value,
               placeholder: (context, url) => const CircularProgressIndicator(),
               errorWidget: (context, url, error) {
-                return const Icon(Icons.no_photography_sharp);
+                return const Icon(Icons.error);
               },
             )))
         .catchError((err) {
