@@ -140,7 +140,7 @@ class PreferencesController extends GetxController with StateMixin {
     var imageRef = (FirebaseStorage.instance.ref('profile-picture/$userId'));
     await imageRef.putData(bytes, SettableMetadata(contentType: "image/png"));
 
-    int maxWaitCount = 10;
+    int maxWaitCount = 20;
     for (int i = 0; i <= maxWaitCount; i++) {
       var imageRef =
           (FirebaseStorage.instance.ref('profile-picture/${userId}_100x100'));
@@ -154,7 +154,7 @@ class PreferencesController extends GetxController with StateMixin {
         errorSnackbar("Upload Failed.", "Failed to upload profile picutre.");
         return;
       } else {
-        await Future.delayed(const Duration(microseconds: 500));
+        await Future.delayed(const Duration(milliseconds: 500));
       }
     }
 
