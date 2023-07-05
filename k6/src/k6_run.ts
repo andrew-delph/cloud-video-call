@@ -8,7 +8,7 @@ import redis from 'k6/experimental/redis';
 import http from 'k6/http';
 import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 
-const vus = 20;
+const vus = 100;
 const authKeysNum = vus + 15; // number of users created for each parallel instance running
 const iterations = 999999; //authKeysNum * 1000;
 
@@ -54,21 +54,21 @@ const updateAuthVars = () => {
 export const options = {
   setupTimeout: `20m`,
   scenarios: {
-    shared: {
-      executor: `shared-iterations`,
-      vus: vus,
-      iterations: iterations,
-      maxDuration: `10h`,
-    },
-    // ramping: {
-    //   executor: `ramping-vus`,
-    //   startVUs: 0,
-    //   stages: [
-    //     { duration: `5m`, target: vus },
-    //     { duration: `2d`, target: vus },
-    //     // { duration: `3m`, target: vus * 1 },
-    //   ],
+    // shared: {
+    //   executor: `shared-iterations`,
+    //   vus: vus,
+    //   iterations: iterations,
+    //   maxDuration: `10h`,
     // },
+    ramping: {
+      executor: `ramping-vus`,
+      startVUs: 0,
+      stages: [
+        { duration: `5m`, target: vus },
+        { duration: `2d`, target: vus },
+        // { duration: `3m`, target: vus * 1 },
+      ],
+    },
     // longConnection: {
     //   executor: `ramping-vus`,
     //   exec: `longWait`,
