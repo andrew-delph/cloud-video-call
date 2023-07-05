@@ -194,11 +194,18 @@ io.on(`connection`, async (socket) => {
       neo4jRpcClient,
       neo4jRpcClient.endCall,
       endCallRequest,
-    );
-
-    if (callback != null) {
-      callback({ ended: true });
-    }
+    )
+      .then(() => {
+        if (callback != null) {
+          callback({ ended: true });
+        }
+      })
+      .catch((err) => {
+        logger.error(
+          `end call error: match_id ${match_id} auth ${socket.data.auth} err ${err}`,
+        );
+        socket.disconnect();
+      });
   });
 
   await pubRedisClient.publish(common.activeCountChannel, `change`);
