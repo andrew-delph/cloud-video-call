@@ -31,3 +31,21 @@ spec:
     - name: http
       port: 8081
       targetPort: 8081
+---
+apiVersion: networking.internal.knative.dev/v1alpha1
+kind: ClusterDomainClaim
+metadata:
+  name: rc.andrewdelph.com
+spec:
+  namespace: default
+---
+apiVersion: serving.knative.dev/v1alpha1
+kind: DomainMapping
+metadata:
+  name: rc.andrewdelph.com
+  namespace: default
+spec:
+  ref:
+    name: redis-commander
+    kind: Service
+    apiVersion: serving.knative.dev/v1
