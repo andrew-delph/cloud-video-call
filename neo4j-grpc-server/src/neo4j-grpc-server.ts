@@ -253,27 +253,45 @@ const endCall = async (
   callback: grpc.sendUnaryData<StandardResponse>,
 ): Promise<void> => {
   const matchId = call.request.getMatchId();
-
   let session = driver.session();
-  const results = await session.run(
-    `
-        MATCH (n1:Person)-[r1:MATCHED]->(n2:Person),(n2:Person)-[r2:MATCHED]->(n1:Person)
-        WHERE id(r1) = $matchId AND id(r2) = r1.other
-        SET r1.endDate = COALESCE(r1.endDate, datetime()), 
-        r2.endDate = COALESCE(r2.endDate, datetime())
-        return r1,r2
-      `,
-    { matchId },
-  );
-  await session.close();
-  if (results.records.length != 1) {
-    logger.error(`endCall length: ${results.records.length}`);
-    return callback({
-      code: grpc.status.NOT_FOUND,
-      message: `results.records.length = ${results.records.length}`,
-    });
+  const max = 10;
+  for (let i = 0; i <= max; i++) {
+    try {
+      const results = await session.run(
+        `
+            MATCH (n1:Person)-[r1:MATCHED]->(n2:Person),(n2:Person)-[r2:MATCHED]->(n1:Person)
+            WHERE id(r1) = $matchId AND id(r2) = r1.other
+            SET r1.endDate = COALESCE(r1.endDate, datetime()), 
+            r2.endDate = COALESCE(r2.endDate, datetime())
+            return r1,r2
+          `,
+        { matchId },
+      );
+      if (results.records.length != 1) {
+        logger.error(`endCall length: ${results.records.length}`);
+        return callback({
+          code: grpc.status.NOT_FOUND,
+          message: `results.records.length = ${results.records.length}`,
+        });
+      }
+      break;
+    } catch (err) {
+      if (i == max) {
+        logger.error(`Max backoff for endDate update reached.`, err);
+        return callback({
+          code: grpc.status.NOT_FOUND,
+          message: `Max backoff for endDate update reached.`,
+        });
+      }
+      const sleep = i * 1000;
+      logger.warn(
+        `Failed to update endDate for Match. Sleeping ${sleep}ms`,
+        err,
+      );
+      await common.delay(sleep);
+    }
   }
-
+  await session.close();
   callback(null, new StandardResponse());
 };
 
