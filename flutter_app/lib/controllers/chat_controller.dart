@@ -100,7 +100,6 @@ class ChatController extends GetxController with StateMixin<Widget> {
 
           if (getOther(chatEvent) == userId) {
             newChatRoom.add(chatEvent);
-            await updateChatRoom(getOther(chatEvent), false, true);
             return "good";
           }
         });

@@ -228,6 +228,24 @@ io.on(`connection`, async (socket) => {
     }, 1000 * 60 * 5),
   );
 
+  // REMOVE THIS AFTER TESTING!
+
+  // intervals.push(
+  //   setInterval(() => {
+  //     logger.debug(`sending test chat`);
+  //     const date = new Date();
+  //     const currentMinute = date.getMinutes();
+  //     const chatMsg: common.ChatMessage = {
+  //       timestamp: `${moment()}`,
+  //       source: socket.data.auth,
+  //       target: `random-${currentMinute}`,
+  //       message: `RANDOM MSG ${Math.random()}`,
+  //       system: false,
+  //     };
+  //     socket.emit(`chat`, chatMsg);
+  //   }, 1000 * 3),
+  // );
+
   const createUserRequest = new CreateUserRequest();
   createUserRequest.setUserId(socket.data.auth);
   makeGrpcRequest<CreateUserRequest, CreateUserResponse>(
