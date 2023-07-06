@@ -75,7 +75,7 @@ export async function getChatRead(
 export async function getRecentChats(
   redisClient: Client,
   source: string,
-): Promise<[string, moment.Moment][]> {
+): Promise<[string, moment.Moment, boolean][]> {
   const readValue = await redisClient.zrange(
     redisRecentChatKey(source),
     0,
@@ -83,12 +83,13 @@ export async function getRecentChats(
     `WITHSCORES`,
   );
 
-  const recentChats: [string, moment.Moment][] = [];
+  const recentChats: [string, moment.Moment, boolean][] = [];
   for (let i = 0; i < readValue.length; i += 2) {
     const target: string = readValue[i];
     const score: string = readValue[i + 1];
     const latestChat: moment.Moment = moment(parseInt(score));
-    recentChats.push([target, latestChat]);
+    const read: boolean = await getChatRead(redisClient, source, target);
+    recentChats.push([target, latestChat, read]);
   }
 
   return recentChats;

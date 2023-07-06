@@ -130,12 +130,14 @@ export async function sendChatEventMessage(
   sourceId: string,
   targetId: string,
   message: string,
+  system: boolean = false,
 ) {
   const userChatEventMessage: ChatEventMessage = new ChatEventMessage();
 
   userChatEventMessage.setSource(sourceId);
   userChatEventMessage.setTarget(targetId);
   userChatEventMessage.setMessage(message);
+  userChatEventMessage.setSystem(system);
 
   await rabbitChannel.sendToQueue(
     chatEventQueue,

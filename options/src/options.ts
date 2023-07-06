@@ -251,23 +251,26 @@ app.get(`/history`, rateLimit(`get_history`, 20), async (req, res) => {
 });
 
 app.get(`/chat/:otherId`, rateLimit(`get_chat_id`, 20), async (req, res) => {
-  const userId: string = req.userId;
-  const otherId = req.params.otherId;
+  const source: string = req.userId;
+  const target = req.params.otherId;
 
   const chatMessages: common.ChatMessage[] = await common.retrieveChat(
     mainRedisClient,
-    userId,
-    otherId,
+    source,
+    target,
     0,
     5,
   );
-  res.status(200).json({ userId, otherId, chatMessages });
+  await common.setChatRead(mainRedisClient, source, target, true);
+  res.status(200).json({ userId: source, otherId: target, chatMessages });
   return;
 });
 
 app.get(`/chat`, rateLimit(`get_chat`, 20), async (req, res) => {
-  const chatRooms = [`test1`, `test2`];
-  res.status(200).json({ chatRooms });
+  const userId: string = req.userId;
+
+  const recentChats = await common.getRecentChats(mainRedisClient, userId);
+  res.status(200).json({ recentChats });
   return;
 });
 

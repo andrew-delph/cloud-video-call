@@ -32,7 +32,10 @@ import {
   FilterObject,
   EndCallRequest,
 } from 'common-messaging';
-import { sendUserNotification } from 'common-messaging/src/message_helper';
+import {
+  sendChatEventMessage,
+  sendUserNotification,
+} from 'common-messaging/src/message_helper';
 import { initializeApp, getApp } from 'firebase-admin/app';
 import { Auth } from 'firebase-admin/auth';
 import * as neo4j from 'neo4j-driver';
@@ -549,6 +552,13 @@ const createFeedback = async (
         userId,
         `Friend Request Accepted`,
         `${otherUser} has accepted your friend request`,
+      );
+      sendChatEventMessage(
+        rabbitChannel,
+        userId,
+        otherUser,
+        `Friends make life a lot more fun.`,
+        true,
       );
     } else {
       sendUserNotification(
