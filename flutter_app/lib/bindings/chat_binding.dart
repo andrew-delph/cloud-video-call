@@ -9,9 +9,9 @@ import '../services/options_service.dart';
 class ChatBinding extends Bindings {
   @override
   void dependencies() {
+    Get.put<HomeController>(HomeController(Get.put<OptionsService>(
+      OptionsService(),
+    )));
     Get.put<ChatController>(ChatController());
-    Get.lazyPut<HomeController>(() => HomeController(Get.put<OptionsService>(
-          OptionsService(),
-        )));
   }
 }

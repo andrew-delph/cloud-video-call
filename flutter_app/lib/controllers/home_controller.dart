@@ -62,6 +62,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
 
   @override
   onInit() async {
+    print("init HomeController");
     super.onInit();
 
     remoteMediaStream.listen((remoteMediaStream) {

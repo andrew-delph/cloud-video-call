@@ -1,11 +1,11 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/chat_room_model.dart';
 
 // Package imports:
 import 'package:get/get.dart';
 
 // Project imports:
+import 'package:flutter_app/models/chat_room_model.dart';
 import '../controllers/chat_controller.dart';
 import '../widgets/app_menu_widget.dart';
 
@@ -43,7 +43,11 @@ class ChatScreen extends GetView<ChatController> {
                               onPressed: () {
                                 controller.showChat(chatroom);
                               },
-                              child: Text("${chatroom.target}")));
+                              child: Container(
+                                  color: chatroom.read ?? false
+                                      ? null
+                                      : Colors.amber,
+                                  child: Text("${chatroom.target}"))));
                         })(),
                       ],
                     ),
