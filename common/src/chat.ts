@@ -1,5 +1,6 @@
 import Client from 'ioredis';
 import moment from 'moment';
+import { activeSetName } from './variables';
 
 export function redisChatRoomKey(user1Id: string, user2Id: string): string {
   if (user1Id > user2Id) {
@@ -91,7 +92,8 @@ export async function getRecentChats(
     const score: string = readValue[i + 1];
     const latestChat: number = parseInt(score);
     const read: boolean = await getChatRead(redisClient, source, target);
-    recentChats.push({ source, target, latestChat, read });
+    const active = (await redisClient.sismember(activeSetName, target)) == 1;
+    recentChats.push({ source, target, latestChat, read, active });
   }
 
   return recentChats;
@@ -133,4 +135,5 @@ export type ChatRoom = {
   target: string;
   latestChat: number;
   read: boolean;
+  active: boolean;
 };
