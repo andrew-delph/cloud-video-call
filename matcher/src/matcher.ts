@@ -253,6 +253,15 @@ export async function matchConsumer() {
         message = msgContent.getMessage();
         system = msgContent.getSystem();
 
+        logger.debug(
+          `ChatEventMessage ${source}, ${target}, ${system}, ${message}`,
+        );
+
+        if (!message) {
+          await common.setChatRead(mainRedisClient, source, target, true);
+          return;
+        }
+
         const checkUserFiltersRequest = new CheckUserFiltersRequest();
 
         const filter = new FilterObject();
@@ -280,10 +289,6 @@ export async function matchConsumer() {
           );
           throw `not friends`;
         }
-
-        logger.debug(
-          `ChatEventMessage ${source}, ${target}, ${system}, ${message}`,
-        );
 
         const chatMessage = await common.appendChat(
           mainRedisClient,

@@ -113,12 +113,15 @@ class ChatController extends GetxController with StateMixin<Widget> {
     return chatRoom;
   }
 
-  void showChat(ChatRoomModel chatroom) {
+  Future<void> showChat(ChatRoomModel chatroom) async {
+    if (chatroom.read == false) {
+      await sendMessage(chatroom, null);
+    }
     change(ChatRoom(chatroom), status: RxStatus.success());
     Get.parameters['target'] = chatroom.target;
   }
 
-  Future<void> sendMessage(ChatRoomModel chatroom, String message) async {
+  Future<void> sendMessage(ChatRoomModel chatroom, String? message) async {
     ChatEventModel chatEvent = ChatEventModel(
         message: message,
         source: authService.getUser().uid,

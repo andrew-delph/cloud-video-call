@@ -41,8 +41,8 @@ class ChatScreen extends GetView<ChatController> {
                             return b.latestChat! - a.latestChat!;
                           });
                           return chatRoomList.map((chatroom) => TextButton(
-                              onPressed: () {
-                                controller.showChat(chatroom);
+                              onPressed: () async {
+                                await controller.showChat(chatroom);
                               },
                               child: Container(
                                   color: chatroom.read ?? false
