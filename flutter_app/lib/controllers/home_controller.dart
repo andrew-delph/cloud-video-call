@@ -235,6 +235,10 @@ class HomeController extends GetxController with StateMixin<Widget> {
     mySocket.on('endchat', (data) async {
       await endChat(!isInChat());
     });
+
+    mySocket.on('chat', (data) async {
+      print("get chat msg ${data}");
+    });
     mySocket.onDisconnect((details) {
       print("onDisconnect: $details");
       // if not disconnected by the client.

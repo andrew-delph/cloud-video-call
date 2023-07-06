@@ -15,19 +15,21 @@ class ChatScreen extends GetView<ChatController> {
   Widget build(BuildContext context) {
     return AppMenu(
         title: 'Chat',
-        body: const Center(
+        body: Center(
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-              Text(
+              const Text(
                 "Chat",
                 style: TextStyle(
                   fontSize: 35.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Divider(),
-              Text("Left nav of recent chats. Open window for each chat.")
+              const Divider(),
+              const Text(
+                  "Left nav of recent chats. Open window for each chat."),
+              Obx(() => Text("${controller.chatRooms()}"))
             ])));
   }
 }

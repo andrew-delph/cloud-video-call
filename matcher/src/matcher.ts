@@ -241,15 +241,17 @@ export async function matchConsumer() {
         return;
       }
 
-      let source: string = ``;
-      let target: string = ``;
-      let message: string = ``;
+      let source: string;
+      let target: string;
+      let message: string;
+      let system: boolean;
 
       try {
         const msgContent = parseChatEventMessage(msg.content);
         source = msgContent.getSource();
         target = msgContent.getTarget();
         message = msgContent.getMessage();
+        system = msgContent.getSystem();
 
         const checkUserFiltersRequest = new CheckUserFiltersRequest();
 
@@ -279,21 +281,22 @@ export async function matchConsumer() {
           throw `not friends`;
         }
 
-        logger.debug(`ChatEventMessage ${source}, ${target}, ${message}`);
+        logger.debug(
+          `ChatEventMessage ${source}, ${target}, ${system}, ${message}`,
+        );
 
         const chatMessage = await common.appendChat(
           mainRedisClient,
           source,
           target,
           message,
+          system,
         );
 
         const targetSocket = await mainRedisClient.hget(
           common.connectedAuthMapName,
           target,
         );
-
-        let notify: boolean;
 
         if (targetSocket) {
           // TODO if the client is not tracking the chat. dont bother sending.
@@ -302,26 +305,43 @@ export async function matchConsumer() {
               .in(targetSocket)
               .timeout(3000)
               .emitWithAck(`chat`, chatMessage);
-            notify = false;
+            await common.setChatRead(mainRedisClient, target, source, true);
           } catch (err) {
             logger.debug(
               `target ${target} targetSocket ${targetSocket} did not ack chat message. Will send notification.`,
             );
-            notify = true;
+
+            await common.setChatRead(mainRedisClient, target, source, false);
+
+            if (!system) {
+              await sendUserNotification(
+                rabbitChannel,
+                target,
+                `Unread Message`,
+                `Messages from ${target}`,
+              );
+            }
           }
-        } else {
-          notify = true;
         }
 
-        if (notify) {
-          await sendUserNotification(
-            rabbitChannel,
-            target,
-            `Unread Message`,
-            `Messages from ${target}`,
+        // if system notification. also send to the source
+        if (system) {
+          const sourceSocket = await mainRedisClient.hget(
+            common.connectedAuthMapName,
+            source,
           );
+          if (sourceSocket) {
+            try {
+              await io
+                .in(sourceSocket)
+                .timeout(3000)
+                .emitWithAck(`chat`, chatMessage);
+              await common.setChatRead(mainRedisClient, source, target, true);
+            } catch (err) {
+              await common.setChatRead(mainRedisClient, source, target, false);
+            }
+          }
         }
-        await common.setChatRead(mainRedisClient, source, target, !notify);
       } catch (e) {
         logger.error(`ChatEventMessage error=` + e); // TODO fix for types
       } finally {

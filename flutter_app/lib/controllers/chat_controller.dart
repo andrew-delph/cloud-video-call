@@ -1,4 +1,5 @@
 // Package imports:
+import 'package:flutter_app/utils/utils.dart';
 import 'package:get/get.dart';
 
 // Project imports:
@@ -11,6 +12,8 @@ import '../services/options_service.dart';
 
 class ChatController extends GetxController {
   ChatController();
+
+  Rx chatRooms = Rx({});
 
   @override
   onInit() async {
@@ -30,7 +33,9 @@ class ChatController extends GetxController {
   }
 
   loadChatRooms() async {
-    var chatRooms = await optionsService.loadChatRooms();
+    var chatRoomsReponse = await optionsService.loadChatRooms();
+
+    chatRooms(chatRoomsReponse);
 
     print("chatRooms: $chatRooms");
   }

@@ -541,27 +541,29 @@ const createFeedback = async (
     const friends_created =
       friend_rel.summary.updateStatistics.updates().relationshipsCreated;
     if (friends_created) {
-      sendUserNotification(
-        rabbitChannel,
-        otherUser,
-        `Friend Request Accepted`,
-        `${userId} has accepted your friend request`,
-      );
-      sendUserNotification(
-        rabbitChannel,
-        userId,
-        `Friend Request Accepted`,
-        `${otherUser} has accepted your friend request`,
-      );
-      sendChatEventMessage(
-        rabbitChannel,
-        userId,
-        otherUser,
-        `Friends make life a lot more fun.`,
-        true,
-      );
+      await Promise.all([
+        sendUserNotification(
+          rabbitChannel,
+          otherUser,
+          `Friend Request Accepted`,
+          `${userId} has accepted your friend request`,
+        ),
+        sendUserNotification(
+          rabbitChannel,
+          userId,
+          `Friend Request Accepted`,
+          `${otherUser} has accepted your friend request`,
+        ),
+        sendChatEventMessage(
+          rabbitChannel,
+          userId,
+          otherUser,
+          `Friends make life a lot more fun.`,
+          true,
+        ),
+      ]);
     } else {
-      sendUserNotification(
+      await sendUserNotification(
         rabbitChannel,
         otherUser,
         `Friend Request Recieved`,

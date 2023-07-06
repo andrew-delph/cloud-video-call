@@ -21,6 +21,7 @@ export async function appendChat(
   source: string,
   target: string,
   message: string,
+  system: boolean,
 ): Promise<ChatMessage> {
   // construct object
   const chatObj: ChatMessage = {
@@ -28,6 +29,7 @@ export async function appendChat(
     source,
     target,
     message,
+    system,
   };
 
   // push message to chat room
@@ -123,4 +125,5 @@ export type ChatMessage = {
   target: string;
   timestamp: string;
   message: string;
+  system: boolean;
 };
