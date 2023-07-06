@@ -1,7 +1,7 @@
 class ChatRoomModel {
   String? source;
   String? target;
-  String? latestChat;
+  int? latestChat;
   bool? read;
 
   ChatRoomModel({this.source, this.target, this.latestChat, this.read});

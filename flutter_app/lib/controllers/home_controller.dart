@@ -230,6 +230,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
 
     mySocket.onConnect((_) {
       mySocket.emit('message', 'from flutter app connected');
+      socket.refresh();
     });
 
     mySocket.on('message', (data) => log(data));
@@ -238,6 +239,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
     });
 
     mySocket.onDisconnect((details) {
+      socket.refresh();
       print("onDisconnect: $details");
       // if not disconnected by the client.
       if (!"$details".contains("client")) {

@@ -89,7 +89,7 @@ export async function getRecentChats(
   for (let i = 0; i < readValue.length; i += 2) {
     const target: string = readValue[i];
     const score: string = readValue[i + 1];
-    const latestChat: string = `${moment(parseInt(score))}`;
+    const latestChat: number = parseInt(score);
     const read: boolean = await getChatRead(redisClient, source, target);
     recentChats.push({ source, target, latestChat, read });
   }
@@ -131,6 +131,6 @@ export type ChatMessage = {
 export type ChatRoom = {
   source: string;
   target: string;
-  latestChat: string;
+  latestChat: number;
   read: boolean;
 };

@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 // Project imports:
 import 'package:flutter_app/controllers/home_controller.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 import '../models/chat_event_model.dart';
 import '../models/chat_room_model.dart';
 import '../services/auth_service.dart';
@@ -31,10 +32,17 @@ class ChatController extends GetxController with StateMixin<Widget> {
     loadChatRooms();
     change(null, status: RxStatus.success());
 
-    homeController.listenEvent("chat", (data) async {
-      ChatEventModel chatEvent = ChatEventModel.fromJson(data);
-      await updateChatRoom(getOther(chatEvent), false);
+    homeController.socket.listen((socket) {
+      bool connected = socket?.connected ?? false;
+      print("chat controller socket.listen ${connected}");
+      if (connected) {
+        homeController.listenEvent("chat", (data) async {
+          ChatEventModel chatEvent = ChatEventModel.fromJson(data);
+          await updateChatRoom(getOther(chatEvent), false);
+        });
+      }
     });
+    homeController.socket.refresh();
   }
 
   void appendChat(String userId, dynamic chatEvent) {
@@ -55,7 +63,7 @@ class ChatController extends GetxController with StateMixin<Widget> {
     ChatRoomModel chatroom = ChatRoomModel(
         source: source,
         target: target,
-        latestChat: DateTime.now().toString(),
+        latestChat: DateTime.now().millisecondsSinceEpoch,
         read: read);
 
     chatRoomMap.addEntries([MapEntry(target, chatroom)]);
