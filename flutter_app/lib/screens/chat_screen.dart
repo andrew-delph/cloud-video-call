@@ -1,5 +1,6 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/chat_room_model.dart';
 
 // Package imports:
 import 'package:get/get.dart';
@@ -31,14 +32,19 @@ class ChatScreen extends GetView<ChatController> {
               Obx(() => Row(children: [
                     Column(
                       children: [
-                        ...controller
-                            .chatRooms()
-                            .map((chatroom) => TextButton(
-                                onPressed: () {
-                                  controller.showChat(chatroom);
-                                },
-                                child: Text("${chatroom.target}")))
-                            .toList(),
+                        ...(() {
+                          List<ChatRoomModel> chatRoomList =
+                              controller.chatRoomMap.values.toList();
+
+                          chatRoomList.sort((a, b) {
+                            return a.latestChat!.compareTo(b.latestChat!);
+                          });
+                          return chatRoomList.map((chatroom) => TextButton(
+                              onPressed: () {
+                                controller.showChat(chatroom);
+                              },
+                              child: Text("${chatroom.target}")));
+                        })(),
                       ],
                     ),
                     controller.obx(

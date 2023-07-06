@@ -40,7 +40,7 @@ class ChatRoom extends GetView<ChatController> {
                     TextButton(
                       onPressed: () {
                         controller.sendMessage(
-                            chatroom.target!, msgInputController.text);
+                            chatroom, msgInputController.text);
                         msgInputController.clear();
                       },
                       child: const Text("SEND MSG"),

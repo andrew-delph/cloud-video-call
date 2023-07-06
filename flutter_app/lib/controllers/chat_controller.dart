@@ -16,37 +16,53 @@ import '../widgets/chat_room_widget.dart';
 class ChatController extends GetxController with StateMixin<Widget> {
   ChatController();
 
-  RxList<ChatRoomModel> chatRooms = RxList();
+  final OptionsService optionsService = Get.find();
+  final AuthService authService = Get.find();
+
+  final RxMap<String, ChatRoomModel> chatRoomMap = RxMap();
+  final RxMap<String, RxList<ChatEventModel>> chatMap = RxMap();
 
   @override
   onInit() async {
     print("init ChatController");
     super.onInit();
-    await loadChatRooms();
+    loadChatRooms();
     change(null, status: RxStatus.success());
-    // final HomeController homeController = Get.find();
-    // homeController.listenEvent("chat", (data) {
-    //   ChatEventModel chatEvent = ChatEventModel.fromJson(data);
 
-    // });
+    final HomeController homeController = Get.find();
+    homeController.listenEvent("chat", (data) async {
+      ChatEventModel chatEvent = ChatEventModel.fromJson(data);
+      await updateChatRoom(chatEvent);
+    });
   }
 
-  final RxMap<String, RxList<ChatEventModel>> chatMap = RxMap();
-  final OptionsService optionsService = Get.find();
-  final AuthService authService = Get.find();
-
-  appendChat(String userId, dynamic chatEvent) {
+  void appendChat(String userId, dynamic chatEvent) {
     RxList<ChatEventModel> chatRoom = loadChat(userId);
 
     chatRoom.add(chatEvent);
   }
 
-  loadChatRooms() async {
+  void loadChatRooms() async {
     List<ChatRoomModel> chatRoomsReponse = await optionsService.loadChatRooms();
 
-    chatRooms(chatRoomsReponse);
+    chatRoomMap.addEntries(chatRoomsReponse
+        .map((chatroom) => MapEntry(chatroom.target!, chatroom)));
+  }
 
-    print("chatRooms: $chatRooms");
+  Future<void> updateChatRoom(ChatEventModel chatEvent) async {
+    ChatRoomModel chatroom = ChatRoomModel(
+        source: chatEvent.source!,
+        target: chatEvent.target!,
+        latestChat: DateTime.now().toString(),
+        read: false);
+
+    String userId = authService.getUser().uid;
+
+    if (userId == chatroom.target) {
+      chatRoomMap.addEntries([MapEntry(chatroom.source!, chatroom)]);
+    } else if (userId == chatroom.source) {
+      chatRoomMap.addEntries([MapEntry(chatroom.target!, chatroom)]);
+    }
   }
 
   RxList<ChatEventModel> loadChat(String userId) {
@@ -57,11 +73,12 @@ class ChatController extends GetxController with StateMixin<Widget> {
 
       optionsService.loadChat(userId).then((loadedMessages) {
         newChatRoom.addAll(loadedMessages);
-        homeController.listenEvent("chat", (data) {
+        homeController.listenEvent("chat", (data) async {
           ChatEventModel chatEvent = ChatEventModel.fromJson(data);
 
           if (chatEvent.source == userId) {
             newChatRoom.add(chatEvent);
+            await updateChatRoom(chatEvent);
             return "good";
           }
         });
@@ -73,17 +90,20 @@ class ChatController extends GetxController with StateMixin<Widget> {
     return chatRoom;
   }
 
-  showChat(ChatRoomModel chatroom) {
+  void showChat(ChatRoomModel chatroom) {
     change(ChatRoom(chatroom), status: RxStatus.success());
   }
 
-  sendMessage(String target, String message) {
+  Future<void> sendMessage(ChatRoomModel chatroom, String message) async {
     final HomeController homeController = Get.find();
 
     ChatEventModel chatEvent = ChatEventModel(
-        message: message, source: authService.getUser().uid, target: target);
+        message: message,
+        source: authService.getUser().uid,
+        target: chatroom.target!);
 
     homeController.emitEvent("chat", chatEvent.toJson());
-    loadChat(target).add(chatEvent);
+    loadChat(chatroom.target!).add(chatEvent);
+    await updateChatRoom(chatEvent);
   }
 }
