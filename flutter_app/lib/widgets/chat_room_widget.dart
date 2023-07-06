@@ -21,34 +21,38 @@ class ChatRoom extends GetView<ChatController> {
 
     TextEditingController msgInputController = TextEditingController();
 
-    return Obx(() => Column(
-          children: chatList()
-                  // ignore: unnecessary_cast
-                  .map((e) => ChatItem(
-                        chatEvent: e,
-                      ) as Widget)
-                  .toList() +
-              [
-                Column(
-                  children: [
-                    TextField(
-                      controller: msgInputController,
-                      decoration: const InputDecoration(
-                        labelText: 'Enter Text',
-                      ),
+    return Obx(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.updateChatRoom(chatroom.target!, true, false);
+      });
+      return Column(
+        children: chatList()
+                // ignore: unnecessary_cast
+                .map((e) => ChatItem(
+                      chatEvent: e,
+                    ) as Widget)
+                .toList() +
+            [
+              Column(
+                children: [
+                  TextField(
+                    controller: msgInputController,
+                    decoration: const InputDecoration(
+                      labelText: 'Enter Text',
                     ),
-                    TextButton(
-                      onPressed: () {
-                        controller.sendMessage(
-                            chatroom, msgInputController.text);
-                        msgInputController.clear();
-                      },
-                      child: const Text("SEND MSG"),
-                    )
-                  ],
-                )
-              ],
-        ));
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      controller.sendMessage(chatroom, msgInputController.text);
+                      msgInputController.clear();
+                    },
+                    child: const Text("SEND MSG"),
+                  )
+                ],
+              )
+            ],
+      );
+    });
   }
 }
 
