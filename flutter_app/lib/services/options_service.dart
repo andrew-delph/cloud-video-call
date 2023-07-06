@@ -73,8 +73,6 @@ class OptionsService extends ApiService {
         contentType: 'application/json',
       ).then((response) => validateRequestGetBody(response, decoder: (body) {
             List<dynamic> chatRooms = body["chatRooms"] ?? [];
-            print("chatRooms loaded");
-            print(chatRooms);
             return chatRooms.map((e) => ChatRoomModel.fromJson(e)).toList();
           }));
 }

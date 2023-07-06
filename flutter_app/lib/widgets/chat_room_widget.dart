@@ -8,15 +8,16 @@ import 'package:get/get.dart';
 import 'package:flutter_app/services/auth_service.dart';
 import '../controllers/chat_controller.dart';
 import '../models/chat_event_model.dart';
+import '../models/chat_room_model.dart';
 
 class ChatRoom extends GetView<ChatController> {
-  const ChatRoom(this.userId, {super.key});
+  final ChatRoomModel chatroom;
 
-  final String userId;
+  const ChatRoom(this.chatroom, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    RxList<ChatEventModel> chatList = controller.loadChat(userId);
+    RxList<ChatEventModel> chatList = controller.loadChat(chatroom.target!);
 
     TextEditingController msgInputController = TextEditingController();
 
@@ -38,7 +39,8 @@ class ChatRoom extends GetView<ChatController> {
                     ),
                     TextButton(
                       onPressed: () {
-                        controller.sendMessage(userId, msgInputController.text);
+                        controller.sendMessage(
+                            chatroom.target!, msgInputController.text);
                         msgInputController.clear();
                       },
                       child: const Text("SEND MSG"),

@@ -1,4 +1,5 @@
 // Package imports:
+import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/utils.dart';
 import 'package:get/get.dart';
 
@@ -8,10 +9,11 @@ import '../models/chat_event_model.dart';
 import '../models/chat_room_model.dart';
 import '../services/auth_service.dart';
 import '../services/options_service.dart';
+import '../widgets/chat_room_widget.dart';
 
 // Project imports:
 
-class ChatController extends GetxController {
+class ChatController extends GetxController with StateMixin<Widget> {
   ChatController();
 
   RxList<ChatRoomModel> chatRooms = RxList();
@@ -21,6 +23,7 @@ class ChatController extends GetxController {
     print("init ChatController");
     super.onInit();
     await loadChatRooms();
+    change(null, status: RxStatus.success());
     // final HomeController homeController = Get.find();
     // homeController.listenEvent("chat", (data) {
     //   ChatEventModel chatEvent = ChatEventModel.fromJson(data);
@@ -68,6 +71,10 @@ class ChatController extends GetxController {
     });
 
     return chatRoom;
+  }
+
+  showChat(ChatRoomModel chatroom) {
+    change(ChatRoom(chatroom), status: RxStatus.success());
   }
 
   sendMessage(String target, String message) {

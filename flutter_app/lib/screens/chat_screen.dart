@@ -15,10 +15,11 @@ class ChatScreen extends GetView<ChatController> {
   Widget build(BuildContext context) {
     return AppMenu(
         title: 'Chat',
-        body: Center(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
+        body: SingleChildScrollView(
+            child: Center(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
               const Text(
                 "Chat",
                 style: TextStyle(
@@ -27,9 +28,29 @@ class ChatScreen extends GetView<ChatController> {
                 ),
               ),
               const Divider(),
-              const Text(
-                  "Left nav of recent chats. Open window for each chat."),
-              Obx(() => Text("${controller.chatRooms()}"))
-            ])));
+              Obx(() => Row(children: [
+                    Column(
+                      children: [
+                        ...controller
+                            .chatRooms()
+                            .map((chatroom) => TextButton(
+                                onPressed: () {
+                                  controller.showChat(chatroom);
+                                },
+                                child: Text("${chatroom.target}")))
+                            .toList(),
+                      ],
+                    ),
+                    controller.obx(
+                      (state) {
+                        if (state != null) {
+                          return Expanded(child: state);
+                        } else {
+                          return const Text("Select a chat room.");
+                        }
+                      },
+                    )
+                  ]))
+            ]))));
   }
 }
