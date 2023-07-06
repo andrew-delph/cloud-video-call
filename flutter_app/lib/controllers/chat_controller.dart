@@ -38,7 +38,7 @@ class ChatController extends GetxController with StateMixin<Widget> {
       if (connected) {
         homeController.listenEvent("chat", (data) async {
           ChatEventModel chatEvent = ChatEventModel.fromJson(data);
-          await updateChatRoom(getOther(chatEvent), false);
+          await updateChatRoom(getOther(chatEvent), false, true);
         });
       }
     });
@@ -58,16 +58,23 @@ class ChatController extends GetxController with StateMixin<Widget> {
         .map((chatroom) => MapEntry(chatroom.target!, chatroom)));
   }
 
-  Future<void> updateChatRoom(String target, bool read) async {
+  Future<void> updateChatRoom(String target, bool read, bool updateTime) async {
     String source = authService.getUser().uid;
-    ChatRoomModel chatroom = ChatRoomModel(
-        source: source,
-        target: target,
-        latestChat: DateTime.now().millisecondsSinceEpoch,
-        read: read);
 
-    chatRoomMap.addEntries([MapEntry(target, chatroom)]);
-    print("update $target read $read");
+    chatRoomMap.update(target, (update) {
+      update.read = read;
+      if (updateTime) {
+        update.latestChat = DateTime.now().millisecondsSinceEpoch;
+      }
+      return update;
+    },
+        ifAbsent: () => ChatRoomModel(
+            source: source,
+            target: target,
+            latestChat: DateTime.now().millisecondsSinceEpoch,
+            read: read));
+
+    print("update $target read $read updateTime $updateTime");
   }
 
   String getOther(ChatEventModel chatEvent) {
@@ -88,13 +95,13 @@ class ChatController extends GetxController with StateMixin<Widget> {
 
       optionsService.loadChat(userId).then((loadedMessages) async {
         newChatRoom.addAll(loadedMessages);
-        await updateChatRoom(userId, true);
+        await updateChatRoom(userId, true, false);
         homeController.listenEvent("chat", (data) async {
           ChatEventModel chatEvent = ChatEventModel.fromJson(data);
 
           if (getOther(chatEvent) == userId) {
             newChatRoom.add(chatEvent);
-            await updateChatRoom(getOther(chatEvent), false);
+            await updateChatRoom(getOther(chatEvent), false, true);
             return "good";
           }
         });
@@ -118,6 +125,6 @@ class ChatController extends GetxController with StateMixin<Widget> {
 
     homeController.emitEvent("chat", chatEvent.toJson());
     loadChat(chatroom.target!).add(chatEvent);
-    await updateChatRoom(chatroom.target!, true);
+    await updateChatRoom(chatroom.target!, true, true);
   }
 }
