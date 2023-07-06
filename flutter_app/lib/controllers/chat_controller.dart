@@ -39,6 +39,7 @@ class ChatController extends GetxController with StateMixin<Widget> {
         homeController.listenEvent("chat", (data) async {
           ChatEventModel chatEvent = ChatEventModel.fromJson(data);
           await updateChatRoom(getOther(chatEvent), false, true);
+          return "good";
         });
       }
     });
@@ -94,13 +95,11 @@ class ChatController extends GetxController with StateMixin<Widget> {
 
       optionsService.loadChat(userId).then((loadedMessages) async {
         newChatRoom.addAll(loadedMessages);
-        await updateChatRoom(userId, true, false);
         homeController.listenEvent("chat", (data) async {
           ChatEventModel chatEvent = ChatEventModel.fromJson(data);
 
           if (getOther(chatEvent) == userId) {
             newChatRoom.add(chatEvent);
-            return "good";
           }
         });
       });

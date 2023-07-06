@@ -31,6 +31,7 @@ class ChatScreen extends GetView<ChatController> {
               const Divider(),
               Obx(() => Row(children: [
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ...(() {
                           List<ChatRoomModel> chatRoomList =
@@ -47,7 +48,19 @@ class ChatScreen extends GetView<ChatController> {
                                   color: chatroom.read ?? false
                                       ? null
                                       : Colors.amber,
-                                  child: Text("${chatroom.target}"))));
+                                  child: Row(children: [
+                                    Container(
+                                      width: 20,
+                                      height: 20,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: chatroom.active == true
+                                            ? Colors.green
+                                            : Colors.grey,
+                                      ),
+                                    ),
+                                    Text("${chatroom.target}")
+                                  ]))));
                         })(),
                       ],
                     ),
