@@ -307,11 +307,11 @@ export async function matchConsumer() {
               .emitWithAck(`chat`, chatMessage);
             await common.setChatRead(mainRedisClient, target, source, true);
           } catch (err) {
+            await common.setChatRead(mainRedisClient, target, source, false);
+
             logger.debug(
               `target ${target} targetSocket ${targetSocket} did not ack chat message. Will send notification.`,
             );
-
-            await common.setChatRead(mainRedisClient, target, source, false);
 
             if (!system) {
               await sendUserNotification(
