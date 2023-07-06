@@ -9,6 +9,7 @@ import 'package:flutter_app/controllers/home_controller.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import '../models/chat_event_model.dart';
 import '../models/chat_room_model.dart';
+import '../routes/app_pages.dart';
 import '../services/auth_service.dart';
 import '../services/options_service.dart';
 import '../widgets/chat_room_widget.dart';
@@ -39,7 +40,6 @@ class ChatController extends GetxController with StateMixin<Widget> {
         homeController.listenEvent("chat", (data) async {
           ChatEventModel chatEvent = ChatEventModel.fromJson(data);
           await updateChatRoom(getOther(chatEvent), false, true);
-          return "good";
         });
       }
     });
@@ -100,6 +100,9 @@ class ChatController extends GetxController with StateMixin<Widget> {
 
           if (getOther(chatEvent) == userId) {
             newChatRoom.add(chatEvent);
+            if (Get.parameters['target'] == getOther(chatEvent)) {
+              return "good";
+            }
           }
         });
       });
@@ -112,6 +115,7 @@ class ChatController extends GetxController with StateMixin<Widget> {
 
   void showChat(ChatRoomModel chatroom) {
     change(ChatRoom(chatroom), status: RxStatus.success());
+    Get.parameters['target'] = chatroom.target;
   }
 
   Future<void> sendMessage(ChatRoomModel chatroom, String message) async {
