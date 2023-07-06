@@ -1,34 +1,97 @@
 import Client from 'ioredis';
 import moment from 'moment';
 
-export function redisChatKey(user1Id: string, user2Id: string): string {
+export function redisChatRoomKey(user1Id: string, user2Id: string): string {
   if (user1Id > user2Id) {
-    return redisChatKey(user2Id, user1Id);
+    return redisChatRoomKey(user2Id, user1Id);
   }
-  return `chat:${user1Id}:${user2Id}`;
+  return `chat_room:${user1Id}:${user2Id}`;
 }
 
-export async function persistChat(
+export function redisRecentChatKey(userId: string): string {
+  return `recent_chat:${userId}`;
+}
+
+export function redisReadChatKey(userId: string): string {
+  return `read_chat:${userId}`;
+}
+
+export async function appendChat(
   redisClient: Client,
   source: string,
   target: string,
   message: string,
 ): Promise<ChatMessage> {
-  const key = redisChatKey(source, target);
-
-  const timestamp: string = `${moment()}`;
-
   // construct object
   const chatObj: ChatMessage = {
-    timestamp,
+    timestamp: `${moment()}`,
     source,
     target,
     message,
   };
 
-  // add to redis...
-  await redisClient.rpush(key, JSON.stringify(chatObj));
+  // push message to chat room
+  await redisClient.rpush(
+    redisChatRoomKey(source, target),
+    JSON.stringify(chatObj),
+  );
+
+  // update recent chat table for source
+  await redisClient.zadd(
+    redisRecentChatKey(source),
+    moment().valueOf(),
+    target,
+  );
+
+  // update recent chat table for target
+  await redisClient.zadd(
+    redisRecentChatKey(target),
+    moment().valueOf(),
+    source,
+  );
+
   return chatObj;
+}
+
+export async function setChatRead(
+  redisClient: Client,
+  source: string,
+  target: string,
+  read: boolean,
+): Promise<void> {
+  await redisClient.hset(redisReadChatKey(target), source, read ? 1 : 0);
+}
+
+export async function getChatRead(
+  redisClient: Client,
+  source: string,
+  target: string,
+): Promise<boolean> {
+  const readValue = await redisClient.hget(redisReadChatKey(source), target);
+
+  return readValue == `1`;
+}
+
+export async function getRecentChats(
+  redisClient: Client,
+  source: string,
+): Promise<[string, moment.Moment][]> {
+  const readValue = await redisClient.zrange(
+    redisRecentChatKey(source),
+    0,
+    -1,
+    `WITHSCORES`,
+  );
+
+  const recentChats: [string, moment.Moment][] = [];
+  for (let i = 0; i < readValue.length; i += 2) {
+    const target: string = readValue[i];
+    const score: string = readValue[i + 1];
+    const latestChat: moment.Moment = moment(parseInt(score));
+    recentChats.push([target, latestChat]);
+  }
+
+  return recentChats;
 }
 
 export async function retrieveChat(
@@ -38,7 +101,7 @@ export async function retrieveChat(
   startIndex: number,
   limit: number,
 ): Promise<ChatMessage[]> {
-  const key = redisChatKey(user1Id, user2Id);
+  const key = redisChatRoomKey(user1Id, user2Id);
 
   // if startId is null start from beginging.
   // else start from startId

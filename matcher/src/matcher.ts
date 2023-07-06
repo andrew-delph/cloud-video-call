@@ -281,7 +281,7 @@ export async function matchConsumer() {
 
         logger.debug(`ChatEventMessage ${source}, ${target}, ${message}`);
 
-        const chatMessage = await common.persistChat(
+        const chatMessage = await common.appendChat(
           mainRedisClient,
           source,
           target,
@@ -321,6 +321,7 @@ export async function matchConsumer() {
             `Messages from ${target}`,
           );
         }
+        await common.setChatRead(mainRedisClient, source, target, !notify);
       } catch (e) {
         logger.error(`ChatEventMessage error=` + e); // TODO fix for types
       } finally {
