@@ -272,7 +272,7 @@ export async function matchConsumer() {
 
         const filterResponse = checkUserFiltersResponse.getFiltersList()[0];
 
-        if (!filterResponse.getFriends()) {
+        if (!filterResponse.getFriends() && !system) {
           logger.warn(
             `Message sent not friends: ${source}, ${target}, ${message} filterResponse= ${JSON.stringify(
               checkUserFiltersResponse.toObject(),
