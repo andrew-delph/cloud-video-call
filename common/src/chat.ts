@@ -61,7 +61,7 @@ export async function setChatRead(
   target: string,
   read: boolean,
 ): Promise<void> {
-  await redisClient.hset(redisReadChatKey(target), source, read ? 1 : 0);
+  await redisClient.hset(redisReadChatKey(source), target, read ? 1 : 0);
 }
 
 export async function getChatRead(
