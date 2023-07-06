@@ -293,26 +293,18 @@ export async function matchConsumer() {
           system,
         );
 
-        const targetSocket = await mainRedisClient.hget(
-          common.connectedAuthMapName,
-          target,
-        );
-
-        if (targetSocket) {
-          // TODO if the client is not tracking the chat. dont bother sending.
-          try {
+        await mainRedisClient
+          .hget(common.connectedAuthMapName, target)
+          .then(async (targetSocket) => {
+            if (!targetSocket) throw `targetSocket is null`;
             await io
               .in(targetSocket)
               .timeout(3000)
               .emitWithAck(`chat`, chatMessage);
             await common.setChatRead(mainRedisClient, target, source, true);
-          } catch (err) {
+          })
+          .catch(async (err) => {
             await common.setChatRead(mainRedisClient, target, source, false);
-
-            logger.debug(
-              `target ${target} targetSocket ${targetSocket} did not ack chat message. Will send notification.`,
-            );
-
             if (!system) {
               await sendUserNotification(
                 rabbitChannel,
@@ -321,26 +313,22 @@ export async function matchConsumer() {
                 `Messages from ${target}`,
               );
             }
-          }
-        }
+          });
 
-        // if system notification. also send to the source
         if (system) {
-          const sourceSocket = await mainRedisClient.hget(
-            common.connectedAuthMapName,
-            source,
-          );
-          if (sourceSocket) {
-            try {
+          await mainRedisClient
+            .hget(common.connectedAuthMapName, source)
+            .then(async (sourceSocket) => {
+              if (!sourceSocket) throw `sourceSocket is null`;
               await io
                 .in(sourceSocket)
                 .timeout(3000)
                 .emitWithAck(`chat`, chatMessage);
               await common.setChatRead(mainRedisClient, source, target, true);
-            } catch (err) {
+            })
+            .catch(async (err) => {
               await common.setChatRead(mainRedisClient, source, target, false);
-            }
-          }
+            });
         }
       } catch (e) {
         logger.error(`ChatEventMessage error=` + e); // TODO fix for types
