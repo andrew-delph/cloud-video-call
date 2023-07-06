@@ -417,10 +417,10 @@ const createFeedback = async (
   const reply = new StandardResponse();
 
   if (!userId || !matchId) {
-    logger.error(`! userId || !matchId`);
+    logger.error(`!userId ${userId} || !matchId ${matchId}`);
     return callback({
       code: grpc.status.INVALID_ARGUMENT,
-      message: `! userId || !matchId`,
+      message: `!userId ${userId} || !matchId ${matchId}`,
     });
   }
 
@@ -807,7 +807,7 @@ const getMatchHistory = async (
     match.setUserId2Score(record.get(`r3.score`));
     match.setFriends(record.get(`friends`));
     match.setNegative(record.get(`negative`));
-    match.setFriends(record.get(`matchId`));
+    match.setMatchId(record.get(`matchId`));
     reply.addMatchHistory(match);
   }
 
