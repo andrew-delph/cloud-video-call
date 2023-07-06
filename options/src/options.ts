@@ -1,6 +1,17 @@
 import * as common from 'common';
 import * as neo4j_common from 'common-messaging';
-import express from 'express';
+import {
+  CreateFeedbackRequest,
+  GetUserPerferencesRequest,
+  GetUserPerferencesResponse,
+  MatchHistoryRequest,
+  MatchHistoryResponse,
+  PutUserPerferencesRequest,
+  PutUserPerferencesResponse,
+  StandardResponse,
+  makeGrpcRequest,
+} from 'common-messaging';
+import express, { response } from 'express';
 import { initializeApp } from 'firebase-admin/app';
 import moment from 'moment';
 import multer from 'multer';
@@ -96,26 +107,21 @@ app.post(
     createFeedbackRequest.setScore(score);
     createFeedbackRequest.setMatchId(match_id);
 
-    try {
-      await neo4jRpcClient.createFeedback(
-        createFeedbackRequest,
-        (error: any, response: neo4j_common.StandardResponse) => {
-          if (error) {
-            res.status(401).json({
-              error: JSON.stringify(error),
-              message: `Failed createFeedbackRequest`,
-            });
-          } else {
-            res.status(201).send(`Feedback created.`);
-          }
-        },
-      );
-    } catch (error) {
-      res.status(401).json({
-        error: JSON.stringify(error),
-        message: `failed createFeedbackRequest`,
+    await makeGrpcRequest<CreateFeedbackRequest, StandardResponse>(
+      neo4jRpcClient,
+      neo4jRpcClient.createFeedback,
+      createFeedbackRequest,
+    )
+      .then((response) => {
+        return res.status(201).send(`Feedback created.`);
+      })
+      .catch((err) => {
+        logger.error(`createFeedbackRequest`, err);
+        res.status(401).json({
+          error: JSON.stringify(err),
+          message: `failed createFeedbackRequest`,
+        });
       });
-    }
   },
 );
 
@@ -151,78 +157,64 @@ app.put(`/preferences`, rateLimit(`put_preferences`, 20), async (req, res) => {
     putUserFiltersRequest.getFiltersCustomMap().set(String(key), String(value));
   });
 
-  try {
-    await neo4jRpcClient.putUserPerferences(
-      putUserFiltersRequest,
-      (error: any, response: neo4j_common.PutUserPerferencesResponse) => {
-        if (error) {
-          logger.error(`putUserPerferences`, error);
-          res.status(401).json({
-            error: JSON.stringify(error),
-            message: `Failed checkUserFiltersRequest`,
-          });
-        } else {
-          res.status(201).send(`preferences updated`);
-        }
-      },
-    );
-  } catch (error) {
-    logger.error(`putUserPerferences`, error);
-    res.status(401).json({
-      error: JSON.stringify(error),
-      message: `failed checkUserFiltersRequest`,
+  await makeGrpcRequest<PutUserPerferencesRequest, PutUserPerferencesResponse>(
+    neo4jRpcClient,
+    neo4jRpcClient.putUserPerferences,
+    putUserFiltersRequest,
+  )
+    .then((response) => {
+      return res.status(201).send(`preferences updated`);
+    })
+    .catch((err) => {
+      logger.error(`getMatchHistory`, err);
+      res.status(401).json({
+        error: JSON.stringify(err),
+        message: `Failed getMatchHistory`,
+      });
     });
-  }
 });
 
 app.get(`/preferences`, rateLimit(`get_preferences`, 20), async (req, res) => {
   const userId: string = req.userId;
 
-  const checkUserFiltersRequest = new neo4j_common.GetUserPerferencesRequest();
+  const checkUserFiltersRequest = new GetUserPerferencesRequest();
   checkUserFiltersRequest.setUserId(userId);
 
-  try {
-    await neo4jRpcClient.getUserPerferences(
-      checkUserFiltersRequest,
-      (error: any, response: neo4j_common.GetUserPerferencesResponse) => {
-        if (error) {
-          logger.error(`getUserPerferences`, error);
-          res.status(401).json({
-            error: JSON.stringify(error),
-            message: `Failed checkUserFiltersRequest`,
-          });
-        } else {
-          res.status(200).json(
-            omitDeep({
-              attributes: {
-                custom: Object.fromEntries(
-                  response.getAttributesCustomMap().entries(),
-                ),
-                constant: Object.fromEntries(
-                  response.getAttributesConstantMap().entries(),
-                ),
-              },
-              filters: {
-                custom: Object.fromEntries(
-                  response.getFiltersCustomMap().entries(),
-                ),
-                constant: Object.fromEntries(
-                  response.getFiltersConstantMap().entries(),
-                ),
-              },
-              priority: response.getPriority(),
-            }),
-          );
-        }
-      },
-    );
-  } catch (error) {
-    logger.error(`getUserPerferences`, error);
-    res.status(401).json({
-      error: JSON.stringify(error),
-      message: `failed checkUserFiltersRequest`,
+  await makeGrpcRequest<GetUserPerferencesRequest, GetUserPerferencesResponse>(
+    neo4jRpcClient,
+    neo4jRpcClient.getUserPerferences,
+    checkUserFiltersRequest,
+  )
+    .then((response) => {
+      return res.status(200).json(
+        omitDeep({
+          attributes: {
+            custom: Object.fromEntries(
+              response.getAttributesCustomMap().entries(),
+            ),
+            constant: Object.fromEntries(
+              response.getAttributesConstantMap().entries(),
+            ),
+          },
+          filters: {
+            custom: Object.fromEntries(
+              response.getFiltersCustomMap().entries(),
+            ),
+            constant: Object.fromEntries(
+              response.getFiltersConstantMap().entries(),
+            ),
+          },
+          priority: response.getPriority(),
+        }),
+      );
+    })
+    .catch((err) => {
+      logger.error(`getUserPerferences`, err);
+      res.status(401).json({
+        error: JSON.stringify(err),
+        message: `Failed checkUserFiltersRequest`,
+      });
     });
-  }
 
   return;
 });
@@ -241,29 +233,21 @@ app.get(`/history`, rateLimit(`get_history`, 20), async (req, res) => {
   matchHistoryRequest.setLimit(limitInt);
   matchHistoryRequest.setPage(pageInt);
 
-  try {
-    await neo4jRpcClient.getMatchHistory(
-      matchHistoryRequest,
-      (error: any, response: neo4j_common.MatchHistoryResponse) => {
-        if (error) {
-          logger.error(`getMatchHistory`, error);
-          res.status(401).json({
-            error: JSON.stringify(error),
-            message: `Failed getMatchHistory`,
-          });
-        } else {
-          res.status(200).json(response.toObject());
-        }
-      },
-    );
-  } catch (error) {
-    logger.error(`getMatchHistory`, error);
-    res.status(401).json({
-      error: JSON.stringify(error),
-      message: `failed getMatchHistory`,
+  await makeGrpcRequest<MatchHistoryRequest, MatchHistoryResponse>(
+    neo4jRpcClient,
+    neo4jRpcClient.getMatchHistory,
+    matchHistoryRequest,
+  )
+    .then((response) => {
+      return res.status(200).json(response.toObject());
+    })
+    .catch((err) => {
+      logger.error(`getMatchHistory`, err);
+      res.status(401).json({
+        error: JSON.stringify(err),
+        message: `Failed getMatchHistory`,
+      });
     });
-  }
-  return;
 });
 
 app.get(`/chat/:otherId`, rateLimit(`get_chat_id`, 20), async (req, res) => {
