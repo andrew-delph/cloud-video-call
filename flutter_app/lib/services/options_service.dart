@@ -1,5 +1,6 @@
 // Package imports:
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_app/models/chat_room_model.dart';
 
 // Project imports:
 import '../config/factory.dart';
@@ -67,8 +68,13 @@ class OptionsService extends ApiService {
             return chatMessages.map((e) => ChatEventModel.fromJson(e)).toList();
           }));
 
-  Future<dynamic> loadChatRooms() => get(
+  Future<List<ChatRoomModel>> loadChatRooms() => get(
         '/chat',
         contentType: 'application/json',
-      ).then((response) => validateRequestGetBody(response));
+      ).then((response) => validateRequestGetBody(response, decoder: (body) {
+            List<dynamic> chatRooms = body["chatRooms"] ?? [];
+            print("chatRooms loaded");
+            print(chatRooms);
+            return chatRooms.map((e) => ChatRoomModel.fromJson(e)).toList();
+          }));
 }

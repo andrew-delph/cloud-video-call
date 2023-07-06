@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 // Project imports:
 import 'package:flutter_app/controllers/home_controller.dart';
 import '../models/chat_event_model.dart';
+import '../models/chat_room_model.dart';
 import '../services/auth_service.dart';
 import '../services/options_service.dart';
 
@@ -13,13 +14,18 @@ import '../services/options_service.dart';
 class ChatController extends GetxController {
   ChatController();
 
-  Rx chatRooms = Rx({});
+  RxList<ChatRoomModel> chatRooms = RxList();
 
   @override
   onInit() async {
     print("init ChatController");
     super.onInit();
     await loadChatRooms();
+    // final HomeController homeController = Get.find();
+    // homeController.listenEvent("chat", (data) {
+    //   ChatEventModel chatEvent = ChatEventModel.fromJson(data);
+
+    // });
   }
 
   final RxMap<String, RxList<ChatEventModel>> chatMap = RxMap();
@@ -33,7 +39,7 @@ class ChatController extends GetxController {
   }
 
   loadChatRooms() async {
-    var chatRoomsReponse = await optionsService.loadChatRooms();
+    List<ChatRoomModel> chatRoomsReponse = await optionsService.loadChatRooms();
 
     chatRooms(chatRoomsReponse);
 

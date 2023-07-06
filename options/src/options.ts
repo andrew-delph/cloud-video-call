@@ -269,8 +269,8 @@ app.get(`/chat/:otherId`, rateLimit(`get_chat_id`, 20), async (req, res) => {
 app.get(`/chat`, rateLimit(`get_chat`, 20), async (req, res) => {
   const userId: string = req.userId;
 
-  const recentChats = await common.getRecentChats(mainRedisClient, userId);
-  res.status(200).json({ recentChats });
+  const chatRooms = await common.getRecentChats(mainRedisClient, userId);
+  res.status(200).json({ chatRooms });
   return;
 });
 
