@@ -15,7 +15,8 @@ import '../widgets/chat_room_widget.dart';
 // Project imports:
 
 class ChatController extends GetxController with StateMixin<Widget> {
-  ChatController();
+  final HomeController homeController;
+  ChatController(this.homeController);
 
   final OptionsService optionsService = Get.find();
   final AuthService authService = Get.find();
@@ -30,11 +31,10 @@ class ChatController extends GetxController with StateMixin<Widget> {
     loadChatRooms();
     change(null, status: RxStatus.success());
 
-    // final HomeController homeController = Get.find();
-    // homeController.listenEvent("chat", (data) async {
-    //   ChatEventModel chatEvent = ChatEventModel.fromJson(data);
-    //   await updateChatRoom(chatEvent);
-    // });
+    homeController.listenEvent("chat", (data) async {
+      ChatEventModel chatEvent = ChatEventModel.fromJson(data);
+      await updateChatRoom(getOther(chatEvent), false);
+    });
   }
 
   void appendChat(String userId, dynamic chatEvent) {
@@ -76,8 +76,6 @@ class ChatController extends GetxController with StateMixin<Widget> {
 
   RxList<ChatEventModel> loadChat(String userId) {
     RxList<ChatEventModel> chatRoom = chatMap.putIfAbsent(userId, () {
-      final HomeController homeController = Get.find();
-
       var newChatRoom = RxList<ChatEventModel>();
 
       optionsService.loadChat(userId).then((loadedMessages) async {
@@ -105,8 +103,6 @@ class ChatController extends GetxController with StateMixin<Widget> {
   }
 
   Future<void> sendMessage(ChatRoomModel chatroom, String message) async {
-    final HomeController homeController = Get.find();
-
     ChatEventModel chatEvent = ChatEventModel(
         message: message,
         source: authService.getUser().uid,
