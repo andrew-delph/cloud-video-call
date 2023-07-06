@@ -32,7 +32,7 @@ class ChatController extends GetxController with StateMixin<Widget> {
     loadChatRooms();
     change(null, status: RxStatus.success());
 
-    homeController.socket.listen((socket) {
+    homeController.socket.listenAndPump((socket) {
       bool connected = socket?.connected ?? false;
       print("chat controller socket.listen ${connected}");
       if (connected) {
@@ -42,7 +42,6 @@ class ChatController extends GetxController with StateMixin<Widget> {
         });
       }
     });
-    homeController.socket.refresh();
   }
 
   void appendChat(String userId, dynamic chatEvent) {
