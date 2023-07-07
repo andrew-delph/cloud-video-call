@@ -1,7 +1,7 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: options
+  name: options-service
 spec:
   template:
     metadata:
@@ -15,7 +15,7 @@ spec:
         - name: docker-secret
       priorityClassName: 'mid-priority'
       containers:
-        - image: ghcr.io/andrew-delph/video-call-options:latest
+        - image: ghcr.io/andrew-delph/video-call-options-service:latest
           envFrom:
             - configMapRef:
                 name: secrets
@@ -42,6 +42,6 @@ metadata:
   namespace: default
 spec:
   ref:
-    name: options
+    name: options-service
     kind: Service
     apiVersion: serving.knative.dev/v1
