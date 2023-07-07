@@ -126,6 +126,7 @@ class ChatController extends GetxController with StateMixin<Widget> {
   }
 
   Future<void> sendMessage(ChatRoomModel chatroom, String? message) async {
+    if (message != null) message = message.trim();
     ChatEventModel chatEvent = ChatEventModel(
         message: message,
         source: authService.getUser().uid,
