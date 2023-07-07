@@ -21,6 +21,8 @@ class ChatRoom extends GetView<ChatController> {
 
     TextEditingController msgInputController = TextEditingController();
 
+    final focusNode = FocusNode();
+
     return Obx(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         controller.updateChatRoom(chatroom.target!, true, false);
@@ -36,11 +38,17 @@ class ChatRoom extends GetView<ChatController> {
           Column(
             children: [
               TextField(
-                controller: msgInputController,
-                decoration: const InputDecoration(
-                  labelText: 'Enter Text',
-                ),
-              ),
+                  controller: msgInputController,
+                  focusNode: focusNode,
+                  decoration: const InputDecoration(
+                    labelText: 'Enter Text',
+                  ),
+                  textInputAction: TextInputAction.search,
+                  onSubmitted: (String value) {
+                    controller.sendMessage(chatroom, msgInputController.text);
+                    msgInputController.clear();
+                    focusNode.requestFocus();
+                  }),
               TextButton(
                 onPressed: () {
                   controller.sendMessage(chatroom, msgInputController.text);

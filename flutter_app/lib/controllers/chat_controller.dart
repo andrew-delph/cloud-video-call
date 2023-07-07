@@ -152,7 +152,7 @@ class ChatController extends GetxController with StateMixin<Widget> {
         target: chatroom.target!);
 
     homeController.emitEvent("chat", chatEvent.toJson());
-    if (message != null) {
+    if (message?.isEmpty == false) {
       loadChat(chatroom.target!).add(chatEvent);
     }
     await updateChatRoom(chatroom.target!, true, true);
