@@ -11,12 +11,12 @@ RUN npm i -g grpc-tools
 
 COPY common/package*.json ./common/
 COPY neo4j/common-messaging/package*.json ./neo4j/common-messaging/
-COPY websocket/package*.json ./websocket/
+COPY socketio-service/package*.json ./socketio-service/
 
 # Install production dependencies.
 RUN cd common && npm install
 RUN cd neo4j/common-messaging && npm install
-RUN cd websocket && npm install
+RUN cd socketio-service && npm install
 
 # Copy local code to the container image.
 
@@ -26,9 +26,9 @@ RUN cd common && npm run build
 COPY neo4j/common-messaging neo4j/common-messaging
 RUN cd neo4j/common-messaging && npm run build
 
-COPY websocket websocket
-RUN cd websocket && npm run build
+COPY socketio-service socketio-service
+RUN cd socketio-service && npm run build
 
-WORKDIR /usr/src/app/websocket
+WORKDIR /usr/src/app/socketio-service
 # # Run the web service on container startup.
 CMD [ "node", "./dist/socketio_server.js" ]

@@ -122,7 +122,8 @@ const score_trend = new Trend(`score_trend`);
 const score_gauge = new Gauge(`score_gauge`);
 
 export const ws_url =
-  __ENV.WS_HOST || `ws://localhost:8888/socket.io/?EIO=4&transport=websocket`;
+  __ENV.WS_HOST ||
+  `ws://localhost:8888/socket.io/?EIO=4&transport=socketio-service`;
 export const options_url = __ENV.OPTIONS_HOST || `ws://localhost:8888`;
 
 // console.log(`ws_url`, ws_url);

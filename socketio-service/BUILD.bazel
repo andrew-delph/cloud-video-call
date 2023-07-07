@@ -17,7 +17,7 @@ ts_project(
 )
 
 js_binary(
-    name = "websocket",
+    name = "socketio-service",
     data = [":ts"],
     entry_point = "src/socketio_server.js",
 )
@@ -29,7 +29,7 @@ load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
 
 js_image_layer(
     name = "layers",
-    binary = ":websocket",
+    binary = ":socketio-service",
     root = "/app",
     visibility = ["//visibility:__pkg__"],
 )
@@ -60,7 +60,7 @@ container_image(
     name = "image",
     architecture = "amd64",
     base = "@debian_amd64//image",
-    cmd = ["/app/websocket/websocket"],
+    cmd = ["/app/socketio-service/socketio-service"],
     entrypoint = ["bash"],
     layers = [
         ":app_layer",
@@ -73,6 +73,6 @@ container_push(
    image = ":image",
    format = "Docker",
    registry = "ghcr.io",
-   repository = "andrew-delph/video-call-websocket",
+   repository = "andrew-delph/video-call-socketio-service",
    tag = "latest",
 )

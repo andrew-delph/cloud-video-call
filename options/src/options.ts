@@ -276,7 +276,7 @@ app.get(`/chat`, rateLimit(`get_chat`, 20), async (req, res) => {
   );
 
   return await axios
-    .post(`http://websocket.default.svc.cluster.local/joinRoom`, {
+    .post(`http://socketio-service.default.svc.cluster.local/joinRoom`, {
       source: userId,
       rooms: rooms,
     })

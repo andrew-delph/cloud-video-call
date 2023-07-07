@@ -11,8 +11,8 @@ services:
     ports:
       - '80:80'
     depends_on:
-      - websocket
-  websocket:
+      - socketio-service
+  socketio-service:
     networks:
       - mynetwork
     restart: always

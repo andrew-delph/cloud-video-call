@@ -1,7 +1,7 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: websocket
+  name: socketio-service
 spec:
   template:
     metadata:
@@ -16,7 +16,7 @@ spec:
       timeoutSeconds: 3600
       priorityClassName: 'mid-priority'
       containers:
-        - image: ghcr.io/andrew-delph/video-call-websocket:latest
+        - image: ghcr.io/andrew-delph/video-call-socketio-service:latest
           envFrom:
             - configMapRef:
                 name: secrets
@@ -45,6 +45,6 @@ metadata:
   #   kourier.knative.dev/disable-http2: 'true' # kubectl annotate domainmapping ws.andrewdelph.com kourier.knative.dev/disable-http2=true
 spec:
   ref:
-    name: websocket
+    name: socketio-service
     kind: Service
     apiVersion: serving.knative.dev/v1

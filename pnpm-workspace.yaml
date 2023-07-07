@@ -4,7 +4,7 @@ packages:
   - 'common-messaging'
   - 'data-service'
   - 'neo4j-jobs'
-  - 'websocket'
+  - 'socketio-service'
   - 'matchmaker'
   - 'socketio-event'
   - 'options'
