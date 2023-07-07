@@ -15,7 +15,7 @@ import {
   GetUserPerferencesResponse,
   readyQueueName,
   matchQueueName,
-  matchmaker-eventQueueName,
+  matchmakerQueueName,
   maxPriority,
   ReadyMessage,
   delayExchange,
@@ -84,7 +84,7 @@ export async function startReadyConsumer() {
   logger.info(` [x] Awaiting RPC requests`);
 
   rabbitChannel.consume(
-    matchmaker-eventQueueName,
+    matchmakerQueueName,
     async (msg: ConsumeMessage | null) => {
       if (msg == null) {
         logger.error(`msg is null.`);

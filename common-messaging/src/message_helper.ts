@@ -12,7 +12,7 @@ import {
   chatEventQueue,
   delayExchange,
   matchQueueName,
-  matchmaker-eventQueueName,
+  matchmakerQueueName,
   maxPriority,
   readyRoutingKey,
   userMessageQueue,
@@ -31,7 +31,7 @@ export async function sendMatchmakerQueue(
   matchmaker-eventMessage.setCooldownAttempts(cooldown_attempts);
 
   await rabbitChannel.sendToQueue(
-    matchmaker-eventQueueName,
+    matchmakerQueueName,
     messageToBuffer(matchmaker-eventMessage),
     {},
   );

@@ -18,7 +18,7 @@ import {
   chatEventQueue,
   createNeo4jClient,
   makeGrpcRequest,
-  matchmaker-eventQueueName,
+  matchmakerQueueName,
 } from 'common-messaging';
 import {
   sendChatEventMessage,
@@ -47,7 +47,7 @@ let rabbitChannel: amqp.Channel;
 const connectRabbit = async () => {
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
 
-  await rabbitChannel.assertQueue(matchmaker-eventQueueName, {
+  await rabbitChannel.assertQueue(matchmakerQueueName, {
     durable: true,
   });
 

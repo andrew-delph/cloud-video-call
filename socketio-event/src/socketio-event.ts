@@ -13,7 +13,7 @@ import {
   CreateUserResponse,
   createNeo4jClient,
   matchQueueName,
-  matchmaker-eventQueueName,
+  matchmakerQueueName,
   MatchMessage,
   userMessageQueue,
   userNotificationQueue,
