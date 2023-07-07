@@ -30,16 +30,29 @@ class ChatController extends GetxController with StateMixin<Widget> {
   onInit() async {
     print("init ChatController");
     super.onInit();
-    loadChatRooms();
-    change(null, status: RxStatus.success());
+    change(null, status: RxStatus.loading());
 
     homeController.socket.listenAndPump((socket) {
       bool connected = socket?.connected ?? false;
       print("chat controller socket.listen ${connected}");
       if (connected) {
+        loadChatRooms()
+            .then((value) => change(null, status: RxStatus.success()))
+            .catchError((err) {
+          change(null, status: RxStatus.error("$err"));
+        });
         homeController.listenEvent("chat", (data) async {
           ChatEventModel chatEvent = ChatEventModel.fromJson(data);
           await updateChatRoom(getOther(chatEvent), false, true);
+        });
+        homeController.listenEvent("chat:active", (data) async {
+          bool? active = data["active"];
+          String? target = data["target"];
+          if (target == null || active == null) {
+            print("missing values target $target active $active");
+            return;
+          }
+          await updateChatRoomActive(target, active);
         });
       }
     });
@@ -51,7 +64,7 @@ class ChatController extends GetxController with StateMixin<Widget> {
     chatRoom.add(chatEvent);
   }
 
-  void loadChatRooms() async {
+  Future<void> loadChatRooms() async {
     List<ChatRoomModel> chatRoomsReponse = await optionsService.loadChatRooms();
 
     chatRoomMap.addEntries(chatRoomsReponse
@@ -75,6 +88,18 @@ class ChatController extends GetxController with StateMixin<Widget> {
             read: read));
 
     print("update $target read $read updateTime $updateTime");
+  }
+
+  Future<void> updateChatRoomActive(String target, bool active) async {
+    if (chatRoomMap.containsKey(target)) {
+      chatRoomMap.update(target, (update) {
+        update.active = active;
+        return update;
+      });
+      print("updateChatRoomActive target $target active $active");
+    } else {
+      print("updateChatRoomActive doesnt exist target $target active $active");
+    }
   }
 
   String getOther(ChatEventModel chatEvent) {
@@ -122,13 +147,16 @@ class ChatController extends GetxController with StateMixin<Widget> {
   }
 
   Future<void> sendMessage(ChatRoomModel chatroom, String? message) async {
+    if (message != null) message = message.trim();
     ChatEventModel chatEvent = ChatEventModel(
         message: message,
         source: authService.getUser().uid,
         target: chatroom.target!);
 
     homeController.emitEvent("chat", chatEvent.toJson());
-    loadChat(chatroom.target!).add(chatEvent);
+    if (message != null) {
+      loadChat(chatroom.target!).add(chatEvent);
+    }
     await updateChatRoom(chatroom.target!, true, true);
   }
 }
