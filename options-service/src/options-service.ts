@@ -15,8 +15,6 @@ import {
 import express, { response } from 'express';
 import { initializeApp } from 'firebase-admin/app';
 import moment from 'moment';
-import multer from 'multer';
-import multerS3 from 'multer-s3';
 import * as neo4j from 'neo4j-driver';
 
 var cors = require(`cors`);
@@ -309,33 +307,6 @@ app.post(`/nukedata`, async (req, res) => {
 
   res.status(200).send(`ITS DONE.`);
 });
-
-var upload = multer({
-  storage: multerS3({
-    s3: common.s3Client,
-    // acl: `public-read`,
-    bucket: common.PROFILE_PICTURES_BUCKET,
-    key: async function (req, file, cb) {
-      logger.info(`uploading file: ${JSON.stringify(file)}`);
-      cb(`this api is disabled`);
-      // cb(null, req.userId);
-    },
-  }),
-});
-
-app.put(
-  `/profile`,
-  rateLimit(`put_profile`, 2),
-  upload.single(`file`),
-  async (req, res) => {
-    if (!req.file) {
-      return res.status(400).json({ error: `No file uploaded` });
-    }
-    const file = req.file as Express.MulterS3.File;
-
-    return res.json({ location: file.location });
-  },
-);
 
 app.listen(port, () => {
   logger.info(`Listening on port ${port}`);
