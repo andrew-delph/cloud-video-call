@@ -49,7 +49,7 @@ common.listenGlobalExceptions(async () => {
 let rabbitConnection: Connection;
 let rabbitChannel: Channel;
 
-const promClient = new common.PromClient(`neo4j-grpc-server`);
+const promClient = new common.PromClient(`data-service`);
 
 promClient.startPush();
 

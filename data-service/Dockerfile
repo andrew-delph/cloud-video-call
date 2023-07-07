@@ -18,8 +18,8 @@ RUN cd common && npm install
 COPY neo4j/common-messaging/package*.json ./neo4j/common-messaging/
 RUN cd neo4j/common-messaging && npm install
 
-COPY neo4j/neo4j-grpc-server/package*.json ./neo4j/neo4j-grpc-server/
-RUN cd neo4j/neo4j-grpc-server && npm install
+COPY neo4j/data-service/package*.json ./neo4j/data-service/
+RUN cd neo4j/data-service && npm install
 
 # Copy and Build
 COPY common common
@@ -28,9 +28,9 @@ RUN cd common && npm run build
 COPY neo4j/common-messaging neo4j/common-messaging
 RUN cd neo4j/common-messaging && npm run build
 
-COPY neo4j/neo4j-grpc-server neo4j/neo4j-grpc-server
-RUN cd neo4j/neo4j-grpc-server && npm run build
+COPY neo4j/data-service neo4j/data-service
+RUN cd neo4j/data-service && npm run build
 
-WORKDIR /usr/src/app/neo4j/neo4j-grpc-server
+WORKDIR /usr/src/app/neo4j/data-service
 # # Run the web service on container startup.
-CMD [ "node", "./dist/neo4j-grpc-server.js" ]
+CMD [ "node", "./dist/data-service.js" ]

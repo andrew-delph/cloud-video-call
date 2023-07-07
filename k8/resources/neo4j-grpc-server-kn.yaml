@@ -1,7 +1,7 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: neo4j-grpc-server
+  name: data-service
 spec:
   template:
     metadata:
@@ -17,7 +17,7 @@ spec:
         - name: docker-secret
       priorityClassName: 'mid-priority'
       containers:
-        - image: ghcr.io/andrew-delph/video-call-neo4j-grpc-server:latest
+        - image: ghcr.io/andrew-delph/video-call-data-service:latest
           ports:
             - name: h2c
               containerPort: 80

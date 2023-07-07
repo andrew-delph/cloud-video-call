@@ -1,16 +1,16 @@
 {
-  "name": "neo4j-grpc-server",
+  "name": "data-service",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "mocha 'dist/test/**/*.js' --recursive",
-    "dev": "ibazel -run_command_after_success='bash -c \"cd neo4j-grpc-server && npm run k8-restart\"' build :ts",
+    "dev": "ibazel -run_command_after_success='bash -c \"cd data-service && npm run k8-restart\"' build :ts",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "prod": "node ./dist/index.js",
     "docker": "bazel run image_push",
-    "k8-restart": "bazel run image_push && kn service update neo4j-grpc-server --image=ghcr.io/andrew-delph/video-call-neo4j-grpc-server:latest --wait && date || echo -en '\\0007'"
+    "k8-restart": "bazel run image_push && kn service update data-service --image=ghcr.io/andrew-delph/video-call-data-service:latest --wait && date || echo -en '\\0007'"
   },
   "dependencies": {
     "common": "link:../common",

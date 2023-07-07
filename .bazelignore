@@ -4,7 +4,7 @@ matcher/node_modules
 matchmaker/node_modules
 neo4j/node_modules
 common-messaging/node_modules
-neo4j-grpc-server/node_modules
+data-service/node_modules
 neo4j-jobs/node_modules
 options/node_modules
 websocket/node_modules

@@ -119,6 +119,64 @@ importers:
         specifier: ^4.4.4
         version: 4.9.4
 
+  data-service:
+    dependencies:
+      amqplib:
+        specifier: ^0.10.3
+        version: 0.10.3
+      common:
+        specifier: link:../common
+        version: link:../common
+      common-messaging:
+        specifier: link:../common-messaging
+        version: link:../common-messaging
+      firebase-admin:
+        specifier: ^11.4.1
+        version: 11.4.1(@firebase/app-types@0.9.0)
+      haversine-distance:
+        specifier: ^1.2.1
+        version: 1.2.1
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      mathjs:
+        specifier: ^11.8.0
+        version: 11.8.0
+      neo4j-driver:
+        specifier: ^5.5.0
+        version: 5.5.0
+      typescript-lru-cache:
+        specifier: ^2.0.0
+        version: 2.0.0
+      uuid:
+        specifier: ^9.0.0
+        version: 9.0.0
+    devDependencies:
+      '@types/amqplib':
+        specifier: ^0.10.1
+        version: 0.10.1
+      '@types/chai':
+        specifier: ^4.3.5
+        version: 4.3.5
+      '@types/lodash':
+        specifier: ^4.14.191
+        version: 4.14.191
+      '@types/mocha':
+        specifier: ^10.0.1
+        version: 10.0.1
+      '@types/uuid':
+        specifier: ^9.0.0
+        version: 9.0.1
+      chai:
+        specifier: ^4.3.7
+        version: 4.3.7
+      mocha:
+        specifier: ^10.2.0
+        version: 10.2.0
+      typescript:
+        specifier: ^4.4.4
+        version: 4.9.4
+
   matcher:
     dependencies:
       '@socket.io/redis-adapter':
@@ -337,64 +395,6 @@ importers:
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
-
-  neo4j-grpc-server:
-    dependencies:
-      amqplib:
-        specifier: ^0.10.3
-        version: 0.10.3
-      common:
-        specifier: link:../common
-        version: link:../common
-      common-messaging:
-        specifier: link:../common-messaging
-        version: link:../common-messaging
-      firebase-admin:
-        specifier: ^11.4.1
-        version: 11.4.1(@firebase/app-types@0.9.0)
-      haversine-distance:
-        specifier: ^1.2.1
-        version: 1.2.1
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-      mathjs:
-        specifier: ^11.8.0
-        version: 11.8.0
-      neo4j-driver:
-        specifier: ^5.5.0
-        version: 5.5.0
-      typescript-lru-cache:
-        specifier: ^2.0.0
-        version: 2.0.0
-      uuid:
-        specifier: ^9.0.0
-        version: 9.0.0
-    devDependencies:
-      '@types/amqplib':
-        specifier: ^0.10.1
-        version: 0.10.1
-      '@types/chai':
-        specifier: ^4.3.5
-        version: 4.3.5
-      '@types/lodash':
-        specifier: ^4.14.191
-        version: 4.14.191
-      '@types/mocha':
-        specifier: ^10.0.1
-        version: 10.0.1
-      '@types/uuid':
-        specifier: ^9.0.0
-        version: 9.0.1
-      chai:
-        specifier: ^4.3.7
-        version: 4.3.7
-      mocha:
-        specifier: ^10.2.0
-        version: 10.2.0
-      typescript:
-        specifier: ^4.4.4
-        version: 4.9.4
 
   neo4j-jobs:
     dependencies:

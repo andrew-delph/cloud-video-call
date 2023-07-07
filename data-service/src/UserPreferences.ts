@@ -3,7 +3,7 @@ import {
   driver,
   redisClient,
   userPreferencesCacheEx,
-} from './neo4j-grpc-server';
+} from './data-service';
 import * as common from 'common';
 import haversine from 'haversine-distance';
 import * as neo4j from 'neo4j-driver';

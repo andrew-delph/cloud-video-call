@@ -2,7 +2,7 @@ packages:
   - 'common'
   - 'neo4j'
   - 'common-messaging'
-  - 'neo4j-grpc-server'
+  - 'data-service'
   - 'neo4j-jobs'
   - 'websocket'
   - 'matchmaker'

@@ -17,9 +17,9 @@ ts_project(
 )
 
 js_binary(
-    name = "neo4j-grpc-server",
+    name = "data-service",
     data = [":ts"],
-    entry_point = "src/neo4j-grpc-server.js",
+    entry_point = "src/data-service.js",
 )
 
 
@@ -29,7 +29,7 @@ load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
 
 js_image_layer(
     name = "layers",
-    binary = ":neo4j-grpc-server",
+    binary = ":data-service",
     root = "/app",
     visibility = ["//visibility:__pkg__"],
 )
@@ -60,7 +60,7 @@ container_image(
     name = "image",
     architecture = "amd64",
     base = "@debian_amd64//image",
-    cmd = ["/app/neo4j-grpc-server/neo4j-grpc-server"],
+    cmd = ["/app/data-service/data-service"],
     entrypoint = ["bash"],
     layers = [
         ":app_layer",
@@ -73,7 +73,7 @@ container_push(
    image = ":image",
    format = "Docker",
    registry = "ghcr.io",
-   repository = "andrew-delph/video-call-neo4j-grpc-server",
+   repository = "andrew-delph/video-call-data-service",
    tag = "latest",
 )
 
