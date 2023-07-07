@@ -13,6 +13,7 @@ import '../services/auth_service.dart';
 
 class NotificationsController extends GetxController with StateMixin {
   final AuthService authService = Get.find();
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
   RxMap<String, NotificationModel> notifications = RxMap();
 
@@ -154,30 +155,37 @@ class NotificationsController extends GetxController with StateMixin {
     return popups;
   }
 
-  Future initFirebaseMessaging() async {
-    final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  Future<NotificationSettings> getNotificationSettings() async {
+    return await firebaseMessaging.getNotificationSettings();
+  }
 
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
+  Future<bool> isAuthorized() async {
+    return (await getNotificationSettings()).authorizationStatus ==
+        AuthorizationStatus.authorized;
+  }
+
+  Future<void> requestPermission() async {
+    await firebaseMessaging.requestPermission(
       alert: true,
       badge: true,
       sound: true,
     );
 
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted permission');
-      // TODO: handle the received notifications
-      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print('Got a message whilst in the foreground!');
-        print('Message data: ${message.data}');
+    // if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    //   print('User granted permission');
+    //   // TODO: handle the received notifications
+    //   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //     print('Got a message whilst in the foreground!');
+    //     print('Message data: ${message.data}');
 
-        if (message.notification != null) {
-          print(
-              'Message also contained a notification: ${message.notification}');
-        }
-      });
-    } else {
-      print('User declined or has not accepted permission');
-    }
+    //     if (message.notification != null) {
+    //       print(
+    //           'Message also contained a notification: ${message.notification}');
+    //     }
+    //   });
+    // } else {
+    //   print('User declined or has not accepted permission');
+    // }
   }
 }
 

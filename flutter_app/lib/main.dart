@@ -57,12 +57,12 @@ Future<void> initializeApp() async {
   Get.put(CacheService(), permanent: true);
 
   Get.put(AuthService(), permanent: true);
+  Get.put(NotificationsController(), permanent: true);
+
   Get.put(LocalPreferences(), permanent: true);
 
   Get.put(OptionsService(), permanent: true);
   Get.put(AnalyticsService(), permanent: true);
-
-  Get.put(NotificationsController(), permanent: true);
 
   log('Initialize');
 }

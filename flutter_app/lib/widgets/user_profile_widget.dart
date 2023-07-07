@@ -97,14 +97,6 @@ class UserProfileWidget extends GetView<PreferencesController> {
           ProfilePicture(user.uid),
           TextButton(
             onPressed: () async {
-              NotificationsController notificationsController = Get.find();
-
-              await notificationsController.initFirebaseMessaging();
-            },
-            child: const Text('Enable Notifications'),
-          ),
-          TextButton(
-            onPressed: () async {
               AuthService authService = Get.find();
 
               authService.deleteUser();

@@ -5,10 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
+import '../widgets/notifications.dart';
+
 dynamic lightTheme = ThemeData.light().copyWith();
 dynamic darkTheme = ThemeData.dark().copyWith();
 
 class LocalPreferences extends GetxService {
+  final NotificationsController notificationsController = Get.find();
   final autoQueue = true.obs;
   final autoAccept = false.obs;
   final feedbackPopup = false.obs;
@@ -17,6 +20,8 @@ class LocalPreferences extends GetxService {
   final audioDeviceLabel = 'Default'.obs;
   final fullscreen = false.obs;
   final isDarkMode = Get.isDarkMode.obs;
+
+  final notificationAutorized = false.obs;
 
   @override
   Future<void> onInit() async {
@@ -56,6 +61,17 @@ class LocalPreferences extends GetxService {
     ever(isDarkMode, (value) {
       box.write('isDarkMode', value);
       Get.changeTheme(value ? darkTheme : lightTheme);
+    });
+
+    notificationAutorized.value = await notificationsController.isAuthorized();
+    ever(notificationAutorized, (value) async {
+      if (value) {
+        notificationsController.requestPermission().whenComplete(() async =>
+            notificationAutorized(
+                await notificationsController.isAuthorized()));
+      } else {
+        notificationAutorized(await notificationsController.isAuthorized());
+      }
     });
   }
 }

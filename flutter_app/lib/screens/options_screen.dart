@@ -133,6 +133,19 @@ class OptionsScreen extends GetView<PreferencesController> {
                                 },
                               )
                             ],
+                          ),
+                          Row(
+                            children: [
+                              const Expanded(
+                                  child: Text("Notifications Authorized:")),
+                              Switch(
+                                value: localPreferences.notificationAutorized(),
+                                onChanged: (bool newValue) async {
+                                  localPreferences.notificationAutorized
+                                      .toggle();
+                                },
+                              )
+                            ],
                           )
                         ]),
                       ],
