@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 // Project imports:
 import 'package:flutter_app/models/chat_room_model.dart';
+import 'package:flutter_app/services/cache_service.dart';
+import 'package:get/get.dart';
 import '../config/factory.dart';
 import '../models/chat_event_model.dart';
 import '../models/history_model.dart';
@@ -12,6 +14,7 @@ import '../utils/utils.dart';
 import 'api_service.dart';
 
 class OptionsService extends ApiService {
+  final CacheService cacheService = Get.find();
   OptionsService() {
     httpClient.baseUrl = Factory.getOptionsHost();
   }
@@ -44,20 +47,22 @@ class OptionsService extends ApiService {
           .then((response) => validateRequestGetBody(response));
 
   Future<UserDataModel?> getUserData(String userId) async {
-    CollectionReference<UserDataModel> myUserCollection = FirebaseFirestore
-        .instance
-        .collection('users')
-        .withConverter<UserDataModel>(
-          fromFirestore: (snapshots, _) =>
-              UserDataModel.fromJson(snapshots.data()!),
-          toFirestore: (userData, _) => userData.toJson(),
-        );
+    return cacheService.getOrWrite<UserDataModel?>("user:data:$userId",
+        () async {
+      CollectionReference<UserDataModel> myUserCollection = FirebaseFirestore
+          .instance
+          .collection('users')
+          .withConverter<UserDataModel>(
+            fromFirestore: (snapshots, _) =>
+                UserDataModel.fromJson(snapshots.data()!),
+            toFirestore: (userData, _) => userData.toJson(),
+          );
+      DocumentReference<UserDataModel> myUserDoc = myUserCollection.doc(userId);
 
-    DocumentReference<UserDataModel> myUserDoc = myUserCollection.doc(userId);
+      UserDataModel? userData = (await myUserDoc.get()).data();
 
-    UserDataModel? userData = (await myUserDoc.get()).data();
-
-    return userData;
+      return userData;
+    });
   }
 
   Future<List<ChatEventModel>> loadChat(String userId) => get(

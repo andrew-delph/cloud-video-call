@@ -48,7 +48,7 @@ class HistoryItemWidget extends GetView<HistoryController> {
   }) : super(key: key);
 
   final Rx<UserDataModel?> userData = Rx(null);
-  final CacheService cacheSerice = Get.find();
+  final CacheService cacheService = Get.find();
 
   @override
   Widget build(BuildContext context) {
