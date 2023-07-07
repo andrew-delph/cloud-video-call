@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -151,6 +152,32 @@ class NotificationsController extends GetxController with StateMixin {
     }
 
     return popups;
+  }
+
+  Future initFirebaseMessaging() async {
+    final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await _firebaseMessaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+      // TODO: handle the received notifications
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        print('Got a message whilst in the foreground!');
+        print('Message data: ${message.data}');
+
+        if (message.notification != null) {
+          print(
+              'Message also contained a notification: ${message.notification}');
+        }
+      });
+    } else {
+      print('User declined or has not accepted permission');
+    }
   }
 }
 

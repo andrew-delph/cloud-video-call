@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_app/widgets/notifications.dart';
 import 'package:get/get.dart';
 
 // Project imports:
@@ -94,6 +95,14 @@ class UserProfileWidget extends GetView<PreferencesController> {
             child: const Text('Take picture'),
           ),
           ProfilePicture(user.uid),
+          TextButton(
+            onPressed: () async {
+              NotificationsController notificationsController = Get.find();
+
+              await notificationsController.initFirebaseMessaging();
+            },
+            child: const Text('Enable Notifications'),
+          ),
           TextButton(
             onPressed: () async {
               AuthService authService = Get.find();
