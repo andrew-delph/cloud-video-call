@@ -78,7 +78,7 @@ export async function startReadyConsumer() {
   pubRedisClient = common.createRedisClient();
   lockRedisClient = common.createRedisClient();
 
-  await subRedisClient.psubscribe(`${matchmaker-eventChannelPrefix}*`);
+  await subRedisClient.psubscribe(`${matchmakerChannelPrefix}*`);
 
   rabbitChannel.prefetch(prefetch);
   logger.info(` [x] Awaiting RPC requests`);
@@ -91,13 +91,13 @@ export async function startReadyConsumer() {
         return;
       }
 
-      const matchmaker-eventMessage = message_helper.parseMatchmakerMessage(
+      const matchmakerMessage = message_helper.parseMatchmakerMessage(
         msg.content,
       );
 
-      const userId = matchmaker-eventMessage.getUserId();
+      const userId = matchmakerMessage.getUserId();
 
-      const cooldownAttempts = matchmaker-eventMessage.getCooldownAttempts();
+      const cooldownAttempts = matchmakerMessage.getCooldownAttempts();
 
       // if (cooldownAttempts == 0) {
       //   await calcScoreZset(userId);
@@ -113,7 +113,7 @@ export async function startReadyConsumer() {
 
       const delaySeconds = Math.min(
         priorityDelay +
-          matchmaker-eventMessage.getCooldownAttempts() ** cooldownScalerValue,
+          matchmakerMessage.getCooldownAttempts() ** cooldownScalerValue,
         maxReadyDelaySeconds,
       );
 
@@ -131,7 +131,7 @@ export async function startReadyConsumer() {
         userId,
         priority,
         delaySeconds * 1000,
-        matchmaker-eventMessage.getCooldownAttempts(),
+        matchmakerMessage.getCooldownAttempts(),
       );
 
       rabbitChannel.ack(msg);
@@ -162,7 +162,7 @@ export async function startReadyConsumer() {
 
       const cleanup: (() => void)[] = [];
       try {
-        await matchmaker-eventFlow(readyMessage, cleanup);
+        await matchmakerFlow(readyMessage, cleanup);
         rabbitChannel.ack(msg);
       } catch (e: any) {
         if (e instanceof CompleteError) {
@@ -293,7 +293,7 @@ const neo4jGetUser = (userId: string) => {
   );
 };
 
-const matchmaker-eventChannelPrefix = `matchmaker-event`;
+const matchmakerChannelPrefix = `matchmaker-event`;
 
 export class CompleteError extends Error {
   constructor(message: string) {
@@ -326,10 +326,10 @@ class RetrySignal {
 }
 
 const getSocketChannel = (userId: string) => {
-  return `${matchmaker-eventChannelPrefix}${userId}`;
+  return `${matchmakerChannelPrefix}${userId}`;
 };
 
-async function matchmaker-eventFlow(
+async function matchmakerFlow(
   readyMessage: ReadyMessage,
   cleanup: (() => void)[],
 ) {
