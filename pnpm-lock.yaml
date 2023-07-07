@@ -4,9 +4,6 @@ importers:
 
   .:
     dependencies:
-      axios:
-        specifier: ^1.4.0
-        version: 1.4.0
       jest:
         specifier: ^29.5.0
         version: 29.5.0
