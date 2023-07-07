@@ -1,0 +1,39 @@
+{
+  "name": "data-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha 'dist/test/**/*.js' --recursive",
+    "dev": "ibazel -run_command_after_success='bash -c \"cd data-service && npm run k8-restart\"' build :ts",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "prod": "node ./dist/index.js",
+    "docker": "bazel run image_push",
+    "k8-restart": "bazel run image_push && kn service update data-service --image=ghcr.io/andrew-delph/video-call-data-service:latest --wait && date || echo -en '\\0007'"
+  },
+  "dependencies": {
+    "common": "link:../common",
+    "common-messaging": "link:../common-messaging",
+    "haversine-distance": "^1.2.1",
+    "lodash": "^4.17.21",
+    "mathjs": "^11.8.0",
+    "neo4j-driver": "^5.5.0",
+    "typescript-lru-cache": "^2.0.0",
+    "uuid": "^9.0.0",
+    "firebase-admin": "^11.4.1",
+    "amqplib": "^0.10.3"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.1",
+    "@types/chai": "^4.3.5",
+    "@types/lodash": "^4.14.191",
+    "@types/mocha": "^10.0.1",
+    "@types/uuid": "^9.0.0",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "typescript": "^4.4.4"
+  },
+  "author": "",
+  "license": "ISC"
+}

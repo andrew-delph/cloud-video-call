@@ -1,6 +1,6 @@
+import { activeSetName } from './variables';
 import Client from 'ioredis';
 import moment from 'moment';
-import { activeSetName } from './variables';
 
 export function redisChatRoomKey(user1Id: string, user2Id: string): string {
   if (user1Id > user2Id) {

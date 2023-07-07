@@ -1,0 +1,47 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: options-service
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/min-scale: '1'
+        autoscaling.knative.dev/max-scale: '3'
+        autoscaling.knative.dev/initial-scale: '1'
+        autoscaling.knative.dev/class: 'kpa.autoscaling.knative.dev'
+    spec:
+      imagePullSecrets:
+        - name: docker-secret
+      priorityClassName: 'mid-priority'
+      containers:
+        - image: ghcr.io/andrew-delph/video-call-options-service:latest
+          envFrom:
+            - configMapRef:
+                name: secrets
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+---
+apiVersion: networking.internal.knative.dev/v1alpha1
+kind: ClusterDomainClaim
+metadata:
+  name: options.andrewdelph.com
+spec:
+  namespace: default
+---
+apiVersion: serving.knative.dev/v1alpha1
+kind: DomainMapping
+metadata:
+  name: options.andrewdelph.com
+  namespace: default
+spec:
+  ref:
+    name: options-service
+    kind: Service
+    apiVersion: serving.knative.dev/v1

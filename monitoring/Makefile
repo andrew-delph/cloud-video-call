@@ -55,16 +55,16 @@ watch:
 
 query:
 	@kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/" | jq
-	@echo 1 ; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/pod/*/matchmaker" | jq | grep value ; echo
-	@echo 2 ; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/pod/*/matcher" | jq | grep value ; echo
+	@echo 1 ; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/pod/*/matchmaker-event" | jq | grep value ; echo
+	@echo 2 ; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/pod/*/socketio-event" | jq | grep value ; echo
 
-	@#echo 2 ; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/monitoring/pod/*/matchmaker" | jq | grep value  ; echo
-	@#echo 3 ; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/metrics/matchmaker" | jq | grep value  ; echo
-	@#echo 4 ; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/monitoring/metrics/matchmaker" | jq | grep value  ; echo
+	@#echo 2 ; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/monitoring/pod/*/matchmaker-event" | jq | grep value  ; echo
+	@#echo 3 ; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/metrics/matchmaker-event" | jq | grep value  ; echo
+	@#echo 4 ; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/monitoring/metrics/matchmaker-event" | jq | grep value  ; echo
 	@#echo ---
 	@#echo 5; kubectl get --raw="/apis/custom.metrics.k8s.io/v1beta1/namespaces/monitoring/metrics/matchQueue" | jq | grep value ; echo 
-	@#kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/namespaces/monitorin/services/prometheus-rabbitmq-exporter/matcher | jq  | grep value ; echo "matchQueue"
-	@#kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/namespaces/default/services/prometheus-rabbitmq-exporter/matchmaker | jq | grep value ; echo "readyQueue" 
+	@#kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/namespaces/monitorin/services/prometheus-rabbitmq-exporter/socketio-event | jq  | grep value ; echo "matchQueue"
+	@#kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/namespaces/default/services/prometheus-rabbitmq-exporter/matchmaker-event | jq | grep value ; echo "readyQueue" 
 
 prom_profile:
 	go tool pprof -symbolize=remote -inuse_space http://node.andrewdelph.com:30002/debug/pprof/heap

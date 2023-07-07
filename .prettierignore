@@ -1,4 +1,4 @@
-### ./matcher/.gitignore ###
+### ./socketio-event/.gitignore ###
 ### ./puppeteer/.gitignore ###
 pia-openvpn/auth-user-pass.txt
 screenshots/*
@@ -52,10 +52,10 @@ common-messaging/src/test.js
 
 test.json
 test.js
+test.ts
 flutter_app/GetStorage.bak
 flutter_app/GetStorage.gs
 
-.prettierignore
 monitoring/release.yaml
 
 /test
@@ -209,7 +209,7 @@ key.properties
 **/*.jks
 ### ./k8/resources/.gitignore ###
 secrets.yaml### ./k8/.gitignore ###
-grafana-agent.sh### ./matchmaker/.gitignore ###
+grafana-agent.sh### ./matchmaker-event/.gitignore ###
 *.bkp### ./neo4j/.gitignore ###
 data### ./k6/.gitignore ###
 # Ignore locally customized builds of k6
@@ -224,7 +224,6 @@ dependencies/*
 ### ./k6/dependencies/xk6-output-prometheus-remote/.gitignore ###
 .idea/
 .DS_Store
-
 ### ./k6/dependencies/k6-operator/.gitignore ###
 # Binaries for programs and plugins
 *.exe

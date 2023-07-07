@@ -11,8 +11,8 @@ services:
     ports:
       - '80:80'
     depends_on:
-      - websocket
-  websocket:
+      - socketio-service
+  socketio-service:
     networks:
       - mynetwork
     restart: always
@@ -30,14 +30,14 @@ services:
     depends_on:
       - redis
       - kafka
-      - matchmaker
-  matcher:
+      - matchmaker-event
+  socketio-event:
     networks:
       - mynetwork
     restart: always
     build:
       context: .
-      dockerfile: ./matcher/Dockerfile
+      dockerfile: ./socketio-event/Dockerfile
     # ports:
     #   - "4000:4000"
     environment:
@@ -50,13 +50,13 @@ services:
       - redis
       - rabbitmq
       - kafka
-  matchmaker:
+  matchmaker-event:
     networks:
       - mynetwork
     restart: always
     build:
       context: .
-      dockerfile: ./matchmaker/Dockerfile
+      dockerfile: ./matchmaker-event/Dockerfile
     # ports:
     #   - "4000:4000"
     environment:

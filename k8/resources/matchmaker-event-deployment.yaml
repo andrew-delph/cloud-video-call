@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: matchmaker-event
+  name: matchmaker-event
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: matchmaker-event
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: matchmaker-event
+    spec:
+      priorityClassName: 'mid-priority'
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: secrets
+          image: ghcr.io/andrew-delph/video-call-matchmaker-event:latest
+          name: matchmaker-event
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: '25m'
+              memory: '250Mi'
+            limits:
+              cpu: '512m'
+              memory: '250Mi'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            # initialDelaySeconds: 30
+            periodSeconds: 10
+      restartPolicy: Always
+status: {}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-matchmaker-event
+spec:
+  minReplicas: 1
+  maxReplicas: 6
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: matchmaker-event
+  metrics:
+    - type: Object
+      object:
+        metric:
+          name: matchmaker-event
+        target:
+          type: Value
+          value: 10
+        describedObject:
+          apiVersion: '/v1'
+          kind: 'Namespace'
+          name: monitoring
+    # - type: Resource
+    #   resource:
+    #     name: cpu
+    #     target:
+    #       type: Utilization
+    #       averageUtilization: 80
+    # - type: Resource
+    #   resource:
+    #     name: memory
+    #     target:
+    #       type: Utilization
+    #       averageUtilization: 80
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   creationTimestamp: null
+#   labels:
+#     app: matchmaker-event
+#   name: matchmaker-event
+# spec:
+#   ports:
+#     - name: '4000'
+#       port: 4000
+#       targetPort: 4000
+#   selector:
+#     app: matchmaker-event
+# status:
+#   loadBalancer: {}

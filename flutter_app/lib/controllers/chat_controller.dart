@@ -6,10 +6,8 @@ import 'package:get/get.dart';
 
 // Project imports:
 import 'package:flutter_app/controllers/home_controller.dart';
-import 'package:socket_io_client/socket_io_client.dart';
 import '../models/chat_event_model.dart';
 import '../models/chat_room_model.dart';
-import '../routes/app_pages.dart';
 import '../services/auth_service.dart';
 import '../services/options_service.dart';
 import '../widgets/chat_room_widget.dart';
@@ -34,7 +32,7 @@ class ChatController extends GetxController with StateMixin<Widget> {
 
     homeController.socket.listenAndPump((socket) {
       bool connected = socket?.connected ?? false;
-      print("chat controller socket.listen ${connected}");
+      print("chat controller socket.listen $connected");
       if (connected) {
         loadChatRooms()
             .then((value) => change(null, status: RxStatus.success()))

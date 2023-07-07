@@ -8,7 +8,7 @@ import redis from 'k6/experimental/redis';
 import http from 'k6/http';
 import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 
-const vus = 100;
+const vus = 40;
 const authKeysNum = vus + 15; // number of users created for each parallel instance running
 const iterations = 999999; //authKeysNum * 1000;
 
@@ -77,13 +77,13 @@ export const options = {
     //     { duration: `2d`, target: 1000 },
     //   ],
     // },
-    // chatStream: {
-    //   executor: `shared-iterations`,
-    //   exec: `biChatStream`,
-    //   vus: 50,
-    //   iterations: 100,
-    //   maxDuration: `10h`,
-    // },
+    chatStream: {
+      executor: `shared-iterations`,
+      exec: `biChatStream`,
+      vus: 10,
+      iterations: 100,
+      maxDuration: `10h`,
+    },
     // chatPull: {
     //   executor: `shared-iterations`,
     //   exec: `biChatPull`,
