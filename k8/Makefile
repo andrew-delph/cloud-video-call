@@ -25,7 +25,6 @@ apply:
 delete:
 	kubectl delete -f ./resources/.
 	kubectl delete -f ./knative.yaml
-	kubectl delete -f ./nsf-deployment.yaml --wait
 
 
 restart:
