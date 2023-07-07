@@ -224,7 +224,6 @@ dependencies/*
 ### ./k6/dependencies/xk6-output-prometheus-remote/.gitignore ###
 .idea/
 .DS_Store
-k6
 ### ./k6/dependencies/k6-operator/.gitignore ###
 # Binaries for programs and plugins
 *.exe
