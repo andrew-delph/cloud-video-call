@@ -25,14 +25,14 @@ export async function sendMatchmakerQueue(
   userId: string,
   cooldown_attempts: number = 0,
 ) {
-  const matchmaker-eventMessage: MatchmakerMessage = new MatchmakerMessage();
+  const matchmakerMessage: MatchmakerMessage = new MatchmakerMessage();
 
-  matchmaker-eventMessage.setUserId(userId);
-  matchmaker-eventMessage.setCooldownAttempts(cooldown_attempts);
+  matchmakerMessage.setUserId(userId);
+  matchmakerMessage.setCooldownAttempts(cooldown_attempts);
 
   await rabbitChannel.sendToQueue(
     matchmakerQueueName,
-    messageToBuffer(matchmaker-eventMessage),
+    messageToBuffer(matchmakerMessage),
     {},
   );
 }
