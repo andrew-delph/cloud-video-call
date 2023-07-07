@@ -54,7 +54,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
   RxBool isMicMute = false.obs;
   RxBool isCamHide = false.obs;
 
-  RxMap<dynamic, dynamic> matchmaker-eventProgess = {}.obs;
+  RxMap<dynamic, dynamic> matchmakerProgess = {}.obs;
 
   HomeController(
     this.optionsService,
@@ -123,7 +123,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
     });
 
     isInChat.listen((isInChat) {
-      matchmaker-eventProgess({});
+      matchmakerProgess({});
       if (isInChat) {
         isInReadyQueue(false);
         change(VideoRenderLayout(), status: RxStatus.success());
@@ -132,7 +132,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
 
     isInReadyQueue.listen((isInReadyQueue) {
       print("isInReadyQueue $isInReadyQueue");
-      matchmaker-eventProgess({});
+      matchmakerProgess({});
       if (isInReadyQueue) {
         change(const MatchmakerProgress(), status: RxStatus.success());
       } else {
@@ -224,8 +224,8 @@ class HomeController extends GetxController with StateMixin<Widget> {
       change(null, status: RxStatus.success());
     });
 
-    mySocket.on('matchmaker-eventProgess', (data) async {
-      matchmaker-eventProgess(data);
+    mySocket.on('matchmakerProgess', (data) async {
+      matchmakerProgess(data);
     });
 
     mySocket.onConnect((_) {
@@ -300,7 +300,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
   Future<void> queueReady() async {
     await resetRemote();
     await initLocalStream();
-    matchmaker-eventProgess({});
+    matchmakerProgess({});
     socket()!.off("client_host");
     socket()!.off("client_guest");
     socket()!.off("match");
