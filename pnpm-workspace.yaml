@@ -7,5 +7,5 @@ packages:
   - 'socketio-service'
   - 'matchmaker-event'
   - 'socketio-event'
-  - 'options'
+  - 'options-service'
   - 'puppeteer'

@@ -6,6 +6,6 @@ neo4j/node_modules
 common-messaging/node_modules
 data-service/node_modules
 neo4j-jobs/node_modules
-options/node_modules
+options-service/node_modules
 socketio-service/node_modules
 puppeteer/node_modules
