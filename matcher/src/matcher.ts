@@ -307,6 +307,7 @@ export async function matchConsumer() {
               .timeout(3000)
               .emitWithAck(`chat`, chatMessage);
             await common.setChatRead(mainRedisClient, target, source, true);
+            io.in(targetSocket).socketsJoin(common.chatActivityRoom(source));
           })
           .catch(async (err) => {
             await common.setChatRead(mainRedisClient, target, source, false);
@@ -330,6 +331,7 @@ export async function matchConsumer() {
                 .timeout(3000)
                 .emitWithAck(`chat`, chatMessage);
               await common.setChatRead(mainRedisClient, source, target, true);
+              io.in(sourceSocket).socketsJoin(common.chatActivityRoom(target));
             })
             .catch(async (err) => {
               await common.setChatRead(mainRedisClient, source, target, false);
