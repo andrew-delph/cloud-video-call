@@ -21,7 +21,7 @@ import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
 import '../services/options_service.dart';
 import '../utils/utils.dart';
-import '../widgets/matchmaker_progress.dart';
+import '../widgets/matchmaker-event_progress.dart';
 import '../widgets/video_render_layout.dart';
 
 class HomeController extends GetxController with StateMixin<Widget> {
@@ -54,7 +54,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
   RxBool isMicMute = false.obs;
   RxBool isCamHide = false.obs;
 
-  RxMap<dynamic, dynamic> matchmakerProgess = {}.obs;
+  RxMap<dynamic, dynamic> matchmaker-eventProgess = {}.obs;
 
   HomeController(
     this.optionsService,
@@ -123,7 +123,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
     });
 
     isInChat.listen((isInChat) {
-      matchmakerProgess({});
+      matchmaker-eventProgess({});
       if (isInChat) {
         isInReadyQueue(false);
         change(VideoRenderLayout(), status: RxStatus.success());
@@ -132,7 +132,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
 
     isInReadyQueue.listen((isInReadyQueue) {
       print("isInReadyQueue $isInReadyQueue");
-      matchmakerProgess({});
+      matchmaker-eventProgess({});
       if (isInReadyQueue) {
         change(const MatchmakerProgress(), status: RxStatus.success());
       } else {
@@ -224,8 +224,8 @@ class HomeController extends GetxController with StateMixin<Widget> {
       change(null, status: RxStatus.success());
     });
 
-    mySocket.on('matchmakerProgess', (data) async {
-      matchmakerProgess(data);
+    mySocket.on('matchmaker-eventProgess', (data) async {
+      matchmaker-eventProgess(data);
     });
 
     mySocket.onConnect((_) {
@@ -300,7 +300,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
   Future<void> queueReady() async {
     await resetRemote();
     await initLocalStream();
-    matchmakerProgess({});
+    matchmaker-eventProgess({});
     socket()!.off("client_host");
     socket()!.off("client_guest");
     socket()!.off("match");

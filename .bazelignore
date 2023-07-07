@@ -1,7 +1,7 @@
 node_modules
 common/node_modules
 socketio-event/node_modules
-matchmaker/node_modules
+matchmaker-event/node_modules
 neo4j/node_modules
 common-messaging/node_modules
 data-service/node_modules

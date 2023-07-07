@@ -209,7 +209,7 @@ key.properties
 **/*.jks
 ### ./k8/resources/.gitignore ###
 secrets.yaml### ./k8/.gitignore ###
-grafana-agent.sh### ./matchmaker/.gitignore ###
+grafana-agent.sh### ./matchmaker-event/.gitignore ###
 *.bkp### ./neo4j/.gitignore ###
 data### ./k6/.gitignore ###
 # Ignore locally customized builds of k6

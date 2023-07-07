@@ -110,7 +110,7 @@ const match_success = new Rate(`match_success`);
 const error_counter = new Counter(`error_counter`);
 const success_counter = new Counter(`success_counter`);
 
-const matchmakerProgess = new Counter(`matchmakerProgess`);
+const matchmaker-eventProgess = new Counter(`matchmaker-eventProgess`);
 
 const valid_score = new Counter(`valid_score`);
 const invalid_score = new Counter(`invalid_score`);
@@ -298,11 +298,11 @@ export default async function () {
   const socket = new K6SocketIoExp(ws_url, { auth: auth }, {});
 
   socket.setEventMessageHandle(
-    `matchmakerProgess`,
+    `matchmaker-eventProgess`,
     (data: any, callback: any) => {
-      matchmakerProgess.add(1, extraLabels(myUser));
+      matchmaker-eventProgess.add(1, extraLabels(myUser));
       check(data, {
-        'valid matchmakerProgess': (data: any) =>
+        'valid matchmaker-eventProgess': (data: any) =>
           data && data.readySize != null && data.filterSize != null,
       });
     },

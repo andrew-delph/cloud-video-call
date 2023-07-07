@@ -3,27 +3,27 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: matchmaker
-  name: matchmaker
+    app: matchmaker-event
+  name: matchmaker-event
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: matchmaker
+      app: matchmaker-event
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: matchmaker
+        app: matchmaker-event
     spec:
       priorityClassName: 'mid-priority'
       containers:
         - envFrom:
             - configMapRef:
                 name: secrets
-          image: ghcr.io/andrew-delph/video-call-matchmaker:latest
-          name: matchmaker
+          image: ghcr.io/andrew-delph/video-call-matchmaker-event:latest
+          name: matchmaker-event
           ports:
             - containerPort: 80
           resources:
@@ -45,19 +45,19 @@ status: {}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: hpa-matchmaker
+  name: hpa-matchmaker-event
 spec:
   minReplicas: 1
   maxReplicas: 6
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: matchmaker
+    name: matchmaker-event
   metrics:
     - type: Object
       object:
         metric:
-          name: matchmaker
+          name: matchmaker-event
         target:
           type: Value
           value: 10
@@ -83,14 +83,14 @@ spec:
 # metadata:
 #   creationTimestamp: null
 #   labels:
-#     app: matchmaker
-#   name: matchmaker
+#     app: matchmaker-event
+#   name: matchmaker-event
 # spec:
 #   ports:
 #     - name: '4000'
 #       port: 4000
 #       targetPort: 4000
 #   selector:
-#     app: matchmaker
+#     app: matchmaker-event
 # status:
 #   loadBalancer: {}

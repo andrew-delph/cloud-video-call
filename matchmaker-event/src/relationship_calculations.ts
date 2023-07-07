@@ -5,7 +5,7 @@ import {
   neo4jRpcClient,
   stripUserId,
   createFilterSet,
-} from './matchmaker';
+} from './matchmaker-event';
 import { FilteredUserType, RelationshipScoreWrapper } from './types';
 import * as common from 'common';
 import {

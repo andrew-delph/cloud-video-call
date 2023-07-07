@@ -17,9 +17,9 @@ ts_project(
 )
 
 js_binary(
-    name = "matchmaker",
+    name = "matchmaker-event",
     data = [":ts"],
-    entry_point = "src/matchmaker.js",
+    entry_point = "src/matchmaker-event.js",
 )
 
 
@@ -30,7 +30,7 @@ load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
 
 js_image_layer(
     name = "layers",
-    binary = ":matchmaker",
+    binary = ":matchmaker-event",
     root = "/app",
     visibility = ["//visibility:__pkg__"],
 )
@@ -61,7 +61,7 @@ container_image(
     name = "image",
     architecture = "amd64",
     base = "@debian_amd64//image",
-    cmd = ["/app/matchmaker/matchmaker"],
+    cmd = ["/app/matchmaker-event/matchmaker-event"],
     entrypoint = ["bash"],
     layers = [
         ":app_layer",
@@ -74,7 +74,7 @@ container_push(
    image = ":image",
    format = "Docker",
    registry = "ghcr.io",
-   repository = "andrew-delph/video-call-matchmaker",
+   repository = "andrew-delph/video-call-matchmaker-event",
    tag = "latest",
 )
 

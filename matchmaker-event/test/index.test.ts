@@ -1,7 +1,7 @@
 import {
   lastMatchedCooldownMinutes,
   relationShipScoresSortFunc,
-} from '../src/matchmaker';
+} from '../src/matchmaker-event';
 import { RelationshipScoreWrapper } from '../src/types';
 import { shuffleArray } from 'common';
 import moment from 'moment';

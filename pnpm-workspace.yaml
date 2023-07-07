@@ -5,7 +5,7 @@ packages:
   - 'data-service'
   - 'neo4j-jobs'
   - 'socketio-service'
-  - 'matchmaker'
+  - 'matchmaker-event'
   - 'socketio-event'
   - 'options'
   - 'puppeteer'

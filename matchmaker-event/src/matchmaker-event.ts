@@ -15,7 +15,7 @@ import {
   GetUserPerferencesResponse,
   readyQueueName,
   matchQueueName,
-  matchmakerQueueName,
+  matchmaker-eventQueueName,
   maxPriority,
   ReadyMessage,
   delayExchange,
@@ -35,7 +35,7 @@ import Redlock, { ResourceLockedError, ExecutionError } from 'redlock';
 const logger = common.getLogger();
 
 listenGlobalExceptions(async () => {
-  logger.debug(`clean up matchmaker`);
+  logger.debug(`clean up matchmaker-event`);
 });
 
 const port = 80;
@@ -78,26 +78,26 @@ export async function startReadyConsumer() {
   pubRedisClient = common.createRedisClient();
   lockRedisClient = common.createRedisClient();
 
-  await subRedisClient.psubscribe(`${matchmakerChannelPrefix}*`);
+  await subRedisClient.psubscribe(`${matchmaker-eventChannelPrefix}*`);
 
   rabbitChannel.prefetch(prefetch);
   logger.info(` [x] Awaiting RPC requests`);
 
   rabbitChannel.consume(
-    matchmakerQueueName,
+    matchmaker-eventQueueName,
     async (msg: ConsumeMessage | null) => {
       if (msg == null) {
         logger.error(`msg is null.`);
         return;
       }
 
-      const matchmakerMessage = message_helper.parseMatchmakerMessage(
+      const matchmaker-eventMessage = message_helper.parseMatchmakerMessage(
         msg.content,
       );
 
-      const userId = matchmakerMessage.getUserId();
+      const userId = matchmaker-eventMessage.getUserId();
 
-      const cooldownAttempts = matchmakerMessage.getCooldownAttempts();
+      const cooldownAttempts = matchmaker-eventMessage.getCooldownAttempts();
 
       // if (cooldownAttempts == 0) {
       //   await calcScoreZset(userId);
@@ -113,7 +113,7 @@ export async function startReadyConsumer() {
 
       const delaySeconds = Math.min(
         priorityDelay +
-          matchmakerMessage.getCooldownAttempts() ** cooldownScalerValue,
+          matchmaker-eventMessage.getCooldownAttempts() ** cooldownScalerValue,
         maxReadyDelaySeconds,
       );
 
@@ -131,7 +131,7 @@ export async function startReadyConsumer() {
         userId,
         priority,
         delaySeconds * 1000,
-        matchmakerMessage.getCooldownAttempts(),
+        matchmaker-eventMessage.getCooldownAttempts(),
       );
 
       rabbitChannel.ack(msg);
@@ -162,7 +162,7 @@ export async function startReadyConsumer() {
 
       const cleanup: (() => void)[] = [];
       try {
-        await matchmakerFlow(readyMessage, cleanup);
+        await matchmaker-eventFlow(readyMessage, cleanup);
         rabbitChannel.ack(msg);
       } catch (e: any) {
         if (e instanceof CompleteError) {
@@ -293,7 +293,7 @@ const neo4jGetUser = (userId: string) => {
   );
 };
 
-const matchmakerChannelPrefix = `matchmaker`;
+const matchmaker-eventChannelPrefix = `matchmaker-event`;
 
 export class CompleteError extends Error {
   constructor(message: string) {
@@ -326,10 +326,10 @@ class RetrySignal {
 }
 
 const getSocketChannel = (userId: string) => {
-  return `${matchmakerChannelPrefix}${userId}`;
+  return `${matchmaker-eventChannelPrefix}${userId}`;
 };
 
-async function matchmakerFlow(
+async function matchmaker-eventFlow(
   readyMessage: ReadyMessage,
   cleanup: (() => void)[],
 ) {
@@ -431,7 +431,7 @@ async function matchmakerFlow(
   await message_helper.sendUserMessage(
     rabbitChannel,
     readyMessage.getUserId(),
-    `matchmakerProgess`,
+    `matchmaker-eventProgess`,
     {
       readySize: readySet.size,
       filterSize: filterSet.size,

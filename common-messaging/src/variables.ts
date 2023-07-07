@@ -1,4 +1,4 @@
-export const matchmakerQueueName = `matchmakerQueue`;
+export const matchmaker-eventQueueName = `matchmaker-eventQueue`;
 
 export const readyQueueName = `readyQueue`;
 

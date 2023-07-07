@@ -36,7 +36,7 @@ class MatchmakerProgress extends GetView<HomeController> {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 Obx(() => Text(
-                      "Progress: ${controller.matchmakerProgess().toString()}",
+                      "Progress: ${controller.matchmaker-eventProgess().toString()}",
                     )),
               ],
             ),

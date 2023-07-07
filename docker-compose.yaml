@@ -30,7 +30,7 @@ services:
     depends_on:
       - redis
       - kafka
-      - matchmaker
+      - matchmaker-event
   socketio-event:
     networks:
       - mynetwork
@@ -50,13 +50,13 @@ services:
       - redis
       - rabbitmq
       - kafka
-  matchmaker:
+  matchmaker-event:
     networks:
       - mynetwork
     restart: always
     build:
       context: .
-      dockerfile: ./matchmaker/Dockerfile
+      dockerfile: ./matchmaker-event/Dockerfile
     # ports:
     #   - "4000:4000"
     environment:

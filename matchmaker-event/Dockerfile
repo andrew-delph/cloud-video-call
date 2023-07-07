@@ -13,8 +13,8 @@ COPY neo4j/common-messaging/package*.json ./neo4j/common-messaging/
 RUN cd neo4j/common-messaging && npm install
 
 
-COPY matchmaker/package*.json ./matchmaker/
-RUN cd matchmaker && npm install
+COPY matchmaker-event/package*.json ./matchmaker-event/
+RUN cd matchmaker-event && npm install
 
 
 COPY common common
@@ -24,9 +24,9 @@ COPY neo4j/common-messaging neo4j/common-messaging
 RUN cd neo4j/common-messaging && npm run build
 
 
-COPY matchmaker matchmaker
-RUN cd matchmaker && npm run build
+COPY matchmaker-event matchmaker-event
+RUN cd matchmaker-event && npm run build
 
-WORKDIR /usr/src/app/matchmaker
+WORKDIR /usr/src/app/matchmaker-event
 # # Run the web service on container startup.
-CMD [ "node", "./dist/matchmaker.js" ]
+CMD [ "node", "./dist/matchmaker-event.js" ]

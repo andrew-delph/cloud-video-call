@@ -851,7 +851,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(k6_matchmakerProgess_total{testid=~\"$testid\", type=~\"$type\"})",
+          "expr": "sum(k6_matchmaker-eventProgess_total{testid=~\"$testid\", type=~\"$type\"})",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"

@@ -12,7 +12,7 @@ import {
   chatEventQueue,
   delayExchange,
   matchQueueName,
-  matchmakerQueueName,
+  matchmaker-eventQueueName,
   maxPriority,
   readyRoutingKey,
   userMessageQueue,
@@ -25,14 +25,14 @@ export async function sendMatchmakerQueue(
   userId: string,
   cooldown_attempts: number = 0,
 ) {
-  const matchmakerMessage: MatchmakerMessage = new MatchmakerMessage();
+  const matchmaker-eventMessage: MatchmakerMessage = new MatchmakerMessage();
 
-  matchmakerMessage.setUserId(userId);
-  matchmakerMessage.setCooldownAttempts(cooldown_attempts);
+  matchmaker-eventMessage.setUserId(userId);
+  matchmaker-eventMessage.setCooldownAttempts(cooldown_attempts);
 
   await rabbitChannel.sendToQueue(
-    matchmakerQueueName,
-    messageToBuffer(matchmakerMessage),
+    matchmaker-eventQueueName,
+    messageToBuffer(matchmaker-eventMessage),
     {},
   );
 }
