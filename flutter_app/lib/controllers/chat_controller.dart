@@ -30,13 +30,17 @@ class ChatController extends GetxController with StateMixin<Widget> {
   onInit() async {
     print("init ChatController");
     super.onInit();
-    loadChatRooms();
-    change(null, status: RxStatus.success());
+    change(null, status: RxStatus.loading());
 
     homeController.socket.listenAndPump((socket) {
       bool connected = socket?.connected ?? false;
       print("chat controller socket.listen ${connected}");
       if (connected) {
+        loadChatRooms()
+            .then((value) => change(null, status: RxStatus.success()))
+            .catchError((err) {
+          change(null, status: RxStatus.error("$err"));
+        });
         homeController.listenEvent("chat", (data) async {
           ChatEventModel chatEvent = ChatEventModel.fromJson(data);
           await updateChatRoom(getOther(chatEvent), false, true);
@@ -51,7 +55,7 @@ class ChatController extends GetxController with StateMixin<Widget> {
     chatRoom.add(chatEvent);
   }
 
-  void loadChatRooms() async {
+  Future<void> loadChatRooms() async {
     List<ChatRoomModel> chatRoomsReponse = await optionsService.loadChatRooms();
 
     chatRoomMap.addEntries(chatRoomsReponse
@@ -128,7 +132,9 @@ class ChatController extends GetxController with StateMixin<Widget> {
         target: chatroom.target!);
 
     homeController.emitEvent("chat", chatEvent.toJson());
-    loadChat(chatroom.target!).add(chatEvent);
+    if (message != null) {
+      loadChat(chatroom.target!).add(chatEvent);
+    }
     await updateChatRoom(chatroom.target!, true, true);
   }
 }
