@@ -1,10 +1,10 @@
 // Package imports:
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 
 // Project imports:
 import 'package:flutter_app/models/chat_room_model.dart';
 import 'package:flutter_app/services/cache_service.dart';
-import 'package:get/get.dart';
 import '../config/factory.dart';
 import '../models/chat_event_model.dart';
 import '../models/history_model.dart';
