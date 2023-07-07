@@ -72,7 +72,7 @@
                 <mxCell id="76TPjEIhWuSXCrwOgqnM-17" value="remove #id and #other from #readySet" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="483" y="182" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="76TPjEIhWuSXCrwOgqnM-19" value="send match event for #id and #other to #matcherQueue" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                <mxCell id="76TPjEIhWuSXCrwOgqnM-19" value="send match event for #id and #other to #socketio-eventQueue" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="483" y="43" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="76TPjEIhWuSXCrwOgqnM-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="76TPjEIhWuSXCrwOgqnM-22" edge="1">

@@ -632,10 +632,10 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
-  matcher:
+  socketio-event:
     dependency: transitive
     description:
-      name: matcher
+      name: socketio-event
       sha256: "6501fbd55da300384b768785b83e5ce66991266cec21af89ab9ae7f5ce1c4cbb"
       url: "https://pub.dev"
     source: hosted

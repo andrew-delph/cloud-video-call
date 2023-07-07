@@ -1,14 +1,14 @@
 {
-  "name": "matcher",
+  "name": "socketio-event",
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "dev": "ibazel -run_command_after_success='bash -c \"cd matcher && npm run k8-restart\"' build :ts",
+    "dev": "ibazel -run_command_after_success='bash -c \"cd socketio-event && npm run k8-restart\"' build :ts",
     "docker": "bazel run image_push",
-    "k8-restart": "bazel run :image_push && kubectl rollout restart deployment/matcher && kubectl rollout status deployment/matcher --watch=true --timeout=300s  && date || echo -en '\\0007'",
-    "prod": "node ./dist/matcher.js"
+    "k8-restart": "bazel run :image_push && kubectl rollout restart deployment/socketio-event && kubectl rollout status deployment/socketio-event --watch=true --timeout=300s  && date || echo -en '\\0007'",
+    "prod": "node ./dist/socketio-event.js"
   },
   "engines": {
     "node": "16"

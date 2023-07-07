@@ -43,10 +43,10 @@ import { v4 as uuid } from 'uuid';
 const prom = common.prom;
 const logger = common.getLogger();
 
-const promClient = new common.PromClient(`matcher`);
+const promClient = new common.PromClient(`socketio-event`);
 
 common.listenGlobalExceptions(async () => {
-  logger.debug(`clean up matcher`);
+  logger.debug(`clean up socketio-event`);
   promClient.stop();
 });
 

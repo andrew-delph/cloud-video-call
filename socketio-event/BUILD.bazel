@@ -17,9 +17,9 @@ ts_project(
 )
 
 js_binary(
-    name = "matcher",
+    name = "socketio-event",
     data = [":ts"],
-    entry_point = "src/matcher.js",
+    entry_point = "src/socketio-event.js",
 )
 
 
@@ -30,7 +30,7 @@ load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
 
 js_image_layer(
     name = "layers",
-    binary = ":matcher",
+    binary = ":socketio-event",
     root = "/app",
     visibility = ["//visibility:__pkg__"],
 )
@@ -61,7 +61,7 @@ container_image(
     name = "image",
     architecture = "amd64",
     base = "@debian_amd64//image",
-    cmd = ["/app/matcher/matcher"],
+    cmd = ["/app/socketio-event/socketio-event"],
     entrypoint = ["bash"],
     layers = [
         ":app_layer",
@@ -74,6 +74,6 @@ container_push(
    image = ":image",
    format = "Docker",
    registry = "ghcr.io",
-   repository = "andrew-delph/video-call-matcher",
+   repository = "andrew-delph/video-call-socketio-event",
    tag = "latest",
 )

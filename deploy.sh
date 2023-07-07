@@ -21,7 +21,7 @@ echo "All image_push targets executed successfully."
 
 kn version
 
-kubectl rollout restart deployment/matcher
+kubectl rollout restart deployment/socketio-event
 kubectl rollout restart deployment/matchmaker
 kn service update options --image=ghcr.io/andrew-delph/video-call-options:latest --no-wait
 kn service update websocket --image=ghcr.io/andrew-delph/video-call-websocket:latest --no-wait

@@ -3,27 +3,27 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: matcher
-  name: matcher
+    app: socketio-event
+  name: socketio-event
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: matcher
+      app: socketio-event
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: matcher
+        app: socketio-event
     spec:
       priorityClassName: 'mid-priority'
       containers:
         - envFrom:
             - configMapRef:
                 name: secrets
-          image: ghcr.io/andrew-delph/video-call-matcher:latest
-          name: matcher
+          image: ghcr.io/andrew-delph/video-call-socketio-event:latest
+          name: socketio-event
           ports:
             - containerPort: 80
           resources:
@@ -45,19 +45,19 @@ status: {}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: hpa-matcher
+  name: hpa-socketio-event
 spec:
   minReplicas: 1
   maxReplicas: 3
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: matcher
+    name: socketio-event
   metrics:
     - type: Object
       object:
         metric:
-          name: matcher
+          name: socketio-event
         target:
           type: Value
           value: 10
@@ -83,14 +83,14 @@ spec:
 # metadata:
 #   creationTimestamp: null
 #   labels:
-#     app: matcher
-#   name: matcher
+#     app: socketio-event
+#   name: socketio-event
 # spec:
 #   ports:
 #     - name: '4000'
 #       port: 4000
 #       targetPort: 4000
 #   selector:
-#     app: matcher
+#     app: socketio-event
 # status:
 #   loadBalancer: {}

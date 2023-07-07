@@ -6,6 +6,6 @@ packages:
   - 'neo4j-jobs'
   - 'websocket'
   - 'matchmaker'
-  - 'matcher'
+  - 'socketio-event'
   - 'options'
   - 'puppeteer'
