@@ -270,16 +270,22 @@ app.get(`/chat/:otherId`, rateLimit(`get_chat_id`, 20), async (req, res) => {
 app.get(`/chat`, rateLimit(`get_chat`, 20), async (req, res) => {
   const userId: string = req.userId;
 
-  const joinRoomsRes = await axios.post(
-    `http://websocket.default.svc.cluster.local/joinRoom`,
-    {
-      source: userId,
-    },
+  const chatRooms = await common.getRecentChats(mainRedisClient, userId);
+  const rooms = chatRooms.map((chatRoom) =>
+    common.chatActivityRoom(chatRoom.target),
   );
 
-  const chatRooms = await common.getRecentChats(mainRedisClient, userId);
-  res.status(200).json({ chatRooms });
-  return;
+  return await axios
+    .post(`http://websocket.default.svc.cluster.local/joinRoom`, {
+      source: userId,
+      rooms: rooms,
+    })
+    .then(() => {
+      res.json({ chatRooms });
+    })
+    .catch((err) => {
+      res.status(500).json({ error: `${err}` });
+    });
 });
 
 app.post(`/nukedata`, async (req, res) => {

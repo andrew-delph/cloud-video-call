@@ -77,14 +77,33 @@ export const io = new Server(httpServer, {
 });
 
 io.use(auth_middleware);
+app.use(express.json());
 
 app.get(`/health`, (req, res) => {
   logger.debug(`Health Check.`);
   res.send(`Health is good.`);
 });
 
-app.post(`/joinRoom`, (req, res) => {
-  logger.debug(`Join Rooms. ${JSON.stringify(req.body)}`);
+app.post(`/joinRoom`, async (req, res) => {
+  const rooms = req.body.rooms;
+  const source = req.body.source;
+
+  if (!source || !rooms)
+    return res
+      .status(400)
+      .send(`source=${source} or rooms=${rooms} is not defined.`);
+
+  const sourceSocket = await mainRedisClient.hget(
+    common.connectedAuthMapName,
+    source,
+  );
+  if (!sourceSocket) {
+    return res
+      .status(404)
+      .send(`sourceSocket=${sourceSocket} is not connected.`);
+  }
+
+  io.in(sourceSocket).socketsJoin(rooms);
   res.send(`Joined rooms successfully.`);
 });
 
@@ -158,10 +177,16 @@ io.on(`connection`, async (socket) => {
     if (callback != undefined) {
       callback({ ready: ready });
     }
+    socket
+      .to(common.chatActivityRoom(socket.data.auth))
+      .emit(`chat:active`, { auth: socket.data.auth, active: true });
   });
 
   socket.on(`disconnect`, async () => {
     socket.to(`room-${socket.id}`).emit(`endchat`, `disconnected`);
+    socket
+      .to(common.chatActivityRoom(socket.data.auth))
+      .emit(`chat:active`, { auth: socket.data.auth, active: false });
     io.socketsLeave(`room-${socket.id}`);
     const duration = performance.now() - start_time;
     // logger.debug(
