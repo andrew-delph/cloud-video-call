@@ -52,10 +52,10 @@ common-messaging/src/test.js
 
 test.json
 test.js
+test.ts
 flutter_app/GetStorage.bak
 flutter_app/GetStorage.gs
 
-.prettierignore
 monitoring/release.yaml
 
 /test
@@ -224,7 +224,7 @@ dependencies/*
 ### ./k6/dependencies/xk6-output-prometheus-remote/.gitignore ###
 .idea/
 .DS_Store
-
+k6
 ### ./k6/dependencies/k6-operator/.gitignore ###
 # Binaries for programs and plugins
 *.exe
