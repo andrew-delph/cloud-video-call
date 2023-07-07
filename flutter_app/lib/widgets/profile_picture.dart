@@ -20,11 +20,10 @@ class ProfilePicture extends GetView<PreferencesController> {
   final Rx<Widget> photoWidget = Rx(const CircularProgressIndicator());
 
   final Rx<Uint8List?> bytes = Rx<Uint8List?>(null);
+  final CacheService cacheSerice = Get.find();
 
   @override
   Widget build(BuildContext context) {
-    final CacheService cacheSerice = Get.find();
-
     cacheSerice.getOrWrite<String>('profile-picture/${userId}_100x100', () {
       var imageRef =
           (FirebaseStorage.instance.ref('profile-picture/${userId}_100x100'));

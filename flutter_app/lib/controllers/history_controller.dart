@@ -4,10 +4,12 @@ import 'package:get/get.dart';
 // Project imports:
 import '../models/history_model.dart';
 import '../models/user_model.dart';
+import '../services/cache_service.dart';
 import '../services/options_service.dart';
 
 class HistoryController extends GetxController with StateMixin<HistoryModel> {
   final OptionsService optionsService;
+  final CacheService cacheSerice = Get.find();
   Rx<HistoryModel> historyModel = Rx(HistoryModel());
   RxBool unsavedChanges = false.obs;
   RxBool loading = false.obs;
@@ -50,7 +52,8 @@ class HistoryController extends GetxController with StateMixin<HistoryModel> {
   }
 
   Future<UserDataModel?> getUserData(String userId) async {
-    return optionsService.getUserData(userId);
+    return cacheSerice.getOrWrite<UserDataModel?>(
+        "user:data:$userId", () => optionsService.getUserData(userId));
   }
 
   Future<void> nextPage() async {

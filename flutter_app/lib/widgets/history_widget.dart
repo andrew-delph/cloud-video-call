@@ -9,6 +9,7 @@ import 'package:flutter_app/widgets/profile_picture.dart';
 import '../controllers/history_controller.dart';
 import '../models/history_model.dart';
 import '../models/user_model.dart';
+import '../services/cache_service.dart';
 import '../utils/utils.dart';
 
 // Package imports:
@@ -47,6 +48,7 @@ class HistoryItemWidget extends GetView<HistoryController> {
   }) : super(key: key);
 
   final Rx<UserDataModel?> userData = Rx(null);
+  final CacheService cacheSerice = Get.find();
 
   @override
   Widget build(BuildContext context) {
