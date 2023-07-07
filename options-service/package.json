@@ -1,15 +1,15 @@
 {
-  "name": "options",
+  "name": "options-service",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/options.js",
+  "main": "dist/options-service.js",
   "scripts": {
-    "prod": "node ./dist/options.js",
+    "prod": "node ./dist/options-service.js",
     "build": "tsc",
     "build:watch": "nodemon -e ts --exec 'npm run build'",
-    "dev": "ibazel -run_command_after_success='bash -c \"cd options && npm run k8-restart\"' build :ts",
+    "dev": "ibazel -run_command_after_success='bash -c \"cd options-service && npm run k8-restart\"' build :ts",
     "docker": "bazel run image_push",
-    "k8-restart": "bazel run :image_push && kn service update options --image=ghcr.io/andrew-delph/video-call-options:latest --wait && date || echo -en '\\0007'"
+    "k8-restart": "bazel run :image_push && kn service update options-service --image=ghcr.io/andrew-delph/video-call-options-service:latest --wait && date || echo -en '\\0007'"
   },
   "dependencies": {
     "axios": "^1.4.0",

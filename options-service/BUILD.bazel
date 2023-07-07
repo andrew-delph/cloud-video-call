@@ -17,9 +17,9 @@ ts_project(
 )
 
 js_binary(
-    name = "options",
+    name = "options-service",
     data = [":ts"],
-    entry_point = "src/options.js",
+    entry_point = "src/options-service.js",
 )
 
 
@@ -29,7 +29,7 @@ load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
 
 js_image_layer(
     name = "layers",
-    binary = ":options",
+    binary = ":options-service",
     root = "/app",
     visibility = ["//visibility:__pkg__"],
 )
@@ -60,7 +60,7 @@ container_image(
     name = "image",
     architecture = "amd64",
     base = "@debian_amd64//image",
-    cmd = ["/app/options/options"],
+    cmd = ["/app/options-service/options-service"],
     entrypoint = ["bash"],
     layers = [
         ":app_layer",
@@ -73,6 +73,6 @@ container_push(
    image = ":image",
    format = "Docker",
    registry = "ghcr.io",
-   repository = "andrew-delph/video-call-options",
+   repository = "andrew-delph/video-call-options-service",
    tag = "latest",
 )
