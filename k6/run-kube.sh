@@ -17,7 +17,7 @@ then
 else
     echo "USING INTERNAL"
     WS_HOST="ws:\/\/socketio-service.default.svc.cluster.local\/socket.io\/\?EIO\=4\&transport\=websocket"
-    OPTIONS_HOST="http:\/\/options.default.svc.cluster.local"
+    OPTIONS_HOST="http:\/\/options-service.default.svc.cluster.local"
 fi
 
 RESOURCE_FILENAME=$1
