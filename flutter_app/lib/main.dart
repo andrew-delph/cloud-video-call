@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 // Package imports:
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter_app/services/cache_service.dart';
 import 'package:get/get.dart';
 
 // Project imports:
@@ -59,6 +60,7 @@ Future<void> initializeApp() async {
 
   Get.put(OptionsService(), permanent: true);
   Get.put(AnalyticsService(), permanent: true);
+  Get.put(CacheService(), permanent: true);
 
   Get.put(NotificationsController(), permanent: true);
 

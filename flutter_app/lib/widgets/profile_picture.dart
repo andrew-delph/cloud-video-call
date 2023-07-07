@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 
 // Project imports:
 import '../controllers/options_controller.dart';
+import '../services/cache_service.dart';
 
 class ProfilePicture extends GetView<PreferencesController> {
   ProfilePicture(this.userId, {super.key});
@@ -22,13 +23,16 @@ class ProfilePicture extends GetView<PreferencesController> {
 
   @override
   Widget build(BuildContext context) {
-    var imageRef =
-        (FirebaseStorage.instance.ref('profile-picture/${userId}_100x100'));
+    final CacheService cacheSerice = Get.find();
 
-    imageRef.getDownloadURL().then((value) {
+    cacheSerice.getOrWrite<String>('profile-picture/${userId}_100x100', () {
+      var imageRef =
+          (FirebaseStorage.instance.ref('profile-picture/${userId}_100x100'));
+      return imageRef.getDownloadURL();
+    }).then((photoUrl) {
       // print("photo url: $value");
       return photoWidget(CachedNetworkImage(
-        imageUrl: value,
+        imageUrl: photoUrl,
         placeholder: (context, url) => const CircularProgressIndicator(),
         errorWidget: (context, url, error) {
           return const Icon(Icons.error);

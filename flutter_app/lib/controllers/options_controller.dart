@@ -14,11 +14,13 @@ import 'package:get/get.dart';
 import 'package:flutter_app/utils/utils.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
+import '../services/cache_service.dart';
 import '../services/options_service.dart';
 
 class PreferencesController extends GetxController with StateMixin {
   final OptionsService optionsService;
   final AuthService authService = Get.find();
+  final CacheService cacheSerice = Get.find();
 
   final RxMap<String, String> constantAttributes = <String, String>{}.obs;
   final RxMap<String, String> constantFilters = <String, String>{}.obs;
