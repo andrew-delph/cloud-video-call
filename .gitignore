@@ -43,6 +43,7 @@ common-messaging/src/test.js
 
 test.json
 test.js
+test.ts
 flutter_app/GetStorage.bak
 flutter_app/GetStorage.gs
 
