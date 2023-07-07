@@ -45,6 +45,15 @@ class ChatController extends GetxController with StateMixin<Widget> {
           ChatEventModel chatEvent = ChatEventModel.fromJson(data);
           await updateChatRoom(getOther(chatEvent), false, true);
         });
+        homeController.listenEvent("chat:active", (data) async {
+          bool? active = data["active"];
+          String? target = data["target"];
+          if (target == null || active == null) {
+            print("missing values target $target active $active");
+            return;
+          }
+          await updateChatRoomActive(target, active);
+        });
       }
     });
   }
@@ -79,6 +88,18 @@ class ChatController extends GetxController with StateMixin<Widget> {
             read: read));
 
     print("update $target read $read updateTime $updateTime");
+  }
+
+  Future<void> updateChatRoomActive(String target, bool active) async {
+    if (chatRoomMap.containsKey(target)) {
+      chatRoomMap.update(target, (update) {
+        update.active = active;
+        return update;
+      });
+      print("updateChatRoomActive target $target active $active");
+    } else {
+      print("updateChatRoomActive doesnt exist target $target active $active");
+    }
   }
 
   String getOther(ChatEventModel chatEvent) {

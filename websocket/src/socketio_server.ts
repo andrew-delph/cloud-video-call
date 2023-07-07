@@ -177,16 +177,15 @@ io.on(`connection`, async (socket) => {
     if (callback != undefined) {
       callback({ ready: ready });
     }
-    socket
-      .to(common.chatActivityRoom(socket.data.auth))
-      .emit(`chat:active`, { auth: socket.data.auth, active: true });
   });
-
+  socket
+    .to(common.chatActivityRoom(socket.data.auth))
+    .emit(`chat:active`, { target: socket.data.auth, active: true });
   socket.on(`disconnect`, async () => {
     socket.to(`room-${socket.id}`).emit(`endchat`, `disconnected`);
     socket
       .to(common.chatActivityRoom(socket.data.auth))
-      .emit(`chat:active`, { auth: socket.data.auth, active: false });
+      .emit(`chat:active`, { target: socket.data.auth, active: false });
     io.socketsLeave(`room-${socket.id}`);
     const duration = performance.now() - start_time;
     // logger.debug(
