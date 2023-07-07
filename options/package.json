@@ -12,6 +12,7 @@
     "k8-restart": "bazel run :image_push && kn service update options --image=ghcr.io/andrew-delph/video-call-options:latest --wait && date || echo -en '\\0007'"
   },
   "dependencies": {
+    "axios": "^1.4.0",
     "common": "link:../common",
     "common-messaging": "link:../common-messaging",
     "cors": "^2.8.5",

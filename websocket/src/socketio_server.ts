@@ -83,6 +83,11 @@ app.get(`/health`, (req, res) => {
   res.send(`Health is good.`);
 });
 
+app.post(`/joinRoom`, (req, res) => {
+  logger.debug(`Join Rooms. ${JSON.stringify(req.body)}`);
+  res.send(`Joined rooms successfully.`);
+});
+
 io.on(`error`, (err) => {
   logger.error(`io err`, err);
 });

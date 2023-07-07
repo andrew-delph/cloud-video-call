@@ -17,6 +17,7 @@ import moment from 'moment';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
 import * as neo4j from 'neo4j-driver';
+import axios from 'axios';
 
 var cors = require(`cors`);
 const omitDeep = require(`omit-deep-lodash`);
@@ -268,6 +269,13 @@ app.get(`/chat/:otherId`, rateLimit(`get_chat_id`, 20), async (req, res) => {
 
 app.get(`/chat`, rateLimit(`get_chat`, 20), async (req, res) => {
   const userId: string = req.userId;
+
+  const joinRoomsRes = await axios.post(
+    `http://websocket.default.svc.cluster.local/joinRoom`,
+    {
+      source: userId,
+    },
+  );
 
   const chatRooms = await common.getRecentChats(mainRedisClient, userId);
   res.status(200).json({ chatRooms });

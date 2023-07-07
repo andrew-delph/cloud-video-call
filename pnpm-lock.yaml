@@ -426,6 +426,9 @@ importers:
 
   options:
     dependencies:
+      axios:
+        specifier: ^1.4.0
+        version: 1.4.0
       common:
         specifier: link:../common
         version: link:../common
