@@ -1,4 +1,4 @@
-### ./matcher/.gitignore ###
+### ./socketio-event/.gitignore ###
 ### ./puppeteer/.gitignore ###
 pia-openvpn/auth-user-pass.txt
 screenshots/*
