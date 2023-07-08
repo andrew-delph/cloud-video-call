@@ -24,11 +24,17 @@ class ProfilePicture extends GetView<PreferencesController> {
 
   @override
   Widget build(BuildContext context) {
-    cacheService.getOrWrite<String>('profile-picture/${userId}_100x100', () {
+    cacheService.getOrWrite<String?>('profile-picture/${userId}_100x100',
+        () async {
       var imageRef =
           (FirebaseStorage.instance.ref('profile-picture/${userId}_100x100'));
-      return imageRef.getDownloadURL();
+      try {
+        return await imageRef.getDownloadURL();
+      } catch (err) {
+        return null;
+      }
     }).then((photoUrl) {
+      if (photoUrl == null) throw "No photo";
       // print("photo url: $value");
       return photoWidget(CachedNetworkImage(
         imageUrl: photoUrl,
