@@ -22,7 +22,7 @@ class LocalPreferences extends GetxService {
   final fullscreen = false.obs;
   final isDarkMode = Get.isDarkMode.obs;
 
-  final notificationAutorized = false.obs;
+  final fcmEnabled = false.obs;
 
   @override
   Future<void> onInit() async {
@@ -64,15 +64,6 @@ class LocalPreferences extends GetxService {
       Get.changeTheme(value ? darkTheme : lightTheme);
     });
 
-    notificationAutorized.value = await notificationsController.isAuthorized();
-    ever(notificationAutorized, (value) async {
-      if (value) {
-        notificationsController.requestPermission().whenComplete(() async =>
-            notificationAutorized(
-                await notificationsController.isAuthorized()));
-      } else {
-        notificationAutorized(await notificationsController.isAuthorized());
-      }
-    });
+    fcmEnabled.value = await notificationsController.isFcmEnabled();
   }
 }

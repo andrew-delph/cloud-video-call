@@ -1,9 +1,9 @@
 // Flutter imports:
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 
 // Project imports:
@@ -13,7 +13,6 @@ import '../services/auth_service.dart';
 
 class NotificationsController extends GetxController with StateMixin {
   final AuthService authService = Get.find();
-  final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
   RxMap<String, NotificationModel> notifications = RxMap();
 
@@ -31,7 +30,7 @@ class NotificationsController extends GetxController with StateMixin {
           );
 
   @override
-  onInit() {
+  onInit() async {
     super.onInit();
     print("init NotificationsController");
 
@@ -90,6 +89,20 @@ class NotificationsController extends GetxController with StateMixin {
         unread(event.size);
       });
     });
+
+    Future<void> _backgroundHandler(RemoteMessage message) async {
+      print('Background message: ${message.data}');
+    }
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+      }
+    });
+    FirebaseMessaging.onBackgroundMessage(_backgroundHandler);
   }
 
   addNotification() async {
@@ -156,36 +169,41 @@ class NotificationsController extends GetxController with StateMixin {
   }
 
   Future<NotificationSettings> getNotificationSettings() async {
-    return await firebaseMessaging.getNotificationSettings();
+    return await FirebaseMessaging.instance.getNotificationSettings();
   }
 
-  Future<bool> isAuthorized() async {
-    return (await getNotificationSettings()).authorizationStatus ==
+  Future<bool> isFcmEnabled() async {
+    bool authorized = (await getNotificationSettings()).authorizationStatus ==
         AuthorizationStatus.authorized;
+    if (!authorized) return authorized;
+    // check from firestore
+    return true;
   }
 
-  Future<void> requestPermission() async {
-    await firebaseMessaging.requestPermission(
+  Future<void> disableFcm() async {
+    // delete from firestore
+  }
+
+  Future<void> enableFcm() async {
+    FirebaseMessaging.instance.setAutoInitEnabled(true);
+    await FirebaseMessaging.instance.requestPermission(
       alert: true,
       badge: true,
       sound: true,
     );
 
-    // if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    //   print('User granted permission');
-    //   // TODO: handle the received notifications
-    //   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    //     print('Got a message whilst in the foreground!');
-    //     print('Message data: ${message.data}');
+    // add to firestore
+  }
 
-    //     if (message.notification != null) {
-    //       print(
-    //           'Message also contained a notification: ${message.notification}');
-    //     }
-    //   });
-    // } else {
-    //   print('User declined or has not accepted permission');
-    // }
+  Future<String?> getToken() async {
+    return await FirebaseMessaging.instance
+        .getToken(
+            vapidKey:
+                "BG0aaA4iE8mJpvjk5XFmX8CcP5cab5fUk_FBMYPQmAKmHd5kumpd9TcYePrpHvOB-aLkr8lGWI0WkRI6M9xGEvg")
+        .catchError((err) {
+      print("GET TOKEN ERROR");
+      return null;
+    });
   }
 }
 
