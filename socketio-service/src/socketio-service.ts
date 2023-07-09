@@ -28,6 +28,7 @@ import {
 import * as dotenv from 'dotenv';
 import express from 'express';
 import { initializeApp } from 'firebase-admin/app';
+import { getMessaging } from 'firebase-admin/messaging';
 import { createServer } from 'http';
 import Client from 'ioredis';
 import { throttle } from 'lodash';
@@ -62,7 +63,8 @@ dotenv.config();
 
 const firebaseApp = initializeApp();
 
-export let pubRedisClient: Client;
+getMessaging(firebaseApp);
+
 let subRedisClient: Client;
 export let mainRedisClient: Client;
 

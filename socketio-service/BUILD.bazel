@@ -19,7 +19,7 @@ ts_project(
 js_binary(
     name = "socketio-service",
     data = [":ts"],
-    entry_point = "src/socketio-server.js",
+    entry_point = "src/socketio-service.js",
 )
 
 

@@ -1,5 +1,5 @@
 import { cleanSocket, registerSocket } from './management';
-import { mainRedisClient } from './socketio-server';
+import { mainRedisClient } from './socketio-service';
 import { getLogger, getUserId } from 'common';
 import * as common from 'common';
 import { Socket } from 'socket.io';

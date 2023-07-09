@@ -1,4 +1,4 @@
-import { io, mainRedisClient, pubRedisClient } from './socketio-server';
+import { io, mainRedisClient, pubRedisClient } from './socketio-service';
 import { delay, getLogger } from 'common';
 import * as common from 'common';
 import { Socket } from 'socket.io';
