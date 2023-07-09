@@ -23,9 +23,11 @@ apply:
 	kubectl annotate domainmapping ws.andrewdelph.com kourier.knative.dev/disable-http2=true
 
 delete:
-	kubectl delete -f ./resources/.
-	kubectl delete -f ./knative.yaml
-
+	kubectl delete -f ./resources/. || echo "ERROR"
+	kubectl delete -f ./knative.yaml || echo "ERROR"
+	kubectl delete -f https://github.com/knative/operator/releases/download/knative-v1.9.2/operator.yaml  || echo "ERROR"
+	kubectl delete -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml || echo "ERROR"
+	kubectl delete -f https://github.com/knative/net-certmanager/releases/download/knative-v1.7.0/release.yaml || echo "ERROR"
 
 restart:
 	kubectl rollout restart -f ./resources/.
