@@ -16,6 +16,7 @@ import 'package:socket_io_client/socket_io_client.dart';
 
 // Project imports:
 import 'package:flutter_app/widgets/approval_widget.dart';
+import 'package:flutter_app/widgets/notifications.dart';
 import '../config/factory.dart';
 import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
@@ -28,6 +29,8 @@ class HomeController extends GetxController with StateMixin<Widget> {
   LocalPreferences localPreferences = Get.find();
   final AuthService authService = Get.find();
   final OptionsService optionsService;
+
+  final NotificationsController notificationsController = Get.find();
 
   Rx<MediaStream?> localMediaStream = Rx(null);
   Rx<MediaStream?> remoteMediaStream = Rx(null);
@@ -221,6 +224,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
     mySocket.on('established', (data) async {
       DateTime now = DateTime.now();
       print("established $now");
+
       change(null, status: RxStatus.success());
     });
 
@@ -233,7 +237,7 @@ class HomeController extends GetxController with StateMixin<Widget> {
       socket.refresh();
     });
 
-    mySocket.on('message', (data) => log(data));
+    mySocket.on('message', (data) => print("SEVER MESSAGE: \"$data\""));
     mySocket.on('endchat', (data) async {
       await endChat(!isInChat());
     });

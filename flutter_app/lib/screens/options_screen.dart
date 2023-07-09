@@ -4,6 +4,7 @@
 
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:flutter_app/widgets/notifications.dart';
 
 // Package imports:
 import 'package:get/get.dart';
@@ -130,6 +131,31 @@ class OptionsScreen extends GetView<PreferencesController> {
                                 value: localPreferences.isDarkMode(),
                                 onChanged: (bool newValue) async {
                                   localPreferences.isDarkMode.toggle();
+                                },
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              const Expanded(
+                                  child: Text("Notifications Authorized:")),
+                              Switch(
+                                value: localPreferences.fcmEnabled(),
+                                onChanged: (bool newValue) async {
+                                  final NotificationsController
+                                      notificationsController = Get.find();
+                                  await (newValue
+                                          ? notificationsController.enableFcm()
+                                          : notificationsController
+                                              .disableFcm())
+                                      .catchError((err) {
+                                    print(
+                                        "notificationPermissions error: ${err}");
+                                  }).whenComplete(() async {
+                                    localPreferences.fcmEnabled(
+                                        await notificationsController
+                                            .isFcmEnabled());
+                                  });
                                 },
                               )
                             ],

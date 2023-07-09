@@ -3,23 +3,20 @@ import { credential } from 'firebase-admin';
 import { initializeApp, getApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import moment from 'moment';
+import { Message, getMessaging } from 'firebase-admin/messaging';
 
 const logger = common.getLogger();
 
-const serviceAccount = JSON.parse(
-  Buffer.from(
-    process.env.FIREBASE_SERVICE_ACCOUNT_KEY ?? `error`,
-    `base64`,
-  ).toString(`utf-8`),
-);
-
 const firebaseApp = initializeApp({
-  credential: credential.cert(serviceAccount),
+  credential: credential.cert(common.getFirebaseAdminServiceAccount()),
 });
+
+const firebaseMessaging = getMessaging(firebaseApp);
 
 const firestore = getFirestore(firebaseApp);
 
 const notificationsCollection = firestore.collection(`notifications`);
+const usersCollection = firestore.collection(`users`);
 
 export async function addNotification(
   userId: string,
@@ -43,4 +40,41 @@ export async function addNotification(
     read: false,
     archive: false,
   });
+
+  await usersCollection
+    .doc(userId)
+    .get()
+    .then(async (userDoc) => {
+      const userData = userDoc.data();
+      if (!userData) {
+        logger.warn(`No user data in firestore for notification`);
+        return;
+      }
+
+      const fcmToken: string = userData[`fcmToken`];
+
+      if (!fcmToken) {
+        logger.warn(`fcmToken is not set.`);
+        return;
+      }
+      let message: Message = {
+        data: {},
+        notification: {
+          title: title,
+          body: description,
+        },
+        token: fcmToken,
+      };
+
+      await firebaseMessaging
+        .send(message)
+        .then((response) => {
+          logger.error(
+            `Successfully sent message: ${JSON.stringify(response)}`,
+          );
+        })
+        .catch((error) => {
+          logger.error(`Error sending message: ${JSON.stringify(error)}`);
+        });
+    });
 }

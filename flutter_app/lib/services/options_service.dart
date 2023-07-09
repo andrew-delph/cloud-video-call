@@ -12,9 +12,11 @@ import '../models/preferences_model.dart';
 import '../models/user_model.dart';
 import '../utils/utils.dart';
 import 'api_service.dart';
+import 'auth_service.dart';
 
 class OptionsService extends ApiService {
   final CacheService cacheService = Get.find();
+  final AuthService authService = Get.find();
   OptionsService() {
     httpClient.baseUrl = Factory.getOptionsHost();
   }
@@ -46,23 +48,33 @@ class OptionsService extends ApiService {
       post('/providefeedback', body, contentType: 'application/json')
           .then((response) => validateRequestGetBody(response));
 
+  CollectionReference<UserDataModel> getUserCollection() {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .withConverter<UserDataModel>(
+          fromFirestore: (snapshots, _) =>
+              UserDataModel.fromJson(snapshots.data()!),
+          toFirestore: (userData, _) => userData.toJson(),
+        );
+  }
+
   Future<UserDataModel?> getUserData(String userId) async {
     return cacheService.getOrWrite<UserDataModel?>("user:data:$userId",
         () async {
-      CollectionReference<UserDataModel> myUserCollection = FirebaseFirestore
-          .instance
-          .collection('users')
-          .withConverter<UserDataModel>(
-            fromFirestore: (snapshots, _) =>
-                UserDataModel.fromJson(snapshots.data()!),
-            toFirestore: (userData, _) => userData.toJson(),
-          );
-      DocumentReference<UserDataModel> myUserDoc = myUserCollection.doc(userId);
+      DocumentReference<UserDataModel> myUserDoc =
+          getUserCollection().doc(userId);
 
       UserDataModel? userData = (await myUserDoc.get()).data();
 
       return userData;
     });
+  }
+
+  DocumentReference<UserDataModel> getMyUserDataDoc() {
+    String userId = authService.getUser().uid;
+    DocumentReference<UserDataModel> myUserDoc =
+        getUserCollection().doc(userId);
+    return myUserDoc;
   }
 
   Future<List<ChatEventModel>> loadChat(String userId) => get(

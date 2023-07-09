@@ -1,5 +1,5 @@
 import { cleanAllSocketServer } from './management';
-import { getServer } from './socketio_server';
+import { getServer } from './socketio-service';
 import { getLogger } from 'common';
 
 const logger = getLogger();

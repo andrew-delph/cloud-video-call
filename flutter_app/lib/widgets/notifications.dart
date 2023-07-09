@@ -3,15 +3,20 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 
 // Project imports:
 import 'package:flutter_app/models/notification_model.dart';
 import 'package:flutter_app/utils/utils.dart';
+import '../models/user_model.dart';
 import '../services/auth_service.dart';
+import '../services/options_service.dart';
 
 class NotificationsController extends GetxController with StateMixin {
   final AuthService authService = Get.find();
+
+  final OptionsService optionsService = Get.find();
 
   RxMap<String, NotificationModel> notifications = RxMap();
 
@@ -29,7 +34,7 @@ class NotificationsController extends GetxController with StateMixin {
           );
 
   @override
-  onInit() {
+  onInit() async {
     super.onInit();
     print("init NotificationsController");
 
@@ -88,6 +93,20 @@ class NotificationsController extends GetxController with StateMixin {
         unread(event.size);
       });
     });
+
+    Future<void> _backgroundHandler(RemoteMessage message) async {
+      print('Background message: ${message.data}');
+    }
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+      }
+    });
+    FirebaseMessaging.onBackgroundMessage(_backgroundHandler);
   }
 
   addNotification() async {
@@ -151,6 +170,60 @@ class NotificationsController extends GetxController with StateMixin {
     }
 
     return popups;
+  }
+
+  Future<NotificationSettings> getNotificationSettings() async {
+    return await FirebaseMessaging.instance.getNotificationSettings();
+  }
+
+  Future<bool> isFcmEnabled() async {
+    bool authorized = (await getNotificationSettings()).authorizationStatus ==
+        AuthorizationStatus.authorized;
+    if (!authorized) return authorized;
+    DocumentReference<UserDataModel> myUserDataDoc =
+        optionsService.getMyUserDataDoc();
+
+    var userData = (await myUserDataDoc.get()).data();
+    return userData?.fcmToken != null;
+  }
+
+  Future<void> disableFcm() async {
+    DocumentReference<UserDataModel> myUserDataDoc =
+        optionsService.getMyUserDataDoc();
+
+    await myUserDataDoc.update({"fcmToken": FieldValue.delete()});
+    // delete from firestore
+  }
+
+  Future<void> enableFcm() async {
+    FirebaseMessaging.instance.setAutoInitEnabled(true);
+    await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    String? fcmToken = await getToken();
+
+    if (fcmToken == null) return;
+
+    DocumentReference<UserDataModel> myUserDataDoc =
+        optionsService.getMyUserDataDoc();
+
+    await myUserDataDoc.update({"fcmToken": fcmToken});
+
+    // add to firestore
+  }
+
+  Future<String?> getToken() async {
+    return await FirebaseMessaging.instance
+        .getToken(
+            vapidKey:
+                "BG0aaA4iE8mJpvjk5XFmX8CcP5cab5fUk_FBMYPQmAKmHd5kumpd9TcYePrpHvOB-aLkr8lGWI0WkRI6M9xGEvg")
+        .catchError((err) {
+      print("GET TOKEN ERROR: $err");
+      return null;
+    });
   }
 }
 

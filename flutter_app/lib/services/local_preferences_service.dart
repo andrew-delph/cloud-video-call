@@ -5,10 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
+// Project imports:
+import '../widgets/notifications.dart';
+
 dynamic lightTheme = ThemeData.light().copyWith();
 dynamic darkTheme = ThemeData.dark().copyWith();
 
 class LocalPreferences extends GetxService {
+  final NotificationsController notificationsController = Get.find();
   final autoQueue = true.obs;
   final autoAccept = false.obs;
   final feedbackPopup = false.obs;
@@ -17,6 +21,8 @@ class LocalPreferences extends GetxService {
   final audioDeviceLabel = 'Default'.obs;
   final fullscreen = false.obs;
   final isDarkMode = Get.isDarkMode.obs;
+
+  final fcmEnabled = false.obs;
 
   @override
   Future<void> onInit() async {
@@ -57,5 +63,7 @@ class LocalPreferences extends GetxService {
       box.write('isDarkMode', value);
       Get.changeTheme(value ? darkTheme : lightTheme);
     });
+
+    fcmEnabled.value = await notificationsController.isFcmEnabled();
   }
 }
