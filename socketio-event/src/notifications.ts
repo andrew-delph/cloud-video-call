@@ -6,15 +6,8 @@ import moment from 'moment';
 
 const logger = common.getLogger();
 
-const serviceAccount = JSON.parse(
-  Buffer.from(
-    process.env.FIREBASE_SERVICE_ACCOUNT_KEY ?? `error`,
-    `base64`,
-  ).toString(`utf-8`),
-);
-
 const firebaseApp = initializeApp({
-  credential: credential.cert(serviceAccount),
+  credential: credential.cert(common.getFirebaseAdminServiceAccount()),
 });
 
 const firestore = getFirestore(firebaseApp);
