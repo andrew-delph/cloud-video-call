@@ -225,15 +225,6 @@ class HomeController extends GetxController with StateMixin<Widget> {
       DateTime now = DateTime.now();
       print("established $now");
 
-      localPreferences.fcmEnabled.listen((value) async {
-        if (value) {
-          String? token = await notificationsController.getToken();
-          print("notification token $token");
-
-          mySocket.emit("notification", token);
-        }
-      });
-
       change(null, status: RxStatus.success());
     });
 

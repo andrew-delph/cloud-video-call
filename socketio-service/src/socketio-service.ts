@@ -207,22 +207,6 @@ io.on(`connection`, async (socket) => {
     socket.to(`room-${socket.id}`).emit(`icecandidate`, value);
   });
 
-  socket.on(`notification`, (value) => {
-    const token = value;
-    logger.error(`GOT NOTIFICATION ${token} ... ${JSON.stringify(value)}`);
-
-    socket.emit(`message`, `GOT NOTIFICATION`);
-
-    setInterval(async () => {
-      await sendUserNotification(
-        rabbitChannel,
-        userId,
-        `Testing FCM notifications`,
-        `hello ${userId}. ${moment()}`,
-      );
-    }, 1000 * 5);
-  });
-
   socket.on(`endchat`, async (value, callback) => {
     socket.to(`room-${socket.id}`).emit(`endchat`, value);
     io.socketsLeave(`room-${socket.id}`);
