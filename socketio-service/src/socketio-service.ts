@@ -27,8 +27,8 @@ import {
 } from 'common-messaging/src/message_helper';
 import * as dotenv from 'dotenv';
 import express from 'express';
+import { credential } from 'firebase-admin';
 import { initializeApp } from 'firebase-admin/app';
-import { getMessaging } from 'firebase-admin/messaging';
 import { createServer } from 'http';
 import Client from 'ioredis';
 import { throttle } from 'lodash';
@@ -61,9 +61,9 @@ const connectRabbit = async () => {
 
 dotenv.config();
 
-const firebaseApp = initializeApp();
-
-getMessaging(firebaseApp);
+const firebaseApp = initializeApp({
+  credential: credential.cert(common.getFirebaseAdminServiceAccount()),
+});
 
 let subRedisClient: Client;
 export let pubRedisClient: Client;
@@ -115,14 +115,12 @@ io.on(`error`, (err) => {
 });
 
 io.on(`connection`, async (socket) => {
+  const userId = socket.data.auth;
   const intervals: NodeJS.Timer[] = [];
-  socket.emit(
-    `message`,
-    `I am ${process.env.HOSTNAME} and you are ${socket.data.auth}.`,
-  );
+  socket.emit(`message`, `I am ${process.env.HOSTNAME} and you are ${userId}.`);
   const start_time = performance.now();
   logger.debug(
-    `connected ${process.env.HOSTNAME} ${io.sockets.sockets.size} auth: ${socket.data.auth}`,
+    `connected ${process.env.HOSTNAME} ${io.sockets.sockets.size} auth: ${userId}`,
   );
 
   socket.on(`error`, (err) => {
@@ -145,7 +143,7 @@ io.on(`connection`, async (socket) => {
     logger.debug(`chat msg: ${JSON.stringify(msg)}`);
     await sendChatEventMessage(
       rabbitChannel,
-      socket.data.auth,
+      userId,
       msg[`target`],
       msg[`message`],
     );
@@ -157,12 +155,7 @@ io.on(`connection`, async (socket) => {
 
     if (ready) {
       try {
-        await common.ratelimit(
-          mainRedisClient,
-          `readyQueue`,
-          socket.data.auth,
-          30,
-        );
+        await common.ratelimit(mainRedisClient, `readyQueue`, userId, 30);
       } catch (err) {
         callback({ ready: false, error: `${err}` });
         return;
@@ -170,7 +163,7 @@ io.on(`connection`, async (socket) => {
 
       await registerSocketReady(socket);
 
-      await sendMatchmakerQueue(rabbitChannel, socket.data.auth);
+      await sendMatchmakerQueue(rabbitChannel, userId);
 
       socket.emit(`activity`, `${moment()}`);
     } else {
@@ -182,13 +175,13 @@ io.on(`connection`, async (socket) => {
     }
   });
   socket
-    .to(common.chatActivityRoom(socket.data.auth))
-    .emit(`chat:active`, { target: socket.data.auth, active: true });
+    .to(common.chatActivityRoom(userId))
+    .emit(`chat:active`, { target: userId, active: true });
   socket.on(`disconnect`, async () => {
     socket.to(`room-${socket.id}`).emit(`endchat`, `disconnected`);
     socket
-      .to(common.chatActivityRoom(socket.data.auth))
-      .emit(`chat:active`, { target: socket.data.auth, active: false });
+      .to(common.chatActivityRoom(userId))
+      .emit(`chat:active`, { target: userId, active: false });
     io.socketsLeave(`room-${socket.id}`);
     const duration = performance.now() - start_time;
     // logger.debug(
@@ -214,6 +207,22 @@ io.on(`connection`, async (socket) => {
     socket.to(`room-${socket.id}`).emit(`icecandidate`, value);
   });
 
+  socket.on(`notification`, (value) => {
+    const token = value;
+    logger.error(`GOT NOTIFICATION ${token} ... ${JSON.stringify(value)}`);
+
+    socket.emit(`message`, `GOT NOTIFICATION`);
+
+    setInterval(async () => {
+      await sendUserNotification(
+        rabbitChannel,
+        userId,
+        `Testing FCM notifications`,
+        `hello ${userId}. ${moment()}`,
+      );
+    }, 1000 * 5);
+  });
+
   socket.on(`endchat`, async (value, callback) => {
     socket.to(`room-${socket.id}`).emit(`endchat`, value);
     io.socketsLeave(`room-${socket.id}`);
@@ -234,7 +243,7 @@ io.on(`connection`, async (socket) => {
       })
       .catch((err) => {
         logger.error(
-          `end call error: match_id ${match_id} auth ${socket.data.auth} err ${err}`,
+          `end call error: match_id ${match_id} auth ${userId} err ${err}`,
         );
         socket.disconnect();
       });
@@ -252,10 +261,10 @@ io.on(`connection`, async (socket) => {
   //   });
   // }, 1000);
 
-  logger.debug(`intervals.push activity for ${socket.data.auth}`);
+  logger.debug(`intervals.push activity for ${userId}`);
   intervals.push(
     setInterval(() => {
-      logger.debug(`sending activity for ${socket.data.auth}`);
+      logger.debug(`sending activity for ${userId}`);
       socket.emit(`activity`, `${moment()}`);
     }, 1000 * 60 * 5),
   );
@@ -269,7 +278,7 @@ io.on(`connection`, async (socket) => {
   //     const currentMinute = date.getMinutes();
   //     const chatMsg: common.ChatMessage = {
   //       timestamp: `${moment()}`,
-  //       source: socket.data.auth,
+  //       source: userId,
   //       target: `random-${currentMinute}`,
   //       message: `RANDOM MSG ${Math.random()}`,
   //       system: false,
@@ -279,7 +288,7 @@ io.on(`connection`, async (socket) => {
   // );
 
   const createUserRequest = new CreateUserRequest();
-  createUserRequest.setUserId(socket.data.auth);
+  createUserRequest.setUserId(userId);
   makeGrpcRequest<CreateUserRequest, CreateUserResponse>(
     neo4jRpcClient,
     neo4jRpcClient.createUser,

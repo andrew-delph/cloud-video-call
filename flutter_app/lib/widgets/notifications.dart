@@ -184,14 +184,14 @@ class NotificationsController extends GetxController with StateMixin {
         optionsService.getMyUserDataDoc();
 
     var userData = (await myUserDataDoc.get()).data();
-    return userData?.fcm != null;
+    return userData?.fcmToken != null;
   }
 
   Future<void> disableFcm() async {
     DocumentReference<UserDataModel> myUserDataDoc =
         optionsService.getMyUserDataDoc();
 
-    await myUserDataDoc.update({"fcm": FieldValue.delete()});
+    await myUserDataDoc.update({"fcmToken": FieldValue.delete()});
     // delete from firestore
   }
 
@@ -210,7 +210,7 @@ class NotificationsController extends GetxController with StateMixin {
     DocumentReference<UserDataModel> myUserDataDoc =
         optionsService.getMyUserDataDoc();
 
-    await myUserDataDoc.update({"fcm": fcmToken});
+    await myUserDataDoc.update({"fcmToken": fcmToken});
 
     // add to firestore
   }
@@ -221,7 +221,7 @@ class NotificationsController extends GetxController with StateMixin {
             vapidKey:
                 "BG0aaA4iE8mJpvjk5XFmX8CcP5cab5fUk_FBMYPQmAKmHd5kumpd9TcYePrpHvOB-aLkr8lGWI0WkRI6M9xGEvg")
         .catchError((err) {
-      print("GET TOKEN ERROR");
+      print("GET TOKEN ERROR: $err");
       return null;
     });
   }
