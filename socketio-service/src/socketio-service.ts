@@ -66,6 +66,7 @@ const firebaseApp = initializeApp();
 getMessaging(firebaseApp);
 
 let subRedisClient: Client;
+export let pubRedisClient: Client;
 export let mainRedisClient: Client;
 
 const app = express();
