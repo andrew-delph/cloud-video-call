@@ -9,10 +9,14 @@ import 'package:get/get.dart';
 // Project imports:
 import 'package:flutter_app/models/notification_model.dart';
 import 'package:flutter_app/utils/utils.dart';
+import '../models/user_model.dart';
 import '../services/auth_service.dart';
+import '../services/options_service.dart';
 
 class NotificationsController extends GetxController with StateMixin {
   final AuthService authService = Get.find();
+
+  final OptionsService optionsService = Get.find();
 
   RxMap<String, NotificationModel> notifications = RxMap();
 
@@ -176,11 +180,18 @@ class NotificationsController extends GetxController with StateMixin {
     bool authorized = (await getNotificationSettings()).authorizationStatus ==
         AuthorizationStatus.authorized;
     if (!authorized) return authorized;
-    // check from firestore
-    return true;
+    DocumentReference<UserDataModel> myUserDataDoc =
+        optionsService.getMyUserDataDoc();
+
+    var userData = (await myUserDataDoc.get()).data();
+    return userData?.fcm != null;
   }
 
   Future<void> disableFcm() async {
+    DocumentReference<UserDataModel> myUserDataDoc =
+        optionsService.getMyUserDataDoc();
+
+    await myUserDataDoc.update({"fcm": FieldValue.delete()});
     // delete from firestore
   }
 
@@ -191,6 +202,15 @@ class NotificationsController extends GetxController with StateMixin {
       badge: true,
       sound: true,
     );
+
+    String? fcmToken = await getToken();
+
+    if (fcmToken == null) return;
+
+    DocumentReference<UserDataModel> myUserDataDoc =
+        optionsService.getMyUserDataDoc();
+
+    await myUserDataDoc.update({"fcm": fcmToken});
 
     // add to firestore
   }
