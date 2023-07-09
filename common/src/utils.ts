@@ -280,3 +280,12 @@ export function tryParseInt(value: any, defaultValue: number) {
 export function chatActivityRoom(userId: string) {
   return `activechat:${userId}`;
 }
+
+export function getFirebaseAdminServiceAccount() {
+  return JSON.parse(
+    Buffer.from(
+      process.env.FIREBASE_SERVICE_ACCOUNT_KEY ?? `error`,
+      `base64`,
+    ).toString(`utf-8`),
+  );
+}

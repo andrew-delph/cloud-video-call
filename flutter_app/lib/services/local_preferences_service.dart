@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
+// Project imports:
 import '../widgets/notifications.dart';
 
 dynamic lightTheme = ThemeData.light().copyWith();

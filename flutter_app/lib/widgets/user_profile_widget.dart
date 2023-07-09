@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_app/widgets/notifications.dart';
 import 'package:get/get.dart';
 
 // Project imports:
