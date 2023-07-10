@@ -16,30 +16,6 @@ class HistoryScreen extends GetView<HistoryController> {
 
   @override
   Widget build(BuildContext context) {
-    var paginationBar = Obx(() => Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.remove_circle),
-              onPressed: () async {
-                await controller.prevPage();
-              },
-            ),
-            Text("Page: ${controller.page()}"),
-            IconButton(
-              icon: const Icon(Icons.add_circle),
-              onPressed: () async {
-                await controller.nextPage();
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: () async {
-                await controller.loadHistory();
-              },
-            )
-          ],
-        ));
     return AppMenu(
         title: 'History',
         body: SingleChildScrollView(
@@ -57,23 +33,14 @@ class HistoryScreen extends GetView<HistoryController> {
               const Divider(),
               Column(
                 children: [
-                  paginationBar,
                   const Divider(),
-                  controller.obx(
-                    (state) => HistoryWidget(historyModel: state),
-                    onLoading: const CircularProgressIndicator(),
-                    onError: (error) => Column(
-                      children: [
-                        const Text("History Error."),
-                        Text('$error'),
-                      ],
-                    ),
-                    onEmpty: const Column(
-                      children: [
-                        Text("No History."),
-                      ],
-                    ),
-                  )
+                  SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Container(
+                        color: Colors.brown,
+                        height: 500,
+                        child: HistoryWidget(),
+                      ))
                 ],
               )
             ]))));

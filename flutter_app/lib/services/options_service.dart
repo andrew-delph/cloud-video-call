@@ -34,8 +34,8 @@ class OptionsService extends ApiService {
       put('/preferences', body, contentType: 'application/json')
           .then((response) => validateRequestGetBody(response));
 
-  Future<HistoryModel> getHistory(int page, int limit) {
-    Map<String, String> query = {"page": "$page", "limit": "$limit"};
+  Future<HistoryModel> getHistory(int skip, int limit) {
+    Map<String, String> query = {"skip": "$skip", "limit": "$limit"};
     return get(
       '/history',
       query: query,
@@ -44,9 +44,10 @@ class OptionsService extends ApiService {
         validateRequestGetBody(response, decoder: HistoryModel.fromJson));
   }
 
-  Future<dynamic> updateFeedback(dynamic body) =>
-      post('/providefeedback', body, contentType: 'application/json')
-          .then((response) => validateRequestGetBody(response));
+  Future<HistoryItemModel> updateFeedback(dynamic body) => put(
+          '/providefeedback', body, contentType: 'application/json')
+      .then((response) =>
+          validateRequestGetBody(response, decoder: HistoryItemModel.fromJson));
 
   CollectionReference<UserDataModel> getUserCollection() {
     return FirebaseFirestore.instance
@@ -64,9 +65,13 @@ class OptionsService extends ApiService {
       DocumentReference<UserDataModel> myUserDoc =
           getUserCollection().doc(userId);
 
-      UserDataModel? userData = (await myUserDoc.get()).data();
+      DocumentSnapshot<UserDataModel> snapshot = (await myUserDoc.get());
 
-      return userData;
+      if (!snapshot.exists) {
+        return null;
+      } else {
+        return (await myUserDoc.get()).data();
+      }
     });
   }
 

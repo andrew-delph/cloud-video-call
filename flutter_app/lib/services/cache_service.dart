@@ -14,13 +14,12 @@ class CacheService extends GetxService {
   }
 
   Future<T> getOrWrite<T>(String key, Future<T> Function() write) async {
-    T? value = get(key);
-    if (value == null) {
-      print("not found in cache: $key");
+    if (!cache.containsKey(key)) {
+      // print("not found in cache: $key");
       return set(key, await write());
     } else {
-      print("found in cache: $key");
-      return value;
+      // print("found in cache: $key");
+      return get(key);
     }
   }
 }

@@ -4,13 +4,13 @@
 
 // Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter_app/widgets/notifications.dart';
 
 // Package imports:
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 // Project imports:
+import 'package:flutter_app/widgets/notifications.dart';
 import '../controllers/options_controller.dart';
 import '../services/local_preferences_service.dart';
 import '../widgets/app_menu_widget.dart';
@@ -150,7 +150,7 @@ class OptionsScreen extends GetView<PreferencesController> {
                                               .disableFcm())
                                       .catchError((err) {
                                     print(
-                                        "notificationPermissions error: ${err}");
+                                        "notificationPermissions error: $err");
                                   }).whenComplete(() async {
                                     localPreferences.fcmEnabled(
                                         await notificationsController

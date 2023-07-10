@@ -14,7 +14,7 @@ service Neo4j {
 
   rpc EndCall (EndCallRequest) returns (StandardResponse) {}
 
-  rpc CreateFeedback (CreateFeedbackRequest) returns (StandardResponse) {}
+  rpc CreateFeedback (CreateFeedbackRequest) returns (Match) {}
 
   rpc GetRelationshipScores (GetRelationshipScoresRequest) returns (GetRelationshipScoresResponse) {}
 
@@ -146,7 +146,7 @@ message CreateFeedbackRequest {
 
 message MatchHistoryRequest {
   string user_id = 1;
-  int32 page = 2;
+  int32 skip = 2;
   int32 limit = 3;
 }
 

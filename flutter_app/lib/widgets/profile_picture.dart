@@ -17,7 +17,7 @@ class ProfilePicture extends GetView<PreferencesController> {
   ProfilePicture(this.userId, {super.key});
 
   final String userId;
-  final Rx<Widget> photoWidget = Rx(const CircularProgressIndicator());
+  final Rx<Widget> photoWidget = Rx(const Icon(Icons.no_photography_sharp));
 
   final Rx<Uint8List?> bytes = Rx<Uint8List?>(null);
   final CacheService cacheService = Get.find();
@@ -28,6 +28,7 @@ class ProfilePicture extends GetView<PreferencesController> {
         () async {
       var imageRef =
           (FirebaseStorage.instance.ref('profile-picture/${userId}_100x100'));
+
       try {
         return await imageRef.getDownloadURL();
       } catch (err) {

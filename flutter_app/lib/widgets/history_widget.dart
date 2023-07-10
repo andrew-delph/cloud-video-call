@@ -14,27 +14,45 @@ import '../utils/utils.dart';
 
 // Package imports:
 
-class HistoryWidget extends StatelessWidget {
-  final HistoryModel? historyModel;
-  const HistoryWidget({
+class HistoryWidget extends GetView<HistoryController> {
+  HistoryWidget({
     Key? key,
-    required this.historyModel,
   }) : super(key: key);
+
+  final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
-    List<StatelessWidget>? historyList =
-        historyModel?.matchHistoryList.expand((historyItem) {
-      return [
-        HistoryItemWidget(
-          historyItem: historyItem,
-        ),
-        const Divider()
-      ];
-    }).toList();
-
-    return Column(
-        children: historyList ?? [const Text("Error Loading History")]);
+    scrollController.addListener(() async {
+      // print("scroll position ${scrollController.position.pixels}");
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        await controller.loadMoreHistory();
+      }
+    });
+    return Obx(() {
+      return ListView.builder(
+        controller: scrollController,
+        itemCount: controller.matchHistoryList().length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == controller.total()) {
+            return const Text("No more history.");
+          } else if (index >= controller.matchHistoryList().length) {
+            return const Text("loading");
+          } else {
+            return Column(
+              children: [
+                HistoryItemWidget(
+                  historyItem: controller.matchHistoryList()[index],
+                ),
+                const Divider()
+              ],
+              // Add any other desired content for each item
+            );
+          }
+        },
+      );
+    });
   }
 }
 
@@ -52,7 +70,6 @@ class HistoryItemWidget extends GetView<HistoryController> {
 
   @override
   Widget build(BuildContext context) {
-    print("build history");
     RelationShipState relationShipState;
     if ((historyItem.userId1Score ?? 1) < 0) {
       relationShipState = RelationShipState.blocked;

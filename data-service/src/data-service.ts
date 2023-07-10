@@ -411,13 +411,13 @@ const getRelationshipScores = async (
 };
 
 const createFeedback = async (
-  call: grpc.ServerUnaryCall<CreateFeedbackRequest, StandardResponse>,
-  callback: grpc.sendUnaryData<StandardResponse>,
+  call: grpc.ServerUnaryCall<CreateFeedbackRequest, Match>,
+  callback: grpc.sendUnaryData<Match>,
 ): Promise<void> => {
   const userId = call.request.getUserId();
   const matchId = call.request.getMatchId();
   const score = call.request.getScore();
-  const reply = new StandardResponse();
+  const reply = new Match();
 
   if (!userId || !matchId) {
     logger.error(`!userId ${userId} || !matchId ${matchId}`);
@@ -575,6 +575,32 @@ const createFeedback = async (
       `friends_created: ${friends_created} .... ${friend_rel.records.length}`,
     );
   }
+
+  const result = await session.run(
+    `
+    MATCH (n1:Person{userId: $userId})-[r1:MATCHED]->(n2:Person)
+    WHERE id(r1) = $matchId
+    OPTIONAL MATCH (n1:Person)-[r2:FEEDBACK{matchId:id(r1)}]->(n2:Person)
+    OPTIONAL MATCH (n2:Person)-[r3:FEEDBACK{matchId:r1.other}]->(n1:Person)
+    return n1.userId, n2.userId, r1.createDate, r1.endDate, r2.score, r3.score,
+    EXISTS((n1)-[:FRIENDS]-(n2)) AS friends,
+    EXISTS((n1)-[:NEGATIVE]-(n2)) AS negative,
+    id(r1) as matchId
+    LIMIT 1
+    `,
+    { userId, matchId },
+  );
+
+  const record = result.records[0];
+  reply.setUserId1(userId);
+  reply.setUserId2(record.get(`n2.userId`));
+  reply.setCreateTime(`${record.get(`r1.createDate`)}`);
+  reply.setEndTime(`${record.get(`r1.endDate`)}`);
+  reply.setUserId1Score(record.get(`r2.score`));
+  reply.setUserId2Score(record.get(`r3.score`));
+  reply.setFriends(record.get(`friends`));
+  reply.setNegative(record.get(`negative`));
+  reply.setMatchId(record.get(`matchId`));
 
   await session.close();
 
@@ -773,10 +799,8 @@ const getMatchHistory = async (
   const start_time = performance.now();
   const session = driver.session();
   const userId = call.request.getUserId();
-  const page = common.tryParseInt(call.request.getPage(), 0);
+  const skip = common.tryParseInt(call.request.getSkip(), 0);
   const limit = common.tryParseInt(call.request.getLimit(), 5);
-
-  const skip = page * limit;
 
   const reply = new MatchHistoryResponse();
 
