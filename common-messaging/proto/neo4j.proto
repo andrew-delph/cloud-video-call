@@ -14,7 +14,7 @@ service Neo4j {
 
   rpc EndCall (EndCallRequest) returns (StandardResponse) {}
 
-  rpc CreateFeedback (CreateFeedbackRequest) returns (StandardResponse) {}
+  rpc CreateFeedback (CreateFeedbackRequest) returns (Match) {}
 
   rpc GetRelationshipScores (GetRelationshipScoresRequest) returns (GetRelationshipScoresResponse) {}
 
