@@ -91,7 +91,7 @@ app.get(`/health`, async (req, res) => {
   res.send(`Health is good.`);
 });
 
-app.post(
+app.put(
   `/providefeedback`,
   rateLimit(`post_providefeedback`, 20),
   async (req, res) => {
@@ -106,13 +106,13 @@ app.post(
     createFeedbackRequest.setScore(score);
     createFeedbackRequest.setMatchId(match_id);
 
-    await makeGrpcRequest<CreateFeedbackRequest, StandardResponse>(
+    await makeGrpcRequest<CreateFeedbackRequest, neo4j_common.Match>(
       neo4jRpcClient,
       neo4jRpcClient.createFeedback,
       createFeedbackRequest,
     )
       .then((response) => {
-        return res.status(201).send(`Feedback created.`);
+        return res.status(200).json(response.toObject());
       })
       .catch((err) => {
         logger.error(`createFeedbackRequest`, err);
@@ -165,10 +165,10 @@ app.put(`/preferences`, rateLimit(`put_preferences`, 20), async (req, res) => {
       return res.status(201).send(`preferences updated`);
     })
     .catch((err) => {
-      logger.error(`getMatchHistory`, err);
+      logger.error(`putUserPerferences`, err);
       res.status(401).json({
         error: JSON.stringify(err),
-        message: `Failed getMatchHistory`,
+        message: `Failed putUserPerferences`,
       });
     });
 });
@@ -218,7 +218,7 @@ app.get(`/preferences`, rateLimit(`get_preferences`, 20), async (req, res) => {
   return;
 });
 
-app.get(`/history`, rateLimit(`get_history`, 20), async (req, res) => {
+app.get(`/history`, rateLimit(`get_history`, 100), async (req, res) => {
   const userId: string = req.userId;
 
   const { limit, skip } = req.query as { limit: string; skip: string };
