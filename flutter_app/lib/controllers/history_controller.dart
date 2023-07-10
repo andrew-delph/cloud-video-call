@@ -72,7 +72,7 @@ class HistoryController extends GetxController with StateMixin<HistoryModel> {
       List<HistoryItemModel> historyItemList = historyMap.values.toList();
 
       historyItemList
-          .sort((a, b) => a.getCreateTime().compareTo(b.getCreateTime()));
+          .sort((a, b) => b.getCreateTime().compareTo(a.getCreateTime()));
       matchHistoryList(historyItemList);
       total(body.total);
     }).catchError((error) {

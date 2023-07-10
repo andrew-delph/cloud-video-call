@@ -47,10 +47,13 @@ class HistoryWidget extends GetView<HistoryController> {
               // Build your list item widget here
               // return Text(
               //     "index $index matchId ${controller.matchHistoryList[index].matchId}");
-              return ListTile(
-                title: HistoryItemWidget(
-                  historyItem: controller.matchHistoryList[index],
-                ),
+              return Column(
+                children: [
+                  HistoryItemWidget(
+                    historyItem: controller.matchHistoryList[index],
+                  ),
+                  Divider()
+                ],
                 // Add any other desired content for each item
               );
             }
