@@ -25,6 +25,7 @@ import '../services/options_service.dart';
 import '../utils/utils.dart';
 import '../widgets/matchmaker_progress.dart';
 import '../widgets/video_render_layout.dart';
+import 'notifications_controller.dart';
 
 class HomeController extends GetxController with StateMixin<Widget> {
   LocalPreferences localPreferences = Get.find();

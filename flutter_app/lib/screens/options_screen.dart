@@ -11,6 +11,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 // Project imports:
 import 'package:flutter_app/widgets/notifications.dart';
+import '../controllers/notifications_controller.dart';
 import '../controllers/options_controller.dart';
 import '../services/local_preferences_service.dart';
 import '../widgets/app_menu_widget.dart';
