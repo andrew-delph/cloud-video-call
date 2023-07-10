@@ -8,7 +8,7 @@ import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/options_service.dart';
 import '../utils/utils.dart';
-import '../widgets/notifications.dart';
+import '../widgets/notifications_button.dart';
 
 class NotificationsController extends GetxController with StateMixin {
   final AuthService authService = Get.find();

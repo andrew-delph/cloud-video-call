@@ -16,7 +16,7 @@ import 'package:socket_io_client/socket_io_client.dart';
 
 // Project imports:
 import 'package:flutter_app/widgets/approval_widget.dart';
-import 'package:flutter_app/widgets/notifications.dart';
+import 'package:flutter_app/widgets/notifications_button.dart';
 import '../config/factory.dart';
 import '../models/history_model.dart';
 import '../services/auth_service.dart';

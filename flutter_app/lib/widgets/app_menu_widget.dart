@@ -14,7 +14,7 @@ import 'package:flutter_app/widgets/page_container.dart';
 import '../controllers/home_controller.dart';
 import '../routes/app_pages.dart';
 import '../services/auth_service.dart';
-import 'notifications.dart';
+import 'notifications_button.dart';
 
 class NavItem {
   final IconData iconData;

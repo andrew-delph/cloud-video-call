@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 // Project imports:
-import 'package:flutter_app/widgets/notifications.dart';
+import 'package:flutter_app/widgets/notifications_button.dart';
 import '../controllers/notifications_controller.dart';
 import '../controllers/options_controller.dart';
 import '../services/local_preferences_service.dart';

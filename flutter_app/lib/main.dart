@@ -13,7 +13,7 @@ import 'package:get/get.dart';
 // Project imports:
 import 'package:flutter_app/services/cache_service.dart';
 import 'package:flutter_app/services/options_service.dart';
-import 'package:flutter_app/widgets/notifications.dart';
+import 'package:flutter_app/widgets/notifications_button.dart';
 import 'config/firebase_options.dart';
 import 'controllers/notifications_controller.dart';
 import 'routes/app_pages.dart';
