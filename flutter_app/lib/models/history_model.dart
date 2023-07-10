@@ -30,15 +30,9 @@ class HistoryItemModel {
   bool? negative;
   int? matchId;
 
-  HistoryItemModel(
-      {this.userId1,
-      this.userId2,
-      this.createTime,
-      this.endTime,
-      this.userId1Score,
-      this.userId2Score});
+  HistoryItemModel();
 
-  HistoryItemModel.fromJson(Map<String, dynamic> json) {
+  HistoryItemModel.fromJson(dynamic json) {
     userId1 = json['userId1'];
     userId2 = json['userId2'];
     createTime = json['createTime'];

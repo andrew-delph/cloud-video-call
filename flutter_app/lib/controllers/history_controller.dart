@@ -27,31 +27,7 @@ class HistoryController extends GetxController with StateMixin<HistoryModel> {
   @override
   onInit() async {
     super.onInit();
-    await loadHistory();
-  }
-
-  Future loadHistory() async {
-    change(null, status: RxStatus.loading());
-    return await optionsService.getHistory(page(), limit()).then((body) async {
-      if (body.matchHistoryList.isEmpty) {
-        change(null, status: RxStatus.empty());
-      } else {
-        change(body, status: RxStatus.success());
-      }
-
-      historyMap.addEntries(body.matchHistoryList
-          .where((historyItem) => historyItem.matchId != null)
-          .map((historyItem) => MapEntry(historyItem.matchId!, historyItem)));
-
-      List<HistoryItemModel> historyItemList = historyMap.values.toList();
-
-      historyItemList
-          .sort((a, b) => a.getCreateTime().compareTo(b.getCreateTime()));
-      matchHistoryList(historyItemList);
-      total(body.total);
-    }).catchError((error) {
-      change(null, status: RxStatus.error(error.toString()));
-    });
+    await loadMoreHistory();
   }
 
   Future loadMoreHistory() async {
@@ -69,47 +45,35 @@ class HistoryController extends GetxController with StateMixin<HistoryModel> {
           .where((historyItem) => historyItem.matchId != null)
           .map((historyItem) => MapEntry(historyItem.matchId!, historyItem)));
 
-      List<HistoryItemModel> historyItemList = historyMap.values.toList();
-
-      historyItemList
-          .sort((a, b) => b.getCreateTime().compareTo(a.getCreateTime()));
-      matchHistoryList(historyItemList);
       total(body.total);
+
+      sortHistory();
     }).catchError((error) {
       change(null, status: RxStatus.error(error.toString()));
     });
   }
 
+  void sortHistory() {
+    List<HistoryItemModel> historyItemList = historyMap.values.toList();
+
+    historyItemList
+        .sort((a, b) => b.getCreateTime().compareTo(a.getCreateTime()));
+    matchHistoryList(historyItemList);
+    matchHistoryList.refresh();
+  }
+
   updateFeedback(int matchId, int score) {
     final body = {'match_id': matchId, 'score': score};
-    return optionsService
-        .updateFeedback(body)
-        .then((value) => loadHistory())
-        .catchError((error) {
-      print("history error: $error");
+    return optionsService.updateFeedback(body).then((match) {
+      historyMap[match.matchId!] = match;
+
+      sortHistory();
+    }).catchError((error) {
       change(null, status: RxStatus.error(error.toString()));
     });
   }
 
   Future<UserDataModel?> getUserData(String userId) async {
     return optionsService.getUserData(userId);
-  }
-
-  Future<void> nextPage() async {
-    int current = (page() + 1) * limit();
-
-    if (historyModel().matchHistoryList.isNotEmpty &&
-        current < historyModel().total) {
-      page(page() + 1);
-      await loadHistory();
-    }
-  }
-
-  Future<void> prevPage() async {
-    var currentPage = page();
-    if (currentPage > 0) {
-      page(currentPage - 1);
-      await loadHistory();
-    }
   }
 }

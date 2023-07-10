@@ -27,64 +27,32 @@ class HistoryWidget extends GetView<HistoryController> {
       // print("scroll position ${scrollController.position.pixels}");
       if (scrollController.position.pixels ==
           scrollController.position.maxScrollExtent) {
-        print("FETCH MORE DATA.");
         await controller.loadMoreHistory();
       }
     });
-    return Obx(() => ListView.builder(
-          controller: scrollController,
-          itemCount: controller.matchHistoryList().length + 1,
-          itemBuilder: (BuildContext context, int index) {
-            if (index == controller.total()) {
-              // Last item, trigger API request for more data
-              // _loadMoreData();
-              return const Text("No more history.");
-            } else if (index >= controller.matchHistoryList().length) {
-              // Last item, trigger API request for more data
-              // _loadMoreData();
-              return const Text("loading");
-            } else {
-              // Build your list item widget here
-              // return Text(
-              //     "index $index matchId ${controller.matchHistoryList[index].matchId}");
-              return Column(
-                children: [
-                  HistoryItemWidget(
-                    historyItem: controller.matchHistoryList[index],
-                  ),
-                  const Divider()
-                ],
-                // Add any other desired content for each item
-              );
-            }
-          },
-        ));
-    // return controller.obx(
-    //   (state) => Column(
-    //     children: [
-    //       ...controller.matchHistoryList.expand((historyItem) {
-    //         return [
-    //           HistoryItemWidget(
-    //             historyItem: historyItem,
-    //           ),
-    //           const Divider()
-    //         ];
-    //       }).toList()
-    //     ],
-    //   ),
-    //   onLoading: const CircularProgressIndicator(),
-    //   onError: (error) => Column(
-    //     children: [
-    //       const Text("History Error."),
-    //       Text('$error'),
-    //     ],
-    //   ),
-    //   onEmpty: const Column(
-    //     children: [
-    //       Text("No History."),
-    //     ],
-    //   ),
-    // );
+    return Obx(() {
+      return ListView.builder(
+        controller: scrollController,
+        itemCount: controller.matchHistoryList().length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == controller.total()) {
+            return const Text("No more history.");
+          } else if (index >= controller.matchHistoryList().length) {
+            return const Text("loading");
+          } else {
+            return Column(
+              children: [
+                HistoryItemWidget(
+                  historyItem: controller.matchHistoryList()[index],
+                ),
+                const Divider()
+              ],
+              // Add any other desired content for each item
+            );
+          }
+        },
+      );
+    });
   }
 }
 

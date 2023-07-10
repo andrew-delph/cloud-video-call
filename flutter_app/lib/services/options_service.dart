@@ -44,9 +44,10 @@ class OptionsService extends ApiService {
         validateRequestGetBody(response, decoder: HistoryModel.fromJson));
   }
 
-  Future<dynamic> updateFeedback(dynamic body) =>
-      post('/providefeedback', body, contentType: 'application/json')
-          .then((response) => validateRequestGetBody(response));
+  Future<HistoryItemModel> updateFeedback(dynamic body) => put(
+          '/providefeedback', body, contentType: 'application/json')
+      .then((response) =>
+          validateRequestGetBody(response, decoder: HistoryItemModel.fromJson));
 
   CollectionReference<UserDataModel> getUserCollection() {
     return FirebaseFirestore.instance

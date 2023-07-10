@@ -16,30 +16,6 @@ class HistoryScreen extends GetView<HistoryController> {
 
   @override
   Widget build(BuildContext context) {
-    var paginationBar = Obx(() => Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.remove_circle),
-              onPressed: () async {
-                await controller.prevPage();
-              },
-            ),
-            Text("Page: ${controller.page()}"),
-            IconButton(
-              icon: const Icon(Icons.add_circle),
-              onPressed: () async {
-                await controller.nextPage();
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: () async {
-                await controller.loadHistory();
-              },
-            )
-          ],
-        ));
     return AppMenu(
         title: 'History',
         body: SingleChildScrollView(
@@ -57,7 +33,6 @@ class HistoryScreen extends GetView<HistoryController> {
               const Divider(),
               Column(
                 children: [
-                  paginationBar,
                   const Divider(),
                   SingleChildScrollView(
                       scrollDirection: Axis.vertical,

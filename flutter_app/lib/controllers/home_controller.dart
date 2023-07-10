@@ -18,6 +18,7 @@ import 'package:socket_io_client/socket_io_client.dart';
 import 'package:flutter_app/widgets/approval_widget.dart';
 import 'package:flutter_app/widgets/notifications.dart';
 import '../config/factory.dart';
+import '../models/history_model.dart';
 import '../services/auth_service.dart';
 import '../services/local_preferences_service.dart';
 import '../services/options_service.dart';
@@ -654,19 +655,10 @@ class HomeController extends GetxController with StateMixin<Widget> {
     throw "not implemented";
   }
 
-  Future<void> sendChatScore(double score) async {
+  Future<HistoryItemModel?> sendChatScore(double score) async {
     log("sending score $score");
     final body = {'match_id': matchId!, 'score': score};
-    return optionsService.updateFeedback(body).then((response) {
-      if (validStatusCode(response.statusCode)) {
-        return;
-      } else {
-        const String errorMsg = 'Failed to provide feedback.';
-        throw Exception(errorMsg);
-      }
-    }).catchError((error) {
-      errorSnackbar("Error", error.toString());
-    });
+    return optionsService.updateFeedback(body);
   }
 
   List<PopupMenuEntry<MediaDeviceInfo>> getDeviceEntries() {
