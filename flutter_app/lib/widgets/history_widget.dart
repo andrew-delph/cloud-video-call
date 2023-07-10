@@ -38,11 +38,11 @@ class HistoryWidget extends GetView<HistoryController> {
             if (index == controller.total()) {
               // Last item, trigger API request for more data
               // _loadMoreData();
-              return Text("No more history.");
+              return const Text("No more history.");
             } else if (index >= controller.matchHistoryList().length) {
               // Last item, trigger API request for more data
               // _loadMoreData();
-              return Text("loading");
+              return const Text("loading");
             } else {
               // Build your list item widget here
               // return Text(
@@ -52,7 +52,7 @@ class HistoryWidget extends GetView<HistoryController> {
                   HistoryItemWidget(
                     historyItem: controller.matchHistoryList[index],
                   ),
-                  Divider()
+                  const Divider()
                 ],
                 // Add any other desired content for each item
               );
