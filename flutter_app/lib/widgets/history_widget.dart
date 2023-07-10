@@ -24,7 +24,7 @@ class HistoryWidget extends GetView<HistoryController> {
   @override
   Widget build(BuildContext context) {
     scrollController.addListener(() async {
-      print("scroll position ${scrollController.position.pixels}");
+      // print("scroll position ${scrollController.position.pixels}");
       if (scrollController.position.pixels ==
           scrollController.position.maxScrollExtent) {
         print("FETCH MORE DATA.");
@@ -102,7 +102,6 @@ class HistoryItemWidget extends GetView<HistoryController> {
 
   @override
   Widget build(BuildContext context) {
-    print("build history");
     RelationShipState relationShipState;
     if ((historyItem.userId1Score ?? 1) < 0) {
       relationShipState = RelationShipState.blocked;

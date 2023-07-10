@@ -64,7 +64,7 @@ DateTime? parseDateTime(String dateString) {
   try {
     return DateTime.parse(dateString);
   } catch (err) {
-    print("Error parseDateTime: $err");
+    // print("Error parseDateTime: $err");
     return null;
   }
 }
