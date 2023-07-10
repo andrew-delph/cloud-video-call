@@ -218,7 +218,7 @@ app.get(`/preferences`, rateLimit(`get_preferences`, 20), async (req, res) => {
   return;
 });
 
-app.get(`/history`, rateLimit(`get_history`, 100), async (req, res) => {
+app.get(`/history`, rateLimit(`get_history`, 20), async (req, res) => {
   const userId: string = req.userId;
 
   const { limit, skip } = req.query as { limit: string; skip: string };
