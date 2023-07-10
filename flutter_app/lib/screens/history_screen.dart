@@ -18,11 +18,10 @@ class HistoryScreen extends GetView<HistoryController> {
   Widget build(BuildContext context) {
     return AppMenu(
         title: 'History',
-        body: SingleChildScrollView(
-            child: Center(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
+        body: Center(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
               const Text(
                 "History",
                 style: TextStyle(
@@ -31,18 +30,7 @@ class HistoryScreen extends GetView<HistoryController> {
                 ),
               ),
               const Divider(),
-              Column(
-                children: [
-                  const Divider(),
-                  SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Container(
-                        color: Colors.brown,
-                        height: 500,
-                        child: HistoryWidget(),
-                      ))
-                ],
-              )
-            ]))));
+              HistoryWidget()
+            ])));
   }
 }

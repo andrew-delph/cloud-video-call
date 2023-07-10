@@ -26,7 +26,7 @@ class HistoryController extends GetxController with StateMixin<HistoryModel> {
   Future loadMoreHistory() async {
     change(null, status: RxStatus.loading());
     return await optionsService
-        .getHistory(matchHistoryList.length, 5)
+        .getHistory(matchHistoryList.length, 20)
         .then((body) async {
       if (body.matchHistoryList.isEmpty) {
         change(null, status: RxStatus.empty());

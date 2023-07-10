@@ -226,6 +226,7 @@ app.get(`/history`, rateLimit(`get_history`, 100), async (req, res) => {
   // Convert the query parameters to integers
   const limitInt = common.tryParseInt(limit, 5);
   const skipInt = common.tryParseInt(skip, 0);
+  logger.debug(`/history query=${JSON.stringify(req.query)}`);
 
   const matchHistoryRequest = new neo4j_common.MatchHistoryRequest();
   matchHistoryRequest.setUserId(userId);

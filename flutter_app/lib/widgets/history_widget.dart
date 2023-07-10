@@ -24,14 +24,16 @@ class HistoryWidget extends GetView<HistoryController> {
   @override
   Widget build(BuildContext context) {
     scrollController.addListener(() async {
-      // print("scroll position ${scrollController.position.pixels}");
+      print(
+          "scroll position ${scrollController.position.pixels} ${scrollController.position.maxScrollExtent} ${scrollController.position.pixels == scrollController.position.maxScrollExtent}");
       if (scrollController.position.pixels ==
           scrollController.position.maxScrollExtent) {
         await controller.loadMoreHistory();
       }
     });
     return Obx(() {
-      return ListView.builder(
+      return Expanded(
+          child: ListView.builder(
         controller: scrollController,
         itemCount: controller.matchHistoryList().length + 1,
         itemBuilder: (BuildContext context, int index) {
@@ -51,7 +53,7 @@ class HistoryWidget extends GetView<HistoryController> {
             );
           }
         },
-      );
+      ));
     });
   }
 }
