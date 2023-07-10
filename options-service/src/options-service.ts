@@ -42,7 +42,7 @@ const router = express.Router();
 
 // autorize all apis
 app.use(async (req: any, res, next) => {
-  if (req.path.includes(`health`)) {
+  if (req.path.includes(`health`) || req.path.includes(`acme-challenge`)) {
     return next();
   }
   const auth = req.headers.authorization;
