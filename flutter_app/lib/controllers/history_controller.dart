@@ -8,20 +8,13 @@ import '../services/cache_service.dart';
 import '../services/options_service.dart';
 
 class HistoryController extends GetxController with StateMixin<HistoryModel> {
-  final OptionsService optionsService;
-  final CacheService cacheService = Get.find();
   Rx<HistoryModel> historyModel = Rx(HistoryModel());
-  RxBool unsavedChanges = false.obs;
-  RxBool loading = false.obs;
-
   RxList<HistoryItemModel> matchHistoryList = RxList();
-
   RxMap<int, HistoryItemModel> historyMap = RxMap();
-
-  RxInt page = 0.obs;
-  RxInt limit = 5.obs;
   RxInt total = 0.obs;
 
+  final CacheService cacheService = Get.find();
+  final OptionsService optionsService;
   HistoryController(this.optionsService);
 
   @override
