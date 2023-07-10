@@ -23,6 +23,6 @@ kn version
 
 kubectl rollout restart deployment/socketio-event
 kubectl rollout restart deployment/matchmaker-event
-kn service update options --image=ghcr.io/andrew-delph/video-call-options:latest --no-wait
+kn service update options-service --image=ghcr.io/andrew-delph/video-call-options:latest --no-wait
 kn service update socketio-service --image=ghcr.io/andrew-delph/video-call-socketio-service:latest --no-wait
 kn service update data-service --image=ghcr.io/andrew-delph/video-call-data-service:latest --no-wait
