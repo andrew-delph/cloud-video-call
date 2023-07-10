@@ -230,11 +230,65 @@ class NotificationsController extends GetxController with StateMixin {
 class NotificationsButton extends GetView<NotificationsController> {
   const NotificationsButton({super.key});
 
+  OverlayEntry _createOverlayEntry() {
+    OverlayEntry? overlay;
+    overlay = OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          // This Positioned.fill covers the entire screen with a translucent color
+          Positioned.fill(
+            child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  overlay?.remove();
+                },
+                child: Container(color: Colors.transparent)),
+          ),
+          // The actual overlay content
+          Positioned(
+            top: 0,
+            right: 0,
+            bottom: 0,
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                color: Colors.brown,
+                child: Column(
+                  children: [
+                    Text("!"),
+                    TextButton(
+                      onPressed: () {
+                        print("PRESSESD");
+                      },
+                      child: Text("testsajdksjdk"),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    return overlay;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Obx(() {
+          return IconButton(
+            icon: Badge(
+              label: Text(controller.unread.toString()),
+              isLabelVisible: controller.unread() > 0,
+              child: const Icon(Icons.notifications),
+            ),
+            onPressed: () {
+              print("pressed");
+              Overlay.of(context).insert(_createOverlayEntry());
+            },
+          );
           return PopupMenuButton<String>(
             onSelected: (value) {
               if (value == "none") {
