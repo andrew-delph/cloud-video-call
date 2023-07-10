@@ -33,7 +33,7 @@ class HistoryWidget extends GetView<HistoryController> {
     });
     return Obx(() => ListView.builder(
           controller: scrollController,
-          itemCount: controller.matchHistoryList().length,
+          itemCount: controller.matchHistoryList().length + 1,
           itemBuilder: (BuildContext context, int index) {
             if (index == controller.total()) {
               // Last item, trigger API request for more data
