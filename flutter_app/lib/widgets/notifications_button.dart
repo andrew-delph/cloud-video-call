@@ -2,17 +2,11 @@
 import 'package:flutter/material.dart';
 
 // Package imports:
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 
 // Project imports:
 import 'package:flutter_app/models/notification_model.dart';
-import 'package:flutter_app/utils/utils.dart';
 import '../controllers/notifications_controller.dart';
-import '../models/user_model.dart';
-import '../services/auth_service.dart';
-import '../services/options_service.dart';
 
 class NotificationsButton extends GetView<NotificationsController> {
   const NotificationsButton({super.key});
@@ -42,12 +36,12 @@ class NotificationsButton extends GetView<NotificationsController> {
                 color: Colors.brown,
                 child: Column(
                   children: [
-                    Text("!"),
+                    const Text("!"),
                     TextButton(
                       onPressed: () {
                         print("PRESSESD");
                       },
-                      child: Text("testsajdksjdk"),
+                      child: const Text("testsajdksjdk"),
                     )
                   ],
                 ),
