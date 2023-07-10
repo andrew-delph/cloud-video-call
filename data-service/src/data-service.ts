@@ -773,10 +773,8 @@ const getMatchHistory = async (
   const start_time = performance.now();
   const session = driver.session();
   const userId = call.request.getUserId();
-  const page = common.tryParseInt(call.request.getPage(), 0);
+  const skip = common.tryParseInt(call.request.getSkip(), 0);
   const limit = common.tryParseInt(call.request.getLimit(), 5);
-
-  const skip = page * limit;
 
   const reply = new MatchHistoryResponse();
 

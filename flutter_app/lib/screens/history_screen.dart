@@ -59,21 +59,34 @@ class HistoryScreen extends GetView<HistoryController> {
                 children: [
                   paginationBar,
                   const Divider(),
-                  controller.obx(
-                    (state) => HistoryWidget(historyModel: state),
-                    onLoading: const CircularProgressIndicator(),
-                    onError: (error) => Column(
-                      children: [
-                        const Text("History Error."),
-                        Text('$error'),
-                      ],
-                    ),
-                    onEmpty: const Column(
-                      children: [
-                        Text("No History."),
-                      ],
-                    ),
-                  )
+                  SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Container(
+                        color: Colors.brown,
+                        height: 500,
+                        child: HistoryWidget(),
+                      ))
+                  // controller.obx(
+                  //   (state) => SingleChildScrollView(
+                  //       scrollDirection: Axis.vertical,
+                  //       child: Container(
+                  //         color: Colors.brown,
+                  //         height: 200,
+                  //         child: HistoryWidget(),
+                  //       )),
+                  //   onLoading: const CircularProgressIndicator(),
+                  //   onError: (error) => Column(
+                  //     children: [
+                  //       const Text("History Error."),
+                  //       Text('$error'),
+                  //     ],
+                  //   ),
+                  //   onEmpty: const Column(
+                  //     children: [
+                  //       Text("No History."),
+                  //     ],
+                  //   ),
+                  // )
                 ],
               )
             ]))));

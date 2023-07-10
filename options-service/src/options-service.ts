@@ -221,16 +221,16 @@ app.get(`/preferences`, rateLimit(`get_preferences`, 20), async (req, res) => {
 app.get(`/history`, rateLimit(`get_history`, 20), async (req, res) => {
   const userId: string = req.userId;
 
-  const { limit, page } = req.query as { limit: string; page: string };
+  const { limit, skip } = req.query as { limit: string; skip: string };
 
   // Convert the query parameters to integers
   const limitInt = common.tryParseInt(limit, 5);
-  const pageInt = common.tryParseInt(page, 0);
+  const skipInt = common.tryParseInt(skip, 0);
 
   const matchHistoryRequest = new neo4j_common.MatchHistoryRequest();
   matchHistoryRequest.setUserId(userId);
   matchHistoryRequest.setLimit(limitInt);
-  matchHistoryRequest.setPage(pageInt);
+  matchHistoryRequest.setSkip(skipInt);
 
   await makeGrpcRequest<MatchHistoryRequest, MatchHistoryResponse>(
     neo4jRpcClient,

@@ -63,4 +63,8 @@ class HistoryItemModel {
     data['matchId'] = matchId;
     return data;
   }
+
+  DateTime getCreateTime() {
+    return DateTime.parse(createTime!);
+  }
 }

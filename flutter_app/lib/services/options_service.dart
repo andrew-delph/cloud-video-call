@@ -34,8 +34,8 @@ class OptionsService extends ApiService {
       put('/preferences', body, contentType: 'application/json')
           .then((response) => validateRequestGetBody(response));
 
-  Future<HistoryModel> getHistory(int page, int limit) {
-    Map<String, String> query = {"page": "$page", "limit": "$limit"};
+  Future<HistoryModel> getHistory(int skip, int limit) {
+    Map<String, String> query = {"skip": "$skip", "limit": "$limit"};
     return get(
       '/history',
       query: query,

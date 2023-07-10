@@ -14,27 +14,74 @@ import '../utils/utils.dart';
 
 // Package imports:
 
-class HistoryWidget extends StatelessWidget {
-  final HistoryModel? historyModel;
-  const HistoryWidget({
+class HistoryWidget extends GetView<HistoryController> {
+  HistoryWidget({
     Key? key,
-    required this.historyModel,
   }) : super(key: key);
+
+  final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
-    List<StatelessWidget>? historyList =
-        historyModel?.matchHistoryList.expand((historyItem) {
-      return [
-        HistoryItemWidget(
-          historyItem: historyItem,
-        ),
-        const Divider()
-      ];
-    }).toList();
-
-    return Column(
-        children: historyList ?? [const Text("Error Loading History")]);
+    scrollController.addListener(() async {
+      print("scroll position ${scrollController.position.pixels}");
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        print("FETCH MORE DATA.");
+        await controller.loadMoreHistory();
+      }
+    });
+    return Obx(() => ListView.builder(
+          controller: scrollController,
+          itemCount: controller.matchHistoryList().length,
+          itemBuilder: (BuildContext context, int index) {
+            if (index == controller.total()) {
+              // Last item, trigger API request for more data
+              // _loadMoreData();
+              return Text("No more history.");
+            } else if (index >= controller.matchHistoryList().length) {
+              // Last item, trigger API request for more data
+              // _loadMoreData();
+              return Text("loading");
+            } else {
+              // Build your list item widget here
+              // return Text(
+              //     "index $index matchId ${controller.matchHistoryList[index].matchId}");
+              return ListTile(
+                title: HistoryItemWidget(
+                  historyItem: controller.matchHistoryList[index],
+                ),
+                // Add any other desired content for each item
+              );
+            }
+          },
+        ));
+    // return controller.obx(
+    //   (state) => Column(
+    //     children: [
+    //       ...controller.matchHistoryList.expand((historyItem) {
+    //         return [
+    //           HistoryItemWidget(
+    //             historyItem: historyItem,
+    //           ),
+    //           const Divider()
+    //         ];
+    //       }).toList()
+    //     ],
+    //   ),
+    //   onLoading: const CircularProgressIndicator(),
+    //   onError: (error) => Column(
+    //     children: [
+    //       const Text("History Error."),
+    //       Text('$error'),
+    //     ],
+    //   ),
+    //   onEmpty: const Column(
+    //     children: [
+    //       Text("No History."),
+    //     ],
+    //   ),
+    // );
   }
 }
 

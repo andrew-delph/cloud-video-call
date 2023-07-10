@@ -14,9 +14,13 @@ class HistoryController extends GetxController with StateMixin<HistoryModel> {
   RxBool unsavedChanges = false.obs;
   RxBool loading = false.obs;
 
-  RxInt page = 0.obs;
+  RxList<HistoryItemModel> matchHistoryList = RxList();
 
+  RxMap<int, HistoryItemModel> historyMap = RxMap();
+
+  RxInt page = 0.obs;
   RxInt limit = 5.obs;
+  RxInt total = 0.obs;
 
   HistoryController(this.optionsService);
 
@@ -34,7 +38,43 @@ class HistoryController extends GetxController with StateMixin<HistoryModel> {
       } else {
         change(body, status: RxStatus.success());
       }
-      historyModel(body);
+
+      historyMap.addEntries(body.matchHistoryList
+          .where((historyItem) => historyItem.matchId != null)
+          .map((historyItem) => MapEntry(historyItem.matchId!, historyItem)));
+
+      List<HistoryItemModel> historyItemList = historyMap.values.toList();
+
+      historyItemList
+          .sort((a, b) => a.getCreateTime().compareTo(b.getCreateTime()));
+      matchHistoryList(historyItemList);
+      total(body.total);
+    }).catchError((error) {
+      change(null, status: RxStatus.error(error.toString()));
+    });
+  }
+
+  Future loadMoreHistory() async {
+    change(null, status: RxStatus.loading());
+    return await optionsService
+        .getHistory(matchHistoryList.length, 5)
+        .then((body) async {
+      if (body.matchHistoryList.isEmpty) {
+        change(null, status: RxStatus.empty());
+      } else {
+        change(body, status: RxStatus.success());
+      }
+
+      historyMap.addEntries(body.matchHistoryList
+          .where((historyItem) => historyItem.matchId != null)
+          .map((historyItem) => MapEntry(historyItem.matchId!, historyItem)));
+
+      List<HistoryItemModel> historyItemList = historyMap.values.toList();
+
+      historyItemList
+          .sort((a, b) => a.getCreateTime().compareTo(b.getCreateTime()));
+      matchHistoryList(historyItemList);
+      total(body.total);
     }).catchError((error) {
       change(null, status: RxStatus.error(error.toString()));
     });
