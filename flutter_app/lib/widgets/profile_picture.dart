@@ -28,6 +28,7 @@ class ProfilePicture extends GetView<PreferencesController> {
         () async {
       var imageRef =
           (FirebaseStorage.instance.ref('profile-picture/${userId}_100x100'));
+
       try {
         return await imageRef.getDownloadURL();
       } catch (err) {

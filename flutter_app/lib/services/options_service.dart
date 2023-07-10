@@ -64,9 +64,13 @@ class OptionsService extends ApiService {
       DocumentReference<UserDataModel> myUserDoc =
           getUserCollection().doc(userId);
 
-      UserDataModel? userData = (await myUserDoc.get()).data();
+      DocumentSnapshot<UserDataModel> snapshot = (await myUserDoc.get());
 
-      return userData;
+      if (!snapshot.exists) {
+        return null;
+      } else {
+        return (await myUserDoc.get()).data();
+      }
     });
   }
 
