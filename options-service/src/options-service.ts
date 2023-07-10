@@ -48,7 +48,7 @@ app.use(async (req: any, res, next) => {
   const auth = req.headers.authorization;
 
   if (!auth) {
-    logger.debug(`Missing Authorization`);
+    logger.debug(`Missing Authorization path ${req.path}`);
     next(new Error(`Missing Authorization`));
     return;
   }
