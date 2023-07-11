@@ -12,13 +12,14 @@ const logger = common.getLogger();
 const address = `192.168.49.2:30033`;
 
 // connect to milvus
-const client = new MilvusClient({ address });
+const milvusClient = new MilvusClient({ address });
 
 const collection_name = `hello_milvus_${Array.from(
   { length: 10 },
   () => Math.random().toString(36)[2],
 ).join(``)}`;
 const dim = 128;
+const METRIC_TYPE = `IP`;
 const schema = [
   {
     name: `age`,
@@ -67,34 +68,35 @@ const fields_data = Array.from({ length: 20 }, () => {
 
 export async function milvusTest() {
   console.log(`STARTING2`);
-  await client.createCollection({
+  await milvusClient.createCollection({
     collection_name,
     fields: schema,
+    metric_type: METRIC_TYPE,
   });
 
   console.log(`INSERT`);
 
-  await client.insert({
+  await milvusClient.insert({
     collection_name,
     fields_data,
   });
 
   console.log(`INDEX`);
   // create index
-  await client.createIndex({
+  await milvusClient.createIndex({
     // required
     collection_name,
     field_name: `vector`, // optional if you are using milvus v2.2.9+
     index_name: `myindex`, // optional
     index_type: `HNSW`, // optional if you are using milvus v2.2.9+
     params: { efConstruction: 10, M: 4 }, // optional if you are using milvus v2.2.9+
-    metric_type: `L2`, // optional if you are using milvus v2.2.9+
+    metric_type: METRIC_TYPE, // optional if you are using milvus v2.2.9+
   });
 
   console.log(`LOAD`);
 
   // load collection
-  await client.loadCollectionSync({
+  await milvusClient.loadCollectionSync({
     collection_name,
   });
 
@@ -116,7 +118,7 @@ export async function milvusTest() {
   console.log(`SEARCH`);
 
   // Perform a vector search on the collection
-  const res = (await client.search({
+  const res = (await milvusClient.search({
     // required
     collection_name, // required, the collection name
     vector: searchVector, // required, vector used to compare other vectors in milvus
@@ -130,13 +132,15 @@ export async function milvusTest() {
 
   //   const names = ["name1", "name2", "name3"]; // the list of names you're searching for
 
-  // const res = await client.query({
+  // const res = await milvusClient.query({
   //   collection_name,
   //   expr: `name in [${names.join(",")}]`,
   //   output_fields: ["height", "name"]
   // });
 
+  console.log(`>>`);
   console.log(`status ${res.status.error_code} reason ${res.status.reason}`);
+  console.log(`<<`);
 
   console.log(`search name: ${fields_data[0].name}`);
 
