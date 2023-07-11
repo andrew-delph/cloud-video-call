@@ -13,9 +13,7 @@ class NotificationsButton extends GetView<NotificationsController> {
 
   OverlayEntry _createOverlayEntry() {
     OverlayEntry? overlay;
-
     final ScrollController scrollController = ScrollController();
-
     // scrollController.addListener(() async {
     //   print(
     //       "scroll position ${scrollController.position.pixels} ${scrollController.position.maxScrollExtent} ${scrollController.position.pixels == scrollController.position.maxScrollExtent}");
@@ -25,13 +23,17 @@ class NotificationsButton extends GetView<NotificationsController> {
     //   }
     // });
 
+    Set<String> seenNotifications = {};
+
     overlay = OverlayEntry(
         builder: (context) => Stack(children: [
               // This Positioned.fill covers the entire screen with a translucent color
               Positioned.fill(
                 child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    onTap: () {
+                    onTap: () async {
+                      await controller
+                          .readNotifications(seenNotifications.toList());
                       overlay?.remove();
                     },
                     child: Container(color: Colors.transparent)),
@@ -55,22 +57,31 @@ class NotificationsButton extends GetView<NotificationsController> {
                                 } else if (index >=
                                     controller.notifications().length) {
                                   controller.loadMoreNotifications();
-                                  return Text(
-                                      "loading total ${controller.notificationTotal()} length ${controller.notifications().length}");
+                                  return const CircularProgressIndicator();
                                 } else {
+                                  String notificationId = controller
+                                      .notifications()
+                                      .entries
+                                      .toList()[index]
+                                      .key;
+                                  NotificationModel notification = controller
+                                      .notifications()
+                                      .entries
+                                      .toList()[index]
+                                      .value;
+
+                                  seenNotifications.add(notificationId);
                                   return NotificationItem(
-                                      controller
-                                          .notifications()
-                                          .entries
-                                          .toList()[index]
-                                          .key,
-                                      controller
-                                          .notifications()
-                                          .entries
-                                          .toList()[index]
-                                          .value);
+                                      notificationId, notification);
                                 }
-                              })))
+                              }))),
+                      const Divider(),
+                      TextButton(
+                          onPressed: () async {
+                            await controller.archiveNotifications(
+                                seenNotifications.toList());
+                          },
+                          child: Text("Archive notifications."))
                     ]),
                   )),
             ]));
@@ -138,12 +149,6 @@ class NotificationItem extends GetView<NotificationsController> {
                   Text(notification.description ?? "No description.")
                 ],
               ))),
-      // IconButton(
-      //     onPressed: () {
-      //       controller.archiveNotification(id);
-      //       Navigator.pop(context);
-      //     },
-      //     icon: const Icon(Icons.close))
     ]);
   }
 }

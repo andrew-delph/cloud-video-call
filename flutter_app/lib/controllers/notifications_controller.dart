@@ -112,8 +112,6 @@ class NotificationsController extends GetxController with StateMixin {
   }
 
   Future<void> loadMoreNotifications() async {
-    print("loadMoreNotifications");
-
     var myNotificationsStream = getMyNotificationsStream();
     if (lastDocument != null) {
       myNotificationsStream =
@@ -121,9 +119,6 @@ class NotificationsController extends GetxController with StateMixin {
     }
 
     myNotificationsStream = myNotificationsStream.limit(5);
-
-    print(
-        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ${(await myNotificationsStream.count().get()).count}");
 
     if ((await myNotificationsStream.count().get()).count > 0) {
       lastDocument = (await myNotificationsStream.get()).docs.last;
@@ -153,7 +148,7 @@ class NotificationsController extends GetxController with StateMixin {
     WriteBatch batch = FirebaseFirestore.instance.batch();
     for (var id in ids) {
       batch.update(notificationCollection.doc(id), {"read": true});
-      print("readNotification $id");
+      // print("readNotification $id");
     }
     await batch.commit();
   }
@@ -162,9 +157,12 @@ class NotificationsController extends GetxController with StateMixin {
     WriteBatch batch = FirebaseFirestore.instance.batch();
     for (var id in ids) {
       batch.update(notificationCollection.doc(id), {"archive": true});
-      print("archiveNotification $id");
+      // print("archiveNotification $id");
     }
     await batch.commit();
+    for (var id in ids) {
+      notifications.remove(id);
+    }
   }
 
   DocumentReference<NotificationModel> getMyNotificationsDoc() {
