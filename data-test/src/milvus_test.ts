@@ -23,6 +23,8 @@ const COLLECTION_NAME = `hello_milvus_${Array.from(
 const dim = 400;
 const ITEMS_NUM = 9000;
 
+const OUTPUT_FIELDS = [`height`, `name`];
+
 const METRIC_TYPE = `IP`;
 const schema = [
   {
@@ -131,14 +133,14 @@ export async function milvusTest() {
   //   params: { nprobe: 64 }, // optional, specify the search parameters
   //   // limit: 10, // optional, specify the number of nearest neighbors to return
   //   metric_type: `L2`, // optional, metric to calculate similarity of two vectors
-  //   output_fields: [`height`, `name`], // optional, specify the fields to return in the search results
+  //   output_fields: OUTPUT_FIELDS, // optional, specify the fields to return in the search results
   // }));
 
   const res = await milvusClient.search({
     collection_name: COLLECTION_NAME,
     vector: searchVector,
     limit: 20,
-    output_fields: [`height`, `name`],
+    output_fields: OUTPUT_FIELDS,
     metric_type: METRIC_TYPE,
   });
 
