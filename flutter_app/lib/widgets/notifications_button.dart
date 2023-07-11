@@ -13,44 +13,67 @@ class NotificationsButton extends GetView<NotificationsController> {
 
   OverlayEntry _createOverlayEntry() {
     OverlayEntry? overlay;
+
+    final ScrollController scrollController = ScrollController();
+
+    // scrollController.addListener(() async {
+    //   print(
+    //       "scroll position ${scrollController.position.pixels} ${scrollController.position.maxScrollExtent} ${scrollController.position.pixels == scrollController.position.maxScrollExtent}");
+    //   if (scrollController.position.pixels ==
+    //       scrollController.position.maxScrollExtent) {
+    //     // await controller.loadMoreNotifications();
+    //   }
+    // });
+
     overlay = OverlayEntry(
-      builder: (context) => Stack(
-        children: [
-          // This Positioned.fill covers the entire screen with a translucent color
-          Positioned.fill(
-            child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  overlay?.remove();
-                },
-                child: Container(color: Colors.transparent)),
-          ),
-          // The actual overlay content
-          Positioned(
-            top: 0,
-            right: 0,
-            bottom: 0,
-            child: Material(
-              color: Colors.transparent,
-              child: Container(
-                color: Colors.brown,
-                child: Column(
-                  children: [
-                    const Text("!"),
-                    TextButton(
-                      onPressed: () {
-                        print("PRESSESD");
-                      },
-                      child: const Text("testsajdksjdk"),
-                    )
-                  ],
-                ),
+        builder: (context) => Stack(children: [
+              // This Positioned.fill covers the entire screen with a translucent color
+              Positioned.fill(
+                child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      overlay?.remove();
+                    },
+                    child: Container(color: Colors.transparent)),
               ),
-            ),
-          ),
-        ],
-      ),
-    );
+              // The actual overlay content
+              Positioned(
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  width: 200,
+                  child: Material(
+                    color: Colors.cyan,
+                    child: Column(children: [
+                      Expanded(
+                          child: Obx(() => ListView.builder(
+                              controller: scrollController,
+                              itemCount: controller.notifications().length + 1,
+                              itemBuilder: (BuildContext context, int index) {
+                                if (index == controller.notificationTotal()) {
+                                  return const Text("No more Notifications.");
+                                } else if (index >=
+                                    controller.notifications().length) {
+                                  controller.loadMoreNotifications();
+                                  return Text(
+                                      "loading total ${controller.notificationTotal()} length ${controller.notifications().length}");
+                                } else {
+                                  return NotificationItem(
+                                      controller
+                                          .notifications()
+                                          .entries
+                                          .toList()[index]
+                                          .key,
+                                      controller
+                                          .notifications()
+                                          .entries
+                                          .toList()[index]
+                                          .value);
+                                }
+                              })))
+                    ]),
+                  )),
+            ]));
     return overlay;
   }
 
@@ -70,39 +93,17 @@ class NotificationsButton extends GetView<NotificationsController> {
               Overlay.of(context).insert(_createOverlayEntry());
             },
           );
-          return PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == "none") {
-                // possible change to an empty string...
-              } else if (value == "archive") {
-                controller.archiveNotifications(controller
-                    .notifications()
-                    .entries
-                    .map((entry) => entry.key)
-                    .toList());
-              } else {
-                controller.archiveNotifications([value]);
-              }
-            },
-            icon: Badge(
-              label: Text(controller.unread.toString()),
-              isLabelVisible: controller.unread() > 0,
-              child: const Icon(Icons.notifications),
-            ),
-            itemBuilder: (BuildContext context) =>
-                controller.loadNotifications(),
-          );
         })
       ],
     );
   }
 }
 
-class NotificationsItem extends GetView<NotificationsController> {
+class NotificationItem extends GetView<NotificationsController> {
   final NotificationModel notification;
   final String id;
 
-  const NotificationsItem(this.id, this.notification, {super.key});
+  const NotificationItem(this.id, this.notification, {super.key});
 
   @override
   Widget build(BuildContext context) {

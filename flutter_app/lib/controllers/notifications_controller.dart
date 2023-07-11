@@ -25,6 +25,10 @@ class NotificationsController extends GetxController with StateMixin {
 
   RxInt unread = (-1).obs;
 
+  RxInt notificationTotal = (0).obs;
+
+  QueryDocumentSnapshot<NotificationModel>? lastDocument;
+
   CollectionReference<NotificationModel> notificationCollection =
       FirebaseFirestore.instance
           .collection('notifications')
@@ -39,32 +43,15 @@ class NotificationsController extends GetxController with StateMixin {
     super.onInit();
     print("init NotificationsController");
 
-    authService.user.listen((user) {
+    authService.user.listen((user) async {
       if (user == null) {
         print("user not logged in. no notifications....");
         return;
       } else {
         print("listening to user notifications");
       }
-      String userId = user.uid;
-      var myNotificationsStream = notificationCollection
-          .where('userId', isEqualTo: userId)
-          .where(
-            'archive',
-            isEqualTo: false,
-          )
-          .orderBy("time", descending: true)
-          .limit(5)
-          .snapshots();
 
-      myNotificationsStream.listen((event) {
-        notifications.clear();
-        for (var element in event.docs) {
-          var notificationId = element.id;
-          var notificationData = element.data();
-          notifications[notificationId] = notificationData;
-        }
-      });
+      String userId = user.uid;
 
       var unreadStream = notificationCollection
           .where('userId', isEqualTo: userId)
@@ -93,9 +80,13 @@ class NotificationsController extends GetxController with StateMixin {
         }
         unread(event.size);
       });
+
+      getMyNotificationsStream().snapshots().listen((event) {
+        notificationTotal(event.docs.length);
+      });
     });
 
-    Future<void> _backgroundHandler(RemoteMessage message) async {
+    Future<void> backgroundHandler(RemoteMessage message) async {
       print('Background message: ${message.data}');
     }
 
@@ -107,7 +98,44 @@ class NotificationsController extends GetxController with StateMixin {
         print('Message also contained a notification: ${message.notification}');
       }
     });
-    FirebaseMessaging.onBackgroundMessage(_backgroundHandler);
+    FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+  }
+
+  Query<NotificationModel> getMyNotificationsStream() {
+    return notificationCollection
+        .where('userId', isEqualTo: authService.getUser().uid)
+        .where(
+          'archive',
+          isEqualTo: false,
+        )
+        .orderBy("time", descending: true);
+  }
+
+  Future<void> loadMoreNotifications() async {
+    print("loadMoreNotifications");
+
+    var myNotificationsStream = getMyNotificationsStream();
+    if (lastDocument != null) {
+      myNotificationsStream =
+          myNotificationsStream.startAfterDocument(lastDocument!);
+    }
+
+    myNotificationsStream = myNotificationsStream.limit(5);
+
+    print(
+        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ${(await myNotificationsStream.count().get()).count}");
+
+    if ((await myNotificationsStream.count().get()).count > 0) {
+      lastDocument = (await myNotificationsStream.get()).docs.last;
+      myNotificationsStream.snapshots().listen((event) {
+        for (var element in event.docs) {
+          var notificationId = element.id;
+          var notificationData = element.data();
+          notifications[notificationId] = notificationData;
+        }
+        // notifications.refresh();
+      });
+    }
   }
 
   addNotification() async {
@@ -143,12 +171,12 @@ class NotificationsController extends GetxController with StateMixin {
     return notificationCollection.doc();
   }
 
-  List<PopupMenuItem<String>> loadNotifications() {
-    print("loadNotifications");
+  List<PopupMenuItem<String>> createNotificationsPopupList() {
+    print("createNotificationsPopupList");
     var popups = notifications().entries.map((entry) {
       return PopupMenuItem<String>(
         value: entry.key,
-        child: NotificationsItem(entry.key, entry.value),
+        child: NotificationItem(entry.key, entry.value),
       );
     }).toList();
 
