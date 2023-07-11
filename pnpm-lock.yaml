@@ -185,6 +185,9 @@ importers:
       '@types/d3':
         specifier: ^7.4.0
         version: 7.4.0
+      '@zilliz/milvus2-sdk-node':
+        specifier: ^2.2.19
+        version: 2.2.19
       async:
         specifier: ^3.2.4
         version: 3.2.4
