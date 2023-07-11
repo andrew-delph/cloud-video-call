@@ -118,17 +118,25 @@ export async function milvusTest() {
   console.log(`SEARCH`);
 
   // Perform a vector search on the collection
-  const res = (await milvusClient.search({
-    // required
-    collection_name, // required, the collection name
-    vector: searchVector, // required, vector used to compare other vectors in milvus
-    // optionals
-    filter: `height > 0`, // optional, filter
-    params: { nprobe: 64 }, // optional, specify the search parameters
-    // limit: 10, // optional, specify the number of nearest neighbors to return
-    metric_type: `L2`, // optional, metric to calculate similarity of two vectors
-    output_fields: [`height`, `name`], // optional, specify the fields to return in the search results
-  })) as SearchResultsTemp;
+  // const res = (await milvusClient.search({
+  //   // required
+  //   collection_name, // required, the collection name
+  //   vector: searchVector, // required, vector used to compare other vectors in milvus
+  //   // optionals
+  //   filter: `height > 0`, // optional, filter
+  //   params: { nprobe: 64 }, // optional, specify the search parameters
+  //   // limit: 10, // optional, specify the number of nearest neighbors to return
+  //   metric_type: `L2`, // optional, metric to calculate similarity of two vectors
+  //   output_fields: [`height`, `name`], // optional, specify the fields to return in the search results
+  // }));
+
+  const res = await milvusClient.search({
+    collection_name: collection_name,
+    vector: searchVector,
+    topk: 2,
+    output_fields: [`height`, `name`],
+    metric_type: METRIC_TYPE,
+  });
 
   //   const names = ["name1", "name2", "name3"]; // the list of names you're searching for
 
@@ -145,6 +153,17 @@ export async function milvusTest() {
   console.log(`search name: ${fields_data[0].name}`);
 
   console.table(res.results);
+
+  console.table(
+    (
+      await milvusClient.search({
+        collection_name: collection_name,
+        vector: searchVector,
+        output_fields: [`height`, `name`],
+        metric_type: METRIC_TYPE,
+      })
+    ).results,
+  );
 
   // for (let r of res.results) {
   //   console.log(`r id ${r.id} score ${r.score} data ${JSON.stringify(r)}`);
