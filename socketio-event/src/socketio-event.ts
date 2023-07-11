@@ -262,32 +262,34 @@ export async function matchConsumer() {
           return;
         }
 
-        const checkUserFiltersRequest = new CheckUserFiltersRequest();
+        if (!system) {
+          const checkUserFiltersRequest = new CheckUserFiltersRequest();
 
-        const filter = new FilterObject();
-        filter.setUserId1(source);
-        filter.setUserId2(target);
+          const filter = new FilterObject();
+          filter.setUserId1(source);
+          filter.setUserId2(target);
 
-        checkUserFiltersRequest.addFilters(filter);
+          checkUserFiltersRequest.addFilters(filter);
 
-        const checkUserFiltersResponse = await makeGrpcRequest<
-          CheckUserFiltersRequest,
-          CheckUserFiltersResponse
-        >(
-          neo4jRpcClient,
-          neo4jRpcClient.checkUserFilters,
-          checkUserFiltersRequest,
-        );
-
-        const filterResponse = checkUserFiltersResponse.getFiltersList()[0];
-
-        if (!filterResponse.getFriends() && !system) {
-          logger.warn(
-            `Message sent not friends: ${source}, ${target}, ${message} filterResponse= ${JSON.stringify(
-              checkUserFiltersResponse.toObject(),
-            )}`,
+          const checkUserFiltersResponse = await makeGrpcRequest<
+            CheckUserFiltersRequest,
+            CheckUserFiltersResponse
+          >(
+            neo4jRpcClient,
+            neo4jRpcClient.checkUserFilters,
+            checkUserFiltersRequest,
           );
-          throw `not friends`;
+
+          const filterResponse = checkUserFiltersResponse.getFiltersList()[0];
+
+          if (!filterResponse.getFriends()) {
+            logger.warn(
+              `Message sent not friends: ${source}, ${target}, ${message} filterResponse= ${JSON.stringify(
+                checkUserFiltersResponse.toObject(),
+              )}`,
+            );
+            throw `not friends`;
+          }
         }
 
         const chatMessage = await common.appendChat(
