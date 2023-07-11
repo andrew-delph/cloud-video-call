@@ -14,7 +14,10 @@ const address = `192.168.49.2:30033`;
 // connect to milvus
 const client = new MilvusClient({ address });
 
-const collection_name = `hello_milvus-${Math.random()}`;
+const collection_name = `hello_milvus_${Array.from(
+  { length: 10 },
+  () => Math.random().toString(36)[2],
+).join(``)}`;
 const dim = 128;
 const schema = [
   {
@@ -39,7 +42,7 @@ const schema = [
   },
 ];
 
-const fields_data = Array.from({ length: 2 }, () => {
+const fields_data = Array.from({ length: 20 }, () => {
   console.log(`HERE`);
   return {
     vector: Array.from({ length: 8 }, () => Math.random()),
@@ -50,25 +53,34 @@ const fields_data = Array.from({ length: 2 }, () => {
   };
 });
 
-console.log(`schema ${JSON.stringify(schema)}`);
+// console.log();
+// console.log();
+
+// console.log(`schema ${JSON.stringify(schema)}`);
+
+// console.log();
+// console.log();
 
 // console.log(`fields_data ${JSON.stringify(fields_data)}`);
 
+// console.log();
+// console.log();
+
 export async function milvusTest() {
-  console.log(`STARTING`);
+  console.log(`STARTING2`);
   await client.createCollection({
     collection_name,
     fields: schema,
   });
 
-  return;
+  console.log(`INSERT`);
 
   await client.insert({
     collection_name,
     fields_data,
   });
 
-  console.log(`CREATING MILVUS INDEX`);
+  console.log(`INDEX`);
   // create index
   await client.createIndex({
     // required
@@ -79,6 +91,8 @@ export async function milvusTest() {
     params: { efConstruction: 10, M: 4 }, // optional if you are using milvus v2.2.9+
     metric_type: `L2`, // optional if you are using milvus v2.2.9+
   });
+
+  console.log(`LOAD`);
 
   // load collection
   await client.loadCollectionSync({
@@ -99,6 +113,8 @@ export async function milvusTest() {
     status: ResStatus;
     results: SearchResult[];
   }
+
+  console.log(`SEARCH`);
 
   // Perform a vector search on the collection
   const res = (await client.search({
@@ -123,7 +139,18 @@ export async function milvusTest() {
 
   console.log(`status ${res.status.error_code} reason ${res.status.reason}`);
 
-  for (let r of res.results) {
-    console.log(`r id ${r.id} score ${r.score} data ${JSON.stringify(r)}`);
-  }
+  console.table(res.results);
+
+  // for (let r of res.results) {
+  //   console.log(`r id ${r.id} score ${r.score} data ${JSON.stringify(r)}`);
+  // }
 }
+
+milvusTest()
+  .catch((err) => {
+    console.error(err);
+  })
+  .finally(() => {
+    console.log(`DONE`);
+    process.exit(0);
+  });
