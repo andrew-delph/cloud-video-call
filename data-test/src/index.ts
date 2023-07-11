@@ -1,9 +1,9 @@
-import { milvusTest } from './milvus';
-import { run } from './run_neo4j';
+import { milvusTest } from './milvus_test';
 
-export * from './neo4j_functions';
-export * from './lp_pipeling';
-export { printResults } from './run_neo4j';
+// import { run } from './run_neo4j';
+// export * from './neo4j_functions';
+// export * from './lp_pipeling';
+// export { printResults } from './run_neo4j';
 
 if (require.main === module) {
   milvusTest();

@@ -9,7 +9,7 @@ import * as common from 'common';
 
 const logger = common.getLogger();
 
-const address = `milvus.milvus:19530`;
+const address = `192.168.49.2:30033`;
 
 // connect to milvus
 const client = new MilvusClient({ address });
@@ -49,9 +49,9 @@ const fields_data = Array.from({ length: 1 }, () => {
   };
 });
 
-logger.info(`schema ${JSON.stringify(schema)}`);
+console.log(`schema ${JSON.stringify(schema)}`);
 
-logger.info(`fields_data ${JSON.stringify(fields_data)}`);
+console.log(`fields_data ${JSON.stringify(fields_data)}`);
 
 export async function milvusTest() {
   await client.createCollection({
@@ -64,7 +64,7 @@ export async function milvusTest() {
     fields_data,
   });
 
-  logger.info(`CREATING MILVUS INDEX`);
+  console.log(`CREATING MILVUS INDEX`);
   // create index
   await client.createIndex({
     // required
@@ -117,9 +117,9 @@ export async function milvusTest() {
   //   output_fields: ["height", "name"]
   // });
 
-  logger.info(`status ${res.status.error_code} reason ${res.status.reason}`);
+  console.log(`status ${res.status.error_code} reason ${res.status.reason}`);
 
   for (let r of res.results) {
-    logger.info(`r id ${r.id} score ${r.score} data ${JSON.stringify(r)}`);
+    console.log(`r id ${r.id} score ${r.score} data ${JSON.stringify(r)}`);
   }
 }
