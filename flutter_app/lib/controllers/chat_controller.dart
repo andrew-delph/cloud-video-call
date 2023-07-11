@@ -41,7 +41,10 @@ class ChatController extends GetxController with StateMixin<Widget> {
         });
         homeController.listenEvent("chat", (data) async {
           ChatEventModel chatEvent = ChatEventModel.fromJson(data);
-          await updateChatRoom(getOther(chatEvent), false, true);
+
+          if (Get.parameters['target'] != getOther(chatEvent)) {
+            await updateChatRoom(getOther(chatEvent), false, true);
+          }
         });
         homeController.listenEvent("chat:active", (data) async {
           bool? active = data["active"];
@@ -50,7 +53,6 @@ class ChatController extends GetxController with StateMixin<Widget> {
             print("missing values target $target active $active");
             return;
           }
-          await updateChatRoomActive(target, active);
         });
       }
     });
@@ -116,18 +118,19 @@ class ChatController extends GetxController with StateMixin<Widget> {
     RxList<ChatEventModel> chatRoom = chatMap.putIfAbsent(userId, () {
       var newChatRoom = RxList<ChatEventModel>();
 
-      optionsService.loadChat(userId).then((loadedMessages) async {
-        newChatRoom.addAll(loadedMessages);
-        homeController.listenEvent("chat", (data) async {
-          ChatEventModel chatEvent = ChatEventModel.fromJson(data);
+      homeController.listenEvent("chat", (data) async {
+        ChatEventModel chatEvent = ChatEventModel.fromJson(data);
 
-          if (getOther(chatEvent) == userId) {
-            newChatRoom.add(chatEvent);
-            if (Get.parameters['target'] == getOther(chatEvent)) {
-              return "good";
-            }
+        if (getOther(chatEvent) == userId) {
+          newChatRoom.add(chatEvent);
+          if (Get.parameters['target'] == getOther(chatEvent)) {
+            return "good";
           }
-        });
+        }
+      });
+
+      optionsService.loadChat(userId).then((loadedMessages) async {
+        newChatRoom.insertAll(0, loadedMessages);
       });
 
       return newChatRoom;
