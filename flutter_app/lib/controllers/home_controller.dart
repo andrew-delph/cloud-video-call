@@ -16,7 +16,6 @@ import 'package:socket_io_client/socket_io_client.dart';
 
 // Project imports:
 import 'package:flutter_app/widgets/approval_widget.dart';
-import 'package:flutter_app/widgets/notifications.dart';
 import '../config/factory.dart';
 import '../models/history_model.dart';
 import '../services/auth_service.dart';
@@ -25,6 +24,7 @@ import '../services/options_service.dart';
 import '../utils/utils.dart';
 import '../widgets/matchmaker_progress.dart';
 import '../widgets/video_render_layout.dart';
+import 'notifications_controller.dart';
 
 class HomeController extends GetxController with StateMixin<Widget> {
   LocalPreferences localPreferences = Get.find();

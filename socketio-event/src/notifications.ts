@@ -34,7 +34,7 @@ export async function addNotification(
   }
   await notificationsCollection.add({
     userId,
-    time: `${moment()}`,
+    time: moment.utc().valueOf(),
     title,
     description,
     read: false,

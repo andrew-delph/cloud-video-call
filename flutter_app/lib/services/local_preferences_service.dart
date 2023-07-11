@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 // Project imports:
-import '../widgets/notifications.dart';
+import '../controllers/notifications_controller.dart';
 
 dynamic lightTheme = ThemeData.light().copyWith();
 dynamic darkTheme = ThemeData.dark().copyWith();

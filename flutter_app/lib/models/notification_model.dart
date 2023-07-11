@@ -1,6 +1,6 @@
 class NotificationModel {
   String? userId;
-  String? time;
+  int? time;
   String? title;
   String? description;
   bool? read;
@@ -30,6 +30,13 @@ class NotificationModel {
 
   bool isRead() {
     return read ?? false;
+  }
+
+  DateTime getDateTime() {
+    var time = this.time;
+    return time != null
+        ? DateTime.fromMillisecondsSinceEpoch(time)
+        : DateTime.now();
   }
 
   Map<String, dynamic> toJson() {
