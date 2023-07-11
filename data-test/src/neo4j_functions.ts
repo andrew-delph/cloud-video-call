@@ -1,5 +1,5 @@
 import { createDotGraph, createRidgeLineChart } from './chart';
-import { printResults } from './neo4j_index';
+import { printResults } from './run_index';
 import { Person, getPerson, indexToColor } from './person';
 import async from 'async';
 import * as common from 'common';
