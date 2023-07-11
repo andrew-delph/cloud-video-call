@@ -140,6 +140,8 @@ export async function milvusTest() {
 
   console.table(res.results);
 
+  console.log(`search name: ${fields_data[0].name}`);
+
   // for (let r of res.results) {
   //   console.log(`r id ${r.id} score ${r.score} data ${JSON.stringify(r)}`);
   // }
