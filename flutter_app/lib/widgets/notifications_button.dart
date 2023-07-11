@@ -81,7 +81,7 @@ class NotificationsButton extends GetView<NotificationsController> {
                             await controller.archiveNotifications(
                                 seenNotifications.toList());
                           },
-                          child: Text("Archive notifications."))
+                          child: const Text("Archive notifications."))
                     ]),
                   )),
             ]));
