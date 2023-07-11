@@ -14,7 +14,7 @@ const address = `milvus.milvus:19530`;
 // connect to milvus
 const client = new MilvusClient({ address });
 
-const collection_name = `hello_milvus`;
+const collection_name = `hello_milvus-${Math.random()}`;
 const dim = 128;
 const schema = [
   {
@@ -39,45 +39,24 @@ const schema = [
   },
 ];
 
-const fields_data = [
-  {
-    vector: [
-      0.11878310581111173, 0.9694947902934701, 0.16443679307243175,
-      0.5484226189097237, 0.9839246709011924, 0.5178387104937776,
-      0.8716926129208069, 0.5616972243831446,
-    ],
-    height: 20405,
-    name: `zlnmh`,
-  },
-  {
-    vector: [
-      0.9992090731236536, 0.8248790611809487, 0.8660083940881405,
-      0.09946359318481224, 0.6790698063908669, 0.5013786801063624,
-      0.795311915725105, 0.9183033261617566,
-    ],
-    height: 93773,
-    name: `5lr9y`,
-  },
-  {
-    vector: [
-      0.8761291569818763, 0.07127366044153227, 0.775648976160332,
-      0.5619757601304878, 0.6076543120476996, 0.8373907516027586,
-      0.8556140171597648, 0.4043893119391049,
-    ],
-    height: 85122,
-    name: `nes0j`,
-  },
-];
+const fields_data = Array.from({ length: 1 }, () => {
+  return {
+    vector: Array.from({ length: 8 }, () => Math.random()),
+    height: Math.floor(Math.random() * 1001),
+    name: Array.from({ length: 10 }, () => Math.random().toString(36)[2]).join(
+      ``,
+    ),
+  };
+});
+
+logger.info(`schema ${JSON.stringify(schema)}`);
+
+logger.info(`fields_data ${JSON.stringify(fields_data)}`);
 
 export async function milvusTest() {
   await client.createCollection({
     collection_name,
     fields: schema,
-  });
-
-  await client.insert({
-    collection_name,
-    fields_data,
   });
 
   await client.insert({
@@ -125,7 +104,7 @@ export async function milvusTest() {
     // optionals
     filter: `height > 0`, // optional, filter
     params: { nprobe: 64 }, // optional, specify the search parameters
-    limit: 10, // optional, specify the number of nearest neighbors to return
+    // limit: 10, // optional, specify the number of nearest neighbors to return
     metric_type: `L2`, // optional, metric to calculate similarity of two vectors
     output_fields: [`height`, `name`], // optional, specify the fields to return in the search results
   })) as SearchResultsTemp;
