@@ -13,16 +13,17 @@
     "k8-restart": "bazel run image_push && kn service update data-service --image=ghcr.io/andrew-delph/video-call-data-service:latest --wait && date || echo -en '\\0007'"
   },
   "dependencies": {
+    "@zilliz/milvus2-sdk-node": "^2.2.19",
+    "amqplib": "^0.10.3",
     "common": "link:../common",
     "common-messaging": "link:../common-messaging",
+    "firebase-admin": "^11.4.1",
     "haversine-distance": "^1.2.1",
     "lodash": "^4.17.21",
     "mathjs": "^11.8.0",
     "neo4j-driver": "^5.5.0",
     "typescript-lru-cache": "^2.0.0",
-    "uuid": "^9.0.0",
-    "firebase-admin": "^11.4.1",
-    "amqplib": "^0.10.3"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.1",

@@ -5,6 +5,7 @@ import {
   writeUserPreferencesDatabase,
 } from './UserPreferences';
 import { user_created } from './metrics';
+import { milvusTest } from './milvus';
 import { cosineSimilarity } from './utils';
 import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
 import * as common from 'common';
@@ -78,6 +79,9 @@ export const driver = neo4j.driver(
 const durationWarn = 2;
 
 const verifyIndexes = async () => {
+  await milvusTest();
+  logger.info(`MILVUS STEPS COMPLETED.`);
+
   const start_time = performance.now();
 
   const session = driver.session();

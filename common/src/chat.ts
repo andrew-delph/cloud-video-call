@@ -1,7 +1,7 @@
+import { getLogger } from './logger';
 import { activeSetName } from './variables';
 import Client from 'ioredis';
 import moment from 'moment';
-import { getLogger } from './logger';
 
 const logger = getLogger();
 

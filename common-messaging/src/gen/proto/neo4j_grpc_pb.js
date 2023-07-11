@@ -12,7 +12,9 @@ function serialize_neo4j_CheckUserFiltersRequest(arg) {
 }
 
 function deserialize_neo4j_CheckUserFiltersRequest(buffer_arg) {
-  return proto_neo4j_pb.CheckUserFiltersRequest.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.CheckUserFiltersRequest.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_CheckUserFiltersResponse(arg) {
@@ -23,7 +25,9 @@ function serialize_neo4j_CheckUserFiltersResponse(arg) {
 }
 
 function deserialize_neo4j_CheckUserFiltersResponse(buffer_arg) {
-  return proto_neo4j_pb.CheckUserFiltersResponse.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.CheckUserFiltersResponse.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_CreateFeedbackRequest(arg) {
@@ -34,7 +38,9 @@ function serialize_neo4j_CreateFeedbackRequest(arg) {
 }
 
 function deserialize_neo4j_CreateFeedbackRequest(buffer_arg) {
-  return proto_neo4j_pb.CreateFeedbackRequest.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.CreateFeedbackRequest.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_CreateMatchRequest(arg) {
@@ -45,7 +51,9 @@ function serialize_neo4j_CreateMatchRequest(arg) {
 }
 
 function deserialize_neo4j_CreateMatchRequest(buffer_arg) {
-  return proto_neo4j_pb.CreateMatchRequest.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.CreateMatchRequest.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_CreateMatchResponse(arg) {
@@ -56,7 +64,9 @@ function serialize_neo4j_CreateMatchResponse(arg) {
 }
 
 function deserialize_neo4j_CreateMatchResponse(buffer_arg) {
-  return proto_neo4j_pb.CreateMatchResponse.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.CreateMatchResponse.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_CreateUserRequest(arg) {
@@ -67,7 +77,9 @@ function serialize_neo4j_CreateUserRequest(arg) {
 }
 
 function deserialize_neo4j_CreateUserRequest(buffer_arg) {
-  return proto_neo4j_pb.CreateUserRequest.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.CreateUserRequest.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_CreateUserResponse(arg) {
@@ -78,7 +90,9 @@ function serialize_neo4j_CreateUserResponse(arg) {
 }
 
 function deserialize_neo4j_CreateUserResponse(buffer_arg) {
-  return proto_neo4j_pb.CreateUserResponse.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.CreateUserResponse.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_EndCallRequest(arg) {
@@ -89,51 +103,69 @@ function serialize_neo4j_EndCallRequest(arg) {
 }
 
 function deserialize_neo4j_EndCallRequest(buffer_arg) {
-  return proto_neo4j_pb.EndCallRequest.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.EndCallRequest.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_GetRelationshipScoresRequest(arg) {
   if (!(arg instanceof proto_neo4j_pb.GetRelationshipScoresRequest)) {
-    throw new Error('Expected argument of type neo4j.GetRelationshipScoresRequest');
+    throw new Error(
+      'Expected argument of type neo4j.GetRelationshipScoresRequest',
+    );
   }
   return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_neo4j_GetRelationshipScoresRequest(buffer_arg) {
-  return proto_neo4j_pb.GetRelationshipScoresRequest.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.GetRelationshipScoresRequest.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_GetRelationshipScoresResponse(arg) {
   if (!(arg instanceof proto_neo4j_pb.GetRelationshipScoresResponse)) {
-    throw new Error('Expected argument of type neo4j.GetRelationshipScoresResponse');
+    throw new Error(
+      'Expected argument of type neo4j.GetRelationshipScoresResponse',
+    );
   }
   return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_neo4j_GetRelationshipScoresResponse(buffer_arg) {
-  return proto_neo4j_pb.GetRelationshipScoresResponse.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.GetRelationshipScoresResponse.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_GetUserPerferencesRequest(arg) {
   if (!(arg instanceof proto_neo4j_pb.GetUserPerferencesRequest)) {
-    throw new Error('Expected argument of type neo4j.GetUserPerferencesRequest');
+    throw new Error(
+      'Expected argument of type neo4j.GetUserPerferencesRequest',
+    );
   }
   return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_neo4j_GetUserPerferencesRequest(buffer_arg) {
-  return proto_neo4j_pb.GetUserPerferencesRequest.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.GetUserPerferencesRequest.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_GetUserPerferencesResponse(arg) {
   if (!(arg instanceof proto_neo4j_pb.GetUserPerferencesResponse)) {
-    throw new Error('Expected argument of type neo4j.GetUserPerferencesResponse');
+    throw new Error(
+      'Expected argument of type neo4j.GetUserPerferencesResponse',
+    );
   }
   return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_neo4j_GetUserPerferencesResponse(buffer_arg) {
-  return proto_neo4j_pb.GetUserPerferencesResponse.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.GetUserPerferencesResponse.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_Match(arg) {
@@ -155,7 +187,9 @@ function serialize_neo4j_MatchHistoryRequest(arg) {
 }
 
 function deserialize_neo4j_MatchHistoryRequest(buffer_arg) {
-  return proto_neo4j_pb.MatchHistoryRequest.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.MatchHistoryRequest.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_MatchHistoryResponse(arg) {
@@ -166,29 +200,39 @@ function serialize_neo4j_MatchHistoryResponse(arg) {
 }
 
 function deserialize_neo4j_MatchHistoryResponse(buffer_arg) {
-  return proto_neo4j_pb.MatchHistoryResponse.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.MatchHistoryResponse.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_PutUserPerferencesRequest(arg) {
   if (!(arg instanceof proto_neo4j_pb.PutUserPerferencesRequest)) {
-    throw new Error('Expected argument of type neo4j.PutUserPerferencesRequest');
+    throw new Error(
+      'Expected argument of type neo4j.PutUserPerferencesRequest',
+    );
   }
   return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_neo4j_PutUserPerferencesRequest(buffer_arg) {
-  return proto_neo4j_pb.PutUserPerferencesRequest.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.PutUserPerferencesRequest.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_PutUserPerferencesResponse(arg) {
   if (!(arg instanceof proto_neo4j_pb.PutUserPerferencesResponse)) {
-    throw new Error('Expected argument of type neo4j.PutUserPerferencesResponse');
+    throw new Error(
+      'Expected argument of type neo4j.PutUserPerferencesResponse',
+    );
   }
   return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_neo4j_PutUserPerferencesResponse(buffer_arg) {
-  return proto_neo4j_pb.PutUserPerferencesResponse.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.PutUserPerferencesResponse.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_StandardResponse(arg) {
@@ -199,7 +243,9 @@ function serialize_neo4j_StandardResponse(arg) {
 }
 
 function deserialize_neo4j_StandardResponse(buffer_arg) {
-  return proto_neo4j_pb.StandardResponse.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.StandardResponse.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
 function serialize_neo4j_UpdatePerferencesRequest(arg) {
@@ -210,14 +256,15 @@ function serialize_neo4j_UpdatePerferencesRequest(arg) {
 }
 
 function deserialize_neo4j_UpdatePerferencesRequest(buffer_arg) {
-  return proto_neo4j_pb.UpdatePerferencesRequest.deserializeBinary(new Uint8Array(buffer_arg));
+  return proto_neo4j_pb.UpdatePerferencesRequest.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
-
 // The greeting service definition.
-var Neo4jService = exports.Neo4jService = {
+var Neo4jService = (exports.Neo4jService = {
   // Sends a greeting
-createUser: {
+  createUser: {
     path: '/neo4j.Neo4j/CreateUser',
     requestStream: false,
     responseStream: false,
@@ -327,6 +374,6 @@ createUser: {
     responseSerialize: serialize_neo4j_MatchHistoryResponse,
     responseDeserialize: deserialize_neo4j_MatchHistoryResponse,
   },
-};
+});
 
 exports.Neo4jClient = grpc.makeGenericClientConstructor(Neo4jService);

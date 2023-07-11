@@ -68,3 +68,7 @@ curl:
 
 debug:
 	kubectl run --rm -it --image "osexp2000/ubuntu-with-utils" bash --
+
+milvus:
+	kubectl create namespace milvus || echo "NAMESPACE EXISTS"
+	helm upgrade --install milvus --namespace milvus --set cluster.enabled=false --set etcd.replicaCount=1 --set pulsar.enabled=false --set minio.mode=standalone milvus/milvus
