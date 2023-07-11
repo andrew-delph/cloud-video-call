@@ -23,7 +23,7 @@ ts_project(
 js_binary(
     name = "binary",
     data = [":ts"],
-    entry_point = "src/index.js",
+    entry_point = "src/milvus_test.js",
 )
 
 js_library(

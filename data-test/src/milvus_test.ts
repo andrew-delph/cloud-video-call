@@ -39,7 +39,8 @@ const schema = [
   },
 ];
 
-const fields_data = Array.from({ length: 1 }, () => {
+const fields_data = Array.from({ length: 2 }, () => {
+  console.log(`HERE`);
   return {
     vector: Array.from({ length: 8 }, () => Math.random()),
     height: Math.floor(Math.random() * 1001),
@@ -51,13 +52,16 @@ const fields_data = Array.from({ length: 1 }, () => {
 
 console.log(`schema ${JSON.stringify(schema)}`);
 
-console.log(`fields_data ${JSON.stringify(fields_data)}`);
+// console.log(`fields_data ${JSON.stringify(fields_data)}`);
 
 export async function milvusTest() {
+  console.log(`STARTING`);
   await client.createCollection({
     collection_name,
     fields: schema,
   });
+
+  return;
 
   await client.insert({
     collection_name,
