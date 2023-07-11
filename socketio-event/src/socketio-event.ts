@@ -258,6 +258,9 @@ export async function matchConsumer() {
         );
 
         if (!message) {
+          logger.debug(
+            `UPDATE READ STATUS ${source}, ${target}, ${system}, ${message}`,
+          );
           await common.setChatRead(mainRedisClient, source, target, true);
           return;
         }

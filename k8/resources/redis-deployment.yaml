@@ -18,9 +18,17 @@ spec:
         app: redis
     spec:
       priorityClassName: 'high-priority'
+      volumes:
+        - name: redis-storage
+          persistentVolumeClaim:
+            claimName: data-neo4j-0
       containers:
         - image: redis:latest
           name: redis
+          volumeMounts:
+            - name: redis-storage
+              mountPath: /data
+              subPath: redis
           ports:
             - containerPort: 6379
           resources:

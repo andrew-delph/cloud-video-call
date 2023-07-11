@@ -1,6 +1,9 @@
 import { activeSetName } from './variables';
 import Client from 'ioredis';
 import moment from 'moment';
+import { getLogger } from './logger';
+
+const logger = getLogger();
 
 export function redisChatRoomKey(user1Id: string, user2Id: string): string {
   if (user1Id > user2Id) {
@@ -104,18 +107,19 @@ export async function retrieveChat(
   user1Id: string,
   user2Id: string,
   startIndex: number,
-  limit: number,
+  limit: number = 0, // the rest of the chat.
 ): Promise<ChatMessage[]> {
   const key = redisChatRoomKey(user1Id, user2Id);
 
   // if startId is null start from beginging.
   // else start from startId
 
-  const rawMessages: string[] = await redisClient.lrange(
-    key,
-    -(startIndex + limit),
-    -startIndex - 1,
-  );
+  const start = -(startIndex + limit);
+  const end = -startIndex - 1;
+
+  logger.debug(`retrieveChat ${start} : ${end}`);
+
+  const rawMessages: string[] = await redisClient.lrange(key, start, end);
 
   const chatMessages: ChatMessage[] = rawMessages.map((msg) => JSON.parse(msg));
 

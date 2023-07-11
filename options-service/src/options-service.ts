@@ -259,7 +259,6 @@ app.get(`/chat/:otherId`, rateLimit(`get_chat_id`, 20), async (req, res) => {
     source,
     target,
     0,
-    5,
   );
   await common.setChatRead(mainRedisClient, source, target, true);
   res.status(200).json({ userId: source, otherId: target, chatMessages });

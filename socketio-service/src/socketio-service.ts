@@ -253,23 +253,26 @@ io.on(`connection`, async (socket) => {
     }, 1000 * 60 * 5),
   );
 
-  // REMOVE THIS AFTER TESTING!
+  // TODO: REMOVE THIS AFTER TESTING!
+  let count = 0;
 
-  // intervals.push(
-  //   setInterval(() => {
-  //     logger.debug(`sending test chat`);
-  //     const date = new Date();
-  //     const currentMinute = date.getMinutes();
-  //     const chatMsg: common.ChatMessage = {
-  //       timestamp: `${moment()}`,
-  //       source: userId,
-  //       target: `random-${currentMinute}`,
-  //       message: `RANDOM MSG ${Math.random()}`,
-  //       system: false,
-  //     };
-  //     socket.emit(`chat`, chatMsg);
-  //   }, 1000 * 3),
-  // );
+  intervals.push(
+    setInterval(async () => {
+      count = count + 1;
+
+      logger.debug(`sending test chat`);
+      const date = new Date();
+      const currentMinute = date.getMinutes();
+
+      await sendChatEventMessage(
+        rabbitChannel,
+        `random-${currentMinute}`,
+        userId,
+        `count: ${count}`,
+        true,
+      );
+    }, 1000 * 3),
+  );
 
   const createUserRequest = new CreateUserRequest();
   createUserRequest.setUserId(userId);
