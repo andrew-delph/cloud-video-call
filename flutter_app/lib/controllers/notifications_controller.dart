@@ -21,6 +21,8 @@ class NotificationsController extends GetxController with StateMixin {
 
   RxMap<String, NotificationModel> notifications = RxMap();
 
+  RxList<MapEntry<String, NotificationModel>> notificationsList = RxList();
+
   RxSet<String> alreadySnackbar = RxSet();
 
   RxInt unread = (-1).obs;
@@ -42,6 +44,10 @@ class NotificationsController extends GetxController with StateMixin {
   onInit() async {
     super.onInit();
     print("init NotificationsController");
+
+    notifications.listen((p0) {
+      sortNotifications();
+    });
 
     authService.user.listen((user) async {
       if (user == null) {
@@ -133,15 +139,11 @@ class NotificationsController extends GetxController with StateMixin {
     }
   }
 
-  addNotification() async {
-    String userId = authService.getUser().uid;
-    await notificationCollection.add(NotificationModel(
-      userId: userId,
-      title: DateTime.now().toString(),
-      time: DateTime.now().toString(),
-      read: false,
-      archive: false,
-    ));
+  sortNotifications() {
+    var notificationEntriestList = notifications.entries.toList();
+    notificationEntriestList
+        .sort((a, b) => a.value.getDateTime().compareTo(b.value.getDateTime()));
+    notificationsList(notificationEntriestList);
   }
 
   readNotifications(List<String> ids) async {
@@ -149,6 +151,10 @@ class NotificationsController extends GetxController with StateMixin {
     for (var id in ids) {
       batch.update(notificationCollection.doc(id), {"read": true});
       // print("readNotification $id");
+      var temp = notifications[id];
+      if (temp != null) {
+        temp.read = true;
+      }
     }
     await batch.commit();
   }

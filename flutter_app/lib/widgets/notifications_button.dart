@@ -50,24 +50,20 @@ class NotificationsButton extends GetView<NotificationsController> {
                       Expanded(
                           child: Obx(() => ListView.builder(
                               controller: scrollController,
-                              itemCount: controller.notifications().length + 1,
+                              itemCount:
+                                  controller.notificationsList().length + 1,
                               itemBuilder: (BuildContext context, int index) {
                                 if (index == controller.notificationTotal()) {
                                   return const Text("No more Notifications.");
                                 } else if (index >=
-                                    controller.notifications().length) {
+                                    controller.notificationsList().length) {
                                   controller.loadMoreNotifications();
                                   return const CircularProgressIndicator();
                                 } else {
-                                  String notificationId = controller
-                                      .notifications()
-                                      .entries
-                                      .toList()[index]
-                                      .key;
+                                  String notificationId =
+                                      controller.notificationsList()[index].key;
                                   NotificationModel notification = controller
-                                      .notifications()
-                                      .entries
-                                      .toList()[index]
+                                      .notificationsList()[index]
                                       .value;
 
                                   seenNotifications.add(notificationId);
@@ -150,20 +146,5 @@ class NotificationItem extends GetView<NotificationsController> {
                 ],
               ))),
     ]);
-  }
-}
-
-class NotificationsLoadMore extends GetView<NotificationsController> {
-  const NotificationsLoadMore({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () {
-        print("loading more");
-        controller.addNotification();
-      },
-      child: const Text("Load More."),
-    );
   }
 }
