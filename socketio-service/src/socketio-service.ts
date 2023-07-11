@@ -254,25 +254,24 @@ io.on(`connection`, async (socket) => {
   );
 
   // TODO: REMOVE THIS AFTER TESTING!
-  let count = 0;
+  // let count = 0;
+  // intervals.push(
+  //   setInterval(async () => {
+  //     count = count + 1;
 
-  intervals.push(
-    setInterval(async () => {
-      count = count + 1;
+  //     logger.debug(`sending test chat`);
+  //     const date = new Date();
+  //     const currentMinute = date.getMinutes();
 
-      logger.debug(`sending test chat`);
-      const date = new Date();
-      const currentMinute = date.getMinutes();
-
-      await sendChatEventMessage(
-        rabbitChannel,
-        `random-${currentMinute}`,
-        userId,
-        `count: ${count}`,
-        true,
-      );
-    }, 1000 * 3),
-  );
+  //     await sendChatEventMessage(
+  //       rabbitChannel,
+  //       `random-${currentMinute}`,
+  //       userId,
+  //       `count: ${count}`,
+  //       true,
+  //     );
+  //   }, 1000 * 3),
+  // );
 
   const createUserRequest = new CreateUserRequest();
   createUserRequest.setUserId(userId);
