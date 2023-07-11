@@ -7,6 +7,7 @@ import {
 } from '@zilliz/milvus2-sdk-node';
 import * as common from 'common';
 
+const START_TIME = performance.now();
 const logger = common.getLogger();
 
 const address = `192.168.49.2:30033`;
@@ -167,6 +168,6 @@ milvusTest()
     console.error(err);
   })
   .finally(() => {
-    console.log(`DONE`);
+    console.log(`DONE ${(performance.now() - START_TIME) / 1000}seconds`);
     process.exit(0);
   });
