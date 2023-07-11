@@ -96,7 +96,6 @@ class NotificationsButton extends GetView<NotificationsController> {
               child: const Icon(Icons.notifications),
             ),
             onPressed: () {
-              print("pressed");
               Overlay.of(context).insert(_createOverlayEntry());
             },
           );

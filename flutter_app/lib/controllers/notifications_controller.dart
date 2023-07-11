@@ -1,5 +1,4 @@
 // Flutter imports:
-import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,7 +11,6 @@ import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/options_service.dart';
 import '../utils/utils.dart';
-import '../widgets/notifications_button.dart';
 
 class NotificationsController extends GetxController with StateMixin {
   final AuthService authService = Get.find();
@@ -139,14 +137,14 @@ class NotificationsController extends GetxController with StateMixin {
     }
   }
 
-  sortNotifications() {
+  void sortNotifications() {
     var notificationEntriestList = notifications.entries.toList();
     notificationEntriestList
         .sort((a, b) => a.value.getDateTime().compareTo(b.value.getDateTime()));
     notificationsList(notificationEntriestList);
   }
 
-  readNotifications(List<String> ids) async {
+  Future<void> readNotifications(List<String> ids) async {
     WriteBatch batch = FirebaseFirestore.instance.batch();
     for (var id in ids) {
       batch.update(notificationCollection.doc(id), {"read": true});
@@ -159,7 +157,7 @@ class NotificationsController extends GetxController with StateMixin {
     await batch.commit();
   }
 
-  archiveNotifications(List<String> ids) async {
+  Future<void> archiveNotifications(List<String> ids) async {
     WriteBatch batch = FirebaseFirestore.instance.batch();
     for (var id in ids) {
       batch.update(notificationCollection.doc(id), {"archive": true});
@@ -173,36 +171,6 @@ class NotificationsController extends GetxController with StateMixin {
 
   DocumentReference<NotificationModel> getMyNotificationsDoc() {
     return notificationCollection.doc();
-  }
-
-  List<PopupMenuItem<String>> createNotificationsPopupList() {
-    print("createNotificationsPopupList");
-    var popups = notifications().entries.map((entry) {
-      return PopupMenuItem<String>(
-        value: entry.key,
-        child: NotificationItem(entry.key, entry.value),
-      );
-    }).toList();
-
-    readNotifications(notifications()
-        .entries
-        .where((entry) => !entry.value.isRead())
-        .map((entry) => entry.key)
-        .toList());
-
-    if (popups.isEmpty) {
-      popups.add(const PopupMenuItem<String>(
-        value: "none",
-        child: Text("No Notifications."),
-      ));
-    } else {
-      popups.add(const PopupMenuItem<String>(
-        value: "archive",
-        child: Text("Archive Notifications."),
-      ));
-    }
-
-    return popups;
   }
 
   Future<NotificationSettings> getNotificationSettings() async {
