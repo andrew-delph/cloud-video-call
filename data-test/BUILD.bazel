@@ -35,7 +35,7 @@ js_library(
 )
 
 npm_package(
-    name = "neo4j",
+    name = "data-test",
     srcs = [":lib"],
     visibility = ["//visibility:public"],
 )

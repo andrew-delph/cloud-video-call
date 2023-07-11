@@ -177,68 +177,7 @@ importers:
         specifier: ^4.4.4
         version: 4.9.5
 
-  matchmaker-event:
-    dependencies:
-      amqplib:
-        specifier: ^0.10.3
-        version: 0.10.3
-      cluster:
-        specifier: ^0.7.7
-        version: 0.7.7
-      common:
-        specifier: link:../common
-        version: link:../common
-      common-messaging:
-        specifier: link:../common-messaging
-        version: link:../common-messaging
-      express:
-        specifier: ^4.18.2
-        version: 4.18.2
-      ioredis:
-        specifier: 5.2.5
-        version: 5.2.5
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-      lodash.throttle:
-        specifier: ^4.1.1
-        version: 4.1.1
-      moment:
-        specifier: ^2.29.4
-        version: 2.29.4
-      redlock:
-        specifier: ^5.0.0-beta.2
-        version: 5.0.0-beta.2
-      uuid:
-        specifier: ^9.0.0
-        version: 9.0.0
-    devDependencies:
-      '@types/amqplib':
-        specifier: ^0.10.1
-        version: 0.10.1
-      '@types/express':
-        specifier: ^4.17.17
-        version: 4.17.17
-      '@types/jest':
-        specifier: ^29.5.2
-        version: 29.5.2
-      '@types/lodash.throttle':
-        specifier: ^4.1.7
-        version: 4.1.7
-      '@types/node':
-        specifier: ^18.13.0
-        version: 18.15.3
-      '@types/uuid':
-        specifier: ^9.0.0
-        version: 9.0.1
-      tsc-watch:
-        specifier: ^6.0.0
-        version: 6.0.0(typescript@4.9.5)
-      typescript:
-        specifier: ^4.9.5
-        version: 4.9.5
-
-  neo4j:
+  data-test:
     dependencies:
       '@types/async':
         specifier: ^3.2.19
@@ -308,6 +247,67 @@ importers:
         specifier: ^4.9.5
         version: 4.9.5
 
+  matchmaker-event:
+    dependencies:
+      amqplib:
+        specifier: ^0.10.3
+        version: 0.10.3
+      cluster:
+        specifier: ^0.7.7
+        version: 0.7.7
+      common:
+        specifier: link:../common
+        version: link:../common
+      common-messaging:
+        specifier: link:../common-messaging
+        version: link:../common-messaging
+      express:
+        specifier: ^4.18.2
+        version: 4.18.2
+      ioredis:
+        specifier: 5.2.5
+        version: 5.2.5
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      lodash.throttle:
+        specifier: ^4.1.1
+        version: 4.1.1
+      moment:
+        specifier: ^2.29.4
+        version: 2.29.4
+      redlock:
+        specifier: ^5.0.0-beta.2
+        version: 5.0.0-beta.2
+      uuid:
+        specifier: ^9.0.0
+        version: 9.0.0
+    devDependencies:
+      '@types/amqplib':
+        specifier: ^0.10.1
+        version: 0.10.1
+      '@types/express':
+        specifier: ^4.17.17
+        version: 4.17.17
+      '@types/jest':
+        specifier: ^29.5.2
+        version: 29.5.2
+      '@types/lodash.throttle':
+        specifier: ^4.1.7
+        version: 4.1.7
+      '@types/node':
+        specifier: ^18.13.0
+        version: 18.15.3
+      '@types/uuid':
+        specifier: ^9.0.0
+        version: 9.0.1
+      tsc-watch:
+        specifier: ^6.0.0
+        version: 6.0.0(typescript@4.9.5)
+      typescript:
+        specifier: ^4.9.5
+        version: 4.9.5
+
   neo4j-jobs:
     dependencies:
       common:
@@ -323,8 +323,8 @@ importers:
         specifier: ^5.5.0
         version: 5.5.0
       neo4jscripts:
-        specifier: link:../neo4j
-        version: link:../neo4j
+        specifier: link:../data-test
+        version: link:../data-test
       uuid:
         specifier: ^9.0.0
         version: 9.0.0

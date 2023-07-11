@@ -1,6 +1,6 @@
 packages:
   - 'common'
-  - 'neo4j'
+  - 'data-test'
   - 'common-messaging'
   - 'data-service'
   - 'neo4j-jobs'

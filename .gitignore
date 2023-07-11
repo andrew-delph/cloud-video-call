@@ -36,7 +36,7 @@ ui-debug.log*
 
 bazel-*
 flutter_app/android/fastlane/report.xml
-neo4j/*.png
+data-test/*.png
 
 common-messaging/src/test.js
 

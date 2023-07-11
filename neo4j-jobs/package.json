@@ -19,7 +19,7 @@
     "neo4j-driver": "^5.5.0",
     "common": "link:../common",
     "common-messaging": "link:../common-messaging",
-    "neo4jscripts": "link:../neo4j"
+    "neo4jscripts": "link:../data-test"
   },
   "devDependencies": {
     "@types/node": "^18.13.0",
