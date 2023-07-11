@@ -138,9 +138,9 @@ export async function milvusTest() {
 
   console.log(`status ${res.status.error_code} reason ${res.status.reason}`);
 
-  console.table(res.results);
-
   console.log(`search name: ${fields_data[0].name}`);
+
+  console.table(res.results);
 
   // for (let r of res.results) {
   //   console.log(`r id ${r.id} score ${r.score} data ${JSON.stringify(r)}`);
