@@ -14,11 +14,14 @@ const address = `192.168.49.2:30033`;
 // connect to milvus
 const milvusClient = new MilvusClient({ address });
 
-const collection_name = `hello_milvus_${Array.from(
+const COLLECTION_NAME = `hello_milvus_${Array.from(
   { length: 10 },
   () => Math.random().toString(36)[2],
 ).join(``)}`;
-const dim = 128;
+
+const dim = 400;
+const ITEMS_NUM = 9000;
+
 const METRIC_TYPE = `IP`;
 const schema = [
   {
@@ -32,7 +35,7 @@ const schema = [
     name: `vector`,
     description: `Vector field`,
     data_type: DataType.FloatVector,
-    dim: 8,
+    dim: dim,
   },
   { name: `height`, description: `int64 field`, data_type: DataType.Int64 },
   {
@@ -43,9 +46,9 @@ const schema = [
   },
 ];
 
-const fields_data = Array.from({ length: 20 }, () => {
+const fields_data = Array.from({ length: ITEMS_NUM }, () => {
   return {
-    vector: Array.from({ length: 8 }, () => Math.random()),
+    vector: Array.from({ length: dim }, () => Math.random()),
     height: Math.floor(Math.random() * 1001),
     name: Array.from({ length: 10 }, () => Math.random().toString(36)[2]).join(
       ``,
@@ -69,7 +72,7 @@ const fields_data = Array.from({ length: 20 }, () => {
 export async function milvusTest() {
   console.log(`STARTING2`);
   await milvusClient.createCollection({
-    collection_name,
+    collection_name: COLLECTION_NAME,
     fields: schema,
     metric_type: METRIC_TYPE,
   });
@@ -77,7 +80,7 @@ export async function milvusTest() {
   console.log(`INSERT`);
 
   await milvusClient.insert({
-    collection_name,
+    collection_name: COLLECTION_NAME,
     fields_data,
   });
 
@@ -85,7 +88,7 @@ export async function milvusTest() {
   // create index
   await milvusClient.createIndex({
     // required
-    collection_name,
+    collection_name: COLLECTION_NAME,
     field_name: `vector`, // optional if you are using milvus v2.2.9+
     index_name: `myindex`, // optional
     index_type: `HNSW`, // optional if you are using milvus v2.2.9+
@@ -97,7 +100,7 @@ export async function milvusTest() {
 
   // load collection
   await milvusClient.loadCollectionSync({
-    collection_name,
+    collection_name: COLLECTION_NAME,
   });
 
   // get the search vector
@@ -120,7 +123,7 @@ export async function milvusTest() {
   // Perform a vector search on the collection
   // const res = (await milvusClient.search({
   //   // required
-  //   collection_name, // required, the collection name
+  //   COLLECTION_NAME, // required, the collection name
   //   vector: searchVector, // required, vector used to compare other vectors in milvus
   //   // optionals
   //   filter: `height > 0`, // optional, filter
@@ -131,9 +134,9 @@ export async function milvusTest() {
   // }));
 
   const res = await milvusClient.search({
-    collection_name: collection_name,
+    collection_name: COLLECTION_NAME,
     vector: searchVector,
-    topk: 2,
+    limit: 20,
     output_fields: [`height`, `name`],
     metric_type: METRIC_TYPE,
   });
@@ -141,7 +144,7 @@ export async function milvusTest() {
   //   const names = ["name1", "name2", "name3"]; // the list of names you're searching for
 
   // const res = await milvusClient.query({
-  //   collection_name,
+  //   COLLECTION_NAME,
   //   expr: `name in [${names.join(",")}]`,
   //   output_fields: ["height", "name"]
   // });
@@ -153,17 +156,6 @@ export async function milvusTest() {
   console.log(`search name: ${fields_data[0].name}`);
 
   console.table(res.results);
-
-  console.table(
-    (
-      await milvusClient.search({
-        collection_name: collection_name,
-        vector: searchVector,
-        output_fields: [`height`, `name`],
-        metric_type: METRIC_TYPE,
-      })
-    ).results,
-  );
 
   // for (let r of res.results) {
   //   console.log(`r id ${r.id} score ${r.score} data ${JSON.stringify(r)}`);
