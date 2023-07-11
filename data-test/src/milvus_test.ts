@@ -43,7 +43,6 @@ const schema = [
 ];
 
 const fields_data = Array.from({ length: 20 }, () => {
-  console.log(`HERE`);
   return {
     vector: Array.from({ length: 8 }, () => Math.random()),
     height: Math.floor(Math.random() * 1001),
