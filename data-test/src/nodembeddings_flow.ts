@@ -14,17 +14,19 @@ import {
 import * as neo4j from 'neo4j-driver';
 import { calcAvgMulvis } from './mulvis_functions';
 
-const NODE_NUM = 10;
-const EDGE_NUM = 4;
+const NODE_NUM = 200;
+const EDGE_NUM = 10;
 
 let PERMS: any = [[1, 0.5, 0]];
 PERMS = false;
 
-const PERMS_LEN_MIN = 3;
-const PERMS_LEN_MAX = 5;
+const PERMS_LEN_MIN = 1;
+const PERMS_LEN_MAX = 3;
 
 const PROP_RATIO_OPTIONS = [0];
 const NODE_INFLUENCE_OPTIONS = [0.5];
+
+export const DIM = 150;
 
 let results: neo4j.QueryResult;
 
@@ -272,7 +274,7 @@ async function generateEmbedding(
         featureProperties: ['values','priority','community'],
         propertyRatio: ${propertyRatio},
         nodeSelfInfluence: ${nodeSelfInfluence},
-        embeddingDimension: 150,
+        embeddingDimension: ${DIM},
         randomSeed: 42,
         iterationWeights: ${JSON.stringify(perm)},
         writeProperty: 'embedding'

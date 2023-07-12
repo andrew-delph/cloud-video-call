@@ -8,6 +8,7 @@ import {
 } from '@zilliz/milvus2-sdk-node';
 import * as common from 'common';
 import { validFriends } from './person';
+import { DIM } from './nodembeddings_flow';
 
 let START_TIME = performance.now();
 const logger = common.getLogger();
@@ -17,7 +18,6 @@ const address = `192.168.49.2:30033`;
 // connect to milvus
 export const milvusClient = new MilvusClient({ address });
 
-const dim = 400;
 const METRIC_TYPE = `IP`;
 const OUTPUT_FIELDS = [`type`];
 
@@ -42,7 +42,7 @@ const schema = [
     name: `vector`,
     description: `Vector field`,
     data_type: DataType.FloatVector,
-    dim: dim,
+    dim: DIM,
   },
   {
     name: `type`,
