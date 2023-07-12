@@ -16,7 +16,7 @@ import {
   CreateUserResponse,
   GetRelationshipScoresRequest,
   GetRelationshipScoresResponse,
-  Neo4jService,
+  DataServiceService,
   CheckUserFiltersResponse,
   CheckUserFiltersRequest,
   GetUserPerferencesRequest,
@@ -858,7 +858,7 @@ const getMatchHistory = async (
   callback(null, reply);
 };
 
-server.addService(Neo4jService, {
+server.addService(DataServiceService, {
   createUser,
   createMatch,
   endCall,
