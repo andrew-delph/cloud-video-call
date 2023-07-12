@@ -2,7 +2,7 @@ import {
   RetryError,
   realtionshipScoreCacheEx,
   mainRedisClient,
-  neo4jRpcClient,
+  dataServiceClient,
   stripUserId,
   createFilterSet,
 } from './matchmaker-event';
@@ -138,8 +138,8 @@ export async function getRelationshipScores(
     GetRelationshipScoresRequest,
     GetRelationshipScoresResponse
   >(
-    neo4jRpcClient,
-    neo4jRpcClient.getRelationshipScores,
+    dataServiceClient,
+    dataServiceClient.getRelationshipScores,
     getRelationshipScoresRequest,
   ).catch((e) => {
     logger.error(`getRelationshipScores`, e);

@@ -45,7 +45,7 @@ app.get(`/health`, (req, res) => {
   res.send(`Health is good.`);
 });
 
-export let neo4jRpcClient: DataServiceClient;
+export let dataServiceClient: DataServiceClient;
 
 export let mainRedisClient: Client;
 let subRedisClient: Client;
@@ -70,7 +70,7 @@ const maxCooldownAttemps = Math.floor(
 export const lastMatchedCooldownMinutes = 30; // filter of last matches
 
 export async function startReadyConsumer() {
-  neo4jRpcClient = createLocalDataServiceClient();
+  dataServiceClient = createLocalDataServiceClient();
   await connectRabbit();
 
   mainRedisClient = common.createRedisClient();
@@ -287,8 +287,8 @@ const neo4jGetUser = (userId: string) => {
   getUserPerferencesRequest.setUserId(userId);
 
   return makeGrpcRequest<GetUserPerferencesRequest, GetUserPerferencesResponse>(
-    neo4jRpcClient,
-    neo4jRpcClient.getUserPerferences,
+    dataServiceClient,
+    dataServiceClient.getUserPerferences,
     getUserPerferencesRequest,
   );
 };
@@ -574,8 +574,8 @@ const neo4jCheckUserFiltersRequest = (
   checkUserFiltersRequest: CheckUserFiltersRequest,
 ) => {
   return makeGrpcRequest<CheckUserFiltersRequest, CheckUserFiltersResponse>(
-    neo4jRpcClient,
-    neo4jRpcClient.checkUserFilters,
+    dataServiceClient,
+    dataServiceClient.checkUserFilters,
     checkUserFiltersRequest,
   );
 };

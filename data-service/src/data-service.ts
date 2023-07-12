@@ -5,7 +5,7 @@ import {
   writeUserPreferencesDatabase,
 } from './UserPreferences';
 import { user_created } from './metrics';
-import { FieldData, insertData, milvusTest } from './milvus';
+import { FieldData, insertData } from './milvus';
 import { cosineSimilarity } from './utils';
 import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
 import * as common from 'common';

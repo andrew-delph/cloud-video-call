@@ -40,7 +40,7 @@ const logger = common.getLogger();
 
 listenGlobalExceptions(cleanSocketServer);
 
-const neo4jRpcClient = createLocalDataServiceClient();
+const dataServiceClient = createLocalDataServiceClient();
 
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;
@@ -216,8 +216,8 @@ io.on(`connection`, async (socket) => {
     endCallRequest.setMatchId(match_id);
 
     await makeGrpcRequest<EndCallRequest, StandardResponse>(
-      neo4jRpcClient,
-      neo4jRpcClient.endCall,
+      dataServiceClient,
+      dataServiceClient.endCall,
       endCallRequest,
     )
       .then(() => {
@@ -276,8 +276,8 @@ io.on(`connection`, async (socket) => {
   const createUserRequest = new CreateUserRequest();
   createUserRequest.setUserId(userId);
   makeGrpcRequest<CreateUserRequest, CreateUserResponse>(
-    neo4jRpcClient,
-    neo4jRpcClient.createUser,
+    dataServiceClient,
+    dataServiceClient.createUser,
     createUserRequest,
   )
     .then(() => {

@@ -26,7 +26,7 @@ const logger = common.getLogger();
 
 const firebaseApp = initializeApp();
 
-const neo4jRpcClient = neo4j_common.createLocalDataServiceClient();
+const dataServiceClient = neo4j_common.createLocalDataServiceClient();
 
 const durationWarn = 2;
 
@@ -107,8 +107,8 @@ app.put(
     createFeedbackRequest.setMatchId(match_id);
 
     await makeGrpcRequest<CreateFeedbackRequest, neo4j_common.Match>(
-      neo4jRpcClient,
-      neo4jRpcClient.createFeedback,
+      dataServiceClient,
+      dataServiceClient.createFeedback,
       createFeedbackRequest,
     )
       .then((response) => {
@@ -157,8 +157,8 @@ app.put(`/preferences`, rateLimit(`put_preferences`, 20), async (req, res) => {
   });
 
   await makeGrpcRequest<PutUserPerferencesRequest, PutUserPerferencesResponse>(
-    neo4jRpcClient,
-    neo4jRpcClient.putUserPerferences,
+    dataServiceClient,
+    dataServiceClient.putUserPerferences,
     putUserFiltersRequest,
   )
     .then((response) => {
@@ -180,8 +180,8 @@ app.get(`/preferences`, rateLimit(`get_preferences`, 20), async (req, res) => {
   checkUserFiltersRequest.setUserId(userId);
 
   await makeGrpcRequest<GetUserPerferencesRequest, GetUserPerferencesResponse>(
-    neo4jRpcClient,
-    neo4jRpcClient.getUserPerferences,
+    dataServiceClient,
+    dataServiceClient.getUserPerferences,
     checkUserFiltersRequest,
   )
     .then((response) => {
@@ -234,8 +234,8 @@ app.get(`/history`, rateLimit(`get_history`, 20), async (req, res) => {
   matchHistoryRequest.setSkip(skipInt);
 
   await makeGrpcRequest<MatchHistoryRequest, MatchHistoryResponse>(
-    neo4jRpcClient,
-    neo4jRpcClient.getMatchHistory,
+    dataServiceClient,
+    dataServiceClient.getMatchHistory,
     matchHistoryRequest,
   )
     .then((response) => {
