@@ -142,7 +142,6 @@ export async function calcAvgMulvis(result: neo4j.QueryResult) {
       const result = queryResults.results[i];
       const otherName = result.type;
       if (validFriends(searchType, otherName)) total += 1;
-      continue;
     }
 
     length += Math.min(queryResults.results.length, TOP_K);
