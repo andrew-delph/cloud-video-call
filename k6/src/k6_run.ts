@@ -349,7 +349,7 @@ export default async function () {
             score_trend.add(score, extraLabels(myUser));
             score_gauge.add(score, extraLabels(myUser));
 
-            const r = http.post(
+            const r = http.put(
               `${options_url}/providefeedback`,
               JSON.stringify({
                 match_id: data.match_id,
