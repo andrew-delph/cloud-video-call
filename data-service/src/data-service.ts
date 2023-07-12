@@ -79,9 +79,6 @@ export const driver = neo4j.driver(
 const durationWarn = 2;
 
 const verifyIndexes = async () => {
-  await milvusTest();
-  logger.info(`MILVUS STEPS COMPLETED.`);
-
   const start_time = performance.now();
 
   const session = driver.session();
