@@ -17,7 +17,7 @@ const Pool = require(`multiprocessing`).Pool;
 
 let results: neo4j.QueryResult;
 
-function calcAvg(
+function calcAvgManual(
   result: neo4j.QueryResult,
   cosineSimilarityThreshhold: number = 0.5,
 ) {
@@ -279,7 +279,7 @@ async function generateEmbedding(
 
   // printResults(results, 50, 0);
 
-  const avgObj = await calcAvg(results, 0.5);
+  const avgObj = await calcAvgManual(results, 0.5);
 
   console.log();
   console.log(`the avg is:`, avgObj.avg);
