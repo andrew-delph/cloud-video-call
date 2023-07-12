@@ -6,7 +6,13 @@ import {
   SearchResultData,
 } from '@zilliz/milvus2-sdk-node';
 import * as common from 'common';
-import { milvusClient, queryVector } from './mulvis_functions';
+import {
+  DIM,
+  METRIC_TYPE,
+  SCHEMA,
+  milvusClient,
+  queryVector,
+} from './mulvis_functions';
 
 const logger = common.getLogger();
 
@@ -17,37 +23,11 @@ const logger = common.getLogger();
 
 const COLLECTION_NAME = `hello_milvus`;
 
-const dim = 400;
 const ITEMS_NUM = 2000;
-
-export const OUTPUT_FIELDS = [`name`];
-
-export const METRIC_TYPE = `IP`;
-export const SCHEMA = [
-  {
-    name: `age`,
-    description: `ID field`,
-    data_type: DataType.Int64,
-    is_primary_key: true,
-    autoID: true,
-  },
-  {
-    name: `vector`,
-    description: `Vector field`,
-    data_type: DataType.FloatVector,
-    dim: dim,
-  },
-  {
-    name: `name`,
-    description: `VarChar field`,
-    data_type: DataType.VarChar,
-    max_length: 128,
-  },
-];
 
 const fields_data = Array.from({ length: ITEMS_NUM }, () => {
   return {
-    vector: Array.from({ length: dim }, () => Math.random()),
+    vector: Array.from({ length: DIM }, () => Math.random()),
     name: Array.from({ length: 10 }, () => Math.random().toString(36)[2]).join(
       ``,
     ),

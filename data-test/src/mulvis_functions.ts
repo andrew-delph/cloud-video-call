@@ -8,9 +8,32 @@ import {
 } from '@zilliz/milvus2-sdk-node';
 import * as common from 'common';
 import { validFriends } from './person';
-import { METRIC_TYPE, OUTPUT_FIELDS, SCHEMA } from './milvus_test';
 export const DIM: number = 150;
 
+export const OUTPUT_FIELDS = [`name`];
+
+export const METRIC_TYPE = `IP`;
+export const SCHEMA = [
+  {
+    name: `age`,
+    description: `ID field`,
+    data_type: DataType.Int64,
+    is_primary_key: true,
+    autoID: true,
+  },
+  {
+    name: `vector`,
+    description: `Vector field`,
+    data_type: DataType.FloatVector,
+    dim: DIM,
+  },
+  {
+    name: `name`,
+    description: `VarChar field`,
+    data_type: DataType.VarChar,
+    max_length: 128,
+  },
+];
 let TOP_K = Infinity;
 TOP_K = 5;
 
@@ -22,11 +45,11 @@ const address = `192.168.49.2:30033`;
 // connect to milvus
 export const milvusClient = new MilvusClient({ address });
 
-interface SearchResultDataExtended extends SearchResultData {
-  type: string;
+export interface SearchResultDataExtended extends SearchResultData {
+  name: string;
 }
 
-interface SearchResultsExtended {
+export interface SearchResultsExtended {
   status: ResStatus;
   results: SearchResultDataExtended[];
 }
@@ -104,7 +127,7 @@ export async function calcAvgMulvis(result: neo4j.QueryResult) {
 
   const items = records.map((record) => {
     return {
-      type: record.get(`n.userId`) as string,
+      name: record.get(`n.userId`) as string,
       vector: record.get(`n.embedding`) as number[],
     };
   });
@@ -118,7 +141,7 @@ export async function calcAvgMulvis(result: neo4j.QueryResult) {
 
   // SEACH AND VALIDATE TOP K
   for (let item of items) {
-    const searchType = item.type;
+    const searchType = item.name;
     const searchVector = item.vector;
 
     const queryResults = await queryVector(
@@ -129,7 +152,7 @@ export async function calcAvgMulvis(result: neo4j.QueryResult) {
 
     for (let i = 0; i < Math.min(queryResults.results.length, TOP_K); i++) {
       const result = queryResults.results[i];
-      const otherName = result.type;
+      const otherName = result.name;
       if (validFriends(searchType, otherName)) total += 1;
     }
 

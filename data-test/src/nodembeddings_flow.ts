@@ -18,7 +18,7 @@ const NODE_NUM = 200;
 const EDGE_NUM = 20;
 
 let PERMS: any = [[1, 0.5, 0]];
-PERMS = false;
+// PERMS = false;
 
 const PERMS_LEN_MIN = 1;
 const PERMS_LEN_MAX = 3;
