@@ -19,7 +19,7 @@ export const milvusClient = new MilvusClient({ address });
 
 const dim = 400;
 const METRIC_TYPE = `IP`;
-const OUTPUT_FIELDS = [`name`];
+const OUTPUT_FIELDS = [`type`];
 
 interface SearchResultDataExtended extends SearchResultData {
   name: string;
@@ -45,7 +45,7 @@ const schema = [
     dim: dim,
   },
   {
-    name: `name`,
+    name: `type`,
     description: `VarChar field`,
     data_type: DataType.VarChar,
     max_length: 128,
@@ -104,10 +104,10 @@ export async function calcAvgMulvis(result: neo4j.QueryResult) {
 
   console.log(`calculating average`);
 
-  const collection_name = Array.from(
+  const collection_name = `hello_milvus_${Array.from(
     { length: 10 },
     () => Math.random().toString(36)[2],
-  ).join(``);
+  ).join(``)}`;
 
   await initCollection(collection_name);
 
@@ -117,7 +117,7 @@ export async function calcAvgMulvis(result: neo4j.QueryResult) {
   const items = records.map((record) => {
     return {
       type: record.get(`n.userId`),
-      embedding: record.get(`n.embedding`),
+      vector: record.get(`n.embedding`),
     };
   });
 
@@ -131,7 +131,7 @@ export async function calcAvgMulvis(result: neo4j.QueryResult) {
   // SEACH AND VALIDATE TOP N
   for (let item of items) {
     const searchType = item.type;
-    const searchVector = item.embedding;
+    const searchVector = item.vector;
 
     const queryResults = await queryVector(collection_name, searchVector);
 
