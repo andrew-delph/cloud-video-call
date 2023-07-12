@@ -17,6 +17,15 @@ import { calcAvgMulvis } from './mulvis_functions';
 const NODE_NUM = 10;
 const EDGE_NUM = 4;
 
+let PERMS: any = [[1, 0.5, 0]];
+PERMS = false;
+
+const PERMS_LEN_MIN = 3;
+const PERMS_LEN_MAX = 5;
+
+const PROP_RATIO_OPTIONS = [0];
+const NODE_INFLUENCE_OPTIONS = [0.5];
+
 let results: neo4j.QueryResult;
 
 function calcAvgManual(
@@ -150,7 +159,11 @@ export async function nodeembeddings(
   results = await funcs.createGraph(`myGraph`);
 
   if (permutations == false) {
-    permutations = generatePermutations([0, 1, 0.5], 3, 5);
+    permutations = generatePermutations(
+      [0, 1, 0.5],
+      PERMS_LEN_MIN,
+      PERMS_LEN_MAX,
+    );
   }
   console.log(`permutations: ${JSON.stringify(permutations)}`);
   // if (1 == 1) process.exit(1);
@@ -188,8 +201,8 @@ export async function nodeembeddings(
   let resultList: any[] = [];
 
   // [0, 1, 0.5]
-  for (let propertyRatio of [0, 0.5, 1]) {
-    for (let nodeSelfInfluence of [0, 0.5, 1]) {
+  for (let propertyRatio of PROP_RATIO_OPTIONS) {
+    for (let nodeSelfInfluence of NODE_INFLUENCE_OPTIONS) {
       for (let perm of permutations) {
         resultList.push(
           await generateEmbedding(perm, propertyRatio, nodeSelfInfluence),
@@ -301,9 +314,7 @@ async function generateEmbedding(
 }
 
 export async function nodeEmbeddingsFlowMain() {
-  let perms: any = [[1, 0.5, 0]];
-  perms = false;
-  const resultsList = await nodeembeddings(perms, true);
+  const resultsList = await nodeembeddings(PERMS, true);
 
   // const resultsListOther = await nodeembeddings(
   //   !gender,
