@@ -1,6 +1,5 @@
 import { poolCalcScore } from './consine_worker';
 import * as funcs from './neo4j_functions';
-import { printResults } from './run_neo4j';
 import {
   userFunctions,
   createFemale,

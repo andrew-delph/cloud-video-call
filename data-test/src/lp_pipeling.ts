@@ -1,7 +1,6 @@
 import { createDotGraph, createRidgeLineChart } from './chart';
 import { session } from './neo4j_functions';
 import * as funcs from './neo4j_functions';
-import { printResults } from './run_neo4j';
 import * as neo4j from 'neo4j-driver';
 
 export async function createPipeline(): Promise<neo4j.QueryResult> {

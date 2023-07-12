@@ -1,5 +1,6 @@
 import * as lp from './lp_pipeling';
 import * as funcs from './neo4j_functions';
+import { printResults } from './neo4j_functions';
 import * as nodembeddings_flow from './nodembeddings_flow';
 import { nodeEmbeddingsFlowMain } from './nodembeddings_flow';
 import {
@@ -13,50 +14,6 @@ import * as neo4j from 'neo4j-driver';
 
 console.log(`starting neo4j_index`);
 let results: neo4j.QueryResult;
-
-export function printResults(
-  result: neo4j.QueryResult,
-  topLimit: number = 10,
-  bottomLimit: number = 0,
-  shortUserId = true,
-) {
-  console.log(``);
-  //   console.log("Results:");
-  //   console.log(result.records);
-  // console.log(`Summary:`);
-  // console.log(result.summary);
-  const records = result.records;
-  console.log(
-    `print records. topLimit: ${topLimit}  bottomLimit: ${bottomLimit}`,
-  );
-  console.log(`>>`);
-
-  const printRecord = (record: any, index: any) => {
-    let line = `#: ${index} `;
-    record.keys.forEach((key: any) => {
-      try {
-        if (!shortUserId) throw `not shortUserId`;
-        line =
-          line +
-          ` ` +
-          `${key.toString()}: ${record.get(key).toString().split(`_`).pop()}` +
-          `\t`;
-      } catch {
-        line = line + ` ` + `${key.toString()}: ${record.get(key)}` + `\t`;
-      }
-    });
-    console.log(line);
-  };
-  records.slice(0, topLimit).forEach(printRecord);
-  if (bottomLimit > 0) {
-    console.log(`---`);
-    records.slice(-bottomLimit).forEach(printRecord);
-  }
-
-  console.log(`<<`);
-
-  console.log(`records.length:`, records.length);
-}
 
 const start_time = performance.now();
 export async function run() {

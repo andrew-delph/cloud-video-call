@@ -1,5 +1,4 @@
 import { createDotGraph, createRidgeLineChart } from './chart';
-import { printResults } from './run_neo4j';
 import { Person, getPerson, indexToColor } from './person';
 import async from 'async';
 import * as common from 'common';
@@ -20,6 +19,50 @@ export function setDriver(host: string) {
     maxTransactionRetryTime: maxRetryTimeMs,
   });
   session = driver.session();
+}
+
+export function printResults(
+  result: neo4j.QueryResult,
+  topLimit: number = 10,
+  bottomLimit: number = 0,
+  shortUserId = true,
+) {
+  console.log(``);
+  //   console.log("Results:");
+  //   console.log(result.records);
+  // console.log(`Summary:`);
+  // console.log(result.summary);
+  const records = result.records;
+  console.log(
+    `print records. topLimit: ${topLimit}  bottomLimit: ${bottomLimit}`,
+  );
+  console.log(`>>`);
+
+  const printRecord = (record: any, index: any) => {
+    let line = `#: ${index} `;
+    record.keys.forEach((key: any) => {
+      try {
+        if (!shortUserId) throw `not shortUserId`;
+        line =
+          line +
+          ` ` +
+          `${key.toString()}: ${record.get(key).toString().split(`_`).pop()}` +
+          `\t`;
+      } catch {
+        line = line + ` ` + `${key.toString()}: ${record.get(key)}` + `\t`;
+      }
+    });
+    console.log(line);
+  };
+  records.slice(0, topLimit).forEach(printRecord);
+  if (bottomLimit > 0) {
+    console.log(`---`);
+    records.slice(-bottomLimit).forEach(printRecord);
+  }
+
+  console.log(`<<`);
+
+  console.log(`records.length:`, records.length);
 }
 
 export function getRandomInt(max: number) {
