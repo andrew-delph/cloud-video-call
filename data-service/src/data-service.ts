@@ -345,9 +345,7 @@ const getRelationshipScores = async (
 
       const scoreVal = result.score;
 
-      logger.debug(
-        `queryVector: [${userId}, ${otherId}, ${scoreVal}, ${typeof scoreVal}]`,
-      );
+      logger.debug(`queryVector: [${scoreVal}]`);
 
       scoreMessage.setScore(scoreVal);
       reply.getRelationshipScoresMap().set(otherId, scoreMessage);
