@@ -26,6 +26,8 @@ const PERMS_LEN_MAX = 3;
 const PROP_RATIO_OPTIONS = [0];
 const NODE_INFLUENCE_OPTIONS = [0.5];
 
+const CREATE_DATA = false;
+
 let results: neo4j.QueryResult;
 
 function calcAvgManual(
@@ -314,7 +316,7 @@ async function generateEmbedding(
 }
 
 export async function nodeEmbeddingsFlowMain() {
-  const resultsList = await nodeembeddings(PERMS, true);
+  const resultsList = await nodeembeddings(PERMS, CREATE_DATA);
 
   // const resultsListOther = await nodeembeddings(
   //   !gender,

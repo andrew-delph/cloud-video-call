@@ -10,6 +10,9 @@ import * as common from 'common';
 import { validFriends } from './person';
 export const DIM: number = 150;
 
+let TOP_K = Infinity;
+TOP_K = 1;
+
 let START_TIME = performance.now();
 const logger = common.getLogger();
 
@@ -135,9 +138,11 @@ export async function calcAvgMulvis(result: neo4j.QueryResult) {
 
     const queryResults = await queryVector(collection_name, searchVector);
 
-    for (let result of queryResults.results) {
+    for (let i = 0; i < Math.min(queryResults.results.length, TOP_K); i++) {
+      const result = queryResults.results[i];
       const otherName = result.type;
       if (validFriends(searchType, otherName)) total += 1;
+      continue;
     }
 
     length += 1;
