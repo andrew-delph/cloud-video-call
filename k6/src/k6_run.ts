@@ -18,8 +18,8 @@ const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
 const maxAuthSkip = 10; // max number of times a auth can be skipped
 
-let validMatchChatTime = 60 * 10; // number of seconds to delay if valid match
-let invalidMatchChatTime = 15;
+let validMatchChatTime = 10; // number of seconds to delay if valid match
+let invalidMatchChatTime = 3;
 
 // validMatchChatTime= 10
 // invalidMatchChatTime= 10
@@ -34,12 +34,12 @@ let authPrefix = `k6_auth_`;
 
 userFunctions.push(usersLib.createFemale);
 userFunctions.push(usersLib.createMale);
-userFunctions.push(usersLib.createGroupA);
-userFunctions.push(usersLib.createGroupB);
-// usersLib.setHotRange(10)
-for (let i = 0; i < usersLib.hotRange / 3; i++) {
-  userFunctions.push(usersLib.createHot);
-}
+// userFunctions.push(usersLib.createGroupA);
+// userFunctions.push(usersLib.createGroupB);
+// // usersLib.setHotRange(10)
+// for (let i = 0; i < usersLib.hotRange / 3; i++) {
+//   userFunctions.push(usersLib.createHot);
+// }
 
 const updateAuthVars = () => {
   if (uniqueAuthIds) {

@@ -501,22 +501,22 @@ async function matchmakerFlow(
   }
 
   const matchedMsg = [
-    `percentile=${scorePercentile.toFixed(2)}`,
     `score=${highestScore.score.toFixed(2)}`,
-    `nscores=(${highestScore.nscore.toFixed(1)}<${lowestScore.nscore.toFixed(
-      1,
-    )})`,
+    // `nscores=(${highestScore.nscore.toFixed(1)}<${lowestScore.nscore.toFixed(
+    //   1,
+    // )})`,
+    `percentile=${scorePercentile.toFixed(2)}`,
     `threshhold=${scoreThreshold.toFixed(2)}`,
-    `priority=${readyMessage.getPriority()}`,
-    `matched=[${stripUserId(readyMessage.getUserId())},${stripUserId(
-      otherId,
-    )}]`,
+    // `priority=${readyMessage.getPriority()}`,
     `scores=${relationShipScores.length}`,
     `attempts=${
       readyMessage.getCooldownAttempts() >= maxCooldownAttemps
         ? `${readyMessage.getCooldownAttempts()}(max)`
         : readyMessage.getCooldownAttempts()
     }`,
+    `matched=[${stripUserId(readyMessage.getUserId())},${stripUserId(
+      otherId,
+    )}]`,
   ];
 
   logger.info(matchedMsg.join(` `));

@@ -120,7 +120,7 @@ export async function queryVector(
     output_fields: OUTPUT_FIELDS,
     metric_type: METRIC_TYPE,
   })) as UserSearchResults;
-  if (result.status.reason) {
+  if (result.status.error_code != `Success`) {
     throw `retrieveVector ERROR: ${JSON.stringify(result.status)}`;
   }
   return result;
@@ -139,7 +139,7 @@ export async function retrieveVector(
     partition_names: [],
   });
 
-  if (result.status.reason) {
+  if (result.status.error_code != `Success`) {
     logger.error(`retrieveVector ERROR: ${JSON.stringify(result.status)}`);
   }
 
