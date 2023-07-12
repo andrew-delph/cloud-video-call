@@ -338,14 +338,15 @@ const getRelationshipScores = async (
     );
 
     for (let result of searchResults.results) {
-      const scoreMessage = defaultScore();
-
       const otherId = result.name;
+
+      if (reply.getRelationshipScoresMap().has(otherId)) continue;
+      const scoreMessage = defaultScore();
 
       const scoreVal = result.score;
 
       logger.debug(
-        `queryVector result for ${userId} and ${otherId} with scoreVal ${scoreVal}`,
+        `queryVector: [${userId}, ${otherId}, ${scoreVal}, ${typeof scoreVal}]`,
       );
 
       scoreMessage.setScore(scoreVal);

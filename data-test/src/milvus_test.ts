@@ -11,6 +11,7 @@ import {
   METRIC_TYPE,
   SCHEMA,
   initCollection,
+  insertData,
   milvusClient,
   queryVector,
   retrieveVector,
@@ -23,16 +24,18 @@ const logger = common.getLogger();
 //   () => Math.random().toString(36)[2],
 // ).join(``)}`;
 
-const COLLECTION_NAME = `hello_milvus`;
+let COLLECTION_NAME = `test3_hello_milvus`;
 
-const ITEMS_NUM = 200;
+// COLLECTION_NAME =
+//   COLLECTION_NAME +
+//   +Array.from({ length: 5 }, () => Math.random().toString(36)[2]).join(``);
+
+const ITEMS_NUM = 20;
 
 const fields_data = Array.from({ length: ITEMS_NUM }, () => {
   return {
     vector: Array.from({ length: DIM }, () => Math.random()),
-    name:
-      `k6_auth_test-07-12-13-48-24_${Math.random()}_GroupB` +
-      Array.from({ length: 10 }, () => Math.random().toString(36)[2]).join(``),
+    name: `test` + (Math.random() > 0.5 ? `a` : `b`),
   };
 });
 
@@ -59,15 +62,9 @@ export async function milvusTest() {
 
   console.log(`INSERT`);
 
-  await milvusClient.insert({
-    collection_name: COLLECTION_NAME,
-    fields_data,
-  });
+  await insertData(COLLECTION_NAME, fields_data);
 
-  await milvusClient.insert({
-    collection_name: COLLECTION_NAME,
-    fields_data,
-  });
+  await insertData(COLLECTION_NAME, fields_data);
 
   // get the search vector
   const searchVector = fields_data[0].vector;
@@ -92,17 +89,22 @@ export async function milvusTest() {
 
   START_TIME = performance.now();
 
-  // const res = await queryVector(COLLECTION_NAME, searchVector, searchName);
+  const res = await queryVector(
+    COLLECTION_NAME,
+    searchVector,
+    searchName,
+    includeNamesList,
+  );
 
-  let res = await retrieveVector(COLLECTION_NAME, searchName);
-  console.table(res.data);
+  // let res = await retrieveVector(COLLECTION_NAME, searchName);
+  // console.table(res.data);
 
-  await milvusClient.insert({
-    collection_name: COLLECTION_NAME,
-    fields_data,
-  });
+  // await milvusClient.insert({
+  //   collection_name: COLLECTION_NAME,
+  //   fields_data,
+  // });
 
-  res = await retrieveVector(COLLECTION_NAME, searchName);
+  // res = await retrieveVector(COLLECTION_NAME, searchName);
 
   //   const names = ["name1", "name2", "name3"]; // the list of names you're searching for
 
@@ -118,11 +120,11 @@ export async function milvusTest() {
 
   console.log(`search name: ${fields_data[0].name}`);
 
-  console.table(res.data);
+  console.table(res.results);
 
-  for (let i = 1; i < res.data.length; i++) {
-    console.log(`diff: ${res.data[i].age - res.data[i - 1].age}`);
-  }
+  // for (let i = 1; i < res.data.length; i++) {
+  //   console.log(`diff: ${res.data[i].age - res.data[i - 1].age}`);
+  // }
 
   // for (let r of res.results) {
   //   console.log(`r id ${r.id} score ${r.score} data ${JSON.stringify(r)}`);

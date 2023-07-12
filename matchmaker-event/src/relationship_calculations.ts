@@ -149,24 +149,26 @@ export async function getRelationshipScores(
   const getRelationshipScoresMap =
     getRelationshipScoresResponse.getRelationshipScoresMap();
 
-  logger.debug(
-    `relationship scores requested:${
-      filtersToRequest.length
-    } responded: ${getRelationshipScoresMap.getLength()}`,
-  );
-
   // write them to the cache
   // store them in map
 
+  let countScores = 0;
+
   for (const filter of filtersToRequest) {
     const relationshipScore = getRelationshipScoresMap.get(filter.otherId);
-    if (!relationshipScore) continue;
+    if (!relationshipScore) {
+      logger.warn(`!relationshipScore ${relationshipScore}`);
+      continue;
+    }
 
     const prob = relationshipScore.getProb();
     const score = relationshipScore.getScore();
     const nscore = relationshipScore.getNscore();
     const otherId = filter.otherId;
     const latest_match = filter.latest_match;
+
+    if (score >= 0) countScores = countScores + 1;
+
     const score_obj: RelationshipScoreWrapper = new RelationshipScoreWrapper({
       prob,
       score,
@@ -186,6 +188,26 @@ export async function getRelationshipScores(
 
     relationshipScoresMap.set(otherId, score_obj);
   }
+
+  const testSet = new Set(filtersToRequest.map((filter) => filter.otherId));
+
+  for (let entry of getRelationshipScoresMap.getEntryList()) {
+    const otherId = entry[0];
+
+    if (!testSet.has(otherId)) {
+      logger.error(
+        `RETURNED VALUE NOT REQUESTED. ${otherId} ???${relationshipScoresMap.has(
+          otherId,
+        )}`,
+      );
+    }
+  }
+
+  logger.debug(
+    `relationship responed ${getRelationshipScoresMap.getLength()} of ${
+      filtersToRequest.length
+    } countScores ${countScores}`,
+  );
 
   return Array.from(relationshipScoresMap.entries());
 }

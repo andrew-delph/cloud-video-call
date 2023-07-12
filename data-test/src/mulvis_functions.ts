@@ -8,9 +8,9 @@ import {
 } from '@zilliz/milvus2-sdk-node';
 import * as common from 'common';
 import { validFriends } from './person';
-export const DIM: number = 150;
+export const DIM: number = 20;
 
-export const OUTPUT_FIELDS = [`name`];
+export const OUTPUT_FIELDS = [`*`];
 
 export const METRIC_TYPE = `IP`;
 export const SCHEMA = [
@@ -83,11 +83,15 @@ export async function initCollection(collection_name: string) {
   });
 }
 
-async function insertData(collection_name: string, fields_data: any[]) {
-  await milvusClient.insert({
+export async function insertData(collection_name: string, fields_data: any[]) {
+  const result = await milvusClient.insert({
     collection_name,
     fields_data,
   });
+
+  if (result.status.reason) {
+    throw `${JSON.stringify(result.status)}`;
+  }
 }
 
 export async function queryVector(
@@ -96,14 +100,22 @@ export async function queryVector(
   excludeName: string,
   includeNamesList: string[] = [],
 ) {
-  let expression = `name != "${excludeName}" `;
+  let expression = `name != "${excludeName}"`;
   if (includeNamesList) {
-    expression + `&& name in ${JSON.stringify(includeNamesList)}`;
+    expression =
+      expression +
+      ` && ` +
+      `name in [${includeNamesList.map((name) => `"${name}"`).join(`, `)}]`;
   }
+
+  console.log(`expression`, expression);
+  console.log(`searchVector`, searchVector);
   return (await milvusClient.search({
     collection_name: collection_name,
     vector: searchVector,
     expr: expression,
+    // topk: 5,
+    limit: 10,
     output_fields: OUTPUT_FIELDS,
     metric_type: METRIC_TYPE,
   })) as SearchResultsExtended;

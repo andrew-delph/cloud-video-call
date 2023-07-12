@@ -105,9 +105,12 @@ export async function queryVector(
   excludeName: string,
   includeNamesList: string[] = [],
 ) {
-  let expression = `name != "${excludeName}" `;
+  let expression = `name != "${excludeName}"`;
   if (includeNamesList) {
-    expression + `&& name in ${JSON.stringify(includeNamesList)}`;
+    expression =
+      expression +
+      ` && ` +
+      `name in [${includeNamesList.map((name) => `"${name}"`).join(`, `)}]`;
   }
 
   const result = (await milvusClient.search({
