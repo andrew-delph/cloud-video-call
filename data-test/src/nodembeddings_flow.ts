@@ -299,7 +299,7 @@ async function generateEmbedding(
   };
 }
 
-export async function main() {
+export async function nodeEmbeddingsFlowMain() {
   let perms: any = [[1, 0.5, 0]];
   perms = false;
   const resultsList = await nodeembeddings(perms, true);

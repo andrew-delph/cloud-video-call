@@ -1,6 +1,7 @@
 import * as lp from './lp_pipeling';
 import * as funcs from './neo4j_functions';
 import * as nodembeddings_flow from './nodembeddings_flow';
+import { nodeEmbeddingsFlowMain } from './nodembeddings_flow';
 import {
   userFunctions,
   createFemale,
@@ -61,6 +62,10 @@ const start_time = performance.now();
 export async function run() {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
+
+    await nodeEmbeddingsFlowMain();
+
+    return;
     results = await funcs.run(`Match (n:Person) return n.userId;`);
 
     // console.log(results.summary);
