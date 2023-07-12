@@ -12,6 +12,7 @@ import {
   userdIdToType,
 } from './person';
 import * as neo4j from 'neo4j-driver';
+import { calcAvgMulvis } from './mulvis_functions';
 
 const Pool = require(`multiprocessing`).Pool;
 
@@ -279,7 +280,8 @@ async function generateEmbedding(
 
   // printResults(results, 50, 0);
 
-  const avgObj = await calcAvgManual(results, 0.5);
+  // const avgObj = await calcAvgManual(results, 0.5);
+  const avgObj = await calcAvgMulvis(results);
 
   console.log();
   console.log(`the avg is:`, avgObj.avg);

@@ -8,7 +8,6 @@ import {
 import * as common from 'common';
 import { milvusClient } from './mulvis_functions';
 
-let START_TIME = performance.now();
 const logger = common.getLogger();
 
 const COLLECTION_NAME = `hello_milvus_${Array.from(
@@ -151,7 +150,7 @@ export async function milvusTest() {
   //   console.log(`r id ${r.id} score ${r.score} data ${JSON.stringify(r)}`);
   // }
 }
-
+let START_TIME = performance.now();
 milvusTest()
   .catch((err) => {
     console.error(err);

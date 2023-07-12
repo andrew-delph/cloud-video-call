@@ -20,10 +20,16 @@ ts_project(
     ],
 )
 
+# js_binary(
+#     name = "binary",
+#     data = [":ts"],
+#     entry_point = "src/milvus_test.js",
+# )
+
 js_binary(
     name = "binary",
     data = [":ts"],
-    entry_point = "src/milvus_test.js",
+    entry_point = "src/run_neo4j.js",
 )
 
 js_library(

@@ -32,6 +32,13 @@ interface SearchResultsExtended {
 
 const schema = [
   {
+    name: `age`,
+    description: `ID field`,
+    data_type: DataType.Int64,
+    is_primary_key: true,
+    autoID: true,
+  },
+  {
     name: `vector`,
     description: `Vector field`,
     data_type: DataType.FloatVector,
@@ -91,7 +98,7 @@ async function queryVector(collection_name: string, searchVector: number[]) {
   })) as SearchResultsExtended;
 }
 
-async function calcAvgMulvis(result: neo4j.QueryResult) {
+export async function calcAvgMulvis(result: neo4j.QueryResult) {
   // create a new pool. inset all embddings
   // check the top
 

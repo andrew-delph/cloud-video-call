@@ -58,7 +58,7 @@ export function printResults(
 }
 
 const start_time = performance.now();
-export const run = async () => {
+export async function run() {
   try {
     funcs.setDriver(`bolt://localhost:7687`);
     results = await funcs.run(`Match (n:Person) return n.userId;`);
@@ -115,4 +115,13 @@ export const run = async () => {
   }
 
   // on application exit:
-};
+}
+let START_TIME = performance.now();
+run()
+  .catch((err) => {
+    console.error(err);
+  })
+  .finally(() => {
+    console.log(`DONE ${(performance.now() - START_TIME) / 1000}seconds`);
+    process.exit(0);
+  });
