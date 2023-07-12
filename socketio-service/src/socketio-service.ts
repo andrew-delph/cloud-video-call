@@ -16,7 +16,7 @@ import {
   ReadyMessage,
   StandardResponse,
   chatEventQueue,
-  createNeo4jClient,
+  createLocalDataServiceClient,
   makeGrpcRequest,
   matchmakerQueueName,
 } from 'common-messaging';
@@ -40,7 +40,7 @@ const logger = common.getLogger();
 
 listenGlobalExceptions(cleanSocketServer);
 
-const neo4jRpcClient = createNeo4jClient();
+const neo4jRpcClient = createLocalDataServiceClient();
 
 let rabbitConnection: amqp.Connection;
 let rabbitChannel: amqp.Channel;

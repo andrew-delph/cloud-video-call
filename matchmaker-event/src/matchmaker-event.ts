@@ -8,7 +8,7 @@ import amqp from 'amqplib';
 import * as common from 'common';
 import { listenGlobalExceptions } from 'common';
 import {
-  createNeo4jClient,
+  createLocalDataServiceClient,
   CheckUserFiltersRequest,
   CheckUserFiltersResponse,
   GetUserPerferencesRequest,
@@ -21,7 +21,7 @@ import {
   delayExchange,
   readyRoutingKey,
   FilterObject,
-  Neo4jClient,
+  DataServiceClient,
   userMessageQueue,
   userNotificationQueue,
   makeGrpcRequest,
@@ -45,7 +45,7 @@ app.get(`/health`, (req, res) => {
   res.send(`Health is good.`);
 });
 
-export let neo4jRpcClient: Neo4jClient;
+export let neo4jRpcClient: DataServiceClient;
 
 export let mainRedisClient: Client;
 let subRedisClient: Client;
@@ -70,7 +70,7 @@ const maxCooldownAttemps = Math.floor(
 export const lastMatchedCooldownMinutes = 30; // filter of last matches
 
 export async function startReadyConsumer() {
-  neo4jRpcClient = createNeo4jClient();
+  neo4jRpcClient = createLocalDataServiceClient();
   await connectRabbit();
 
   mainRedisClient = common.createRedisClient();

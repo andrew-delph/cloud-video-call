@@ -26,7 +26,7 @@ const logger = common.getLogger();
 
 const firebaseApp = initializeApp();
 
-const neo4jRpcClient = neo4j_common.createNeo4jClient();
+const neo4jRpcClient = neo4j_common.createLocalDataServiceClient();
 
 const durationWarn = 2;
 
