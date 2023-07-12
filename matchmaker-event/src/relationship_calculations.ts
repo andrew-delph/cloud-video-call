@@ -81,12 +81,16 @@ export async function calcScoreThreshold(
     `WITHSCORES`,
   );
 
+  // zrange=${JSON.stringify(
+  //   zrange,
+  // )}
+
   logger.debug(
     `userId=${stripUserId(
       userId,
-    )} zsetScoreTotal=${zsetScoreTotal} index=${index} zrange=${JSON.stringify(
-      zrange,
-    )} score=${parseFloat(zrange[zrange.length - 1])}`,
+    )} zsetScoreTotal=${zsetScoreTotal} index=${index} score=${parseFloat(
+      zrange[zrange.length - 1],
+    )}`,
   );
 
   return parseFloat(zrange[zrange.length - 1]);
@@ -94,6 +98,10 @@ export async function calcScoreThreshold(
 
 export async function expireScoreZset(userId: string, seconds: number) {
   await mainRedisClient.expire(getUserScoreZsetCacheKey(userId), seconds);
+}
+
+export async function deleteScoreZset(userId: string) {
+  await mainRedisClient.del(getUserScoreZsetCacheKey(userId));
 }
 
 export async function getRelationshipScores(

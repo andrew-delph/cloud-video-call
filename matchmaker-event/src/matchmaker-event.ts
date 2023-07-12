@@ -1,5 +1,6 @@
 import {
   calcScoreThreshold,
+  deleteScoreZset,
   getRelationshipScores,
 } from './relationship_calculations';
 import { FilteredUserType, RelationshipScoreWrapper } from './types';
@@ -562,6 +563,9 @@ async function matchmakerFlow(
         otherId,
         1,
       );
+
+      await deleteScoreZset(readyMessage.getUserId());
+      await deleteScoreZset(otherId);
 
       // remove both from ready set
       await mainRedisClient.srem(common.readySetName, readyMessage.getUserId());
