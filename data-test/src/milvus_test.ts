@@ -10,6 +10,7 @@ import {
   DIM,
   METRIC_TYPE,
   SCHEMA,
+  initCollection,
   milvusClient,
   queryVector,
 } from './mulvis_functions';
@@ -34,6 +35,9 @@ const fields_data = Array.from({ length: ITEMS_NUM }, () => {
   };
 });
 
+// for (let i = 0; i < 100; i++) {
+//   console.log(`dim: ${DIM}`);
+// }
 // console.log();
 // console.log();
 
@@ -49,11 +53,8 @@ const fields_data = Array.from({ length: ITEMS_NUM }, () => {
 
 export async function milvusTest() {
   console.log(`STARTING2`);
-  await milvusClient.createCollection({
-    collection_name: COLLECTION_NAME,
-    fields: SCHEMA,
-    metric_type: METRIC_TYPE,
-  });
+
+  await initCollection(COLLECTION_NAME);
 
   console.log(`INSERT`);
 
@@ -67,40 +68,9 @@ export async function milvusTest() {
     fields_data,
   });
 
-  console.log(`INDEX`);
-  // create index
-  await milvusClient.createIndex({
-    // required
-    collection_name: COLLECTION_NAME,
-    field_name: `vector`, // optional if you are using milvus v2.2.9+
-    index_name: `myindex`, // optional
-    index_type: `HNSW`, // optional if you are using milvus v2.2.9+
-    params: { efConstruction: 10, M: 4 }, // optional if you are using milvus v2.2.9+
-    metric_type: METRIC_TYPE, // optional if you are using milvus v2.2.9+
-  });
-
-  console.log(`LOAD`);
-
-  // load collection
-  await milvusClient.loadCollectionSync({
-    collection_name: COLLECTION_NAME,
-  });
-
   // get the search vector
   const searchVector = fields_data[0].vector;
   const searchName = fields_data[0].name;
-
-  interface SearchResult extends SearchResultData {
-    id: string;
-    score: number;
-    height: number;
-    name: string;
-  }
-
-  interface SearchResultsTemp {
-    status: ResStatus;
-    results: SearchResult[];
-  }
 
   console.log(`SEARCH`);
 
@@ -121,12 +91,7 @@ export async function milvusTest() {
 
   START_TIME = performance.now();
 
-  const res = await queryVector(
-    COLLECTION_NAME,
-    searchVector,
-    searchName,
-    includeNamesList,
-  );
+  const res = await queryVector(COLLECTION_NAME, searchVector, searchName);
 
   //   const names = ["name1", "name2", "name3"]; // the list of names you're searching for
 

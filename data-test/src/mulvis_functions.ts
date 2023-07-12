@@ -54,14 +54,14 @@ export interface SearchResultsExtended {
   results: SearchResultDataExtended[];
 }
 
-async function initCollection(collection_name: string) {
+export async function initCollection(collection_name: string) {
+  console.log(`COLLECTION`);
+
   await milvusClient.createCollection({
     collection_name,
     fields: SCHEMA,
     metric_type: METRIC_TYPE,
   });
-
-  console.log(`INSERT`);
 
   console.log(`INDEX`);
   // create index
@@ -93,10 +93,10 @@ async function insertData(collection_name: string, fields_data: any[]) {
 export async function queryVector(
   collection_name: string,
   searchVector: number[],
-  searchName: string,
+  excludeName: string,
   includeNamesList: string[] = [],
 ) {
-  let expression = `name != "${searchName}" `;
+  let expression = `name != "${excludeName}" `;
   if (includeNamesList) {
     expression + `&& name in ${JSON.stringify(includeNamesList)}`;
   }
