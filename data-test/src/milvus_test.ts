@@ -6,7 +6,7 @@ import {
   SearchResultData,
 } from '@zilliz/milvus2-sdk-node';
 import * as common from 'common';
-import { milvusClient } from './mulvis_functions';
+import { milvusClient, queryVector } from './mulvis_functions';
 
 const logger = common.getLogger();
 
@@ -18,12 +18,12 @@ const logger = common.getLogger();
 const COLLECTION_NAME = `hello_milvus`;
 
 const dim = 400;
-const ITEMS_NUM = 30000;
+const ITEMS_NUM = 2000;
 
-const OUTPUT_FIELDS = [`name`];
+export const OUTPUT_FIELDS = [`name`];
 
-const METRIC_TYPE = `IP`;
-const schema = [
+export const METRIC_TYPE = `IP`;
+export const SCHEMA = [
   {
     name: `age`,
     description: `ID field`,
@@ -71,7 +71,7 @@ export async function milvusTest() {
   console.log(`STARTING2`);
   await milvusClient.createCollection({
     collection_name: COLLECTION_NAME,
-    fields: schema,
+    fields: SCHEMA,
     metric_type: METRIC_TYPE,
   });
 
@@ -108,6 +108,7 @@ export async function milvusTest() {
 
   // get the search vector
   const searchVector = fields_data[0].vector;
+  const searchName = fields_data[0].name;
 
   interface SearchResult extends SearchResultData {
     id: string;
@@ -136,13 +137,16 @@ export async function milvusTest() {
   //   output_fields: OUTPUT_FIELDS, // optional, specify the fields to return in the search results
   // }));
 
-  const res = await milvusClient.search({
-    collection_name: COLLECTION_NAME,
-    vector: searchVector,
-    limit: 20,
-    output_fields: OUTPUT_FIELDS,
-    metric_type: METRIC_TYPE,
-  });
+  const includeNamesList = fields_data.map((data) => data.name);
+
+  START_TIME = performance.now();
+
+  const res = await queryVector(
+    COLLECTION_NAME,
+    searchVector,
+    searchName,
+    includeNamesList,
+  );
 
   //   const names = ["name1", "name2", "name3"]; // the list of names you're searching for
 

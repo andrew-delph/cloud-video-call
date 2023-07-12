@@ -8,6 +8,7 @@ import {
 } from '@zilliz/milvus2-sdk-node';
 import * as common from 'common';
 import { validFriends } from './person';
+import { METRIC_TYPE, OUTPUT_FIELDS, SCHEMA } from './milvus_test';
 export const DIM: number = 150;
 
 let TOP_K = Infinity;
@@ -21,9 +22,6 @@ const address = `192.168.49.2:30033`;
 // connect to milvus
 export const milvusClient = new MilvusClient({ address });
 
-const METRIC_TYPE = `IP`;
-const OUTPUT_FIELDS = [`type`];
-
 interface SearchResultDataExtended extends SearchResultData {
   type: string;
 }
@@ -33,32 +31,10 @@ interface SearchResultsExtended {
   results: SearchResultDataExtended[];
 }
 
-const schema = [
-  {
-    name: `age`,
-    description: `ID field`,
-    data_type: DataType.Int64,
-    is_primary_key: true,
-    autoID: true,
-  },
-  {
-    name: `vector`,
-    description: `Vector field`,
-    data_type: DataType.FloatVector,
-    dim: DIM,
-  },
-  {
-    name: `type`,
-    description: `VarChar field`,
-    data_type: DataType.VarChar,
-    max_length: 128,
-  },
-];
-
 async function initCollection(collection_name: string) {
   await milvusClient.createCollection({
     collection_name,
-    fields: schema,
+    fields: SCHEMA,
     metric_type: METRIC_TYPE,
   });
 
@@ -91,11 +67,20 @@ async function insertData(collection_name: string, fields_data: any[]) {
   });
 }
 
-async function queryVector(collection_name: string, searchVector: number[]) {
+export async function queryVector(
+  collection_name: string,
+  searchVector: number[],
+  searchName: string,
+  includeNamesList: string[] = [],
+) {
+  let expression = `name != "${searchName}" `;
+  if (includeNamesList) {
+    expression + `&& name in ${JSON.stringify(includeNamesList)}`;
+  }
   return (await milvusClient.search({
-    collection_name,
+    collection_name: collection_name,
     vector: searchVector,
-    limit: 20,
+    expr: expression,
     output_fields: OUTPUT_FIELDS,
     metric_type: METRIC_TYPE,
   })) as SearchResultsExtended;
@@ -136,7 +121,11 @@ export async function calcAvgMulvis(result: neo4j.QueryResult) {
     const searchType = item.type;
     const searchVector = item.vector;
 
-    const queryResults = await queryVector(collection_name, searchVector);
+    const queryResults = await queryVector(
+      collection_name,
+      searchVector,
+      searchType,
+    );
 
     for (let i = 0; i < Math.min(queryResults.results.length, TOP_K); i++) {
       const result = queryResults.results[i];
