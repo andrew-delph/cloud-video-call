@@ -5,7 +5,7 @@ import {
   writeUserPreferencesDatabase,
 } from './UserPreferences';
 import { user_created } from './metrics';
-import { milvusTest } from './milvus';
+import { FieldData, insertData, milvusTest } from './milvus';
 import { cosineSimilarity } from './utils';
 import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
 import * as common from 'common';
@@ -32,6 +32,7 @@ import {
   grpc,
   FilterObject,
   EndCallRequest,
+  InsertUserVectorsRequest,
 } from 'common-messaging';
 import {
   sendChatEventMessage,
@@ -858,6 +859,34 @@ const getMatchHistory = async (
   callback(null, reply);
 };
 
+const insertUserVectors = async (
+  call: grpc.ServerUnaryCall<InsertUserVectorsRequest, StandardResponse>,
+  callback: grpc.sendUnaryData<StandardResponse>,
+): Promise<void> => {
+  const insertUserVectorsRequest = call.request;
+
+  const userVectorList = insertUserVectorsRequest.getUserVectorsList();
+
+  const fields_data: FieldData[] = [];
+
+  for (const userVector of userVectorList) {
+    const userId = userVector.getUserId();
+    const vector = userVector.getVectorList();
+    fields_data.push({ name: userId, vector });
+  }
+
+  await insertData(`hello_milvus`, fields_data)
+    .then(() => {
+      const reply = new StandardResponse();
+
+      callback(null, reply);
+    })
+    .catch((err) => {
+      logger.error(`putUserPerferences`, err);
+      callback({ code: grpc.status.INTERNAL, message: String(err) }, null);
+    });
+};
+
 server.addService(DataServiceService, {
   createUser,
   createMatch,
@@ -868,6 +897,7 @@ server.addService(DataServiceService, {
   putUserPerferences,
   createFeedback,
   getMatchHistory,
+  insertUserVectors,
 });
 
 const addr = `0.0.0.0:${process.env.PORT || 80}`;

@@ -26,6 +26,9 @@ service DataService {
 
   rpc GetMatchHistory(MatchHistoryRequest) returns (MatchHistoryResponse) {
   }
+
+  rpc InsertUserVectors(InsertUserVectorsRequest) returns (StandardResponse) {
+  }
 }
 
 message CreateUserRequest {
@@ -163,4 +166,14 @@ message Match {
   bool negative = 7;
   int32 match_id = 8;
   string end_time = 9;
+}
+
+message InsertUserVectorsRequest {
+  repeated UserVector user_vectors = 1;
+}
+
+
+message UserVector {
+  string user_id = 1;
+  repeated double vector = 2;
 }

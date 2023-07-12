@@ -668,3 +668,53 @@ export namespace Match {
         endTime: string,
     }
 }
+
+export class InsertUserVectorsRequest extends jspb.Message { 
+    clearUserVectorsList(): void;
+    getUserVectorsList(): Array<UserVector>;
+    setUserVectorsList(value: Array<UserVector>): InsertUserVectorsRequest;
+    addUserVectors(value?: UserVector, index?: number): UserVector;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): InsertUserVectorsRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: InsertUserVectorsRequest): InsertUserVectorsRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: InsertUserVectorsRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): InsertUserVectorsRequest;
+    static deserializeBinaryFromReader(message: InsertUserVectorsRequest, reader: jspb.BinaryReader): InsertUserVectorsRequest;
+}
+
+export namespace InsertUserVectorsRequest {
+    export type AsObject = {
+        userVectorsList: Array<UserVector.AsObject>,
+    }
+}
+
+export class UserVector extends jspb.Message { 
+    getUserId(): string;
+    setUserId(value: string): UserVector;
+
+    clearVectorList(): void;
+    getVectorList(): Array<number>;
+    setVectorList(value: Array<number>): UserVector;
+    addVector(value: number, index?: number): number;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): UserVector.AsObject;
+    static toObject(includeInstance: boolean, msg: UserVector): UserVector.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: UserVector, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): UserVector;
+    static deserializeBinaryFromReader(message: UserVector, reader: jspb.BinaryReader): UserVector;
+}
+
+export namespace UserVector {
+    export type AsObject = {
+        userId: string,
+        vectorList: Array<number>,
+    }
+}

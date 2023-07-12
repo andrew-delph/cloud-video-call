@@ -19,6 +19,7 @@ interface IDataServiceService extends grpc.ServiceDefinition<grpc.UntypedService
     getUserPerferences: IDataServiceService_IGetUserPerferences;
     putUserPerferences: IDataServiceService_IPutUserPerferences;
     getMatchHistory: IDataServiceService_IGetMatchHistory;
+    insertUserVectors: IDataServiceService_IInsertUserVectors;
 }
 
 interface IDataServiceService_ICreateUser extends grpc.MethodDefinition<proto_data_pb.CreateUserRequest, proto_data_pb.CreateUserResponse> {
@@ -111,6 +112,15 @@ interface IDataServiceService_IGetMatchHistory extends grpc.MethodDefinition<pro
     responseSerialize: grpc.serialize<proto_data_pb.MatchHistoryResponse>;
     responseDeserialize: grpc.deserialize<proto_data_pb.MatchHistoryResponse>;
 }
+interface IDataServiceService_IInsertUserVectors extends grpc.MethodDefinition<proto_data_pb.InsertUserVectorsRequest, proto_data_pb.StandardResponse> {
+    path: "/data.DataService/InsertUserVectors";
+    requestStream: false;
+    responseStream: false;
+    requestSerialize: grpc.serialize<proto_data_pb.InsertUserVectorsRequest>;
+    requestDeserialize: grpc.deserialize<proto_data_pb.InsertUserVectorsRequest>;
+    responseSerialize: grpc.serialize<proto_data_pb.StandardResponse>;
+    responseDeserialize: grpc.deserialize<proto_data_pb.StandardResponse>;
+}
 
 export const DataServiceService: IDataServiceService;
 
@@ -125,6 +135,7 @@ export interface IDataServiceServer {
     getUserPerferences: grpc.handleUnaryCall<proto_data_pb.GetUserPerferencesRequest, proto_data_pb.GetUserPerferencesResponse>;
     putUserPerferences: grpc.handleUnaryCall<proto_data_pb.PutUserPerferencesRequest, proto_data_pb.PutUserPerferencesResponse>;
     getMatchHistory: grpc.handleUnaryCall<proto_data_pb.MatchHistoryRequest, proto_data_pb.MatchHistoryResponse>;
+    insertUserVectors: grpc.handleUnaryCall<proto_data_pb.InsertUserVectorsRequest, proto_data_pb.StandardResponse>;
 }
 
 export interface IDataServiceClient {
@@ -158,6 +169,9 @@ export interface IDataServiceClient {
     getMatchHistory(request: proto_data_pb.MatchHistoryRequest, callback: (error: grpc.ServiceError | null, response: proto_data_pb.MatchHistoryResponse) => void): grpc.ClientUnaryCall;
     getMatchHistory(request: proto_data_pb.MatchHistoryRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: proto_data_pb.MatchHistoryResponse) => void): grpc.ClientUnaryCall;
     getMatchHistory(request: proto_data_pb.MatchHistoryRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: proto_data_pb.MatchHistoryResponse) => void): grpc.ClientUnaryCall;
+    insertUserVectors(request: proto_data_pb.InsertUserVectorsRequest, callback: (error: grpc.ServiceError | null, response: proto_data_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    insertUserVectors(request: proto_data_pb.InsertUserVectorsRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: proto_data_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    insertUserVectors(request: proto_data_pb.InsertUserVectorsRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: proto_data_pb.StandardResponse) => void): grpc.ClientUnaryCall;
 }
 
 export class DataServiceClient extends grpc.Client implements IDataServiceClient {
@@ -192,4 +206,7 @@ export class DataServiceClient extends grpc.Client implements IDataServiceClient
     public getMatchHistory(request: proto_data_pb.MatchHistoryRequest, callback: (error: grpc.ServiceError | null, response: proto_data_pb.MatchHistoryResponse) => void): grpc.ClientUnaryCall;
     public getMatchHistory(request: proto_data_pb.MatchHistoryRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: proto_data_pb.MatchHistoryResponse) => void): grpc.ClientUnaryCall;
     public getMatchHistory(request: proto_data_pb.MatchHistoryRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: proto_data_pb.MatchHistoryResponse) => void): grpc.ClientUnaryCall;
+    public insertUserVectors(request: proto_data_pb.InsertUserVectorsRequest, callback: (error: grpc.ServiceError | null, response: proto_data_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    public insertUserVectors(request: proto_data_pb.InsertUserVectorsRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: proto_data_pb.StandardResponse) => void): grpc.ClientUnaryCall;
+    public insertUserVectors(request: proto_data_pb.InsertUserVectorsRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: proto_data_pb.StandardResponse) => void): grpc.ClientUnaryCall;
 }

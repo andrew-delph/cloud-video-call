@@ -136,6 +136,17 @@ function deserialize_data_GetUserPerferencesResponse(buffer_arg) {
   return proto_data_pb.GetUserPerferencesResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_data_InsertUserVectorsRequest(arg) {
+  if (!(arg instanceof proto_data_pb.InsertUserVectorsRequest)) {
+    throw new Error('Expected argument of type data.InsertUserVectorsRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_data_InsertUserVectorsRequest(buffer_arg) {
+  return proto_data_pb.InsertUserVectorsRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_data_Match(arg) {
   if (!(arg instanceof proto_data_pb.Match)) {
     throw new Error('Expected argument of type data.Match');
@@ -326,6 +337,17 @@ createUser: {
     requestDeserialize: deserialize_data_MatchHistoryRequest,
     responseSerialize: serialize_data_MatchHistoryResponse,
     responseDeserialize: deserialize_data_MatchHistoryResponse,
+  },
+  insertUserVectors: {
+    path: '/data.DataService/InsertUserVectors',
+    requestStream: false,
+    responseStream: false,
+    requestType: proto_data_pb.InsertUserVectorsRequest,
+    responseType: proto_data_pb.StandardResponse,
+    requestSerialize: serialize_data_InsertUserVectorsRequest,
+    requestDeserialize: deserialize_data_InsertUserVectorsRequest,
+    responseSerialize: serialize_data_StandardResponse,
+    responseDeserialize: deserialize_data_StandardResponse,
   },
 };
 
