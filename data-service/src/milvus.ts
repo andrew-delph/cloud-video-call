@@ -7,7 +7,9 @@ import {
   SearchResultData,
 } from '@zilliz/milvus2-sdk-node';
 import * as common from 'common';
-export const DIM: number = 150;
+export const collection_name = `user_data`;
+
+export const DIM: number = 300;
 
 export const OUTPUT_FIELDS = [`name`];
 
@@ -58,7 +60,7 @@ export interface FieldData {
   vector: number[];
 }
 
-export async function initCollection(collection_name: string) {
+export async function initCollection() {
   console.log(`COLLECTION`);
 
   await milvusClient.createCollection({
@@ -91,7 +93,7 @@ export async function insertData(
   collection_name: string,
   fields_data: FieldData[],
 ) {
-  await milvusClient.insert({
+  return await milvusClient.insert({
     collection_name,
     fields_data,
   });
@@ -107,11 +109,36 @@ export async function queryVector(
   if (includeNamesList) {
     expression + `&& name in ${JSON.stringify(includeNamesList)}`;
   }
-  return (await milvusClient.search({
+
+  const result = (await milvusClient.search({
     collection_name: collection_name,
     vector: searchVector,
     expr: expression,
     output_fields: OUTPUT_FIELDS,
     metric_type: METRIC_TYPE,
   })) as UserSearchResults;
+  if (result.status.reason) {
+    throw `retrieveVector ERROR: ${JSON.stringify(result.status)}`;
+  }
+  return result;
+}
+
+export async function retrieveVector(
+  collection_name: string,
+  queryName: string,
+) {
+  let expression = `name == "${queryName}"`;
+
+  const result = await milvusClient.query({
+    collection_name: collection_name,
+    expr: expression,
+    output_fields: [`vector`],
+    partition_names: [],
+  });
+
+  if (result.status.reason) {
+    logger.error(`retrieveVector ERROR: ${JSON.stringify(result.status)}`);
+  }
+
+  return result;
 }

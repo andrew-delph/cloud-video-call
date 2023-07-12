@@ -25,14 +25,14 @@ const logger = common.getLogger();
 
 const COLLECTION_NAME = `hello_milvus`;
 
-const ITEMS_NUM = 2000;
+const ITEMS_NUM = 200;
 
 const fields_data = Array.from({ length: ITEMS_NUM }, () => {
   return {
     vector: Array.from({ length: DIM }, () => Math.random()),
-    name: Array.from({ length: 10 }, () => Math.random().toString(36)[2]).join(
-      ``,
-    ),
+    name:
+      `k6_auth_test-07-12-13-48-24_${Math.random()}_GroupB` +
+      Array.from({ length: 10 }, () => Math.random().toString(36)[2]).join(``),
   };
 });
 

@@ -118,7 +118,7 @@ export async function retrieveVector(
   return await milvusClient.query({
     collection_name: collection_name,
     expr: expression,
-    output_fields: [`*`],
+    output_fields: [`vector`],
     partition_names: [],
   });
 }

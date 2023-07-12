@@ -42,6 +42,7 @@ import { initializeApp, getApp } from 'firebase-admin/app';
 import { Auth } from 'firebase-admin/auth';
 import * as neo4j from 'neo4j-driver';
 import { v4 } from 'uuid';
+import { collection_name } from './milvus';
 
 common.listenGlobalExceptions(async () => {
   await promClient.stop();
@@ -79,8 +80,10 @@ export const driver = neo4j.driver(
 
 const durationWarn = 2;
 
-const verifyIndexes = async () => {
+const initDataService = async () => {
   const start_time = performance.now();
+
+  await milvus.initCollection();
 
   const session = driver.session();
   await session.run(
@@ -321,38 +324,39 @@ const getRelationshipScores = async (
   let otherUsers = call.request.getOtherUsersList();
   const reply = new GetRelationshipScoresResponse();
 
-  // check for relationships on redis
+  const userVectors = await milvus.retrieveVector(collection_name, userId);
 
-  const userEmbddings = await common.getRedisUserEmbeddings(
-    redisClient,
-    userId,
-  );
+  if (userVectors != null && userVectors.data.length > 0) {
+    const lastUserVector: number[] =
+      userVectors.data[userVectors.data.length - 1].vector;
 
-  if (userEmbddings != null) {
-    for (let otherId of otherUsers) {
-      const otherEmbddings = await common.getRedisUserEmbeddings(
-        redisClient,
-        otherId,
+    const searchResults = await milvus.queryVector(
+      collection_name,
+      lastUserVector,
+      userId,
+      otherUsers,
+    );
+
+    for (let result of searchResults.results) {
+      const scoreMessage = defaultScore();
+
+      const otherId = result.name;
+
+      const scoreVal = result.score;
+
+      logger.debug(
+        `queryVector result for ${userId} and ${otherId} with scoreVal ${scoreVal}`,
       );
 
-      if (otherEmbddings != null) {
-        const score = defaultScore();
-        const redisScore = cosineSimilarity(userEmbddings, otherEmbddings);
-
-        logger.debug(
-          `cosineSimilarity score is ${redisScore} for ${userId} and ${otherId}`,
-        );
-
-        score.setScore(redisScore);
-        reply.getRelationshipScoresMap().set(otherId, score);
-      }
+      scoreMessage.setScore(scoreVal);
+      reply.getRelationshipScoresMap().set(otherId, scoreMessage);
     }
   }
 
   logger.debug(
-    `scores's read from redis: ${reply
-      .getRelationshipScoresMap()
-      .getLength()} of ${otherUsers.length}`,
+    `scores's from mulvis: ${reply.getRelationshipScoresMap().getLength()} of ${
+      otherUsers.length
+    }`,
   );
 
   const session = driver.session();
@@ -874,18 +878,22 @@ const insertUserVectors = async (
   for (const userVector of userVectorList) {
     const userId = userVector.getUserId();
     const vector = userVector.getVectorList();
+
+    logger.debug(`insert userId ${userId} length ${vector.length}`);
     fields_data.push({ name: userId, vector });
   }
 
   await milvus
-    .insertData(`hello_milvus`, fields_data)
-    .then(() => {
+    .insertData(collection_name, fields_data)
+    .then((result) => {
       const reply = new StandardResponse();
 
       callback(null, reply);
     })
     .catch((err) => {
-      logger.error(`putUserPerferences`, err);
+      logger.error(
+        `insertUserVectors ERROR. collection_name: ${collection_name} ${err}`,
+      );
       callback({ code: grpc.status.INTERNAL, message: String(err) }, null);
     });
 };
@@ -906,7 +914,7 @@ server.addService(DataServiceService, {
 const addr = `0.0.0.0:${process.env.PORT || 80}`;
 
 server.bindAsync(addr, grpc.ServerCredentials.createInsecure(), async () => {
-  await verifyIndexes();
+  await initDataService();
 
   [rabbitConnection, rabbitChannel] = await common.createRabbitMQClient();
 
