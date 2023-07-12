@@ -17,10 +17,10 @@ const Pool = require(`multiprocessing`).Pool;
 
 let results: neo4j.QueryResult;
 
-const calcAvg = async (
+function calcAvg(
   result: neo4j.QueryResult,
   cosineSimilarityThreshhold: number = 0.5,
-) => {
+) {
   console.log(`calculating average`);
 
   const start_time = performance.now();
@@ -50,18 +50,6 @@ const calcAvg = async (
   const pairs = generatePairs(items);
 
   console.log(`pairs.length`, pairs.length);
-
-  // const pool = new Pool(10);
-  // const scores = await pool.map(
-  // pairs.map((pairs) => {
-  //   const ntype: any = pairs[0].type;
-  //   const mtype: any = pairs[1].type;
-  //   const nembedding: any = pairs[0].embedding;
-  //   const membedding: any = pairs[1].embedding;
-  //   return { ntype, mtype, nembedding, membedding };
-  // }),
-  //   __dirname + `/consine_worker`,
-  // );
 
   const scores = pairs
     .map((pairs) => {
@@ -102,7 +90,7 @@ const calcAvg = async (
   console.log(`run`, performance.now() - start_time);
 
   return { avg: total / length, length, valid: total };
-};
+}
 
 function cleanPerm(perm: number[]): number[] {
   if (perm.length > 1 && perm[perm.length - 1] == 0) {
