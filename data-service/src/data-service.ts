@@ -5,7 +5,7 @@ import {
   writeUserPreferencesDatabase,
 } from './UserPreferences';
 import { user_created } from './metrics';
-import { FieldData, insertData } from './milvus';
+import * as milvus from './milvus';
 import { cosineSimilarity } from './utils';
 import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
 import * as common from 'common';
@@ -867,7 +867,9 @@ const insertUserVectors = async (
 
   const userVectorList = insertUserVectorsRequest.getUserVectorsList();
 
-  const fields_data: FieldData[] = [];
+  logger.debug(`insertUserVectors with ${userVectorList.length} vectors`);
+
+  const fields_data: milvus.FieldData[] = [];
 
   for (const userVector of userVectorList) {
     const userId = userVector.getUserId();
@@ -875,7 +877,8 @@ const insertUserVectors = async (
     fields_data.push({ name: userId, vector });
   }
 
-  await insertData(`hello_milvus`, fields_data)
+  await milvus
+    .insertData(`hello_milvus`, fields_data)
     .then(() => {
       const reply = new StandardResponse();
 
