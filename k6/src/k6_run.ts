@@ -77,13 +77,13 @@ export const options = {
     //     { duration: `2d`, target: 1000 },
     //   ],
     // },
-    chatStream: {
-      executor: `shared-iterations`,
-      exec: `biChatStream`,
-      vus: 10,
-      iterations: 100,
-      maxDuration: `10h`,
-    },
+    // chatStream: {
+    //   executor: `shared-iterations`,
+    //   exec: `biChatStream`,
+    //   vus: 10,
+    //   iterations: 100,
+    //   maxDuration: `10h`,
+    // },
     // chatPull: {
     //   executor: `shared-iterations`,
     //   exec: `biChatPull`,
