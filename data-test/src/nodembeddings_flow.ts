@@ -21,7 +21,7 @@ let PERMS: any = [[1, 0.5, 0]];
 PERMS = false;
 
 const PERMS_LEN_MIN = 1;
-const PERMS_LEN_MAX = 3;
+const PERMS_LEN_MAX = 5;
 
 const PROP_RATIO_OPTIONS = [0];
 const NODE_INFLUENCE_OPTIONS = [0.5];
