@@ -1,11 +1,9 @@
 syntax = "proto3";
 
-
-
-package neo4j;
+package data;
 
 // The greeting service definition.
-service Neo4j {
+service DataService {
   // Sends a greeting
   rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {
   }
