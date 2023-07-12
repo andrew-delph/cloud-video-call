@@ -874,12 +874,19 @@ const insertUserVectors = async (
 
   const fields_data: milvus.FieldData[] = [];
 
+  function normalize(vector: number[]) {
+    const magnitude = Math.sqrt(
+      vector.reduce((sum, val) => sum + val * val, 0),
+    );
+    return vector.map((val) => val / magnitude);
+  }
+
   for (const userVector of userVectorList) {
     const userId = userVector.getUserId();
     const vector = userVector.getVectorList();
 
     logger.debug(`insert userId ${userId} length ${vector.length}`);
-    fields_data.push({ name: userId, vector });
+    fields_data.push({ name: userId, vector: normalize(vector) });
   }
 
   await milvus
