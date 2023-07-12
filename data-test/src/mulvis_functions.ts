@@ -8,7 +8,7 @@ import {
 } from '@zilliz/milvus2-sdk-node';
 import * as common from 'common';
 import { validFriends } from './person';
-import { DIM } from './nodembeddings_flow';
+export const DIM: number = 150;
 
 let START_TIME = performance.now();
 const logger = common.getLogger();

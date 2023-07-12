@@ -12,10 +12,10 @@ import {
   userdIdToType,
 } from './person';
 import * as neo4j from 'neo4j-driver';
-import { calcAvgMulvis } from './mulvis_functions';
+import { DIM, calcAvgMulvis } from './mulvis_functions';
 
-const NODE_NUM = 200;
-const EDGE_NUM = 10;
+const NODE_NUM = 11;
+const EDGE_NUM = 2;
 
 let PERMS: any = [[1, 0.5, 0]];
 PERMS = false;
@@ -25,8 +25,6 @@ const PERMS_LEN_MAX = 3;
 
 const PROP_RATIO_OPTIONS = [0];
 const NODE_INFLUENCE_OPTIONS = [0.5];
-
-export const DIM = 150;
 
 let results: neo4j.QueryResult;
 
