@@ -14,8 +14,8 @@ import {
 import * as neo4j from 'neo4j-driver';
 import { DIM, calcAvgMulvis } from './mulvis_functions';
 
-const NODE_NUM = 11;
-const EDGE_NUM = 2;
+const NODE_NUM = 200;
+const EDGE_NUM = 20;
 
 let PERMS: any = [[1, 0.5, 0]];
 PERMS = false;
@@ -284,7 +284,7 @@ async function generateEmbedding(
   results = await funcs.run(
     `
       MATCH (n:Person)
-      WHERE n.embedding IS NOT NULL
+      WHERE n.embedding IS NOT NULL AND n.userId IS NOT NULL
       return
       n.userId, 
       n.embedding
