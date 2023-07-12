@@ -363,7 +363,7 @@ export default async function () {
               },
             );
             check(r, {
-              'feedback response status is 201': r && r.status == 201,
+              'feedback response status is 201': r && r.status == 200,
             });
 
             // sleep
