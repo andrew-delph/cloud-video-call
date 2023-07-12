@@ -35,7 +35,9 @@ const ITEMS_NUM = 20;
 const fields_data = Array.from({ length: ITEMS_NUM }, () => {
   return {
     vector: Array.from({ length: DIM }, () => Math.random()),
-    name: `test` + (Math.random() > 0.5 ? `a` : `b`),
+    name:
+      `test` +
+      Array.from({ length: 1 }, () => Math.random().toString(36)[2]).join(``),
   };
 });
 
@@ -126,9 +128,9 @@ export async function milvusTest() {
   //   console.log(`diff: ${res.data[i].age - res.data[i - 1].age}`);
   // }
 
-  // for (let r of res.results) {
-  //   console.log(`r id ${r.id} score ${r.score} data ${JSON.stringify(r)}`);
-  // }
+  for (let r of res.results) {
+    console.log(`score ${r.score}`);
+  }
 }
 let START_TIME = performance.now();
 milvusTest()
