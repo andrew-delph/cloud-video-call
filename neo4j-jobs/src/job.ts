@@ -1,5 +1,6 @@
 import * as common from 'common';
 import * as funcs from 'neo4jscripts';
+import * as common_messaging from 'common-messaging';
 
 common.listenGlobalExceptions();
 
@@ -15,6 +16,8 @@ let node_attributes: string[];
 const print_num = 5;
 
 const redisClient = common.createRedisClient();
+
+const dataServiceClient = common_messaging.createLocalDataServiceClient();
 
 let results: any = {};
 const start_time = performance.now();
@@ -123,11 +126,26 @@ logger.info(`Value of JOB: ${job}`);
         `,
       );
 
+      const insertUserVectorsRequest =
+        new common_messaging.InsertUserVectorsRequest();
+
       for (let record of results.records) {
+        const userVectorMessage = new common_messaging.UserVector();
         const userId: string = record.get(`userId`);
         const embedding = record.get(`embedding`);
-        await common.writeRedisUserEmbeddings(redisClient, userId, embedding);
+        userVectorMessage.setUserId(userId);
+        userVectorMessage.setVectorList(embedding);
+        insertUserVectorsRequest.addUserVectors(userVectorMessage);
       }
+
+      await common_messaging.makeGrpcRequest<
+        common_messaging.InsertUserVectorsRequest,
+        common_messaging.StandardResponse
+      >(
+        dataServiceClient,
+        dataServiceClient.insertUserVectors,
+        insertUserVectorsRequest,
+      );
 
       logger.info(`wrote ${results.records.length} embeddings to redis`);
 

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as common from 'common';
-import * as neo4j_common from 'common-messaging';
+import * as common_messaging from 'common-messaging';
 import {
   CreateFeedbackRequest,
   GetUserPerferencesRequest,
@@ -26,7 +26,7 @@ const logger = common.getLogger();
 
 const firebaseApp = initializeApp();
 
-const dataServiceClient = neo4j_common.createLocalDataServiceClient();
+const dataServiceClient = common_messaging.createLocalDataServiceClient();
 
 const durationWarn = 2;
 
@@ -101,12 +101,12 @@ app.put(
 
     const userId: string = req.userId;
 
-    const createFeedbackRequest = new neo4j_common.CreateFeedbackRequest();
+    const createFeedbackRequest = new common_messaging.CreateFeedbackRequest();
     createFeedbackRequest.setUserId(userId);
     createFeedbackRequest.setScore(score);
     createFeedbackRequest.setMatchId(match_id);
 
-    await makeGrpcRequest<CreateFeedbackRequest, neo4j_common.Match>(
+    await makeGrpcRequest<CreateFeedbackRequest, common_messaging.Match>(
       dataServiceClient,
       dataServiceClient.createFeedback,
       createFeedbackRequest,
@@ -134,7 +134,8 @@ app.put(`/preferences`, rateLimit(`put_preferences`, 20), async (req, res) => {
 
   const userId: string = req.userId;
 
-  const putUserFiltersRequest = new neo4j_common.PutUserPerferencesRequest();
+  const putUserFiltersRequest =
+    new common_messaging.PutUserPerferencesRequest();
   putUserFiltersRequest.setUserId(userId);
 
   Object.entries(a_constant).forEach(([key, value]) => {
@@ -228,7 +229,7 @@ app.get(`/history`, rateLimit(`get_history`, 20), async (req, res) => {
   const skipInt = common.tryParseInt(skip, 0);
   logger.debug(`/history query=${JSON.stringify(req.query)}`);
 
-  const matchHistoryRequest = new neo4j_common.MatchHistoryRequest();
+  const matchHistoryRequest = new common_messaging.MatchHistoryRequest();
   matchHistoryRequest.setUserId(userId);
   matchHistoryRequest.setLimit(limitInt);
   matchHistoryRequest.setSkip(skipInt);
