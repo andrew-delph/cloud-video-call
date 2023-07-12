@@ -135,10 +135,10 @@ function generatePermutations(
   return Array.from(permutationsSet).map((val) => JSON.parse(val));
 }
 
-export const nodeembeddings = async (
+export async function nodeembeddings(
   permutations: any = false,
   createData: boolean = false,
-) => {
+) {
   userFunctions.length = 0;
 
   userFunctions.push(createFemale);
@@ -243,13 +243,13 @@ export const nodeembeddings = async (
   console.log(`permutations.length: ${permutations.length}`);
 
   return resultList;
-};
+}
 
-const generateEmbedding = async (
+async function generateEmbedding(
   perm: number[],
   propertyRatio: number = 0,
   nodeSelfInfluence: number = 1,
-) => {
+) {
   console.log(`perm: ${JSON.stringify(perm)}`);
 
   results = await funcs.run(
@@ -307,9 +307,9 @@ const generateEmbedding = async (
     embeddings: results.records.length,
     score: avgObj.avg * results.records.length,
   };
-};
+}
 
-export const main = async () => {
+export async function main() {
   let perms: any = [[1, 0.5, 0]];
   perms = false;
   const resultsList = await nodeembeddings(perms, true);
@@ -330,4 +330,4 @@ export const main = async () => {
   // for (let result of resultsListOther) {
   //   console.log(`avg: ${result.avg} for ${JSON.stringify(result.perm)}`);
   // }
-};
+}

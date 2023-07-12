@@ -6,14 +6,10 @@ import {
   SearchResultData,
 } from '@zilliz/milvus2-sdk-node';
 import * as common from 'common';
+import { milvusClient } from './mulvis_functions';
 
-const START_TIME = performance.now();
+let START_TIME = performance.now();
 const logger = common.getLogger();
-
-const address = `192.168.49.2:30033`;
-
-// connect to milvus
-const milvusClient = new MilvusClient({ address });
 
 const COLLECTION_NAME = `hello_milvus_${Array.from(
   { length: 10 },
@@ -23,24 +19,16 @@ const COLLECTION_NAME = `hello_milvus_${Array.from(
 const dim = 400;
 const ITEMS_NUM = 9000;
 
-const OUTPUT_FIELDS = [`height`, `name`];
+const OUTPUT_FIELDS = [`name`];
 
 const METRIC_TYPE = `IP`;
 const schema = [
-  {
-    name: `age`,
-    description: `ID field`,
-    data_type: DataType.Int64,
-    is_primary_key: true,
-    autoID: true,
-  },
   {
     name: `vector`,
     description: `Vector field`,
     data_type: DataType.FloatVector,
     dim: dim,
   },
-  { name: `height`, description: `int64 field`, data_type: DataType.Int64 },
   {
     name: `name`,
     description: `VarChar field`,
@@ -52,7 +40,6 @@ const schema = [
 const fields_data = Array.from({ length: ITEMS_NUM }, () => {
   return {
     vector: Array.from({ length: dim }, () => Math.random()),
-    height: Math.floor(Math.random() * 1001),
     name: Array.from({ length: 10 }, () => Math.random().toString(36)[2]).join(
       ``,
     ),
