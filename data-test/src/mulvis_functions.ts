@@ -11,7 +11,7 @@ import { validFriends } from './person';
 export const DIM: number = 150;
 
 let TOP_K = Infinity;
-TOP_K = 1;
+TOP_K = 5;
 
 let START_TIME = performance.now();
 const logger = common.getLogger();
@@ -145,7 +145,7 @@ export async function calcAvgMulvis(result: neo4j.QueryResult) {
       continue;
     }
 
-    length += 1;
+    length += Math.min(queryResults.results.length, TOP_K);
   }
 
   console.log(`total`, total, `length`, length);
