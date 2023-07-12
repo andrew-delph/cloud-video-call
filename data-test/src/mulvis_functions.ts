@@ -1,3 +1,4 @@
+import * as neo4j from 'neo4j-driver';
 import {
   MilvusClient,
   DataType,
@@ -6,6 +7,7 @@ import {
   SearchResultData,
 } from '@zilliz/milvus2-sdk-node';
 import * as common from 'common';
+import { validFriends } from './person';
 
 let START_TIME = performance.now();
 const logger = common.getLogger();
@@ -18,6 +20,15 @@ export const milvusClient = new MilvusClient({ address });
 const dim = 400;
 const METRIC_TYPE = `IP`;
 const OUTPUT_FIELDS = [`name`];
+
+interface SearchResultDataExtended extends SearchResultData {
+  name: string;
+}
+
+interface SearchResultsExtended {
+  status: ResStatus;
+  results: SearchResultDataExtended[];
+}
 
 const schema = [
   {
@@ -70,12 +81,64 @@ async function insertData(collection_name: string, fields_data: any[]) {
   });
 }
 
-async function searchVector(collection_name: string, searchVector: number[]) {
-  await milvusClient.search({
+async function queryVector(collection_name: string, searchVector: number[]) {
+  return (await milvusClient.search({
     collection_name,
     vector: searchVector,
     limit: 20,
     output_fields: OUTPUT_FIELDS,
     metric_type: METRIC_TYPE,
+  })) as SearchResultsExtended;
+}
+
+async function calcAvgMulvis(result: neo4j.QueryResult) {
+  // create a new pool. inset all embddings
+  // check the top
+
+  console.log(`calculating average`);
+
+  const collection_name = Array.from(
+    { length: 10 },
+    () => Math.random().toString(36)[2],
+  ).join(``);
+
+  await initCollection(collection_name);
+
+  const start_time = performance.now();
+  let records = result.records;
+
+  const items = records.map((record) => {
+    return {
+      type: record.get(`n.userId`),
+      embedding: record.get(`n.embedding`),
+    };
   });
+
+  await insertData(collection_name, items);
+
+  // INSERT EACH VECTOR
+
+  let length = 0;
+  let total = 0;
+
+  // SEACH AND VALIDATE TOP N
+  for (let item of items) {
+    const searchType = item.type;
+    const searchVector = item.embedding;
+
+    const queryResults = await queryVector(collection_name, searchVector);
+
+    for (let result of queryResults.results) {
+      const otherName = result.name;
+      if (validFriends(searchType, otherName)) total += 1;
+    }
+
+    length += 1;
+  }
+
+  console.log(`total`, total, `length`, length);
+  console.log(`--- calcAvg`);
+  console.log(`run`, performance.now() - start_time);
+
+  return { avg: total / length, length, valid: total };
 }
