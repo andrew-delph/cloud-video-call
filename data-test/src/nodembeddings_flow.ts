@@ -14,7 +14,8 @@ import {
 import * as neo4j from 'neo4j-driver';
 import { calcAvgMulvis } from './mulvis_functions';
 
-const Pool = require(`multiprocessing`).Pool;
+const NODE_NUM = 10;
+const EDGE_NUM = 4;
 
 let results: neo4j.QueryResult;
 
@@ -139,8 +140,8 @@ export async function nodeembeddings(
   if (createData) {
     await funcs.createData({
       deleteData: true,
-      nodesNum: 400,
-      edgesNum: 20,
+      nodesNum: NODE_NUM,
+      edgesNum: EDGE_NUM,
     });
     results = await funcs.createFriends();
   }
