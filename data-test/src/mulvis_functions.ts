@@ -131,7 +131,7 @@ export async function calcAvgMulvis(result: neo4j.QueryResult) {
   let length = 0;
   let total = 0;
 
-  // SEACH AND VALIDATE TOP N
+  // SEACH AND VALIDATE TOP K
   for (let item of items) {
     const searchType = item.type;
     const searchVector = item.vector;
