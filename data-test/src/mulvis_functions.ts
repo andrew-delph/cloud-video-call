@@ -109,6 +109,20 @@ export async function queryVector(
   })) as SearchResultsExtended;
 }
 
+export async function retrieveVector(
+  collection_name: string,
+  queryName: string,
+) {
+  let expression = `name == "${queryName}"`;
+
+  return await milvusClient.query({
+    collection_name: collection_name,
+    expr: expression,
+    output_fields: [`*`],
+    partition_names: [],
+  });
+}
+
 export async function calcAvgMulvis(result: neo4j.QueryResult) {
   // create a new pool. inset all embddings
   // check the top

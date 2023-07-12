@@ -13,6 +13,7 @@ import {
   initCollection,
   milvusClient,
   queryVector,
+  retrieveVector,
 } from './mulvis_functions';
 
 const logger = common.getLogger();
@@ -91,7 +92,17 @@ export async function milvusTest() {
 
   START_TIME = performance.now();
 
-  const res = await queryVector(COLLECTION_NAME, searchVector, searchName);
+  // const res = await queryVector(COLLECTION_NAME, searchVector, searchName);
+
+  let res = await retrieveVector(COLLECTION_NAME, searchName);
+  console.table(res.data);
+
+  await milvusClient.insert({
+    collection_name: COLLECTION_NAME,
+    fields_data,
+  });
+
+  res = await retrieveVector(COLLECTION_NAME, searchName);
 
   //   const names = ["name1", "name2", "name3"]; // the list of names you're searching for
 
@@ -107,7 +118,11 @@ export async function milvusTest() {
 
   console.log(`search name: ${fields_data[0].name}`);
 
-  console.table(res.results);
+  console.table(res.data);
+
+  for (let i = 1; i < res.data.length; i++) {
+    console.log(`diff: ${res.data[i].age - res.data[i - 1].age}`);
+  }
 
   // for (let r of res.results) {
   //   console.log(`r id ${r.id} score ${r.score} data ${JSON.stringify(r)}`);
