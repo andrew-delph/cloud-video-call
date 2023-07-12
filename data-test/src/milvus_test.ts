@@ -10,18 +10,27 @@ import { milvusClient } from './mulvis_functions';
 
 const logger = common.getLogger();
 
-const COLLECTION_NAME = `hello_milvus_${Array.from(
-  { length: 10 },
-  () => Math.random().toString(36)[2],
-).join(``)}`;
+// const COLLECTION_NAME = `hello_milvus_${Array.from(
+//   { length: 10 },
+//   () => Math.random().toString(36)[2],
+// ).join(``)}`;
+
+const COLLECTION_NAME = `hello_milvus`;
 
 const dim = 400;
-const ITEMS_NUM = 9000;
+const ITEMS_NUM = 30000;
 
 const OUTPUT_FIELDS = [`name`];
 
 const METRIC_TYPE = `IP`;
 const schema = [
+  {
+    name: `age`,
+    description: `ID field`,
+    data_type: DataType.Int64,
+    is_primary_key: true,
+    autoID: true,
+  },
   {
     name: `vector`,
     description: `Vector field`,
@@ -67,6 +76,11 @@ export async function milvusTest() {
   });
 
   console.log(`INSERT`);
+
+  await milvusClient.insert({
+    collection_name: COLLECTION_NAME,
+    fields_data,
+  });
 
   await milvusClient.insert({
     collection_name: COLLECTION_NAME,

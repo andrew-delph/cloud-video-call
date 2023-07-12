@@ -73,3 +73,10 @@ debug:
 milvus:
 	kubectl create namespace milvus || echo "NAMESPACE EXISTS"
 	helm upgrade --install milvus --namespace milvus --set cluster.enabled=false --set etcd.replicaCount=1 --set pulsar.enabled=false --set minio.mode=standalone milvus/milvus -f milvus.values.yaml
+
+rmilvus:
+	helm uninstall milvus --namespace milvus
+
+milvus_ui:
+	# -e MILVUS_URL=192.168.49.2:30033
+	docker run -it --network host -e MILVUS_URL=192.168.49.2:30033  zilliz/attu:v2.2.6
