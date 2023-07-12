@@ -22,7 +22,7 @@ const METRIC_TYPE = `IP`;
 const OUTPUT_FIELDS = [`type`];
 
 interface SearchResultDataExtended extends SearchResultData {
-  name: string;
+  type: string;
 }
 
 interface SearchResultsExtended {
@@ -116,8 +116,8 @@ export async function calcAvgMulvis(result: neo4j.QueryResult) {
 
   const items = records.map((record) => {
     return {
-      type: record.get(`n.userId`),
-      vector: record.get(`n.embedding`),
+      type: record.get(`n.userId`) as string,
+      vector: record.get(`n.embedding`) as number[],
     };
   });
 
