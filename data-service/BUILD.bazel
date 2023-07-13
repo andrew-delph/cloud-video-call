@@ -1,6 +1,9 @@
 load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
-load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
+load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 
 npm_link_all_packages(
     name = "node_modules",
@@ -8,7 +11,7 @@ npm_link_all_packages(
 
 ts_project(
     name = "ts",
-    srcs = glob(["src/**/*.ts",]),
+    srcs = glob(["src/**/*.ts"]),
     declaration = True,
     out_dir = ".",
     deps = [
@@ -21,11 +24,6 @@ js_binary(
     data = [":ts"],
     entry_point = "src/data-service.js",
 )
-
-
-load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
-load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
-load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
 
 js_image_layer(
     name = "layers",
@@ -69,28 +67,27 @@ container_image(
 )
 
 container_push(
-   name = "image_push",
-   image = ":image",
-   format = "Docker",
-   registry = "ghcr.io",
-   repository = "andrew-delph/video-call-data-service",
-   tag = "latest",
+    name = "image_push",
+    format = "Docker",
+    image = ":image",
+    registry = "ghcr.io",
+    repository = "andrew-delph/video-call-data-service",
+    tag = "latest",
 )
 
-load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
-
-# go_library(
-#     name = "main_library",
-#     srcs = glob(["**/*.go",]),
-#     deps = [
-#         "//common-messaging:common-messaging-proto-go",
-#     ],
-#     importpath = "test",
-#     visibility = ["//visibility:public"],
-# )
+go_library(
+    name = "go_default_library",
+    srcs = glob(["**/*.go"]),
+    importpath = "github.com/example/project/greeter_server",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//common-messaging:common-messaging-go-proto-library",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)
 
 go_binary(
     name = "main",
-    srcs = glob(["**/*.go",]),
-    deps = ["//common-messaging:common-messaging-proto-go"]
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
 )

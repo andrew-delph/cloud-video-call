@@ -13,5 +13,8 @@
   },
   "[starlark]": {
     "editor.defaultFormatter": "BazelBuild.vscode-bazel"
+  },
+  "[bazel]": {
+    "editor.defaultFormatter": "StackBuild.bazel-stack-vscode"
   }
 }

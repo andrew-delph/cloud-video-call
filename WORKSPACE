@@ -1,4 +1,3 @@
-
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
@@ -32,8 +31,6 @@ load("@npm//:repositories.bzl", "npm_repositories")
 
 npm_repositories()
 
-
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
     name = "aspect_rules_ts",
     sha256 = "58b6c0ad158fc42883dafa157f1a25cddd65bcd788a772620192ac9ceefa0d78",
@@ -60,9 +57,6 @@ rules_ts_dependencies(
     # ts_version = LATEST_VERSION
 )
 
-# Fetch and register node, if you haven't already
-load("@rules_nodejs//nodejs:repositories.bzl", "DEFAULT_NODE_VERSION", "nodejs_register_toolchains")
-
 nodejs_register_toolchains(
     name = "node",
     node_version = DEFAULT_NODE_VERSION,
@@ -76,14 +70,12 @@ register_copy_directory_toolchains()
 
 register_copy_to_directory_toolchains()
 
-
 # DOCKER
 http_archive(
     name = "io_bazel_rules_docker",
     sha256 = "b1e80761a8a8243d03ebca8845e9cc1ba6c82ce7c5179ce2b295cd36f7e394bf",
     urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.25.0/rules_docker-v0.25.0.tar.gz"],
 )
-
 
 load("@io_bazel_rules_docker//repositories:repositories.bzl", rules_docker_repositories = "repositories")
 
@@ -112,10 +104,10 @@ container_pull(
 )
 
 container_pull(
-  name = "ubuntu",
-  registry = "docker.io",
-  repository = "ubuntu",
-  tag = "latest"
+    name = "ubuntu",
+    registry = "docker.io",
+    repository = "ubuntu",
+    tag = "latest",
 )
 
 http_archive(
@@ -128,8 +120,6 @@ http_archive(
 load("@aspect_rules_jest//jest:dependencies.bzl", "rules_jest_dependencies")
 
 rules_jest_dependencies()
-
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "com_google_protobuf",
@@ -144,3 +134,29 @@ http_archive(
 load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
 
 protobuf_deps()
+
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
+
+gazelle_dependencies()
+
+go_repository(
+    name = "org_golang_google_grpc",
+    build_file_proto_mode = "disable",
+    importpath = "google.golang.org/grpc",
+    sum = "h1:J0UbZOIrCAl+fpTOf8YLs4dJo8L/owV4LYVtAXQoPkw=",
+    version = "v1.22.0",
+)
+
+go_repository(
+    name = "org_golang_x_net",
+    importpath = "golang.org/x/net",
+    sum = "h1:oWX7TPOiFAMXLq8o0ikBYfCJVlRHBcsciT5bXOrH628=",
+    version = "v0.0.0-20190311183353-d8887717615a",
+)
+
+go_repository(
+    name = "org_golang_x_text",
+    importpath = "golang.org/x/text",
+    sum = "h1:g61tztE5qeGQ89tm6NTjjM9VPIm088od1l6aSorWRWg=",
+    version = "v0.3.0",
+)
