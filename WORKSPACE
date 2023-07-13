@@ -167,4 +167,10 @@ protobuf_deps()
 
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 
+# gazelle:repo bazel_gazelle
 gazelle_dependencies()
+
+load("//:deps.bzl", "go_dependencies")
+
+# gazelle:repository_macro deps.bzl%go_dependencies
+go_dependencies()
