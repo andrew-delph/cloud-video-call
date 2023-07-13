@@ -78,11 +78,10 @@ container_push(
 go_library(
     name = "go_default_library",
     srcs = glob(["**/*.go"]),
-    importpath = "github.com/example/project/greeter_server",
+    importpath = "data-service",
     visibility = ["//visibility:private"],
     deps = [
         "//common-messaging:common-messaging-go-proto-library",
-        "@org_golang_google_grpc//:go_default_library",
     ],
 )
 
