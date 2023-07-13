@@ -78,8 +78,11 @@ container_push(
 
 go_library(
     name = "go_default_library",
-    srcs = glob(["**/*.go"]),
-    importpath = "",
+    srcs = [
+        "helpers.go",
+        "main.go",
+    ],
+    importpath = "github.com/andrew-delph/cloud-video-call/data-service",
     visibility = ["//visibility:private"],
     deps = [
         "@org_golang_google_grpc//:go_default_library",
@@ -96,10 +99,5 @@ gazelle(name = "gazelle")
 
 gazelle(
     name = "gazelle-update-repos",
-    args = [
-        "-from_file=go.mod",
-        "-to_macro=deps.bzl%go_dependencies",
-        "-prune",
-    ],
     command = "update",
 )

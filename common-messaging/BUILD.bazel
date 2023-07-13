@@ -2,8 +2,6 @@ load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 load("@aspect_rules_js//npm:defs.bzl", "npm_package")
 load("@aspect_rules_js//js:defs.bzl", "js_library")
-load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 npm_link_all_packages(
     name = "node_modules",
@@ -37,19 +35,5 @@ js_library(
 npm_package(
     name = "common-messaging",
     srcs = [":lib"],
-    visibility = ["//visibility:public"],
-)
-
-go_proto_library(
-    name = "common-messaging-go-proto-library",
-    importpath = "common-messaging",
-    protos = [":common-messaging-proto"],
-    visibility = ["//visibility:public"],
-)
-
-go_library(
-    name = "common-messaging-go-library",
-    embed = [":common-messaging-go-proto-library"],
-    importpath = "common-messaging",
     visibility = ["//visibility:public"],
 )

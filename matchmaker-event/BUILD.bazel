@@ -69,8 +69,8 @@ container_image(
 
 container_push(
     name = "image_push",
-    image = ":image",
     format = "Docker",
+    image = ":image",
     registry = "ghcr.io",
     repository = "andrew-delph/video-call-matchmaker-event",
     tag = "latest",
@@ -87,7 +87,7 @@ ts_project(
 
 jest_test(
     name = "test",
-    data = [":test_ts"],
     colors = False,
+    data = [":test_ts"],
     node_modules = "//:node_modules",
 )

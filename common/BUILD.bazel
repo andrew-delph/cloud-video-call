@@ -22,8 +22,8 @@ ts_project(
 js_library(
     name = "lib",
     srcs = [
-        ":ts",
         "package.json",
+        ":ts",
     ],
 )
 
@@ -44,7 +44,7 @@ ts_project(
 
 jest_test(
     name = "test",
-    data = [":test_ts"],
     colors = False,
+    data = [":test_ts"],
     node_modules = "//:node_modules",
 )

@@ -69,8 +69,8 @@ container_image(
 
 container_push(
     name = "image_push",
-    image = ":image",
     format = "Docker",
+    image = ":image",
     registry = "ghcr.io",
     repository = "andrew-delph/video-call-socketio-service",
     tag = "latest",
