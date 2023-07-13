@@ -68,7 +68,7 @@ const maxCooldownAttemps = Math.floor(
   maxCooldownDelay ** (1 / cooldownScalerValue),
 );
 
-export const lastMatchedCooldownMinutes = 30; // filter of last matches
+export const lastMatchedCooldownMinutes = 0; // filter of last matches
 
 export async function startReadyConsumer() {
   dataServiceClient = createLocalDataServiceClient();

@@ -21,7 +21,6 @@ apply:
 	kubectl apply -f ./knative.yaml --wait
 	kubectl apply -f ./resources/. --wait
 	kubectl annotate domainmapping ws.andrewdelph.com kourier.knative.dev/disable-http2=true
-	make milvus
 
 delete:
 	kubectl delete -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml || echo "ERROR"

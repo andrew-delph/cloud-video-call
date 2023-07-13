@@ -8,7 +8,7 @@ import redis from 'k6/experimental/redis';
 import http from 'k6/http';
 import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 
-const vus = 40;
+const vus = 100;
 const authKeysNum = vus + 15; // number of users created for each parallel instance running
 const iterations = 999999; //authKeysNum * 1000;
 
@@ -18,8 +18,8 @@ const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
 const maxAuthSkip = 10; // max number of times a auth can be skipped
 
-let validMatchChatTime = 3; // number of seconds to delay if valid match
-let invalidMatchChatTime = 3;
+let validMatchChatTime = 60; // number of seconds to delay if valid match
+let invalidMatchChatTime = 60;
 
 // validMatchChatTime= 10
 // invalidMatchChatTime= 10
@@ -34,12 +34,12 @@ let authPrefix = `k6_auth_`;
 
 userFunctions.push(usersLib.createFemale);
 userFunctions.push(usersLib.createMale);
-// userFunctions.push(usersLib.createGroupA);
-// userFunctions.push(usersLib.createGroupB);
-// // usersLib.setHotRange(10)
-// for (let i = 0; i < usersLib.hotRange / 3; i++) {
-//   userFunctions.push(usersLib.createHot);
-// }
+userFunctions.push(usersLib.createGroupA);
+userFunctions.push(usersLib.createGroupB);
+// usersLib.setHotRange(10)
+for (let i = 0; i < usersLib.hotRange / 3; i++) {
+  userFunctions.push(usersLib.createHot);
+}
 
 const updateAuthVars = () => {
   if (uniqueAuthIds) {
