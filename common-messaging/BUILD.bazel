@@ -44,15 +44,15 @@ npm_package(
 
 load("@rules_proto//proto:defs.bzl", "proto_library")
 proto_library(
-    name = "foo_proto",
+    name = "common-messaging-proto",
     srcs = ["proto/data.proto"],
     visibility = ["//visibility:public"],
 )
 
 load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
 go_proto_library(
-    name = "foo_go_proto",
+    name = "common-messaging-proto-go",
     importpath = "github.com/example/protos/foo_proto",
-    protos = [":foo_proto"],
+    protos = [":common-messaging-proto"],
     visibility = ["//visibility:public"],
 )
