@@ -41,10 +41,10 @@ TOP_K = 5;
 let START_TIME = performance.now();
 const logger = common.getLogger();
 
-const address = `192.168.49.2:30033`;
+const milvusAddress = `milvus.default:19530`;
 
 // connect to milvus
-export const milvusClient = new MilvusClient({ address });
+export const milvusClient = new MilvusClient({ address: milvusAddress });
 
 export interface UserSearchResultData extends SearchResultData {
   name: string;
