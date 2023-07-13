@@ -5,13 +5,13 @@ import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
 import axios from 'axios';
 import * as common from 'common';
 import {
-  Neo4jClient,
+  DataServiceClient,
   grpc,
   CreateUserRequest,
   CreateMatchRequest,
   CreateMatchResponse,
   CreateUserResponse,
-  createNeo4jClient,
+  createLocalDataServiceClient,
   matchQueueName,
   matchmakerQueueName,
   MatchMessage,
@@ -62,7 +62,7 @@ app.get(`/health`, (req, res) => {
   res.send(`Health is good.`);
 });
 
-const neo4jRpcClient = createNeo4jClient();
+const dataServiceClient = createLocalDataServiceClient();
 
 const matchTimeout = 5000;
 
@@ -278,8 +278,8 @@ export async function matchConsumer() {
             CheckUserFiltersRequest,
             CheckUserFiltersResponse
           >(
-            neo4jRpcClient,
-            neo4jRpcClient.checkUserFilters,
+            dataServiceClient,
+            dataServiceClient.checkUserFilters,
             checkUserFiltersRequest,
           );
 
@@ -404,10 +404,12 @@ export const match = async (msgContent: MatchMessage) => {
     const matchResponse = await makeGrpcRequest<
       CreateMatchRequest,
       CreateMatchResponse
-    >(neo4jRpcClient, neo4jRpcClient.createMatch, request).catch((error) => {
-      logger.error(`createMatch: ${error}`);
-      throw Error(error);
-    });
+    >(dataServiceClient, dataServiceClient.createMatch, request).catch(
+      (error) => {
+        logger.error(`createMatch: ${error}`);
+        throw Error(error);
+      },
+    );
 
     const hostApproval = (resolve: any, reject: any) => {
       io.in(socket1)

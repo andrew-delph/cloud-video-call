@@ -1,6 +1,5 @@
 import { poolCalcScore } from './consine_worker';
 import * as funcs from './neo4j_functions';
-import { printResults } from './neo4j_index';
 import {
   userFunctions,
   createFemale,
@@ -12,15 +11,28 @@ import {
   userdIdToType,
 } from './person';
 import * as neo4j from 'neo4j-driver';
+import { DIM, calcAvgMulvis } from './mulvis_functions';
 
-const Pool = require(`multiprocessing`).Pool;
+const NODE_NUM = 200;
+const EDGE_NUM = 20;
+
+let PERMS: any = [[1, 0.5, 0]];
+// PERMS = false;
+
+const PERMS_LEN_MIN = 1;
+const PERMS_LEN_MAX = 3;
+
+const PROP_RATIO_OPTIONS = [0];
+const NODE_INFLUENCE_OPTIONS = [0.5];
+
+const CREATE_DATA = false;
 
 let results: neo4j.QueryResult;
 
-const calcAvg = async (
+function calcAvgManual(
   result: neo4j.QueryResult,
   cosineSimilarityThreshhold: number = 0.5,
-) => {
+) {
   console.log(`calculating average`);
 
   const start_time = performance.now();
@@ -50,18 +62,6 @@ const calcAvg = async (
   const pairs = generatePairs(items);
 
   console.log(`pairs.length`, pairs.length);
-
-  // const pool = new Pool(10);
-  // const scores = await pool.map(
-  // pairs.map((pairs) => {
-  //   const ntype: any = pairs[0].type;
-  //   const mtype: any = pairs[1].type;
-  //   const nembedding: any = pairs[0].embedding;
-  //   const membedding: any = pairs[1].embedding;
-  //   return { ntype, mtype, nembedding, membedding };
-  // }),
-  //   __dirname + `/consine_worker`,
-  // );
 
   const scores = pairs
     .map((pairs) => {
@@ -102,7 +102,7 @@ const calcAvg = async (
   console.log(`run`, performance.now() - start_time);
 
   return { avg: total / length, length, valid: total };
-};
+}
 
 function cleanPerm(perm: number[]): number[] {
   if (perm.length > 1 && perm[perm.length - 1] == 0) {
@@ -135,10 +135,10 @@ function generatePermutations(
   return Array.from(permutationsSet).map((val) => JSON.parse(val));
 }
 
-export const nodeembeddings = async (
+export async function nodeembeddings(
   permutations: any = false,
   createData: boolean = false,
-) => {
+) {
   userFunctions.length = 0;
 
   userFunctions.push(createFemale);
@@ -150,8 +150,8 @@ export const nodeembeddings = async (
   if (createData) {
     await funcs.createData({
       deleteData: true,
-      nodesNum: 400,
-      edgesNum: 20,
+      nodesNum: NODE_NUM,
+      edgesNum: EDGE_NUM,
     });
     results = await funcs.createFriends();
   }
@@ -160,7 +160,11 @@ export const nodeembeddings = async (
   results = await funcs.createGraph(`myGraph`);
 
   if (permutations == false) {
-    permutations = generatePermutations([0, 1, 0.5], 3, 5);
+    permutations = generatePermutations(
+      [0, 1, 0.5],
+      PERMS_LEN_MIN,
+      PERMS_LEN_MAX,
+    );
   }
   console.log(`permutations: ${JSON.stringify(permutations)}`);
   // if (1 == 1) process.exit(1);
@@ -198,8 +202,8 @@ export const nodeembeddings = async (
   let resultList: any[] = [];
 
   // [0, 1, 0.5]
-  for (let propertyRatio of [0, 0.5, 1]) {
-    for (let nodeSelfInfluence of [0, 0.5, 1]) {
+  for (let propertyRatio of PROP_RATIO_OPTIONS) {
+    for (let nodeSelfInfluence of NODE_INFLUENCE_OPTIONS) {
       for (let perm of permutations) {
         resultList.push(
           await generateEmbedding(perm, propertyRatio, nodeSelfInfluence),
@@ -243,13 +247,13 @@ export const nodeembeddings = async (
   console.log(`permutations.length: ${permutations.length}`);
 
   return resultList;
-};
+}
 
-const generateEmbedding = async (
+async function generateEmbedding(
   perm: number[],
   propertyRatio: number = 0,
   nodeSelfInfluence: number = 1,
-) => {
+) {
   console.log(`perm: ${JSON.stringify(perm)}`);
 
   results = await funcs.run(
@@ -269,7 +273,7 @@ const generateEmbedding = async (
         featureProperties: ['values','priority','community'],
         propertyRatio: ${propertyRatio},
         nodeSelfInfluence: ${nodeSelfInfluence},
-        embeddingDimension: 150,
+        embeddingDimension: ${DIM},
         randomSeed: 42,
         iterationWeights: ${JSON.stringify(perm)},
         writeProperty: 'embedding'
@@ -281,7 +285,7 @@ const generateEmbedding = async (
   results = await funcs.run(
     `
       MATCH (n:Person)
-      WHERE n.embedding IS NOT NULL
+      WHERE n.embedding IS NOT NULL AND n.userId IS NOT NULL
       return
       n.userId, 
       n.embedding
@@ -291,7 +295,8 @@ const generateEmbedding = async (
 
   // printResults(results, 50, 0);
 
-  const avgObj = await calcAvg(results, 0.5);
+  // const avgObj = await calcAvgManual(results, 0.5);
+  const avgObj = await calcAvgMulvis(results);
 
   console.log();
   console.log(`the avg is:`, avgObj.avg);
@@ -305,14 +310,12 @@ const generateEmbedding = async (
     propertyRatio,
     nodeSelfInfluence,
     embeddings: results.records.length,
-    score: avgObj.avg * results.records.length,
+    score: avgObj.avg * avgObj.length,
   };
-};
+}
 
-export const main = async () => {
-  let perms: any = [[1, 0.5, 0]];
-  perms = false;
-  const resultsList = await nodeembeddings(perms, true);
+export async function nodeEmbeddingsFlowMain() {
+  const resultsList = await nodeembeddings(PERMS, CREATE_DATA);
 
   // const resultsListOther = await nodeembeddings(
   //   !gender,
@@ -330,4 +333,4 @@ export const main = async () => {
   // for (let result of resultsListOther) {
   //   console.log(`avg: ${result.avg} for ${JSON.stringify(result.perm)}`);
   // }
-};
+}

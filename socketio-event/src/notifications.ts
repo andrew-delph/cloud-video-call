@@ -2,8 +2,8 @@ import * as common from 'common';
 import { credential } from 'firebase-admin';
 import { initializeApp, getApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import moment from 'moment';
 import { Message, getMessaging } from 'firebase-admin/messaging';
+import moment from 'moment';
 
 const logger = common.getLogger();
 

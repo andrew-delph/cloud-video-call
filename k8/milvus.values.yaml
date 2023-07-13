@@ -1,0 +1,25 @@
+service:
+  type: NodePort
+  nodePort: 30033
+
+standalone:
+  persistence:
+    persistentVolumeClaim:
+      existingClaim: 'data-neo4j-0'
+      subPath: 'milvus'
+
+cluster:
+  enabled: false
+
+etcd:
+  replicaCount: 1
+  persistence:
+    enabled: false
+
+minio:
+  mode: standalone
+  persistence:
+    enabled: false
+
+pulsar:
+  enabled: false

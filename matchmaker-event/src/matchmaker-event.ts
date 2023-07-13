@@ -1,5 +1,6 @@
 import {
   calcScoreThreshold,
+  deleteScoreZset,
   getRelationshipScores,
 } from './relationship_calculations';
 import { FilteredUserType, RelationshipScoreWrapper } from './types';
@@ -8,7 +9,7 @@ import amqp from 'amqplib';
 import * as common from 'common';
 import { listenGlobalExceptions } from 'common';
 import {
-  createNeo4jClient,
+  createLocalDataServiceClient,
   CheckUserFiltersRequest,
   CheckUserFiltersResponse,
   GetUserPerferencesRequest,
@@ -21,7 +22,7 @@ import {
   delayExchange,
   readyRoutingKey,
   FilterObject,
-  Neo4jClient,
+  DataServiceClient,
   userMessageQueue,
   userNotificationQueue,
   makeGrpcRequest,
@@ -45,7 +46,7 @@ app.get(`/health`, (req, res) => {
   res.send(`Health is good.`);
 });
 
-export let neo4jRpcClient: Neo4jClient;
+export let dataServiceClient: DataServiceClient;
 
 export let mainRedisClient: Client;
 let subRedisClient: Client;
@@ -57,9 +58,9 @@ let rabbitChannel: amqp.Channel;
 
 const prefetch = 4;
 
-export const realtionshipScoreCacheEx = 60 * 5;
+export const realtionshipScoreCacheEx = 20; //60 * 5;
 
-const maxCooldownDelay = 2; // still can be longer because of priority delay
+const maxCooldownDelay = 20; // still can be longer because of priority delay
 const cooldownScalerValue = 1.3;
 const maxReadyDelaySeconds = 5;
 const maxPriorityDelay = 3;
@@ -67,10 +68,10 @@ const maxCooldownAttemps = Math.floor(
   maxCooldownDelay ** (1 / cooldownScalerValue),
 );
 
-export const lastMatchedCooldownMinutes = 30; // filter of last matches
+export const lastMatchedCooldownMinutes = 0; // filter of last matches
 
 export async function startReadyConsumer() {
-  neo4jRpcClient = createNeo4jClient();
+  dataServiceClient = createLocalDataServiceClient();
   await connectRabbit();
 
   mainRedisClient = common.createRedisClient();
@@ -287,8 +288,8 @@ const neo4jGetUser = (userId: string) => {
   getUserPerferencesRequest.setUserId(userId);
 
   return makeGrpcRequest<GetUserPerferencesRequest, GetUserPerferencesResponse>(
-    neo4jRpcClient,
-    neo4jRpcClient.getUserPerferences,
+    dataServiceClient,
+    dataServiceClient.getUserPerferences,
     getUserPerferencesRequest,
   );
 };
@@ -501,22 +502,22 @@ async function matchmakerFlow(
   }
 
   const matchedMsg = [
-    `percentile=${scorePercentile.toFixed(2)}`,
     `score=${highestScore.score.toFixed(2)}`,
-    `nscores=(${highestScore.nscore.toFixed(1)}<${lowestScore.nscore.toFixed(
-      1,
-    )})`,
+    // `nscores=(${highestScore.nscore.toFixed(1)}<${lowestScore.nscore.toFixed(
+    //   1,
+    // )})`,
+    `percentile=${scorePercentile.toFixed(2)}`,
     `threshhold=${scoreThreshold.toFixed(2)}`,
-    `priority=${readyMessage.getPriority()}`,
-    `matched=[${stripUserId(readyMessage.getUserId())},${stripUserId(
-      otherId,
-    )}]`,
+    // `priority=${readyMessage.getPriority()}`,
     `scores=${relationShipScores.length}`,
     `attempts=${
       readyMessage.getCooldownAttempts() >= maxCooldownAttemps
         ? `${readyMessage.getCooldownAttempts()}(max)`
         : readyMessage.getCooldownAttempts()
     }`,
+    `matched=[${stripUserId(readyMessage.getUserId())},${stripUserId(
+      otherId,
+    )}]`,
   ];
 
   logger.info(matchedMsg.join(` `));
@@ -563,6 +564,9 @@ async function matchmakerFlow(
         1,
       );
 
+      await deleteScoreZset(readyMessage.getUserId());
+      await deleteScoreZset(otherId);
+
       // remove both from ready set
       await mainRedisClient.srem(common.readySetName, readyMessage.getUserId());
       await mainRedisClient.srem(common.readySetName, otherId);
@@ -574,8 +578,8 @@ const neo4jCheckUserFiltersRequest = (
   checkUserFiltersRequest: CheckUserFiltersRequest,
 ) => {
   return makeGrpcRequest<CheckUserFiltersRequest, CheckUserFiltersResponse>(
-    neo4jRpcClient,
-    neo4jRpcClient.checkUserFilters,
+    dataServiceClient,
+    dataServiceClient.checkUserFilters,
     checkUserFiltersRequest,
   );
 };

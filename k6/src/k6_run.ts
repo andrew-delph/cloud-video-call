@@ -8,18 +8,18 @@ import redis from 'k6/experimental/redis';
 import http from 'k6/http';
 import { Counter, Rate, Trend, Gauge } from 'k6/metrics';
 
-const vus = 40;
+const vus = 100;
 const authKeysNum = vus + 15; // number of users created for each parallel instance running
 const iterations = 999999; //authKeysNum * 1000;
 
-const nukeData = true; // this doesnt work with multile running instances
+const nukeData = false; // this doesnt work with multile running instances
 const uniqueAuthIds = true; //for every test new auth will be created
 const shuffleUsers = true; // shuffle the users to insert redis
 const updatePreferences = false; // update attributes/filters in neo4j
 const maxAuthSkip = 10; // max number of times a auth can be skipped
 
-let validMatchChatTime = 60 * 10; // number of seconds to delay if valid match
-let invalidMatchChatTime = 15;
+let validMatchChatTime = 60; // number of seconds to delay if valid match
+let invalidMatchChatTime = 60;
 
 // validMatchChatTime= 10
 // invalidMatchChatTime= 10
@@ -77,13 +77,13 @@ export const options = {
     //     { duration: `2d`, target: 1000 },
     //   ],
     // },
-    chatStream: {
-      executor: `shared-iterations`,
-      exec: `biChatStream`,
-      vus: 10,
-      iterations: 100,
-      maxDuration: `10h`,
-    },
+    // chatStream: {
+    //   executor: `shared-iterations`,
+    //   exec: `biChatStream`,
+    //   vus: 10,
+    //   iterations: 100,
+    //   maxDuration: `10h`,
+    // },
     // chatPull: {
     //   executor: `shared-iterations`,
     //   exec: `biChatPull`,
@@ -349,7 +349,7 @@ export default async function () {
             score_trend.add(score, extraLabels(myUser));
             score_gauge.add(score, extraLabels(myUser));
 
-            const r = http.post(
+            const r = http.put(
               `${options_url}/providefeedback`,
               JSON.stringify({
                 match_id: data.match_id,
@@ -363,7 +363,7 @@ export default async function () {
               },
             );
             check(r, {
-              'feedback response status is 201': r && r.status == 201,
+              'feedback response status is 201': r && r.status == 200,
             });
 
             // sleep

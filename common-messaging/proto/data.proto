@@ -1,11 +1,9 @@
 syntax = "proto3";
 
-
-
-package neo4j;
+package data;
 
 // The greeting service definition.
-service Neo4j {
+service DataService {
   // Sends a greeting
   rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {
   }
@@ -27,6 +25,9 @@ service Neo4j {
   rpc PutUserPerferences(PutUserPerferencesRequest) returns (PutUserPerferencesResponse) {}
 
   rpc GetMatchHistory(MatchHistoryRequest) returns (MatchHistoryResponse) {
+  }
+
+  rpc InsertUserVectors(InsertUserVectorsRequest) returns (StandardResponse) {
   }
 }
 
@@ -165,4 +166,14 @@ message Match {
   bool negative = 7;
   int32 match_id = 8;
   string end_time = 9;
+}
+
+message InsertUserVectorsRequest {
+  repeated UserVector user_vectors = 1;
+}
+
+
+message UserVector {
+  string user_id = 1;
+  repeated double vector = 2;
 }

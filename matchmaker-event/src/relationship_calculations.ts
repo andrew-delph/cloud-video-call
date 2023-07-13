@@ -2,7 +2,7 @@ import {
   RetryError,
   realtionshipScoreCacheEx,
   mainRedisClient,
-  neo4jRpcClient,
+  dataServiceClient,
   stripUserId,
   createFilterSet,
 } from './matchmaker-event';
@@ -81,12 +81,16 @@ export async function calcScoreThreshold(
     `WITHSCORES`,
   );
 
+  // zrange=${JSON.stringify(
+  //   zrange,
+  // )}
+
   logger.debug(
     `userId=${stripUserId(
       userId,
-    )} zsetScoreTotal=${zsetScoreTotal} index=${index} zrange=${JSON.stringify(
-      zrange,
-    )} score=${parseFloat(zrange[zrange.length - 1])}`,
+    )} zsetScoreTotal=${zsetScoreTotal} index=${index} score=${parseFloat(
+      zrange[zrange.length - 1],
+    )}`,
   );
 
   return parseFloat(zrange[zrange.length - 1]);
@@ -94,6 +98,10 @@ export async function calcScoreThreshold(
 
 export async function expireScoreZset(userId: string, seconds: number) {
   await mainRedisClient.expire(getUserScoreZsetCacheKey(userId), seconds);
+}
+
+export async function deleteScoreZset(userId: string) {
+  await mainRedisClient.del(getUserScoreZsetCacheKey(userId));
 }
 
 export async function getRelationshipScores(
@@ -138,8 +146,8 @@ export async function getRelationshipScores(
     GetRelationshipScoresRequest,
     GetRelationshipScoresResponse
   >(
-    neo4jRpcClient,
-    neo4jRpcClient.getRelationshipScores,
+    dataServiceClient,
+    dataServiceClient.getRelationshipScores,
     getRelationshipScoresRequest,
   ).catch((e) => {
     logger.error(`getRelationshipScores`, e);
@@ -149,24 +157,26 @@ export async function getRelationshipScores(
   const getRelationshipScoresMap =
     getRelationshipScoresResponse.getRelationshipScoresMap();
 
-  logger.debug(
-    `relationship scores requested:${
-      filtersToRequest.length
-    } responded: ${getRelationshipScoresMap.getLength()}`,
-  );
-
   // write them to the cache
   // store them in map
 
+  let countScores = 0;
+
   for (const filter of filtersToRequest) {
     const relationshipScore = getRelationshipScoresMap.get(filter.otherId);
-    if (!relationshipScore) continue;
+    if (!relationshipScore) {
+      logger.warn(`!relationshipScore ${relationshipScore}`);
+      continue;
+    }
 
     const prob = relationshipScore.getProb();
     const score = relationshipScore.getScore();
     const nscore = relationshipScore.getNscore();
     const otherId = filter.otherId;
     const latest_match = filter.latest_match;
+
+    if (score >= 0) countScores = countScores + 1;
+
     const score_obj: RelationshipScoreWrapper = new RelationshipScoreWrapper({
       prob,
       score,
@@ -186,6 +196,26 @@ export async function getRelationshipScores(
 
     relationshipScoresMap.set(otherId, score_obj);
   }
+
+  const testSet = new Set(filtersToRequest.map((filter) => filter.otherId));
+
+  for (let entry of getRelationshipScoresMap.getEntryList()) {
+    const otherId = entry[0];
+
+    if (!testSet.has(otherId)) {
+      logger.error(
+        `RETURNED VALUE NOT REQUESTED. ${otherId} ???${relationshipScoresMap.has(
+          otherId,
+        )}`,
+      );
+    }
+  }
+
+  logger.debug(
+    `relationship responed ${getRelationshipScoresMap.getLength()} of ${
+      filtersToRequest.length
+    } countScores ${countScores}`,
+  );
 
   return Array.from(relationshipScoresMap.entries());
 }
