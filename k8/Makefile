@@ -69,6 +69,15 @@ curl:
 debug:
 	kubectl run --rm -it --image "osexp2000/ubuntu-with-utils" bash --
 
+
+make neo4j:
+	kubectl label node minikube vke.vultr.com/node-pool=video-call || echo not local
+	helm upgrade --install neo4j neo4j/neo4j -f neo4j.values.yaml # --version 5.6.0
+	kubectl rollout status --watch --timeout=600s statefulset/neo4j
+
+make rneo4j:
+	helm uninstall neo4j
+
 milvus:
 	kubectl create namespace milvus || echo "NAMESPACE EXISTS"
 	helm upgrade --install milvus  milvus/milvus -f milvus.values.yaml
