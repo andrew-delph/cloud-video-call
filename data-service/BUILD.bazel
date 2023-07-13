@@ -83,6 +83,7 @@ go_library(
     ],
     importpath = "github.com/andrew-delph/cloud-video-call/data-service",
     visibility = ["//visibility:private"],
+    deps = ["@org_golang_google_grpc//:go_default_library"],
 )
 
 go_binary(

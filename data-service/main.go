@@ -4,9 +4,10 @@ import (
 	"log"
 	"net"
 
+	"fmt"
+
 	"google.golang.org/grpc"
 )
-
 const (
 	port = ":50051"
 )
@@ -14,6 +15,7 @@ const (
 
 
 func main() {
+	fmt.Println("Starting...")
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
