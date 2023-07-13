@@ -8,7 +8,7 @@ npm_link_all_packages(
 
 ts_project(
     name = "ts",
-    srcs = glob(["src/**/*.ts",]),
+    srcs = glob(["src/**/*.ts"]),
     declaration = True,
     out_dir = ".",
     deps = [
@@ -20,13 +20,12 @@ js_binary(
     name = "puppeteer",
     data = [
         ":ts",
-        ":input.mjpeg"
+        ":input.mjpeg",
     ],
     copy_data_to_bin = True,
     entry_point = "src/browser.js",
     args = ["--webcam-file $(location :input.mjpeg)"],
 )
-
 
 load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push", "container_flatten")
@@ -72,7 +71,7 @@ container_run_and_commit_layer(
         "curl -LOJ https://github.com/Snawoot/hola-proxy/releases/download/v1.9.1/hola-proxy.linux-amd64",
         "mv hola-proxy.linux-amd64 hola-proxy",
         "chmod +x hola-proxy",
-        "apt clean"
+        "apt clean",
     ],
 )
 
@@ -82,8 +81,8 @@ container_run_and_commit_layer(
     commands = [
         "apt update",
         "apt install openvpn easy-rsa curl netcat net-tools iputils-ping dnsutils tcpdump -y",
-        "apt clean"
-        ],
+        "apt clean",
+    ],
 )
 
 container_run_and_commit_layer(
@@ -95,8 +94,8 @@ container_run_and_commit_layer(
         "curl -LO https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb",
         "apt-get install -y ./google-chrome-stable_current_amd64.deb",
         "rm google-chrome-stable_current_amd64.deb",
-        "apt clean"
-        ],
+        "apt clean",
+    ],
 )
 
 container_image(
@@ -105,7 +104,7 @@ container_image(
     files = [
         "startup.sh",
         "pia-openvpn",
-        "input.mjpeg"
+        "input.mjpeg",
     ],
     layers = [
         "proxy_layer",
@@ -117,18 +116,16 @@ container_image(
     cmd = ["/startup.sh"],
     env = {
         "DOCKER": "true",
-        "RUN_COMMAND":"/app/puppeteer/puppeteer --webcam-file input.mjpeg",
-        "PUPPETEER_EXECUTABLE_PATH":"/usr/bin/google-chrome-stable"
+        "RUN_COMMAND": "/app/puppeteer/puppeteer --webcam-file input.mjpeg",
+        "PUPPETEER_EXECUTABLE_PATH": "/usr/bin/google-chrome-stable",
     },
 )
 
-
 container_push(
-   name = "image_push",
-   image = ":image",
-   format = "Docker",
-   registry = "ghcr.io",
-   repository = "andrew-delph/video-call-puppeteer",
-   tag = "latest",
+    name = "image_push",
+    image = ":image",
+    format = "Docker",
+    registry = "ghcr.io",
+    repository = "andrew-delph/video-call-puppeteer",
+    tag = "latest",
 )
-

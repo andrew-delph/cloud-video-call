@@ -4,6 +4,5 @@ load("@npm//:defs.bzl", "npm_link_all_packages")
 # manual /WORKSPACE npm_import rules to bazel-bin/node_modules as well as the virtual store
 # bazel-bin/node_modules/.aspect_rules_js since /pnpm-lock.yaml is the root of the pnpm workspace
 npm_link_all_packages(
-    name = "node_modules"
+    name = "node_modules",
 )
-
