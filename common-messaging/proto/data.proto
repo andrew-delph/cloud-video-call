@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package data;
+package video_call;
 
 // The greeting service definition.
 service DataService {

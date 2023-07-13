@@ -1,4 +1,4 @@
-// package: data
+// package: video_call
 // file: proto/data.proto
 
 /* tslint:disable */

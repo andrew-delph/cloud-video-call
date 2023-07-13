@@ -1,7 +1,6 @@
 syntax = "proto3";
 
-
-package rabbitmq;
+package video_call;
 
 message MatchmakerMessage {
   string user_id = 1;

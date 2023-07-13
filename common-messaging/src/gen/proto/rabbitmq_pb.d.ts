@@ -1,4 +1,4 @@
-// package: rabbitmq
+// package: video_call
 // file: proto/rabbitmq.proto
 
 /* tslint:disable */

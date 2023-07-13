@@ -1,4 +1,4 @@
-// package: data
+// package: video_call
 // file: proto/data.proto
 
 /* tslint:disable */
@@ -23,7 +23,7 @@ interface IDataServiceService extends grpc.ServiceDefinition<grpc.UntypedService
 }
 
 interface IDataServiceService_ICreateUser extends grpc.MethodDefinition<proto_data_pb.CreateUserRequest, proto_data_pb.CreateUserResponse> {
-    path: "/data.DataService/CreateUser";
+    path: "/video_call.DataService/CreateUser";
     requestStream: false;
     responseStream: false;
     requestSerialize: grpc.serialize<proto_data_pb.CreateUserRequest>;
@@ -32,7 +32,7 @@ interface IDataServiceService_ICreateUser extends grpc.MethodDefinition<proto_da
     responseDeserialize: grpc.deserialize<proto_data_pb.CreateUserResponse>;
 }
 interface IDataServiceService_ICreateMatch extends grpc.MethodDefinition<proto_data_pb.CreateMatchRequest, proto_data_pb.CreateMatchResponse> {
-    path: "/data.DataService/CreateMatch";
+    path: "/video_call.DataService/CreateMatch";
     requestStream: false;
     responseStream: false;
     requestSerialize: grpc.serialize<proto_data_pb.CreateMatchRequest>;
@@ -41,7 +41,7 @@ interface IDataServiceService_ICreateMatch extends grpc.MethodDefinition<proto_d
     responseDeserialize: grpc.deserialize<proto_data_pb.CreateMatchResponse>;
 }
 interface IDataServiceService_IEndCall extends grpc.MethodDefinition<proto_data_pb.EndCallRequest, proto_data_pb.StandardResponse> {
-    path: "/data.DataService/EndCall";
+    path: "/video_call.DataService/EndCall";
     requestStream: false;
     responseStream: false;
     requestSerialize: grpc.serialize<proto_data_pb.EndCallRequest>;
@@ -50,7 +50,7 @@ interface IDataServiceService_IEndCall extends grpc.MethodDefinition<proto_data_
     responseDeserialize: grpc.deserialize<proto_data_pb.StandardResponse>;
 }
 interface IDataServiceService_ICreateFeedback extends grpc.MethodDefinition<proto_data_pb.CreateFeedbackRequest, proto_data_pb.Match> {
-    path: "/data.DataService/CreateFeedback";
+    path: "/video_call.DataService/CreateFeedback";
     requestStream: false;
     responseStream: false;
     requestSerialize: grpc.serialize<proto_data_pb.CreateFeedbackRequest>;
@@ -59,7 +59,7 @@ interface IDataServiceService_ICreateFeedback extends grpc.MethodDefinition<prot
     responseDeserialize: grpc.deserialize<proto_data_pb.Match>;
 }
 interface IDataServiceService_IGetRelationshipScores extends grpc.MethodDefinition<proto_data_pb.GetRelationshipScoresRequest, proto_data_pb.GetRelationshipScoresResponse> {
-    path: "/data.DataService/GetRelationshipScores";
+    path: "/video_call.DataService/GetRelationshipScores";
     requestStream: false;
     responseStream: false;
     requestSerialize: grpc.serialize<proto_data_pb.GetRelationshipScoresRequest>;
@@ -68,7 +68,7 @@ interface IDataServiceService_IGetRelationshipScores extends grpc.MethodDefiniti
     responseDeserialize: grpc.deserialize<proto_data_pb.GetRelationshipScoresResponse>;
 }
 interface IDataServiceService_ICheckUserFilters extends grpc.MethodDefinition<proto_data_pb.CheckUserFiltersRequest, proto_data_pb.CheckUserFiltersResponse> {
-    path: "/data.DataService/CheckUserFilters";
+    path: "/video_call.DataService/CheckUserFilters";
     requestStream: false;
     responseStream: false;
     requestSerialize: grpc.serialize<proto_data_pb.CheckUserFiltersRequest>;
@@ -77,7 +77,7 @@ interface IDataServiceService_ICheckUserFilters extends grpc.MethodDefinition<pr
     responseDeserialize: grpc.deserialize<proto_data_pb.CheckUserFiltersResponse>;
 }
 interface IDataServiceService_IUpdatePerferences extends grpc.MethodDefinition<proto_data_pb.UpdatePerferencesRequest, proto_data_pb.StandardResponse> {
-    path: "/data.DataService/UpdatePerferences";
+    path: "/video_call.DataService/UpdatePerferences";
     requestStream: false;
     responseStream: false;
     requestSerialize: grpc.serialize<proto_data_pb.UpdatePerferencesRequest>;
@@ -86,7 +86,7 @@ interface IDataServiceService_IUpdatePerferences extends grpc.MethodDefinition<p
     responseDeserialize: grpc.deserialize<proto_data_pb.StandardResponse>;
 }
 interface IDataServiceService_IGetUserPerferences extends grpc.MethodDefinition<proto_data_pb.GetUserPerferencesRequest, proto_data_pb.GetUserPerferencesResponse> {
-    path: "/data.DataService/GetUserPerferences";
+    path: "/video_call.DataService/GetUserPerferences";
     requestStream: false;
     responseStream: false;
     requestSerialize: grpc.serialize<proto_data_pb.GetUserPerferencesRequest>;
@@ -95,7 +95,7 @@ interface IDataServiceService_IGetUserPerferences extends grpc.MethodDefinition<
     responseDeserialize: grpc.deserialize<proto_data_pb.GetUserPerferencesResponse>;
 }
 interface IDataServiceService_IPutUserPerferences extends grpc.MethodDefinition<proto_data_pb.PutUserPerferencesRequest, proto_data_pb.PutUserPerferencesResponse> {
-    path: "/data.DataService/PutUserPerferences";
+    path: "/video_call.DataService/PutUserPerferences";
     requestStream: false;
     responseStream: false;
     requestSerialize: grpc.serialize<proto_data_pb.PutUserPerferencesRequest>;
@@ -104,7 +104,7 @@ interface IDataServiceService_IPutUserPerferences extends grpc.MethodDefinition<
     responseDeserialize: grpc.deserialize<proto_data_pb.PutUserPerferencesResponse>;
 }
 interface IDataServiceService_IGetMatchHistory extends grpc.MethodDefinition<proto_data_pb.MatchHistoryRequest, proto_data_pb.MatchHistoryResponse> {
-    path: "/data.DataService/GetMatchHistory";
+    path: "/video_call.DataService/GetMatchHistory";
     requestStream: false;
     responseStream: false;
     requestSerialize: grpc.serialize<proto_data_pb.MatchHistoryRequest>;
@@ -113,7 +113,7 @@ interface IDataServiceService_IGetMatchHistory extends grpc.MethodDefinition<pro
     responseDeserialize: grpc.deserialize<proto_data_pb.MatchHistoryResponse>;
 }
 interface IDataServiceService_IInsertUserVectors extends grpc.MethodDefinition<proto_data_pb.InsertUserVectorsRequest, proto_data_pb.StandardResponse> {
-    path: "/data.DataService/InsertUserVectors";
+    path: "/video_call.DataService/InsertUserVectors";
     requestStream: false;
     responseStream: false;
     requestSerialize: grpc.serialize<proto_data_pb.InsertUserVectorsRequest>;
