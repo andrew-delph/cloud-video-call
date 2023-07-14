@@ -95,80 +95,96 @@ func neo4j_init() {
 		`
 		MATCH (n:Person)
 		RETURN n.userId
-		LIMIT 1
+		LIMIT 3
 		`, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	rec, err := result.Single()
+	rec, err := result.Collect()
 	if rec == nil {
 		log.Fatal("rec is nil")
 	} else {
-		log.Info("REC IS NOT NIL")
+		// log.Info("REC IS NOT NIL")
+		// log.Info(rec.Keys)
+		// log.Info(rec.Values)
+		// log.Info(rec)
+		log.Info("result.....................")
+		log.Info("Length:", len(rec))
+		for index, item := range rec {
+			log.Infof("Index: %d, Item: %s\n", index, item)
+		}
 	}
 }
 
 func (s *server) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	log.Printf("Received: CreateUser")
+	log.Debug("Received: CreateUser")
 	return &pb.CreateUserResponse{}, nil
 }
 
 func (s *server) CreateMatch(ctx context.Context, in *pb.CreateMatchRequest) (*pb.CreateMatchResponse, error) {
-	log.Printf("Received: CreateMatch")
+	log.Debug("Received: CreateMatch")
 	return &pb.CreateMatchResponse{}, nil
 }
 
 func (s *server) EndCall(ctx context.Context, in *pb.EndCallRequest) (*pb.StandardResponse, error) {
-	log.Printf("Received: EndCall")
+	log.Debug("Received: EndCall")
 	return &pb.StandardResponse{}, nil
 }
 
 func (s *server) CreateFeedback(ctx context.Context, in *pb.CreateFeedbackRequest) (*pb.Match, error) {
-	log.Printf("Received: CreateFeedback")
+	log.Debug("Received: CreateFeedback")
 	return &pb.Match{}, nil
 }
 
 func (s *server) GetRelationshipScores(ctx context.Context, in *pb.GetRelationshipScoresRequest) (*pb.GetRelationshipScoresResponse, error) {
-	log.Printf("Received: GetRelationshipScores")
+	log.Debug("Received: GetRelationshipScores")
 	return &pb.GetRelationshipScoresResponse{}, nil
 }
 
 func (s *server) CheckUserFilters(ctx context.Context, in *pb.CheckUserFiltersRequest) (*pb.CheckUserFiltersResponse, error) {
-	// log.Printf("Received: CheckUserFilters123zzz1z")
+	// log.Debug("Received: CheckUserFilters123zzz1z")
 	return &pb.CheckUserFiltersResponse{}, nil
 }
 
 func (s *server) UpdatePerferences(ctx context.Context, in *pb.UpdatePerferencesRequest) (*pb.StandardResponse, error) {
-	log.Printf("Received: UpdatePerferences")
+	log.Debug("Received: UpdatePerferences")
 	return &pb.StandardResponse{}, nil
 }
 
 func (s *server) GetUserPerferences(ctx context.Context, in *pb.GetUserPerferencesRequest) (*pb.GetUserPerferencesResponse, error) {
-	log.Printf("Received: GetUserPerferences")
+	log.Debug("Received: GetUserPerferences")
 	return &pb.GetUserPerferencesResponse{}, nil
 }
 
 func (s *server) PutUserPerferences(ctx context.Context, in *pb.PutUserPerferencesRequest) (*pb.PutUserPerferencesResponse, error) {
-	log.Printf("Received: PutUserPerferences")
+	log.Debug("Received: PutUserPerferences")
 	return &pb.PutUserPerferencesResponse{}, nil
 }
 
 func (s *server) GetMatchHistory(ctx context.Context, in *pb.MatchHistoryRequest) (*pb.MatchHistoryResponse, error) {
-	log.Printf("Received: GetMatchHistory")
+	log.Debug("Received: GetMatchHistory")
 	return &pb.MatchHistoryResponse{}, nil
 }
 
 func (s *server) InsertUserVectors(ctx context.Context, in *pb.InsertUserVectorsRequest) (*pb.StandardResponse, error) {
-	log.Printf("Received: InsertUserVectors")
+	log.Debug("Received: InsertUserVectors")
 	return &pb.StandardResponse{}, nil
 }
 
 func main() {
 	log.SetFormatter(&log.JSONFormatter{})
+	defer func() {
+		if r := recover(); r != nil {
+			log.Errorf("Uncaught panic: %v", r)
+			// Perform any necessary cleanup or error handling here
+		}
+	}()
 
 	log.Info("STARTING !!!")
 
-	flag.Parse() // Is this needed?
+	neo4j_init()
+
+	flag.Parse()
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
@@ -178,9 +194,6 @@ func main() {
 	pb.RegisterDataServiceServer(s, &server{})
 	log.Infof("server listening at %v", lis.Addr())
 
-	neo4j_init()
-
-	log.Info("neo4j_init done")
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
