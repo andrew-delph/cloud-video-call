@@ -42,19 +42,19 @@ func neo4j_init() {
         panic(err)
     }
 
-	// result, err := neo4j.ExecuteQuery(ctx, driver,
-	// 	"MERGE (p:Person {name: $name}) RETURN p",  
-	// 	map[string]any{  
-	// 		"name": "Alice",
-	// 	}, neo4j.EagerResultTransformer,
-	// 	neo4j.ExecuteQueryWithDatabase("neo4j"))  
-	// if err != nil {
-	// 	panic(err)
-	// }
+	result, err := neo4j.ExecuteQuery(ctx, driver,
+		"MERGE (p:Person {name: $name}) RETURN p",  
+		map[string]any{  
+			"name": "Alice",
+		}, neo4j.EagerResultTransformer,
+		neo4j.ExecuteQueryWithDatabase("neo4j"))  
+	if err != nil {
+		panic(err)
+	}
 	
-	// fmt.Printf("Created %v nodes in %+v.\n",
-	// 	result.Summary.Counters().NodesCreated(),
-	// 	result.Summary.ResultAvailableAfter())
+	fmt.Printf("Created %v nodes in %+v.\n",
+		result.Summary.Counters().NodesCreated(),
+		result.Summary.ResultAvailableAfter())
 }
 
 func (s *server) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
@@ -85,7 +85,7 @@ func (s *server) GetRelationshipScores(ctx context.Context, in *pb.GetRelationsh
 
 
 func (s *server) CheckUserFilters(ctx context.Context, in *pb.CheckUserFiltersRequest) (*pb.CheckUserFiltersResponse, error) {
-	log.Printf("Received: CheckUserFilters")
+	log.Printf("Received: CheckUserFilters123zzz1z")
 	return &pb.CheckUserFiltersResponse{}, nil
 }
 
