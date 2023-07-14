@@ -23,59 +23,59 @@ type server struct {
 
 
 func (s *server) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	log.Printf("Received: %v")
+	log.Printf("Received: CreateUser")
 	return &pb.CreateUserResponse{}, nil
 }
 
 func (s *server) CreateMatch(ctx context.Context, in *pb.CreateMatchRequest) (*pb.CreateMatchResponse, error) {
-	log.Printf("Received: %v")
+	log.Printf("Received: CreateMatch")
 	return &pb.CreateMatchResponse{}, nil
 }
 
 func (s *server) EndCall(ctx context.Context, in *pb.EndCallRequest) (*pb.StandardResponse, error) {
-	log.Printf("Received: %v")
+	log.Printf("Received: EndCall")
 	return &pb.StandardResponse{}, nil
 }
 
 func (s *server) CreateFeedback(ctx context.Context, in *pb.CreateFeedbackRequest) (*pb.Match, error) {
-	log.Printf("Received: %v")
+	log.Printf("Received: CreateFeedback")
 	return &pb.Match{}, nil
 }
 
 
 func (s *server) GetRelationshipScores(ctx context.Context, in *pb.GetRelationshipScoresRequest) (*pb.GetRelationshipScoresResponse, error) {
-	log.Printf("Received: %v")
+	log.Printf("Received: GetRelationshipScores")
 	return &pb.GetRelationshipScoresResponse{}, nil
 }
 
 
 func (s *server) CheckUserFilters(ctx context.Context, in *pb.CheckUserFiltersRequest) (*pb.CheckUserFiltersResponse, error) {
-	log.Printf("Received: %v")
+	log.Printf("Received: CheckUserFilters")
 	return &pb.CheckUserFiltersResponse{}, nil
 }
 
 func (s *server) UpdatePerferences(ctx context.Context, in *pb.UpdatePerferencesRequest) (*pb.StandardResponse, error) {
-	log.Printf("Received: %v")
+	log.Printf("Received: UpdatePerferences")
 	return &pb.StandardResponse{}, nil
 }
 
 func (s *server) GetUserPerferences(ctx context.Context, in *pb.GetUserPerferencesRequest) (*pb.GetUserPerferencesResponse, error) {
-	log.Printf("Received: %v")
+	log.Printf("Received: GetUserPerferences")
 	return &pb.GetUserPerferencesResponse{}, nil
 }
 
 func (s *server) PutUserPerferences(ctx context.Context, in *pb.PutUserPerferencesRequest) (*pb.PutUserPerferencesResponse, error) {
-	log.Printf("Received: %v")
+	log.Printf("Received: PutUserPerferences")
 	return &pb.PutUserPerferencesResponse{}, nil
 }
 
 func (s *server) GetMatchHistory(ctx context.Context, in *pb.MatchHistoryRequest) (*pb.MatchHistoryResponse, error) {
-	log.Printf("Received: %v")
+	log.Printf("Received: GetMatchHistory")
 	return &pb.MatchHistoryResponse{}, nil
 }
 
 func (s *server) InsertUserVectors(ctx context.Context, in *pb.InsertUserVectorsRequest) (*pb.StandardResponse, error) {
-	log.Printf("Received: %v")
+	log.Printf("Received: InsertUserVectors")
 	return &pb.StandardResponse{}, nil
 }
 
