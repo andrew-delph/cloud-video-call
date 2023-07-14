@@ -108,22 +108,76 @@ func neo4j_init() {
 		// log.Info(rec.Keys)
 		// log.Info(rec.Values)
 		// log.Info(rec)
-		log.Info("result.....................")
-		log.Info("Length:", len(rec))
+		log.Debug("result.....................")
+		log.Debug("Length:", len(rec))
 		for index, item := range rec {
-			log.Infof("Index: %d, Item: %s\n", index, item)
+			log.Debug("Index: %d, Item: %s\n", index, item)
 		}
 	}
 }
 
 func (s *server) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	log.Debug("Received: CreateUser")
+	log.Debug("Received: CreateUser", in.UserId)
+	session := getSession()
+	defer session.Close()
+
+	session.Run(
+		`Merge (n:Person {userId: $userId}) return n.priority as priority;`, map[string]any{
+			"userId": in.UserId,
+		})
+
+	log.Debug("User created", in.UserId)
+
 	return &pb.CreateUserResponse{}, nil
 }
 
 func (s *server) CreateMatch(ctx context.Context, in *pb.CreateMatchRequest) (*pb.CreateMatchResponse, error) {
 	log.Debug("Received: CreateMatch")
-	return &pb.CreateMatchResponse{}, nil
+
+	session := getSession()
+	defer session.Close()
+
+	result, err := session.Run(
+		`MATCH (a:Person), (b:Person) 
+		WHERE a.userId = $userId1 AND b.userId = $userId2 
+		CREATE (a)-[r1:MATCHED{createDate: datetime()}]->(b)
+		CREATE (b)-[r2:MATCHED{createDate: datetime()}]->(a)
+		set r1.other = id(r2)
+		set r2.other = id(r1)
+		RETURN id(r1), id(r2)`, map[string]any{
+			"userId1": in.UserId1,
+			"userId2": in.UserId2,
+		})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	match, err := result.Single()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if match == nil {
+		log.Fatal("match is not single")
+	}
+
+	response := pb.CreateMatchResponse{}
+
+	if idValue, found := result.Record().Get("id(r2)"); found {
+		id, ok := idValue.(int32)
+		if ok {
+			response.MatchId1 = id
+		}
+	}
+
+	if idValue, found := result.Record().Get("id(r2)"); found {
+		id, ok := idValue.(int32)
+		if ok {
+			response.MatchId1 = id
+		}
+	}
+
+	return &response, nil
 }
 
 func (s *server) EndCall(ctx context.Context, in *pb.EndCallRequest) (*pb.StandardResponse, error) {
@@ -138,12 +192,37 @@ func (s *server) CreateFeedback(ctx context.Context, in *pb.CreateFeedbackReques
 
 func (s *server) GetRelationshipScores(ctx context.Context, in *pb.GetRelationshipScoresRequest) (*pb.GetRelationshipScoresResponse, error) {
 	log.Debug("Received: GetRelationshipScores")
-	return &pb.GetRelationshipScoresResponse{}, nil
+
+	scoreMap := make(map[string]*pb.Score)
+
+	for _, otherId := range in.OtherUsers {
+		log.Debug("otherId ", otherId)
+
+		score := pb.Score{}
+
+		score.Score = 1
+
+		// response.GetRelationshipScores()[otherId] = &score
+
+		scoreMap[otherId] = &score
+	}
+
+	log.Debug("SENDING BACKKKK")
+	return &pb.GetRelationshipScoresResponse{RelationshipScores: scoreMap}, nil
 }
 
 func (s *server) CheckUserFilters(ctx context.Context, in *pb.CheckUserFiltersRequest) (*pb.CheckUserFiltersResponse, error) {
-	// log.Debug("Received: CheckUserFilters123zzz1z")
-	return &pb.CheckUserFiltersResponse{}, nil
+	log.Debug("Received: CheckUserFilters ", len(in.GetFilters()))
+
+	response := pb.CheckUserFiltersResponse{}
+	for _, filter := range in.Filters {
+
+		filter.Passed = true
+
+		response.Filters = append(response.Filters, filter)
+
+	}
+	return &response, nil
 }
 
 func (s *server) UpdatePerferences(ctx context.Context, in *pb.UpdatePerferencesRequest) (*pb.StandardResponse, error) {
