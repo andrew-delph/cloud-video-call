@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package video_call;
 
+option go_package = "github.com/andrew-delph/cloud-video-call/common-messaging/proto";
+
 message MatchmakerMessage {
   string user_id = 1;
   int32 cooldown_attempts = 2;
