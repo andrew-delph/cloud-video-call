@@ -12,7 +12,7 @@ import (
 	"context"
 
 	pb "github.com/andrew-delph/cloud-video-call/common-messaging/proto"
-	// "github.com/neo4j/neo4j-go-driver/v5/neo4j"
+	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
 var (
@@ -24,25 +24,25 @@ type server struct {
 }
 
 
-// func neo4j_init() {
-//     context.Background()
-//     ctx := context.Background() 
-//     dbUri := "neo4j://localhost"
-//     dbUser := "neo4j"
-//     dbPassword := "verysecret"
-//     driver, err := neo4j.NewDriverWithContext(  
-//         dbUri,
-//         neo4j.BasicAuth(dbUser, dbPassword, ""))
-//     if err != nil {
-//         panic(err)
-//     }
-//     defer driver.Close(ctx)  
+func neo4j_init() {
+    context.Background()
+    ctx := context.Background() 
+    dbUri := "neo4j://localhost"
+    dbUser := "neo4j"
+    dbPassword := "verysecret"
+    driver, err := neo4j.NewDriverWithContext(  
+        dbUri,
+        neo4j.BasicAuth(dbUser, dbPassword, ""))
+    if err != nil {
+        panic(err)
+    }
+    defer driver.Close(ctx)  
 
-//     err = driver.VerifyConnectivity(ctx)  
-//     if err != nil {
-//         panic(err)
-//     }
-// }
+    err = driver.VerifyConnectivity(ctx)  
+    if err != nil {
+        panic(err)
+    }
+}
 
 func (s *server) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	log.Printf("Received: CreateUser")
