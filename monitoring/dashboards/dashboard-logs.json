@@ -236,7 +236,7 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": ["All"],
           "value": ["$__all"]
         },
@@ -273,18 +273,23 @@
           },
           {
             "selected": false,
+            "text": "fatal",
+            "value": "fatal"
+          },
+          {
+            "selected": false,
             "text": "unknown",
             "value": "unknown"
           }
         ],
-        "query": "info, debug, warn, error, unknown",
+        "query": "info, debug, warn, error, fatal, unknown",
         "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "",
           "value": ""
         },
@@ -312,6 +317,6 @@
   "timezone": "",
   "title": "Logs",
   "uid": "VzlEPu1Vz",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
