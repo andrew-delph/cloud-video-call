@@ -25,11 +25,10 @@ type server struct {
 
 
 func neo4j_init() {
-    context.Background()
     ctx := context.Background() 
-    dbUri := "neo4j://localhost"
+    dbUri := "bolt://neo4j:7687"
     dbUser := "neo4j"
-    dbPassword := "verysecret"
+    dbPassword := "password"
     driver, err := neo4j.NewDriverWithContext(  
         dbUri,
         neo4j.BasicAuth(dbUser, dbPassword, ""))
@@ -42,6 +41,20 @@ func neo4j_init() {
     if err != nil {
         panic(err)
     }
+
+	// result, err := neo4j.ExecuteQuery(ctx, driver,
+	// 	"MERGE (p:Person {name: $name}) RETURN p",  
+	// 	map[string]any{  
+	// 		"name": "Alice",
+	// 	}, neo4j.EagerResultTransformer,
+	// 	neo4j.ExecuteQueryWithDatabase("neo4j"))  
+	// if err != nil {
+	// 	panic(err)
+	// }
+	
+	// fmt.Printf("Created %v nodes in %+v.\n",
+	// 	result.Summary.Counters().NodesCreated(),
+	// 	result.Summary.ResultAvailableAfter())
 }
 
 func (s *server) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
@@ -112,6 +125,12 @@ func main() {
 	s := grpc.NewServer()
 	pb.RegisterDataServiceServer(s, &server{})
 	log.Printf("server listening at %v", lis.Addr())
+
+	log.Printf("BEFORE neo4j_init",)
+	neo4j_init()
+	log.Printf("AFTER neo4j_init111",)
+
+
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

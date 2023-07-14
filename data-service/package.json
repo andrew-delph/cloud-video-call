@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha 'dist/test/**/*.js' --recursive",
-    "dev": "ibazel -run_command_after_success='bash -c \"cd data-service && npm run k8-restart\"' build image",
+    "dev": "ibazel -run_command_after_success='bash -c \"cd data-service && npm run k8-restart\"' build image_push",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "prod": "node ./dist/index.js",

@@ -113,11 +113,7 @@ container_push(
 )
 
 go_library(
-    name = "go_default_library",
-    srcs = [
-        "helpers.go",
-        "main.go",
-    ],
+    name = "go_default_library_deps",
     importpath = "github.com/andrew-delph/cloud-video-call/data-service",
     visibility = ["//visibility:private"],
     deps = [
@@ -125,4 +121,17 @@ go_library(
         "@com_github_neo4j_neo4j_go_driver_v5//neo4j:go_default_library",
         "@org_golang_google_grpc//:go_default_library",
     ],
+)
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "helpers.go",
+        "main.go",
+    ],
+    embed = [
+        ":go_default_library_deps",
+    ],
+    importpath = "github.com/andrew-delph/cloud-video-call/data-service",
+    visibility = ["//visibility:private"],
 )
