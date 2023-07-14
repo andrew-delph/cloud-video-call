@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"log"
 	"net"
 
 	"fmt"
@@ -10,6 +9,10 @@ import (
 	"google.golang.org/grpc"
 
 	"context"
+
+	"sync"
+
+	log "github.com/sirupsen/logrus"
 
 	pb "github.com/andrew-delph/cloud-video-call/common-messaging/proto"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
@@ -24,37 +27,53 @@ type server struct {
 }
 
 
+
+var (
+	driver     neo4j.Driver
+	driverOnce sync.Once
+)
+
+func getDriver() neo4j.Driver {
+	driverOnce.Do(func() {
+		var err error
+		driver, err = neo4j.NewDriver("bolt://neo4j:7687", neo4j.BasicAuth("neo4j", "password", ""))
+		if err != nil {
+			log.Fatal(err)
+		}
+	})
+
+	return driver
+}
+
+
 func neo4j_init() {
-    ctx := context.Background() 
-    dbUri := "bolt://neo4j:7687"
-    dbUser := "neo4j"
-    dbPassword := "password"
-    driver, err := neo4j.NewDriverWithContext(  
-        dbUri,
-        neo4j.BasicAuth(dbUser, dbPassword, ""))
-    if err != nil {
-        panic(err)
-    }
-    defer driver.Close(ctx)  
+	log.Debug("neo4j_init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	log.Debug("neo4j_init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	log.Debug("neo4j_init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-    err = driver.VerifyConnectivity(ctx)  
-    if err != nil {
-        panic(err)
-    }
+	// ctx := context.Background()
+    session:= getDriver().NewSession(neo4j.SessionConfig{DatabaseName: "neo4j"})
 
-	result, err := neo4j.ExecuteQuery(ctx, driver,
-		"MERGE (p:Person {name: $name}) RETURN p",  
-		map[string]any{  
-			"name": "Alice",
-		}, neo4j.EagerResultTransformer,
-		neo4j.ExecuteQueryWithDatabase("neo4j"))  
-	if err != nil {
-		panic(err)
-	}
+	defer session.Close()
+
 	
-	fmt.Printf("Created %v nodes in %+v.\n",
-		result.Summary.Counters().NodesCreated(),
-		result.Summary.ResultAvailableAfter())
+
+	// Execute a Neo4j query
+	result, err := session.Run("CREATE (p:Person {name: $name})", map[string]interface{}{
+		"name": "Alice",
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Process the query result
+	for result.Next() {
+		log.Debug("---1")
+		log.Debug(result.Record().Values)
+	}
+	if err = result.Err(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (s *server) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
@@ -85,7 +104,7 @@ func (s *server) GetRelationshipScores(ctx context.Context, in *pb.GetRelationsh
 
 
 func (s *server) CheckUserFilters(ctx context.Context, in *pb.CheckUserFiltersRequest) (*pb.CheckUserFiltersResponse, error) {
-	log.Printf("Received: CheckUserFilters123zzz1z")
+	// log.Printf("Received: CheckUserFilters123zzz1z")
 	return &pb.CheckUserFiltersResponse{}, nil
 }
 
@@ -117,6 +136,13 @@ func (s *server) InsertUserVectors(ctx context.Context, in *pb.InsertUserVectors
 
 
 func main() {
+	log.SetFormatter(&log.JSONFormatter{})
+
+	log.Debug("STARTING !!!")
+	log.Debug("STARTING !!!")
+	log.Debug("STARTING !!!")
+	log.Debug("STARTING !!!")
+
 	flag.Parse()
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
@@ -130,8 +156,9 @@ func main() {
 	neo4j_init()
 	log.Printf("AFTER neo4j_init111",)
 
-
+	log.Printf("start. done",)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+	log.Printf("DONE. done",)
 }
