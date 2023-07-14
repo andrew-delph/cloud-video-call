@@ -99,7 +99,7 @@ container_image(
     ports = ["50051"],
     # repository = "docker.io/salrashid123"
     # repository = "gcr.io/$PROJECT_ID"
-    repository = "us-central1-docker.pkg.dev/builder-project/repo1/greeter_server",
+    # repository = "us-central1-docker.pkg.dev/builder-project/repo1/greeter_server",
 )
 
 go_library(
@@ -108,6 +108,7 @@ go_library(
     importpath = "main",
     visibility = ["//visibility:private"],
     deps = [
+        "//common-messaging/proto:go_default_library",
         "@com_github_google_uuid//:go_default_library",
         "@org_golang_google_grpc//:go_default_library",
         "@org_golang_google_grpc//codes:go_default_library",
