@@ -1,16 +1,13 @@
 package main
 
 import (
+	"context"
 	"flag"
-	"net"
-
 	"fmt"
+	"net"
+	"sync"
 
 	"google.golang.org/grpc"
-
-	"context"
-
-	"sync"
 
 	log "github.com/sirupsen/logrus"
 
@@ -18,15 +15,11 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-var (
-	port = flag.Int("port", 80, "The server port")
-)
+var port = flag.Int("port", 80, "The server port")
 
 type server struct {
 	pb.UnimplementedDataServiceServer
 }
-
-
 
 var (
 	driver     neo4j.Driver
@@ -45,34 +38,73 @@ func getDriver() neo4j.Driver {
 	return driver
 }
 
+func getSession() neo4j.Session {
+	session := getDriver().NewSession(neo4j.SessionConfig{})
+	return session
+}
 
 func neo4j_init() {
-	log.Debug("neo4j_init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-	log.Debug("neo4j_init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-	log.Debug("neo4j_init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	log.Debug("neo4j_init")
 
 	// ctx := context.Background()
-    session:= getDriver().NewSession(neo4j.SessionConfig{DatabaseName: "neo4j"})
-
+	session := getSession()
 	defer session.Close()
 
-	
+	session.Run(
+		`CREATE CONSTRAINT Person_userId IF NOT EXISTS FOR (p:Person) REQUIRE (p.userId) IS UNIQUE`, nil)
 
-	// Execute a Neo4j query
-	result, err := session.Run("CREATE (p:Person {name: $name})", map[string]interface{}{
-		"name": "Alice",
-	})
+	session.Run(
+		`CREATE INDEX SIMILAR_TO_jobId IF NOT EXISTS  FOR ()-[r:SIMILAR_TO]-() ON (r.jobId)`, nil)
+
+	session.Run(
+		`CREATE INDEX PREDICTION_probability IF NOT EXISTS  FOR ()-[r:PREDICTION]-() ON (r.probability)`, nil)
+
+	session.Run(
+		`CREATE INDEX SIMILAR_probability IF NOT EXISTS  FOR ()-[r:SIMILAR]-() ON (r.score)`, nil)
+
+	session.Run(
+		`CREATE INDEX DISTANCE_probability IF NOT EXISTS  FOR ()-[r:DISTANCE]-() ON (r.distance)`, nil)
+
+	session.Run(
+		`CREATE INDEX MATCHED_createDate IF NOT EXISTS FOR ()-[r:MATCHED]-() ON (r.createDate)`, nil)
+
+	session.Run(
+		`CREATE INDEX FEEDBACK_createDate IF NOT EXISTS FOR ()-[r:FEEDBACK]-() ON (r.createDate)`, nil)
+
+	session.Run(
+		`CREATE INDEX FEEDBACK_feedbackId IF NOT EXISTS FOR ()-[r:FEEDBACK]-() ON (r.matchId)`, nil)
+
+	// // Execute a Neo4j query
+	// result, err := session.Run("CREATE (p:Person {name: $name})", map[string]interface{}{
+	// 	"name": "Alice",
+	// })
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// // Process the query result
+	// for result.Next() {
+	// 	log.Debug("---1")
+	// 	log.Debug(result.Record().Values)
+	// }
+	// if err = result.Err(); err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	result, err := session.Run(
+		`
+		MATCH (n:Person)
+		RETURN n.userId
+		LIMIT 1
+		`, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// Process the query result
-	for result.Next() {
-		log.Debug("---1")
-		log.Debug(result.Record().Values)
-	}
-	if err = result.Err(); err != nil {
-		log.Fatal(err)
+	rec, err := result.Single()
+	if rec == nil {
+		log.Fatal("rec is nil")
+	} else {
+		log.Info("REC IS NOT NIL")
 	}
 }
 
@@ -96,12 +128,10 @@ func (s *server) CreateFeedback(ctx context.Context, in *pb.CreateFeedbackReques
 	return &pb.Match{}, nil
 }
 
-
 func (s *server) GetRelationshipScores(ctx context.Context, in *pb.GetRelationshipScoresRequest) (*pb.GetRelationshipScoresResponse, error) {
 	log.Printf("Received: GetRelationshipScores")
 	return &pb.GetRelationshipScoresResponse{}, nil
 }
-
 
 func (s *server) CheckUserFilters(ctx context.Context, in *pb.CheckUserFiltersRequest) (*pb.CheckUserFiltersResponse, error) {
 	// log.Printf("Received: CheckUserFilters123zzz1z")
@@ -133,32 +163,25 @@ func (s *server) InsertUserVectors(ctx context.Context, in *pb.InsertUserVectors
 	return &pb.StandardResponse{}, nil
 }
 
-
-
 func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 
-	log.Debug("STARTING !!!")
-	log.Debug("STARTING !!!")
-	log.Debug("STARTING !!!")
-	log.Debug("STARTING !!!")
+	log.Info("STARTING !!!")
 
-	flag.Parse()
+	flag.Parse() // Is this needed?
+
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
 	pb.RegisterDataServiceServer(s, &server{})
-	log.Printf("server listening at %v", lis.Addr())
+	log.Infof("server listening at %v", lis.Addr())
 
-	log.Printf("BEFORE neo4j_init",)
 	neo4j_init()
-	log.Printf("AFTER neo4j_init111",)
 
-	log.Printf("start. done",)
+	log.Info("neo4j_init done")
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
-	log.Printf("DONE. done",)
 }

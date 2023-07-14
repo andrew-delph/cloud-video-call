@@ -48,4 +48,7 @@
   "go.useLanguageServer": true,
   "go.buildOnSave": "off",
   "go.lintOnSave": "off",
+  "[go]": {
+    "editor.defaultFormatter": "golang.go"
+  },
 }
