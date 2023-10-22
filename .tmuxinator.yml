@@ -1,0 +1,43 @@
+# /home/andrew/.config/tmuxinator/video_call.yml
+
+name: video_call
+
+on_project_start: while true; do (cd k8 && make neo4j && make milvus && make apply) && (cd monitoring && make apply) && break; done
+# on_project_exit: minikube stop
+
+windows:
+  - editor:
+      layout: tiled
+      panes:
+        - k8:
+            - cd k8
+            - make watch
+        # - top:
+        #     - cd k8
+        # - make top
+        # - dashboard:
+        #     - cd k8
+        #     - make apply
+        #     - make -B dashboard
+        # - monitoring:
+        #     - cd monitoring
+        #     - make apply
+        # - make pgrafana
+        - socketio-service:
+            - cd socketio-service
+            - npm run dev
+        - options-service:
+            - cd options-service
+            - npm run dev
+        - matchmaker-event:
+            - cd matchmaker-event
+            - npm run dev
+        - socketio-event:
+            - cd socketio-event
+            - npm run dev
+        - neo4j:
+            - cd data-service
+            - npm run dev
+        - neo4j-jobs:
+            - cd neo4j-jobs
+            - npm run dev
