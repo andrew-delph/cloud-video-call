@@ -42,5 +42,5 @@ volumes:
     mode: 'share'
     share:
       name: 'data'
-nodeSelector:
-  vke.vultr.com/node-pool: video-call
+# nodeSelector:
+#   vke.vultr.com/node-pool: video-call
