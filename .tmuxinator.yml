@@ -2,7 +2,8 @@
 
 name: video_call
 
-on_project_start: while true; do (cd k8 && make neo4j && make milvus && make apply) && (cd monitoring && make apply) && break; done
+on_project_start: while true; do echo "sleeping\n\n" && sleep 5 && echo "STARTING" && (cd k8 && make apply && make neo4j && make milvus) && (cd monitoring && make apply) && break; done
+# on_project_start: (cd k8 && make neo4j && make milvus && make apply) && (cd monitoring && make apply)
 # on_project_exit: minikube stop
 
 windows:

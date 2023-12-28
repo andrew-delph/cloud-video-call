@@ -12,10 +12,10 @@ init:
 	rm -rf dependencies
 	mkdir dependencies
 	mkdir dependencies/k6-operator
-	mkdir dependencies/xk6-output-prometheus-remote
-	git clone https://github.com/grafana/k6-operator.git dependencies/k6-operator
-	git clone https://github.com/grafana/xk6-output-prometheus-remote.git dependencies/xk6-output-prometheus-remote
-	cd dependencies/k6-operator && make deploy
+	# mkdir dependencies/xk6-output-prometheus-remote
+	curl https://raw.githubusercontent.com/grafana/k6-operator/main/bundle.yaml | kubectl apply -f -
+	# git clone https://github.com/grafana/xk6-output-prometheus-remote.git dependencies/xk6-output-prometheus-remote
+	# cd dependencies/k6-operator && make deploy
 
 setup:
 	npm run webpack > /dev/null
