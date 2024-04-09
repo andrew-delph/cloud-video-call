@@ -1,6 +1,7 @@
 {
   "name": "socketio-event",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",

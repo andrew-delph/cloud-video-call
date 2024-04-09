@@ -43,7 +43,7 @@ js_image_layer(
     visibility = ["//visibility:__pkg__"],
     platform = ":amd64_linux",
 )
-load("@rules_oci//oci:defs.bzl", "oci_image")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
 oci_image(
     name = "image",
     cmd = ["/app/main"],
@@ -55,19 +55,8 @@ oci_image(
     ]
 )
 
-container_push(
-    name = "image_push",
-    format = "Docker",
-    image = ":image",
-    registry = "ghcr.io",
-    repository = "andrew-delph/video-call-socketio-service",
-    tag = "latest",
-)
-
-load("@rules_oci//oci:defs.bzl", "oci_push")
-
 oci_push(
-    name = "push_image_wo_tags",
+    name = "image_push",
     image = ":image",
     repository = "ghcr.io/andrew-delph/video-call-socketio-service",
 )
