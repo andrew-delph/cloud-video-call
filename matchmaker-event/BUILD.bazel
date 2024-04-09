@@ -1,3 +1,4 @@
+load("@aspect_rules_swc//swc:defs.bzl", "swc")
 load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 load("@aspect_rules_js//js:defs.bzl", "js_binary")
@@ -8,9 +9,10 @@ npm_link_all_packages(
 
 ts_project(
     name = "ts",
-    srcs = glob(["src/**/*.ts",]),
+    srcs = glob(["src/**/*.ts"]),
     declaration = True,
     out_dir = ".",
+    transpiler = swc,
     deps = [
         ":node_modules",
     ],
@@ -22,9 +24,7 @@ js_binary(
     entry_point = "src/matchmaker-event.js",
 )
 
-
-
-load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
+load("@aspect_rules_js//js:defs.bzl", "js_image_layer")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
 load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
 
@@ -70,26 +70,27 @@ container_image(
 )
 
 container_push(
-   name = "image_push",
-   image = ":image",
-   format = "Docker",
-   registry = "ghcr.io",
-   repository = "andrew-delph/video-call-matchmaker-event",
-   tag = "latest",
+    name = "image_push",
+    format = "Docker",
+    image = ":image",
+    registry = "ghcr.io",
+    repository = "andrew-delph/video-call-matchmaker-event",
+    tag = "latest",
 )
 
 load("@aspect_rules_jest//jest:defs.bzl", "jest_test")
 
 ts_project(
     name = "test_ts",
-    srcs = [":ts"] + glob(["test/**/*.ts",]),
+    srcs = [":ts"] + glob(["test/**/*.ts"]),
     declaration = True,
     out_dir = ".",
+    transpiler = swc,
 )
 
 jest_test(
     name = "test",
+    colors = False,
     data = [":test_ts"],
-    colors= False,
     node_modules = "//:node_modules",
 )

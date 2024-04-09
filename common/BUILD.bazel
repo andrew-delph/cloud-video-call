@@ -1,31 +1,30 @@
+load("@aspect_rules_swc//swc:defs.bzl", "swc")
 load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
-load("@aspect_rules_js//js:defs.bzl", "js_binary")
 load("@aspect_rules_js//npm:defs.bzl", "npm_package")
 load("@aspect_rules_js//js:defs.bzl", "js_library")
-
 
 npm_link_all_packages(
     name = "node_modules",
 )
 
-
 ts_project(
     name = "ts",
-    srcs = glob(["src/**/*.ts",]),
+    srcs = glob(["src/**/*.ts"]),
     declaration = True,
     out_dir = ".",
+    transpiler = swc,
     visibility = ["//visibility:public"],
     deps = [
         ":node_modules",
     ],
 )
 
-
 js_library(
     name = "lib",
     srcs = [
-        ":ts","package.json"
+        "package.json",
+        ":ts",
     ],
 )
 
@@ -35,19 +34,19 @@ npm_package(
     visibility = ["//visibility:public"],
 )
 
-
 load("@aspect_rules_jest//jest:defs.bzl", "jest_test")
 
 ts_project(
     name = "test_ts",
-    srcs = [":ts"] + glob(["test/**/*.ts",]),
+    srcs = [":ts"] + glob(["test/**/*.ts"]),
     declaration = True,
     out_dir = ".",
+    transpiler = swc,
 )
 
 jest_test(
     name = "test",
+    colors = False,
     data = [":test_ts"],
-    colors= False,
     node_modules = "//:node_modules",
 )

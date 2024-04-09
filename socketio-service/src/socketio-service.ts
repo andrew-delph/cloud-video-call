@@ -191,7 +191,7 @@ io.on(`connection`, async (socket) => {
     // );
 
     for (let interval of intervals) {
-      clearInterval(interval);
+      clearInterval(interval as unknown as number);
     }
   });
 

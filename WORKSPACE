@@ -1,11 +1,12 @@
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+
 http_archive(
     name = "aspect_rules_js",
-    sha256 = "aea8d12bdc4b40127e57fb3da5b61cbb17e969e7786471a71cbff0808c600bcb",
-    strip_prefix = "rules_js-1.24.1",
-    url = "https://github.com/aspect-build/rules_js/releases/download/v1.24.1/rules_js-v1.24.1.tar.gz",
+    sha256 = "d6dddd224b27d456820d19b9c23a7bcbe75660a6c040d83e31ba3da4fb1f6888",
+    strip_prefix = "rules_js-1.41.0",
+    url = "https://github.com/aspect-build/rules_js/releases/download/v1.41.0/rules_js-v1.41.0.tar.gz",
 )
 
 load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
@@ -19,7 +20,12 @@ nodejs_register_toolchains(
     node_version = DEFAULT_NODE_VERSION,
 )
 
-load("@aspect_rules_js//npm:npm_import.bzl", "npm_translate_lock")
+# For convenience, npm_translate_lock does this call automatically.
+# Uncomment if you don't call npm_translate_lock at all.
+#load("@bazel_features//:deps.bzl", "bazel_features_deps")
+#bazel_features_deps()
+
+load("@aspect_rules_js//npm:repositories.bzl", "npm_translate_lock")
 
 npm_translate_lock(
     name = "npm",
@@ -33,13 +39,6 @@ load("@npm//:repositories.bzl", "npm_repositories")
 npm_repositories()
 
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-http_archive(
-    name = "aspect_rules_ts",
-    sha256 = "58b6c0ad158fc42883dafa157f1a25cddd65bcd788a772620192ac9ceefa0d78",
-    strip_prefix = "rules_ts-1.3.2",
-    url = "https://github.com/aspect-build/rules_ts/releases/download/v1.3.2/rules_ts-v1.3.2.tar.gz",
-)
 
 ##################
 # rules_ts setup #
@@ -49,6 +48,14 @@ http_archive(
 # you should fetch it *before* calling this.
 # Alternatively, you can skip calling this function, so long as you've
 # already fetched all the dependencies.
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+http_archive(
+    name = "aspect_rules_ts",
+    sha256 = "c77f0dfa78c407893806491223c1264c289074feefbf706721743a3556fa7cea",
+    strip_prefix = "rules_ts-2.2.0",
+    url = "https://github.com/aspect-build/rules_ts/releases/download/v2.2.0/rules_ts-v2.2.0.tar.gz",
+)
+
 load("@aspect_rules_ts//ts:repositories.bzl", "rules_ts_dependencies")
 
 rules_ts_dependencies(
@@ -56,15 +63,23 @@ rules_ts_dependencies(
     ts_version_from = "//:package.json",
 
     # Alternatively, you could pick a specific version, or use
-    # load("@aspect_rules_ts//ts:repositories.bzl", "LATEST_VERSION")
-    # ts_version = LATEST_VERSION
+    # load("@aspect_rules_ts//ts:repositories.bzl", "LATEST_TYPESCRIPT_VERSION")
+    # ts_version = LATEST_TYPESCRIPT_VERSION
 )
+
+load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
+
+rules_js_dependencies()
+
+load("@bazel_features//:deps.bzl", "bazel_features_deps")
+
+bazel_features_deps()
 
 # Fetch and register node, if you haven't already
 load("@rules_nodejs//nodejs:repositories.bzl", "DEFAULT_NODE_VERSION", "nodejs_register_toolchains")
 
 nodejs_register_toolchains(
-    name = "node",
+    name = "nodejs",
     node_version = DEFAULT_NODE_VERSION,
 )
 
@@ -128,3 +143,36 @@ http_archive(
 load("@aspect_rules_jest//jest:dependencies.bzl", "rules_jest_dependencies")
 
 rules_jest_dependencies()
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+http_archive(
+    name = "aspect_rules_swc",
+    sha256 = "cde09df7dea773adaed896612434559f8955d2dfb2cfd6429ee333f30299ed34",
+    strip_prefix = "rules_swc-1.2.2",
+    url = "https://github.com/aspect-build/rules_swc/releases/download/v1.2.2/rules_swc-v1.2.2.tar.gz",
+)
+
+###################
+# rules_swc setup #
+###################
+
+# Fetches the rules_swc dependencies.
+# If you want to have a different version of some dependency,
+# you should fetch it *before* calling this.
+# Alternatively, you can skip calling this function, so long as you've
+# already fetched all the dependencies.
+load("@aspect_rules_swc//swc:dependencies.bzl", "rules_swc_dependencies")
+
+rules_swc_dependencies()
+
+# Fetches a SWC cli from
+# https://github.com/swc-project/swc/releases
+# If you'd rather compile it from source, you can use rules_rust, fetch the project,
+# then register the toolchain yourself. (Note, this is not yet documented)
+load("@aspect_rules_swc//swc:repositories.bzl", "LATEST_SWC_VERSION", "swc_register_toolchains")
+
+swc_register_toolchains(
+    name = "swc",
+    swc_version = LATEST_SWC_VERSION,
+)
+
