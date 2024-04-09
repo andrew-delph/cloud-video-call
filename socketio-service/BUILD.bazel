@@ -63,3 +63,11 @@ container_push(
     repository = "andrew-delph/video-call-socketio-service",
     tag = "latest",
 )
+
+load("@rules_oci//oci:defs.bzl", "oci_push")
+
+oci_push(
+    name = "push_image_wo_tags",
+    image = ":image",
+    repository = "ghcr.io/andrew-delph/video-call-socketio-service",
+)
