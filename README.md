@@ -4,6 +4,10 @@ This project is a chat application similar to Omegle. Users can join the applica
 
 An AI pipeline progressively runs to create embeddings based on conversation metrics. These embeddings are saved in a vector database, and cosine similarity is used for link prediction to match users.
 
+## TODO
+- implement data log stream to db for writting relationship and milvus embeddings
+- implement spark node embeddings: https://arxiv.org/pdf/2106.10620.pdf
+
 ## Features
 
 - User registration and profile update
