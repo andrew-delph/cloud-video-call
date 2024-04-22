@@ -4,7 +4,7 @@
 set -e
 
 # Get all image_push targets
-targets=$(bazel query //... | grep image_push)
+targets=$(bazel query //... | grep 'image_build$')
 
 # Run each image_push target
 while read -r target; do
