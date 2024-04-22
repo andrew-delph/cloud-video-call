@@ -4,7 +4,7 @@ load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
 load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
 load("@npm//:defs.bzl", "npm_link_all_packages")
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push", "oci_tarball")
 
 npm_link_all_packages(
     name = "node_modules",
@@ -12,10 +12,9 @@ npm_link_all_packages(
 
 ts_project(
     name = "ts",
-    srcs = glob(["src/**/*.ts"]),
-    declaration = True,
-    out_dir = ".",
+    srcs = glob(["src/**/*.ts","*.json"]),
     transpiler = "tsc",
+    # validate = False,
     deps = [
         ":node_modules",
     ],
@@ -28,32 +27,6 @@ js_binary(
     entry_point = "src/socketio-event.js",
 )
 
-ts_project(
-    name = "ts2",
-    srcs = glob(["*.ts"]),
-    # srcs = [
-    #     "src/test.ts",
-    # ],
-    declaration = True,
-    # out_dir = ".",
-    transpiler = "tsc",
-    deps = [
-        ":node_modules",
-    ],
-)
-
-js_binary(
-    name = "btest",
-    copy_data_to_bin = True,
-    data = [
-        ":node_modules",
-        ":package.json",
-        ":ts2",
-    ],
-
-    # entry_point = "src/socketio-event.js",
-    entry_point = "example2.js",
-)
 
 js_image_layer(
     name = "layers",
@@ -154,6 +127,12 @@ oci_image(
         ":layersz",
     ],
     visibility = ["//visibility:public"],
+)
+
+oci_tarball(
+    name = "tarball",
+    image = ":imagez",
+    repo_tags = ["my-repository:latest"],
 )
 
 oci_push(
