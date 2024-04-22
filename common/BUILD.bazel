@@ -9,13 +9,14 @@ npm_link_all_packages(
     name = "node_modules",
 )
 
+
 ts_project(
     name = "ts",
-    srcs = glob(["src/**/*.ts"]),
+    srcs = glob(["src/**/*.ts","*.json"]),
+    transpiler = "tsc",
     declaration = True,
     out_dir = ".",
-    transpiler = "tsc",
-    visibility = ["//visibility:public"],
+    validate = False,
     deps = [
         ":node_modules",
     ],
