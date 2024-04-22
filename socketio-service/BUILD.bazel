@@ -1,6 +1,10 @@
-load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
+load("@aspect_rules_swc//swc:defs.bzl", "swc")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
-load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
+load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push", "oci_tarball")
 
 npm_link_all_packages(
     name = "node_modules",
@@ -8,30 +12,19 @@ npm_link_all_packages(
 
 ts_project(
     name = "ts",
-    srcs = glob(["src/**/*.ts",]),
-    declaration = True,
-    out_dir = ".",
+    srcs = glob(["src/**/*.ts","*.json"]),
+    transpiler = "tsc",
+    # validate = False,
     deps = [
         ":node_modules",
     ],
 )
 
 js_binary(
-    name = "socketio-service",
+    name = "binary",
+    copy_data_to_bin = True,
     data = [":ts"],
     entry_point = "src/socketio-service.js",
-)
-
-
-load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
-load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
-load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
-
-js_image_layer(
-    name = "layers",
-    binary = ":socketio-service",
-    root = "/app",
-    visibility = ["//visibility:__pkg__"],
 )
 
 filegroup(
@@ -56,23 +49,55 @@ container_layer(
     tars = [":node_modules_tar"],
 )
 
-container_image(
-    name = "image",
-    architecture = "amd64",
-    base = "@debian_amd64//image",
-    cmd = ["/app/socketio-service/socketio-service"],
-    entrypoint = ["bash"],
-    layers = [
-        ":app_layer",
-        ":node_modules_layer",
+platform(
+    name = "linux_amd64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
     ],
 )
 
-container_push(
-   name = "image_push",
-   image = ":image",
-   format = "Docker",
-   registry = "ghcr.io",
-   repository = "andrew-delph/video-call-socketio-service",
-   tag = "latest",
+platform(
+    name = "linux_arm64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:arm64",
+    ],
+)
+
+js_image_layer(
+    name = "image_layer",
+    binary = ":binary",
+    platform = select({
+        "@platforms//cpu:arm64": ":linux_arm64",
+        "@platforms//cpu:x86_64": ":linux_amd64",
+    }),
+    root = "/app",
+    visibility = ["//visibility:__pkg__"],
+)
+
+oci_image(
+    name = "image",
+    # Since js_binary depends on bash we have to bring in a base image that has bash
+    base = "@debian",
+    # This is going to be /{root of js_image_layer}/{package_name()}/{name of js_binary}
+    cmd = ["/app/socketio-service/socketio-service"],
+    entrypoint = ["bash"],
+    tars = [
+        ":image_layer",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+oci_tarball(
+    name = "image_build",
+    image = ":image",
+    repo_tags = ["socketio-service:latest"],
+)
+
+oci_push(
+    name = "image_push",
+    image = ":image",
+    repository = "ghcr.io/andrew-delph/video-call-socketio-service",
+    tags = ["latest"],
 )

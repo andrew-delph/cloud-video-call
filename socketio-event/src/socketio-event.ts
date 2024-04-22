@@ -1,8 +1,9 @@
-import { iceServers, loadIceServers } from './iceservers';
+import axios from 'axios';
 import { addNotification } from './notifications';
+import { iceServers, loadIceServers } from './iceservers';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { connect, Channel, ConsumeMessage, Connection } from 'amqplib';
-import axios from 'axios';
+
 import * as common from 'common';
 import {
   DataServiceClient,
@@ -40,13 +41,14 @@ import Client from 'ioredis';
 import { Server } from 'socket.io';
 import { v4 as uuid } from 'uuid';
 
+console.log(`!:?@?#@!?#@s`);
 const prom = common.prom;
 const logger = common.getLogger();
 
 const promClient = new common.PromClient(`socketio-event`);
 
 common.listenGlobalExceptions(async () => {
-  logger.debug(`clean up socketio-event`);
+  logger.debug(`clean up socketio-eventz`);
   promClient.stop();
 });
 

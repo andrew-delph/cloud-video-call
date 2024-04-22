@@ -1,8 +1,8 @@
-load("@npm//:defs.bzl", "npm_link_all_packages")
-load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
-load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_library")
 load("@aspect_rules_js//npm:defs.bzl", "npm_package")
-load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@aspect_rules_swc//swc:defs.bzl", "swc")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("@npm//:defs.bzl", "npm_link_all_packages")
 
 npm_link_all_packages(
     name = "node_modules",
@@ -10,11 +10,11 @@ npm_link_all_packages(
 
 ts_project(
     name = "ts",
-    srcs = glob(["src/**/*.ts"]),
+    srcs = glob(["src/**/*.ts","*.json"]),
+    transpiler = "tsc",
     declaration = True,
     out_dir = ".",
-    source_map = True,
-    visibility = ["//visibility:public"],
+    validate = False,
     deps = [
         ":node_modules",
     ],
