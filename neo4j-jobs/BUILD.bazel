@@ -4,6 +4,7 @@ load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
 load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
 load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push", "oci_tarball")
 
 npm_link_all_packages(
     name = "node_modules",
@@ -20,16 +21,10 @@ ts_project(
 )
 
 js_binary(
-    name = "index",
+    name = "binary",
+    copy_data_to_bin = True,
     data = [":ts"],
-    entry_point = "src/job.js",
-)
-
-js_image_layer(
-    name = "layers",
-    binary = ":index",
-    root = "/app",
-    visibility = ["//visibility:__pkg__"],
+    entry_point = "src/neo4j-jobs.js",
 )
 
 filegroup(
@@ -54,23 +49,55 @@ container_layer(
     tars = [":node_modules_tar"],
 )
 
-container_image(
-    name = "image",
-    architecture = "amd64",
-    base = "@debian_amd64//image",
-    cmd = ["/app/neo4j-jobs/index"],
-    entrypoint = ["bash"],
-    layers = [
-        ":app_layer",
-        ":node_modules_layer",
+platform(
+    name = "linux_amd64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
     ],
 )
 
-container_push(
-    name = "image_push",
-    format = "Docker",
+platform(
+    name = "linux_arm64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:arm64",
+    ],
+)
+
+js_image_layer(
+    name = "image_layer",
+    binary = ":binary",
+    platform = select({
+        "@platforms//cpu:arm64": ":linux_arm64",
+        "@platforms//cpu:x86_64": ":linux_amd64",
+    }),
+    root = "/app",
+    visibility = ["//visibility:__pkg__"],
+)
+
+oci_image(
+    name = "image",
+    # Since js_binary depends on bash we have to bring in a base image that has bash
+    base = "@debian",
+    # This is going to be /{root of js_image_layer}/{package_name()}/{name of js_binary}
+    cmd = ["/app/neo4j-jobs/neo4j-jobs"],
+    entrypoint = ["bash"],
+    tars = [
+        ":image_layer",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+oci_tarball(
+    name = "image_build",
     image = ":image",
-    registry = "ghcr.io",
-    repository = "andrew-delph/video-call-neo4j-jobs",
-    tag = "latest",
+    repo_tags = ["neo4j-jobs:latest"],
+)
+
+oci_push(
+    name = "image_push",
+    image = ":image",
+    repository = "ghcr.io/andrew-delph/video-call-neo4j-jobs",
+    tags = ["latest"],
 )

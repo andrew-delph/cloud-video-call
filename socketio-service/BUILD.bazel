@@ -4,7 +4,7 @@ load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
 load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
 load("@npm//:defs.bzl", "npm_link_all_packages")
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push", "oci_tarball")
 
 npm_link_all_packages(
     name = "node_modules",
@@ -21,41 +21,83 @@ ts_project(
 )
 
 js_binary(
-    name = "socketio-service",
+    name = "binary",
+    copy_data_to_bin = True,
     data = [":ts"],
     entry_point = "src/socketio-service.js",
 )
 
+filegroup(
+    name = "app_tar",
+    srcs = [":layers"],
+    output_group = "app",
+)
+
+container_layer(
+    name = "app_layer",
+    tars = [":app_tar"],
+)
+
+filegroup(
+    name = "node_modules_tar",
+    srcs = [":layers"],
+    output_group = "node_modules",
+)
+
+container_layer(
+    name = "node_modules_layer",
+    tars = [":node_modules_tar"],
+)
 
 platform(
-    name = "amd64_linux",
+    name = "linux_amd64",
     constraint_values = [
         "@platforms//os:linux",
         "@platforms//cpu:x86_64",
     ],
 )
 
+platform(
+    name = "linux_arm64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:arm64",
+    ],
+)
+
 js_image_layer(
-    name = "layers",
-    binary = ":socketio-service",
-    platform = ":amd64_linux",
+    name = "image_layer",
+    binary = ":binary",
+    platform = select({
+        "@platforms//cpu:arm64": ":linux_arm64",
+        "@platforms//cpu:x86_64": ":linux_amd64",
+    }),
     root = "/app",
     visibility = ["//visibility:__pkg__"],
 )
 
 oci_image(
     name = "image",
-    architecture = "@platforms//cpu:x86_64",
-    cmd = ["/app/main"],
+    # Since js_binary depends on bash we have to bring in a base image that has bash
+    base = "@debian",
+    # This is going to be /{root of js_image_layer}/{package_name()}/{name of js_binary}
+    cmd = ["/app/socketio-service/socketio-service"],
     entrypoint = ["bash"],
-    os = "@platforms//os:linux",
     tars = [
-        ":layers",
+        ":image_layer",
     ],
+    visibility = ["//visibility:public"],
+)
+
+oci_tarball(
+    name = "image_build",
+    image = ":image",
+    repo_tags = ["socketio-service:latest"],
 )
 
 oci_push(
     name = "image_push",
     image = ":image",
     repository = "ghcr.io/andrew-delph/video-call-socketio-service",
+    tags = ["latest"],
 )
