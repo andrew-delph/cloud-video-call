@@ -24,6 +24,28 @@ js_binary(
     copy_data_to_bin = True,
     entry_point = "src/socketio-event.js",
 )
+ts_project(
+    name = "ts2",
+    srcs = glob(["*.ts"]),
+    # srcs = [
+    #     "src/test.ts",
+    # ],
+    declaration = True,
+    # out_dir = ".",
+    transpiler = swc,
+    deps = [
+        ":node_modules",
+    ],
+)
+
+js_binary(
+    name = "btest",
+    data = [":ts2",":node_modules",":package.json",],
+    copy_data_to_bin = True,
+    
+    # entry_point = "src/socketio-event.js",
+    entry_point = "example2.js",
+)
 
 load("@aspect_rules_js//js:defs.bzl", "js_image_layer")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
