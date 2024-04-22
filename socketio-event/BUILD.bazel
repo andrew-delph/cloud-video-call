@@ -1,7 +1,10 @@
+load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
 load("@aspect_rules_swc//swc:defs.bzl", "swc")
-load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
-load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
+load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
 
 npm_link_all_packages(
     name = "node_modules",
@@ -12,7 +15,7 @@ ts_project(
     srcs = glob(["src/**/*.ts"]),
     declaration = True,
     out_dir = ".",
-    transpiler = swc,
+    transpiler = "tsc",
     deps = [
         ":node_modules",
     ],
@@ -20,10 +23,11 @@ ts_project(
 
 js_binary(
     name = "socketio-event",
-    data = [":ts"],
     copy_data_to_bin = True,
+    data = [":ts"],
     entry_point = "src/socketio-event.js",
 )
+
 ts_project(
     name = "ts2",
     srcs = glob(["*.ts"]),
@@ -32,7 +36,7 @@ ts_project(
     # ],
     declaration = True,
     # out_dir = ".",
-    transpiler = swc,
+    transpiler = "tsc",
     deps = [
         ":node_modules",
     ],
@@ -40,16 +44,16 @@ ts_project(
 
 js_binary(
     name = "btest",
-    data = [":ts2",":node_modules",":package.json",],
     copy_data_to_bin = True,
-    
+    data = [
+        ":node_modules",
+        ":package.json",
+        ":ts2",
+    ],
+
     # entry_point = "src/socketio-event.js",
     entry_point = "example2.js",
 )
-
-load("@aspect_rules_js//js:defs.bzl", "js_image_layer")
-load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
-load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
 
 js_image_layer(
     name = "layers",
@@ -101,17 +105,17 @@ container_layer(
 #     tag = "latest",
 # )
 
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
 oci_image(
     name = "image",
+    architecture = "amd64",
     cmd = ["/app/socketio-event/socketio-event"],
     entrypoint = ["bash"],
     os = "linux",
-    architecture = "amd64",
     tars = [
-        ":layers"
-    ]
+        ":layers",
+    ],
 )
+
 platform(
     name = "linux_amd64",
     constraint_values = [
@@ -127,7 +131,6 @@ platform(
         "@platforms//cpu:arm64",
     ],
 )
-
 
 js_image_layer(
     name = "layersz",
@@ -153,10 +156,9 @@ oci_image(
     visibility = ["//visibility:public"],
 )
 
-
 oci_push(
     name = "image_pushz",
     image = ":imagez",
-    tags = ["latest"],
     repository = "ghcr.io/andrew-delph/video-call-socketio-eventzz",
+    tags = ["latest"],
 )

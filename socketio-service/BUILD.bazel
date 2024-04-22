@@ -1,7 +1,10 @@
+load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
 load("@aspect_rules_swc//swc:defs.bzl", "swc")
-load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
-load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
+load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
 
 npm_link_all_packages(
     name = "node_modules",
@@ -12,7 +15,7 @@ ts_project(
     srcs = glob(["src/**/*.ts"]),
     declaration = True,
     out_dir = ".",
-    transpiler = swc,
+    transpiler = "tsc",
     deps = [
         ":node_modules",
     ],
@@ -24,11 +27,6 @@ js_binary(
     entry_point = "src/socketio-service.js",
 )
 
-load("@aspect_rules_js//js:defs.bzl", "js_image_layer")
-load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
-load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
-
-
 platform(
     name = "amd64_linux",
     constraint_values = [
@@ -36,23 +34,24 @@ platform(
         "@platforms//cpu:x86_64",
     ],
 )
+
 js_image_layer(
     name = "layers",
     binary = ":socketio-service",
+    platform = ":amd64_linux",
     root = "/app",
     visibility = ["//visibility:__pkg__"],
-    platform = ":amd64_linux",
 )
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
+
 oci_image(
     name = "image",
+    architecture = "@platforms//cpu:x86_64",
     cmd = ["/app/main"],
     entrypoint = ["bash"],
     os = "@platforms//os:linux",
-    architecture = "@platforms//cpu:x86_64",
     tars = [
-        ":layers"
-    ]
+        ":layers",
+    ],
 )
 
 oci_push(
