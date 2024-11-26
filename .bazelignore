@@ -9,3 +9,4 @@ neo4j-jobs/node_modules
 options-service/node_modules
 socketio-service/node_modules
 puppeteer/node_modules
+k6

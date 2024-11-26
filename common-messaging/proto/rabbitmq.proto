@@ -1,7 +1,8 @@
 syntax = "proto3";
 
+package video_call;
 
-package rabbitmq;
+option go_package = "github.com/andrew-delph/cloud-video-call/common-messaging/proto";
 
 message MatchmakerMessage {
   string user_id = 1;

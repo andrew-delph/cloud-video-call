@@ -8,7 +8,7 @@ npm_link_all_packages(
 
 ts_project(
     name = "ts",
-    srcs = glob(["src/**/*.ts",]),
+    srcs = glob(["src/**/*.ts"]),
     declaration = True,
     out_dir = ".",
     deps = [
@@ -21,7 +21,6 @@ js_binary(
     data = [":ts"],
     entry_point = "src/options-service.js",
 )
-
 
 load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
@@ -69,10 +68,10 @@ container_image(
 )
 
 container_push(
-   name = "image_push",
-   image = ":image",
-   format = "Docker",
-   registry = "ghcr.io",
-   repository = "andrew-delph/video-call-options-service",
-   tag = "latest",
+    name = "image_push",
+    format = "Docker",
+    image = ":image",
+    registry = "ghcr.io",
+    repository = "andrew-delph/video-call-options-service",
+    tag = "latest",
 )

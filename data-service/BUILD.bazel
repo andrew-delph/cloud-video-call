@@ -1,6 +1,10 @@
 load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
-load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
+load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
 
 npm_link_all_packages(
     name = "node_modules",
@@ -8,7 +12,7 @@ npm_link_all_packages(
 
 ts_project(
     name = "ts",
-    srcs = glob(["src/**/*.ts",]),
+    srcs = glob(["src/**/*.ts"]),
     declaration = True,
     out_dir = ".",
     deps = [
@@ -21,11 +25,6 @@ js_binary(
     data = [":ts"],
     entry_point = "src/data-service.js",
 )
-
-
-load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
-load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
-load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
 
 js_image_layer(
     name = "layers",
@@ -68,12 +67,74 @@ container_image(
     ],
 )
 
-container_push(
-   name = "image_push",
-   image = ":image",
-   format = "Docker",
-   registry = "ghcr.io",
-   repository = "andrew-delph/video-call-data-service",
-   tag = "latest",
+# JS image push
+# container_push(
+#     name = "image_push",
+#     format = "Docker",
+#     image = ":image",
+#     registry = "ghcr.io",
+#     repository = "andrew-delph/video-call-data-service",
+#     tag = "latest",
+# )
+
+go_binary(
+    name = "server",
+    embed = [":go_default_library"],
+    goarch = "amd64",
+    goos = "linux",
+    visibility = ["//visibility:public"],
 )
 
+go_image(
+    name = "go_image",
+    embed = [":go_default_library"],
+    goarch = "amd64",
+    goos = "linux",
+    importpath = "main",
+    visibility = ["//visibility:private"],
+)
+
+container_image(
+    name = "greeter_server_image",
+    base = ":go_image",
+    ports = ["80"],
+    # repository = "docker.io/salrashid123"
+    # repository = "gcr.io/$PROJECT_ID"
+    # repository = "us-central1-docker.pkg.dev/builder-project/repo1/greeter_server",
+)
+
+container_push(
+    name = "image_push",
+    format = "Docker",
+    image = ":greeter_server_image",
+    registry = "ghcr.io",
+    repository = "andrew-delph/video-call-data-service",
+    tag = "latest",
+)
+
+go_library(
+    name = "go_default_library_deps",
+    importpath = "github.com/andrew-delph/cloud-video-call/data-service",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//common-messaging/proto:go_default_library",
+        "@com_github_neo4j_neo4j_go_driver_v5//neo4j:go_default_library",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "helpers.go",
+        "main.go",
+    ],
+    importpath = "github.com/andrew-delph/cloud-video-call/data-service",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//common-messaging/proto:go_default_library",
+        "@com_github_neo4j_neo4j_go_driver_v5//neo4j:go_default_library",
+        "@com_github_sirupsen_logrus//:go_default_library",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)

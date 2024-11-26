@@ -156,8 +156,8 @@
             "type": "loki",
             "uid": "Loki"
           },
-          "editorMode": "builder",
-          "expr": "{app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"} | line_format `{{.app}} [{{ .level | default \"unknown\" | upper }}] {{ $json := fromJson __line__ }} {{ $json.message | default __line__ }}` |~ `.*$search.*`",
+          "editorMode": "code",
+          "expr": "{app=~\"$app\", level=~\"$level\", namespace=~\"$namespace\"} | line_format `{{.app}} [{{ .level | default \"unknown\" | upper }}] {{ $json := fromJson __line__ }} {{ $message := $json.message | default $json.msg  }} {{ $message | default __line__ }}` |~ `.*$search.*`",
           "key": "Q-3e372365-9fa7-4447-8019-d543a1f51e4e-0",
           "queryType": "range",
           "refId": "A"
@@ -176,7 +176,7 @@
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "default",
           "value": "default"
         },
@@ -273,11 +273,16 @@
           },
           {
             "selected": false,
+            "text": "fatal",
+            "value": "fatal"
+          },
+          {
+            "selected": false,
             "text": "unknown",
             "value": "unknown"
           }
         ],
-        "query": "info, debug, warn, error, unknown",
+        "query": "info, debug, warn, error, fatal, unknown",
         "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
@@ -312,6 +317,6 @@
   "timezone": "",
   "title": "Logs",
   "uid": "VzlEPu1Vz",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
